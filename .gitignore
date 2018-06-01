@@ -99,3 +99,15 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+research papers/
+
+\.idea/
+
+datasets/
+
+full_tfl_network_example/src/migrations/logs/
+
+tube_network_example/src/bug #20017 - dropping attributes/
+
+tube_network_example/src/migrations/logs/
