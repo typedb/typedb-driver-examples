@@ -25,10 +25,22 @@ These examples uses the [Grakn Node.js Client](https://github.com/graknlabs/grak
 
 ## Quick Start
 
+Run:
+
 - `git clone git@github.com:graknlabs/examples.git`
 - `path-to-grakn-dist-directory/grakn server start`
-- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/nodejs/migdation/schema.gql`
+- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/nodejs/migration/schema.gql`
 - `cd examples/nodejs/migration`
 - `cd csv`, `cd json` or `cd xml`
 - `npm install`
 - `npm run migrate`
+
+### Before running `npm run migrate` for a second time
+
+The `phone_calls` keyspace needs to be cleaned. Run:
+
+- `path-to-grakn-dist-directory/graql console -k phone_calls
+- `clean`
+- `confirm`
+- `exit`
+- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/nodejs/migration/schema.gql`
