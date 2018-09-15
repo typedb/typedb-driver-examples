@@ -57,8 +57,7 @@ async function buildPhoneCallGraph() {
 
 /**
  * loads the csv data into our Grakn phone_calls keyspace
- * @param {string} input.dataPath path to the data file, minus the file format
- * @param {function} input.template accepts a js object and returns a constructed Graql insert query
+ * @param {object} input contains details required to parse the data
  * @param {object} session a Grakn session, off of which a tx will be created
  */
 async function loadDataIntoGrakn(input, session) {
@@ -131,8 +130,8 @@ function callTemplate(call) {
  * 1. reads the file through a stream,
  * 2. parses the xml element to an object
  * 3. adds it to items
- * @param {string} dataPath path to the data file
- * @param {string} selector an xml-stream option to determine the main selector to be parsed
+ * @param {string} input.dataPath path to the data file
+ * @param {string} input.selector an xml-stream option to determine the main selector to be parsed
  * @returns items that is, a list of objects each representing a data item the Grakn keyspace
  */
 function parseDataToObjects(input) {
