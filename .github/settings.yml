@@ -8,7 +8,7 @@ labels:
   - name: in progress
     color: 84FF94
   - name: solved
-    color: F2A4FF
+    color: 7057FF
   - name: duplicate
     color: CFD3D7
   - name: don't merge
