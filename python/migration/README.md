@@ -34,7 +34,7 @@ Run:
 - `cd csv`, `cd json` or `cd xml`
 - `python3 migrate.py`
 
-### Before running `npm run migrate` for a second time
+### Before running `python3 migrate.py` for a second time
 
 The `phone_calls` keyspace needs to be cleaned. Run:
 
