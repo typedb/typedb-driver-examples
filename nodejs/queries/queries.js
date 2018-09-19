@@ -35,14 +35,6 @@ const readline = require("readline");
 //   printToLog("Result:", result);
 // }
 
-const log = console.log;
-function printToLog(title, content) {
-  log(title);
-  log("");
-  log(content);
-  log("\n");
-}
-
 const getQsFunc = [
   {
     question:
@@ -88,6 +80,15 @@ const computeQsFunc = [
 const questionsAndFunctions = getQsFunc
   .concat(aggregateQsFunc)
   .concat(computeQsFunc);
+
+// utils
+const log = console.log;
+function printToLog(title, content) {
+  log(title);
+  log("");
+  log(content);
+  log("\n");
+}
 
 // From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004?
 async function executeQuery1(question, tx) {
@@ -279,15 +280,14 @@ async function executeAllQueries(tx) {
   }
 }
 
-// the code below:
-//   - prints the questions
-//   - gets user's selection wrt the queries to be executed
-//   - creates a Grakn client > session > transaction connected to the phone_calls keyspace
-//   - runs the right function based on the user's selection
-//   - closes the session
-
+// Go
 executeQueries();
 
+/**
+ * this is the main function
+ * prints the questions and asks for the input, based on which the corresponding function
+ * to execute the query is called
+ */
 async function executeQueries() {
   // print questions
   log("\nSelect a question for which you'd like to execute the query?\n");
@@ -302,31 +302,42 @@ async function executeQueries() {
   });
   executeBasedOnSelection(rl);
 }
-
+/**
+ * a recursive function that terminates after receiving a valid input
+ * otherwise keeps asking
+ * @param {pnkect} rl the readline insterface to receive input via console
+ * exists on completion
+ */
 function executeBasedOnSelection(rl) {
   const question = "choose a number (0 for to answer all questions): ";
   rl.question(question, async function(answer, rl) {
     if (answer >= 0 && answer < questionsAndFunctions.length + 1) {
       await processSelection(answer);
       process.exit(0);
-      return false;
     }
     executeBasedOnSelection(rl);
   });
 }
-
+/**
+ * 1. create an instance of Grakn, connecting to the server
+ * 2. create a session of the instance, connecting to the keyspace phone_calls
+ * 3. create a transaction, off the session
+ * 4. call the function corresponding to the selected question
+ * 5. close the session
+ * @param {integer} qsNumber the (question) number selected by the user
+ */
 async function processSelection(qsNumber) {
-  const grakn = new Grakn("localhost:48555");
-  const session = await grakn.session((keyspace = "phone_calls"));
-  const tx = await session.transaction(Grakn.txType.WRITE);
+  const grakn = new Grakn("localhost:48555"); // 1
+  const session = await grakn.session((keyspace = "phone_calls")); // 2
+  const tx = await session.transaction(Grakn.txType.WRITE); // 3
 
   if (qsNumber == 0) {
-    await executeAllQueries(tx);
+    await executeAllQueries(tx); // 4
   } else {
     const question = questionsAndFunctions[qsNumber - 1]["question"];
     const queryFunction = questionsAndFunctions[qsNumber - 1]["queryFunction"];
-    await queryFunction(question, tx);
+    await queryFunction(question, tx); // 4
   }
 
-  session.close();
+  session.close(); // 5
 }
