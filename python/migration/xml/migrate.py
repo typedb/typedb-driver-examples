@@ -11,13 +11,10 @@ def build_phone_call_graph(inputs):
     :param input as list of dictionaties: each dictionary contains details required to parse the data
   '''
   client = grakn.Grakn(uri = "localhost:48555") # 1
-  session = client.session(keyspace = "phone_calls") # 2
-
-  for input in inputs:
-    print("Loading from [" + input["data_path"] + "] into Grakn ...")
-    load_data_into_grakn(input, session) # 3
-
-  session.close() # 4
+  with client.session(keyspace = "phone_calls") as session: # 2 and 4
+    for input in inputs:
+      print("Loading from [" + input["data_path"] + "] into Grakn ...")
+      load_data_into_grakn(input, session) # 3
 
 def load_data_into_grakn(input, session):
   '''
@@ -34,12 +31,11 @@ def load_data_into_grakn(input, session):
   items = parse_data_to_dictionaries(input) # 1
 
   for item in items: # 2
-    tx = session.transaction(grakn.TxType.WRITE) # a
-
-    graql_insert_query = input["template"](item) # b
-    print("Executing Graql Query: " + graql_insert_query)
-    tx.query(graql_insert_query) # c
-    tx.commit() # d
+    with session.transaction(grakn.TxType.WRITE) as tx: # a
+      graql_insert_query = input["template"](item) # b
+      print("Executing Graql Query: " + graql_insert_query)
+      tx.query(graql_insert_query) # c
+      tx.commit() # d
 
   print("\nInserted " + str(len(items)) + " items from [ " + input["data_path"] + "] into Grakn.\n")
 
@@ -135,5 +131,5 @@ inputs = [
   }
 ]
 
-## Go
-build_phone_call_graph(inputs)
+if __name__ == "__main__":
+  build_phone_call_graph(inputs)

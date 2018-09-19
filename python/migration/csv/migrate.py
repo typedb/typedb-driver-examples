@@ -11,13 +11,10 @@ def build_phone_call_graph(inputs):
     :param input as list of dictionaties: each dictionary contains details required to parse the data
   '''
   client = grakn.Grakn(uri = "localhost:48555") # 1
-  session = client.session(keyspace = "phone_calls") # 2
-
-  for input in inputs:
-    print("Loading from [" + input["data_path"] + "] into Grakn ...")
-    load_data_into_grakn(input, session) # 3
-
-  session.close() # 4
+  with client.session(keyspace = "phone_calls") as session: # 2 and 4
+    for input in inputs:
+      print("Loading from [" + input["data_path"] + "] into Grakn ...")
+      load_data_into_grakn(input, session) # 3
 
 def load_data_into_grakn(input, session):
   '''
@@ -34,12 +31,11 @@ def load_data_into_grakn(input, session):
   items = parse_data_to_dictionaries(input) # 1
 
   for item in items: # 2
-    tx = session.transaction(grakn.TxType.WRITE) # a
-
-    graql_insert_query = input["template"](item) # b
-    print("Executing Graql Query: " + graql_insert_query)
-    tx.query(graql_insert_query) # c
-    tx.commit() # d
+    with session.transaction(grakn.TxType.WRITE) as tx: # a
+      graql_insert_query = input["template"](item) # b
+      print("Executing Graql Query: " + graql_insert_query)
+      tx.query(graql_insert_query) # c
+      tx.commit() # d
 
   print("\nInserted " + str(len(items)) + " items from [ " + input["data_path"] + "] into Grakn.\n")
 
@@ -87,9 +83,11 @@ def parse_data_to_dictionaries(input):
     :param input.data_path as string: the path to the data file, minus the format
     :returns items as list of dictionaries: each item representing a data item from the file at input.data_path
   '''
-  with open(input["data_path"] + ".csv") as data: #1
-    items = [ { key: value for key, value in row.items()}
-      for row in csv.DictReader(data, skipinitialspace = True)] #2
+  items = []
+  with open(input["data_path"] + ".csv") as data: # 1
+    for row in csv.DictReader(data, skipinitialspace = True):
+      item = { key: value for key, value in row.items() }
+      items.append(item) # 2
   return items
 
 inputs = [
@@ -111,5 +109,5 @@ inputs = [
   }
 ]
 
-## Go
-build_phone_call_graph(inputs)
+if __name__ == "__main__":
+  build_phone_call_graph(inputs)
