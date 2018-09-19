@@ -2,46 +2,34 @@ import grakn
 import sys
 
 '''
-  To add a new query:
-  1. add a question to the relevant variable with the _qs prefix
-  2. add the function in 'execute_query_<new-query-number>` format
-  3. write the implementation for the new function based on the execute_query_format(question)
+  to add a new query implementation:
+    1. add the question and function to the approriate list of dictionaries:
+      current lists are: get_qs_func, aggregate_qs_func and compute_qs_func
+      example:
+        get_qs_func = [
+          ...
+          {
+            "question": "new question?"
+            "query_function": execute_query_#
+          }
+        ]
+    2. add the function and its implementation:
+      use the template below
 '''
-
-get_qs = [
-  "1. From 2018-09-10 onwards, which customers called the person with phone number +86 921 547 9004?",
-  "2. who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 50?"
-  "3. Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?",
-  "4. Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
-]
-
-aggregate_qs = [
-  "5. How does the average call duration among customers aged under 20 compare those aged above 40?",
-]
-
-compute_qs = [
-  "6. ",
-  "7. "
-]
-
-questions = get_qs + aggregate_qs + compute_qs
-
-def print_to_log(title, content):
-  print(title)
-  print("")
-  print(content)
-  print("\n")
 
 ## The template for execute_query functions
 # def execute_query_format(question)
 #   print_to_log("Question: ", question)
 
+#   ## queries are written as a list for better readibility
 #   query = [
 #     "each line;",
 #     "as an element;",
 #     "ends with simocolon;",
 #   ]
+#   ## join the query list elements with a new line before printing
 #   print_to_log("Query:", "\n".join(query))
+#   ## join the query list elements to obtain the quer as a string to be executed
 #   query = "".join(query)
 
 #   iterator = tx.query(query)
@@ -50,9 +38,14 @@ def print_to_log(title, content):
 
 #   print_to_log("Result:", result)
 
+def print_to_log(title, content):
+  print(title)
+  print("")
+  print(content)
+  print("\n")
 
 ## From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004?
-def execute_query_1(question):
+def execute_query_1(question = ""):
   print_to_log("Question: ", question)
 
   query = [
@@ -184,38 +177,91 @@ def execute_query_5(question):
 
   print_to_log("Result:", result)
 
+##
+def execute_query_6(question):
+  print_to_log("Question: ", question)
+
+##
+def execute_query_7(question):
+  print_to_log("Question: ", question)
+
 def execute_query_all():
-  for index, question in enumerate(questions):
-    globals()["execute_query_" + str(index + 1)](question)
+  for qs_func in questions_n_functions:
+    qustion = qs_func["question"]
+    query_function = qs_func["query_function"]
+    query_function(qustion)
     print("\n - - -  - - -  - - -  - - - \n")
 
-'''
-  The code below:
-  - gets user's selection wrt the queries to be executed
-  - creates a Grakn client > session > transaction connected to the phone_calls keyspace
-  - runs the right function based on the user's selection
-  - closes the session
-'''
+get_qs_func = [
+  {
+    "question": "From 2018-09-10 onwards, which customers called the person with phone number +86 921 547 9004?",
+    "query_function": execute_query_1
+  },
+  {
+    "question": "Who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 50?",
+    "query_function": execute_query_2
+  },
+  {
+    "question": "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?",
+    "query_function": execute_query_3
+  },
+  {
+    "question": "Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
+    "query_function": execute_query_4
+  }
+]
 
-## ask user which question to answer/query to execute
-print("")
-print("For which of these questions, on the phone_calls knowledge graph, do you want to execute the query?\n")
-for  question in questions:
-  print(question)
-print("")
+aggregate_qs_func = [
+  {
+    "question": "How does the average call duration among customers aged under 20 compare those aged above 40?",
+    "query_function": execute_query_5
+  }
+]
 
-question_number = -1
-while question_number < 0 or question_number > len(questions):
-  question_number = int(input("choose a number (0 for to answer all questions): "))
-print("")
+compute_qs_func = [
+  {
+    "question": "compute #1 related question goes here ",
+    "query_function": execute_query_6
+  },
+  {
+    "question": "compute #2 related question goes here ",
+    "query_function": execute_query_7
+  }
+]
 
-## create a transaction to talk to the phone_calls keyspace
-client = grakn.Grakn(uri = "localhost:48555")
-session = client.session(keyspace = "phone_calls")
-tx = session.transaction(grakn.TxType.READ);
+if __name__ == "__main__":
+  questions_n_functions = get_qs_func + aggregate_qs_func + compute_qs_func
+  print(questions_n_functions)
 
-## call the function to execute the query selected by user
-execute_query_all() if question_number == 0 else locals()["execute_query_" + str(question_number)](questions[question_number - 1])
+  '''
+    The code below:
+    - gets user's selection wrt the queries to be executed
+    - creates a Grakn client > session > transaction connected to the phone_calls keyspace
+    - runs the right function based on the user's selection
+    - closes the session
+  '''
 
-## we're done
-session.close()
+  ## ask user which question to execute the query for
+  print("")
+  print("For which of these questions, on the phone_calls knowledge graph, do you want to execute the query?\n")
+  for  qs_func in questions_n_functions:
+    print(qs_func["question"])
+  print("")
+
+  ## get user's question selection
+  qs_number = -1
+  while qs_number < 0 or qs_number > len(questions_n_functions):
+    qs_number = int(input("choose a number (0 for to answer all questions): "))
+  print("")
+
+  ## create a transaction to talk to the phone_calls keyspace
+  client = grakn.Grakn(uri = "localhost:48555")
+  with client.session(keyspace = "phone_calls") as session:
+    with session.transaction(grakn.TxType.READ) as tx:
+      ## execute the query for the selected question
+      if qs_number == 0:
+        execute_query_all()
+      else:
+        qustion = questions_n_functions[qs_number - 1]["question"]
+        query_function = questions_n_functions[qs_number - 1]["query_function"]
+        query_function(qustion)
