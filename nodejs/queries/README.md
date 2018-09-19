@@ -3,7 +3,7 @@ title: Example Queries using the Node.js Client
 keywords: graql queries, grakn, node.js client
 tags: [example]
 sidebar: documentation_sidebar
-permalink: /examples/Node.js/queries
+permalink: /examples/nodejs/queries
 folder: examples
 symlink: false
 ---
@@ -28,7 +28,7 @@ The `queries.js`, contains query examples that get exectued on the phone_calls k
 
 Run:
 
-- [migrate data into the phone_calls Grakn keyspace](https://github.com/graknlabs/examples/tree/master/Node.js/migration)
+- [migrate data into the phone_calls Grakn keyspace](https://github.com/graknlabs/examples/tree/master/nodejs/migration)
 - `path-to-grakn-dist-directory/grakn server start` (if the Grakn server is not yet running)
 - `git clone git@github.com:graknlabs/examples.git`
 - `cd examples/nodejs/queries`
