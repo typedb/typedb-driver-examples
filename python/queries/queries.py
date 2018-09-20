@@ -45,7 +45,7 @@ def print_to_log(title, content):
   print("\n")
 
 ## From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004?
-def execute_query_1(question = ""):
+def execute_query_1(question, tx):
   print_to_log("Question: ", question)
 
   query = [
@@ -69,7 +69,7 @@ def execute_query_1(question = ""):
   print_to_log("Result:", result)
 
 ## who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 60?
-def execute_query_2(question):
+def execute_query_2(question, tx):
   print_to_log("Question: ", question)
 
   query = [
@@ -92,7 +92,7 @@ def execute_query_2(question):
   print_to_log("Result:", result)
 
 ## "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?
-def execute_query_3(question):
+def execute_query_3(question, tx):
   print_to_log("Question: ", question)
 
   query = [
@@ -114,7 +114,7 @@ def execute_query_3(question):
   print_to_log("Result:", result)
 
 ## Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
-def execute_query_4(question):
+def execute_query_4(question, tx):
   print_to_log("Question: ", question)
 
   query = [
@@ -140,7 +140,7 @@ def execute_query_4(question):
   print_to_log("Result:", result)
 
 ## How does the average call duration among customers aged under 20 compare those aged above 40?
-def execute_query_5(question):
+def execute_query_5(question, tx):
   print_to_log("Question: ", question)
 
   query_a = [
@@ -178,18 +178,18 @@ def execute_query_5(question):
   print_to_log("Result:", result)
 
 ##
-def execute_query_6(question):
+def execute_query_6(question, tx):
   print_to_log("Question: ", question)
 
 ##
-def execute_query_7(question):
+def execute_query_7(question, tx):
   print_to_log("Question: ", question)
 
-def execute_query_all():
+def execute_query_all(tx):
   for qs_func in questions_n_functions:
     qustion = qs_func["question"]
     query_function = qs_func["query_function"]
-    query_function(qustion)
+    query_function(qustion, tx)
     print("\n - - -  - - -  - - -  - - - \n")
 
 get_qs_func = [
@@ -244,8 +244,8 @@ if __name__ == "__main__":
   ## ask user which question to execute the query for
   print("")
   print("For which of these questions, on the phone_calls knowledge graph, do you want to execute the query?\n")
-  for  qs_func in questions_n_functions:
-    print(qs_func["question"])
+  for index, qs_func in enumerate(questions_n_functions):
+    print(str(index + 1) + ". " + qs_func["question"])
   print("")
 
   ## get user's question selection
@@ -260,8 +260,8 @@ if __name__ == "__main__":
     with session.transaction(grakn.TxType.READ) as tx:
       ## execute the query for the selected question
       if qs_number == 0:
-        execute_query_all()
+        execute_query_all(tx)
       else:
         qustion = questions_n_functions[qs_number - 1]["question"]
         query_function = questions_n_functions[qs_number - 1]["query_function"]
-        query_function(qustion)
+        query_function(qustion, tx)
