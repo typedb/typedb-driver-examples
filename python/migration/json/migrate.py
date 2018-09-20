@@ -1,4 +1,9 @@
+## the Python client for Grakn
+## https://github.com/graknlabs/grakn/tree/master/client-python
 import grakn
+## an iterative JSON parser
+## we will use it read data source files.
+## https://pypi.org/project/ijson/
 import ijson
 
 def build_phone_call_graph(inputs):
@@ -47,7 +52,7 @@ def person_template(person):
   graql_insert_query = 'insert $person isa person has phone-number "' + person["phone_number"] + '"'
   if "first_name" in person:
     # person is a customer
-    graql_insert_query += " has is-customer true";
+    graql_insert_query += " has is-customer true"
     graql_insert_query += ' has first-name "' + person["first_name"] + '"'
     graql_insert_query += ' has last-name "' + person["last_name"] + '"'
     graql_insert_query += ' has city "' + person["city"] + '"'
@@ -55,8 +60,8 @@ def person_template(person):
   else:
     # person is not a customer
     graql_insert_query += " has is-customer false"
-  graql_insert_query += ";";
-  return graql_insert_query;
+  graql_insert_query += ";"
+  return graql_insert_query
 
 def contract_template(contract):
   # match company
@@ -74,7 +79,7 @@ def call_template(call):
   graql_insert_query += ' $callee isa person has phone-number "' + call["callee_id"] + '";'
   # insert call
   graql_insert_query += " insert $call(caller: $caller, callee: $callee) isa call; $call has started-at " + call["started_at"] + "; $call has duration " + str(call["duration"]) + ";"
-  return graql_insert_query;
+  return graql_insert_query
 
 def parse_data_to_dictionaries(input):
   '''

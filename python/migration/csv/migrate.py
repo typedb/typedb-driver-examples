@@ -1,4 +1,9 @@
+## the Python client for Grakn
+## https://github.com/graknlabs/grakn/tree/master/client-python
 import grakn
+## Python's built in module for dealing with .csv files.
+## we will use it read data source files.
+## https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
 import csv
 
 def build_phone_call_graph(inputs):
@@ -50,13 +55,13 @@ def person_template(person):
     graql_insert_query += " has is-customer false"
   else:
     # person is a customer
-    graql_insert_query += " has is-customer true";
+    graql_insert_query += " has is-customer true"
     graql_insert_query += ' has first-name "' + person["first_name"] + '"'
     graql_insert_query += ' has last-name "' + person["last_name"] + '"'
     graql_insert_query += ' has city "' + person["city"] + '"'
     graql_insert_query += " has age " + str(person["age"])
-  graql_insert_query += ";";
-  return graql_insert_query;
+  graql_insert_query += ";"
+  return graql_insert_query
 
 def contract_template(contract):
   # match company
@@ -74,7 +79,7 @@ def call_template(call):
   graql_insert_query += ' $callee isa person has phone-number "' + call["callee_id"] + '";'
   # insert call
   graql_insert_query += " insert $call(caller: $caller, callee: $callee) isa call; $call has started-at " + call["started_at"] + "; $call has duration " + str(call["duration"]) + ";"
-  return graql_insert_query;
+  return graql_insert_query
 
 def parse_data_to_dictionaries(input):
   '''
