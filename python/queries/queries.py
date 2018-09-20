@@ -68,17 +68,19 @@ def execute_query_1(question, tx):
 
   print_to_log("Result:", result)
 
-## who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 60?
+## Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?
 def execute_query_2(question, tx):
   print_to_log("Question: ", question)
 
   query = [
     'match ',
-    '  $person isa person has phone-number $phone-number has age < 20;'
-    '  $customer isa person has city "London", has age > 60;',
+    '  $suspect isa person has city "London", has age > 50;',
     '  $company isa company has name "Telecom";',
-    '  (customer: $customer, provider: $company) isa contract;',
-    '  (caller: $customer, callee: $person) isa call;',
+    '  (customer: $suspect, provider: $company) isa contract;',
+    '  $young-callee isa person has age < 20;',
+    '  (caller: $customer, callee: $young-callee) isa call;',
+    '  $anyone isa person has phone-number $phone-number, has is-customer false;',
+    '  (caller: $customer, callee: $anyone) isa call;',
     'get $phone-number;'
   ]
 
@@ -122,12 +124,12 @@ def execute_query_4(question, tx):
     '  $target isa person has phone-number "+48 894 777 5173";',
     '  $company isa company has name "Telecom";',
     '  $customer-a isa person has phone-number $phone-number-a;',
-    '  $customer-b isa person has phone-number $phone-number-b;',
     '  (customer: $customer-a, provider: $company) isa contract;',
-    '  (customer: $customer-b, provider: $company) isa contract;',
-    '  (caller: $customer-a, callee: $customer-b) isa call;',
     '  (caller: $customer-a, callee: $target) isa call;',
+    '  $customer-b isa person has phone-number $phone-number-b;',
+    '  (customer: $customer-b, provider: $company) isa contract;',
     '  (caller: $customer-b, callee: $target) isa call;',
+    '  (caller: $customer-a, callee: $customer-b) isa call;',
     'get $phone-number-a, $phone-number-b;'
   ]
   print_to_log("Query:", "\n".join(query))
@@ -139,17 +141,17 @@ def execute_query_4(question, tx):
 
   print_to_log("Result:", result)
 
-## How does the average call duration among customers aged under 20 compare those aged above 40?
+## How does the average call duration among customers aged under 20 compare those aged over 40?
 def execute_query_5(question, tx):
   print_to_log("Question: ", question)
 
   query_a = [
-      'match',
-      '  $customer isa person has age < 20;',
-      '  $company isa company has name "Telecom";',
-      '  (customer: $customer, provider: $company) isa contract;',
-      '  (caller: $customer, callee: $anyone) isa call has duration $duration;',
-      'aggregate mean $duration;'
+    'match',
+    '  $customer isa person has age < 20;',
+    '  $company isa company has name "Telecom";',
+    '  (customer: $customer, provider: $company) isa contract;',
+    '  (caller: $customer, callee: $anyone) isa call has duration $duration;',
+    'aggregate mean $duration;'
   ]
   print_to_log("Query:", "\n".join(query_a))
   query_a = "".join(query_a)
@@ -172,7 +174,7 @@ def execute_query_5(question, tx):
 
   iterator_b = tx.query(query_b)
   result_b = next(iterator_b).number()
-  result += ("Customers aged above 40 have made calls with average duration of " +
+  result += ("Customers aged over 40 have made calls with average duration of " +
     str(round(result_b)) + " seconds.\n")
 
   print_to_log("Result:", result)
@@ -194,11 +196,11 @@ def execute_query_all(tx):
 
 get_qs_func = [
   {
-    "question": "From 2018-09-10 onwards, which customers called the person with phone number +86 921 547 9004?",
+    "question": "Since September 10th, which customers called the person with phone number +86 921 547 9004?",
     "query_function": execute_query_1
   },
   {
-    "question": "Who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 50?",
+    "question": "Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?",
     "query_function": execute_query_2
   },
   {
@@ -213,7 +215,7 @@ get_qs_func = [
 
 aggregate_qs_func = [
   {
-    "question": "How does the average call duration among customers aged under 20 compare those aged above 40?",
+    "question": "How does the average call duration among customers aged under 20 compare those aged over 40?",
     "query_function": execute_query_5
   }
 ]
@@ -231,7 +233,6 @@ compute_qs_func = [
 
 if __name__ == "__main__":
   questions_n_functions = get_qs_func + aggregate_qs_func + compute_qs_func
-  print(questions_n_functions)
 
   '''
     The code below:
