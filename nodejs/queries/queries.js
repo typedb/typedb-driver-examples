@@ -271,6 +271,7 @@ async function executeQuery7(question, tx) {
   printToLog("Question: ", question);
 }
 
+// execute all queries for all questions
 async function executeAllQueries(tx) {
   for (qsFunc of questionsAndFunctions) {
     qustion = qsFunc["question"];
