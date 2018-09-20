@@ -43,7 +43,7 @@ const getQsFunc = [
   },
   {
     question:
-      "Who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 50?",
+      "Who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 50?",
     queryFunction: executeQuery2
   },
   {
@@ -61,7 +61,7 @@ const getQsFunc = [
 const aggregateQsFunc = [
   {
     question:
-      "How does the average call duration among customers aged under 20 compare those aged above 40?",
+      "How does the average call duration among customers aged under 20 compare those aged over 40?",
     queryFunction: executeQuery5
   }
 ];
@@ -123,17 +123,19 @@ async function executeQuery1(question, tx) {
   printToLog("Result:", result);
 }
 
-// who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged above 60?
+// who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 60?
 async function executeQuery2(question, tx) {
   printToLog("Question: ", question);
 
   let query = [
     "match ",
-    "  $person isa person has phone-number $phone-number has age < 20;",
-    '  $customer isa person has city "London", has age > 60;',
+    '  $suspect isa person has city "London", has age > 50;',
     '  $company isa company has name "Telecom";',
-    "  (customer: $customer, provider: $company) isa contract;",
-    "  (caller: $customer, callee: $person) isa call;",
+    "  (customer: $suspect, provider: $company) isa contract;",
+    "  $young-callee isa person has age < 20;",
+    "  (caller: $customer, callee: $young-callee) isa call;",
+    "  $anyone isa person has phone-number $phone-number, has is-customer false;",
+    "  (caller: $customer, callee: $anyone) isa call;",
     "get $phone-number;"
   ];
   printToLog("Query:", query.join("\n"));
@@ -192,12 +194,12 @@ async function executeQuery4(question, tx) {
     '  $target isa person has phone-number "+48 894 777 5173";',
     '  $company isa company has name "Telecom";',
     "  $customer-a isa person has phone-number $phone-number-a;",
-    "  $customer-b isa person has phone-number $phone-number-b;",
     "  (customer: $customer-a, provider: $company) isa contract;",
-    "  (customer: $customer-b, provider: $company) isa contract;",
-    "  (caller: $customer-a, callee: $customer-b) isa call;",
     "  (caller: $customer-a, callee: $target) isa call;",
+    "  $customer-b isa person has phone-number $phone-number-b;",
+    "  (customer: $customer-b, provider: $company) isa contract;",
     "  (caller: $customer-b, callee: $target) isa call;",
+    "  (caller: $customer-a, callee: $customer-b) isa call;",
     "get $phone-number-a, $phone-number-b;"
   ];
   printToLog("Query:", query.join("\n"));
@@ -217,7 +219,7 @@ async function executeQuery4(question, tx) {
   printToLog("Result:", result);
 }
 
-// How does the average call duration among customers aged under 20 compare those aged above 40?
+// How does the average call duration among customers aged under 20 compare those aged over 40?
 async function executeQuery5(question, tx) {
   printToLog("Question: ", question);
 
@@ -254,7 +256,7 @@ async function executeQuery5(question, tx) {
   const answersB = await iteratorB.collect();
   const resultB = answersB[0].number();
   result +=
-    "Customers aged above 40 have made calls with average duration of " +
+    "Customers aged over 40 have made calls with average duration of " +
     Math.round(resultB) +
     " seconds.\n";
 
