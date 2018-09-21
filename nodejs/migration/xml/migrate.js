@@ -6,8 +6,8 @@ const Grakn = require("grakn");
 // https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
 const fs = require("fs");
 
-// for creating custom JSON processing pipelines with a minimal memory footprint
-// https://github.com/uhop/stream-json
+// xml stream parser
+// https://github.com/assistunion/xml-stream
 const xmlStream = require("xml-stream");
 
 const inputs = [

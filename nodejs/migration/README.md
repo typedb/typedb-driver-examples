@@ -39,7 +39,7 @@ Run:
 
 The `phone_calls` keyspace needs to be cleaned. Run:
 
-- `path-to-grakn-dist-directory/graql console -k phone_calls
+- `path-to-grakn-dist-directory/graql console -k phone_calls`
 - `clean`
 - `confirm`
 - `exit`
