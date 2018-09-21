@@ -77,10 +77,11 @@ def execute_query_2(question, tx):
     '  $suspect isa person has city "London", has age > 50;',
     '  $company isa company has name "Telecom";',
     '  (customer: $suspect, provider: $company) isa contract;',
-    '  $young-callee isa person has age < 20;',
-    '  (caller: $customer, callee: $young-callee) isa call;',
-    '  $anyone isa person has phone-number $phone-number, has is-customer false;',
-    '  (caller: $customer, callee: $anyone) isa call;',
+    '  $pattern-callee isa person has age < 20;',
+    '  (caller: $suspect, callee: $pattern-callee) isa call has started-at $pattern-call-date;',
+    '  $target isa person has phone-number $phone-number, has is-customer false;',
+    '  (caller: $suspect, callee: $target) isa call has started-at $target-call-date;',
+    '  $target-call-date > $pattern-call-date;',
     'get $phone-number;'
   ]
 
