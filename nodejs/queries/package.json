@@ -1,0 +1,25 @@
+{
+  "name": "graql-query-examples-with-nodejs",
+  "version": "1.0.0",
+  "description": "A number of graql query examples executed on the phone_calls knowledge graph",
+  "main": "queries.js",
+  "scripts": {
+    "queries": "node queries.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "htttp://github.com/graknlabs/examples.git"
+  },
+  "keywords": [
+    "graql",
+    "queries",
+    "grakn",
+    "knowledgegraph",
+    "examples"
+  ],
+  "author": "Grakn Labs (community@grakn.ai)",
+  "license": "ISC",
+  "dependencies": {
+    "grakn": "^1.3.1"
+  }
+}
