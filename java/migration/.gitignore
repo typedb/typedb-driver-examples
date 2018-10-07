@@ -1,0 +1,15 @@
+# Mac files #
+.DS_Store
+
+# IDE files #
+.idea/
+*.iml
+
+# VS Code files #
+.vscode/
+.settings/
+.project
+.classpath
+
+# Compiled files #
+target/
