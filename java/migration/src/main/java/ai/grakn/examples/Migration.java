@@ -16,13 +16,12 @@ import java.util.Collection;
 
 /**
  * a collection of  fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
- *
  * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
  */
 
 public class Migration {
     /**
-     * Representation of Input object that links an input file to its own templating function,
+     * representation of Input object that links an input file to its own templating function,
      * which is used to map a Json object to Graql query string
      */
     abstract static class Input {
