@@ -1,6 +1,6 @@
 `mvn clean compile assembly:single`
 
-`java -cp target/migrate-csv-json-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Migration`
+`java -cp target/migrate-csv-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.CsvMigration`
 
 ---
 title: Loading CSV, JSON and XML data into Grakn using the Java Client - an Example
@@ -35,11 +35,21 @@ Run:
 - `path-to-grakn-dist-directory/grakn server start`
 - `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/java/migration/src/main/schema.gql`
 - `cd examples/java/migration`
-- `cd csv`, `cd json` or `cd xml`
-- `mvn clean compile assembly:single`
-- `java -cp target/migrate-csv-json-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Migration`
+- for migrating:
+    - csv data:
+        - `cd csv`
+        - `mvn clean compile assembly:single`
+        - `java -cp target/migrate-csv-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.CsvMigration`
+    - json data:
+        - `cd json`
+        - `mvn clean compile assembly:single`
+        - `java -cp target/migrate-json-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.JsonMigration`
+    - xml data:
+        - `cd xml`
+        - `mvn clean compile assembly:single`
+        - `java -cp target/migrate-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.XmlMigration`
 
-### Before running `java -cp target/migrate-csv-json-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Migrationy` for a second time
+### Before running `java -cp target/migrate-csv-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Migrationy` for a second time
 
 The `phone_calls` keyspace needs to be cleaned. Run:
 
