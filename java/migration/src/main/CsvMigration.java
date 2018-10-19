@@ -19,7 +19,7 @@ import java.util.Collection;
  * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
  */
 
-public class Migration {
+public class CsvMigration {
     /**
      * representation of Input object that links an input file to its own templating function,
      * which is used to map a Json object to Graql query string
@@ -182,7 +182,7 @@ public class Migration {
     }
 
     public static Reader getReader(String relativePath) throws UnsupportedEncodingException {
-        return new InputStreamReader(Migration.class.getClassLoader().getResourceAsStream(relativePath), "UTF-8");
+        return new InputStreamReader(CsvMigration.class.getClassLoader().getResourceAsStream(relativePath), "UTF-8");
     }
 }
 
