@@ -1,7 +1,3 @@
-`mvn clean compile assembly:single`
-
-`java -cp target/migrate-csv-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.CsvMigration`
-
 ---
 title: Loading CSV, JSON and XML data into Grakn using the Java Client - an Example
 keywords: migration, csv to grakn, json to grakn, xml to grakn, java client
