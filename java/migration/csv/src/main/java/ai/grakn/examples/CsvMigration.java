@@ -4,8 +4,18 @@ import ai.grakn.GraknTxType;
 import ai.grakn.Keyspace;
 import ai.grakn.client.Grakn;
 import ai.grakn.util.SimpleURI;
+
+/**
+ * a collection of  fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
+ * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
+ */
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+
+/**
+ * a lean JSON Library for Java,
+ * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
+ */
 import mjson.Json;
 
 import java.io.InputStreamReader;
@@ -13,11 +23,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-/**
- * a collection of  fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
- * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
- */
 
 public class CsvMigration {
     /**

@@ -4,17 +4,22 @@ import ai.grakn.GraknTxType;
 import ai.grakn.Keyspace;
 import ai.grakn.client.Grakn;
 import ai.grakn.util.SimpleURI;
+
+/**
+ * reads a JSON encoded value as a stream of tokens,
+ * @see <a href="https://google.github.io/gson/apidocs/com/google/gson/stream/JsonReader.html">JsonReader</a>
+ */
 import com.google.gson.stream.JsonReader;
+
+/**
+ * a lean JSON Library for Java,
+ * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
+ */
 import mjson.Json;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
-
-/**
- * a collection of  fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
- * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
- */
 
 public class JsonMigration {
     /**
@@ -151,8 +156,8 @@ public class JsonMigration {
 
     /**
      * 1. reads a json file through a stream
-     * 2. parses each json object found in the file to a mjson object
-     * 3. adds the mjson object to the list of items
+     * 2. parses each json object found in the file to a json object
+     * 3. adds the json object to the list of items
      *
      * @param input used to get the path to the data file, minus the format
      * @return the list of json objects

@@ -4,6 +4,11 @@ import ai.grakn.GraknTxType;
 import ai.grakn.Keyspace;
 import ai.grakn.client.Grakn;
 import ai.grakn.util.SimpleURI;
+
+/**
+ * a lean JSON Library for Java,
+ * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
+ */
 import mjson.Json;
 
 /**
