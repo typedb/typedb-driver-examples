@@ -29,7 +29,7 @@ Run:
 
 - `git clone git@github.com:graknlabs/examples.git`
 - `path-to-grakn-dist-directory/grakn server start`
-- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/java/migration/src/main/schema.gql`
+- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/java/migration/schema.gql`
 - `cd examples/java/migration`
 - for migrating:
     - csv data:
@@ -45,11 +45,11 @@ Run:
         - `mvn clean compile assembly:single`
         - `java -cp target/migrate-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.XmlMigration`
 
-### Before running `java -cp target/migrate-csv-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Migrationy` for a second time
+### Before running the migration for a second time
 
 The `phone_calls` keyspace needs to be cleaned. Run:
 
-- `path-to-grakn-dist-directory/graql console -k phone_calls
+- `path-to-grakn-dist-directory/graql console -k phone_calls`
 - `clean`
 - `confirm`
 - `exit`
