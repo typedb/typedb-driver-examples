@@ -10,6 +10,8 @@ import ai.grakn.util.SimpleURI;
  * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
  */
 import mjson.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * provides an easy and intuitive means of parsing and generating XML documents
@@ -90,7 +92,7 @@ public class XmlMigration {
                 // insert person
                 String graqlInsertQuery = "insert $person isa person has phone-number " + person.at("phone_number");
 
-                if (person.at("first_name").isNull()) {
+                if (! person.has("first_name")) {
                     // person is not a customer
                     graqlInsertQuery += " has is-customer false";
                 } else {
@@ -178,8 +180,7 @@ public class XmlMigration {
         String key;
         String value = null;
         Boolean inSelector = false;
-        Json item = Json.object();
-
+        Json item = null;
         while(r.hasNext()) {
             int event = r.next();
 
@@ -187,6 +188,7 @@ public class XmlMigration {
                 case XMLStreamConstants.START_ELEMENT:
                     if (r.getLocalName().equals(input.getSelector())) {
                         inSelector = true;
+                        item = Json.object();
                     }
                     break;
 
@@ -207,7 +209,7 @@ public class XmlMigration {
                     break;
             }
         }
-
+        System.out.println(items);
         return items;
     }
 
