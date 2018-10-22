@@ -1,8 +1,8 @@
 # Mac files #
-**/*.DS_Store
+**/.DS_Store
 
 # IDE files #
-**/.idea
+.idea
 **/*.iml
 
 # VS Code files #
