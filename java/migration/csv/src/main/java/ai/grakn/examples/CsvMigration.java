@@ -27,7 +27,7 @@ import java.util.Collection;
 public class CsvMigration {
     /**
      * representation of Input object that links an input file to its own templating function,
-     * which is used to map a Json object to Graql query string
+     * which is used to map a Json object to a Graql query string
      */
     abstract static class Input {
         String path;
@@ -71,14 +71,14 @@ public class CsvMigration {
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
-        // Define template for companies file
+        // define template for constructing a company Graql insert query
         inputs.add(new Input("data/companies") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company has name " + company.at("name") + ";";
             }
         });
-        //Define template for people file
+        // define template for constructing a person Graql insert query
         inputs.add(new Input("data/people") {
             @Override
             public String template(Json person) {
@@ -101,7 +101,7 @@ public class CsvMigration {
                 return graqlInsertQuery;
             }
         });
-        //Define template for contracts file
+        // define template for constructing a contract Graql insert query
         inputs.add(new Input("data/contracts") {
             @Override
             public String template(Json contract) {
@@ -114,7 +114,7 @@ public class CsvMigration {
                 return graqlInsertQuery;
             }
         });
-        //Define template for calls file
+        // define template for constructing a call Graql insert query
         inputs.add(new Input("data/calls") {
             @Override
             public String template(Json call) {
@@ -136,23 +136,23 @@ public class CsvMigration {
      * loads the csv data into our Grakn phone_calls keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
-     * a. creates a Grakn transaction
-     * b. constructs the corresponding Graql insert query
-     * c. runs the query
-     * d. commits the transaction
+     *   a. creates a Grakn transaction
+     *   b. constructs the corresponding Graql insert query
+     *   c. runs the query
+     *   d. commits the transaction
      *
      * @param input   contains details required to parse the data
      * @param session off of which a transaction will be created
      * @throws UnsupportedEncodingException
      */
     static void loadDataIntoGrakn(Input input, Grakn.Session session) throws UnsupportedEncodingException {
-        ArrayList<Json> items = parseDataToJson(input);
+        ArrayList<Json> items = parseDataToJson(input); // 1
         items.forEach(item -> {
-            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE);
-            String graqlInsertQuery = input.template(item);
+            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE); // 2a
+            String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.graql().parse(graqlInsertQuery).execute();
-            transaction.commit();
+            transaction.graql().parse(graqlInsertQuery).execute(); // 2c
+            transaction.commit(); // 2d
         });
         System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + "] into Grakn.\n");
     }
@@ -172,16 +172,16 @@ public class CsvMigration {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setLineSeparatorDetectionEnabled(true);
         CsvParser parser = new CsvParser(settings);
-        parser.beginParsing(getReader(input.getDataPath() + ".csv"));
+        parser.beginParsing(getReader(input.getDataPath() + ".csv")); // 1
 
         String[] columns = parser.parseNext();
         String[] row;
         while ((row = parser.parseNext()) != null) {
             Json item = Json.object();
             for (int i = 0; i < row.length; i++) {
-                item.set(columns[i], row[i]);
+                item.set(columns[i], row[i]); // 2
             }
-            items.add(item);
+            items.add(item); // 3
         }
         return items;
     }
