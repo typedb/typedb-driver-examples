@@ -10,8 +10,6 @@ import ai.grakn.util.SimpleURI;
  * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
  */
 import mjson.Json;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * provides an easy and intuitive means of parsing and generating XML documents
@@ -31,7 +29,7 @@ import java.util.Collection;
 public class XmlMigration {
     /**
      * representation of Input object that links an input file to its own templating function,
-     * which is used to map a Json object to Graql query string
+     * which is used to map a Json object to a Graql query string
      */
     abstract static class Input {
         String path;
@@ -55,7 +53,7 @@ public class XmlMigration {
      * 4. loads the xml data to Grakn for each file
      * 5. closes the session
      */
-    public static void main(String[] args) throws UnsupportedEncodingException, XMLStreamException {
+    public static void main(String[] args)  {
         SimpleURI localGrakn = new SimpleURI("localhost", 48555);
         Keyspace keyspace = Keyspace.of("phone_calls");
         Grakn grakn = new Grakn(localGrakn);
@@ -78,14 +76,14 @@ public class XmlMigration {
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
-        // Define template for companies file
+        // define template for constructing a company Graql insert query
         inputs.add(new Input("data/companies", "company") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company has name " + company.at("name") + ";";
             }
         });
-        //Define template for people file
+        // define template for constructing a person Graql insert query
         inputs.add(new Input("data/people", "person") {
             @Override
             public String template(Json person) {
@@ -108,7 +106,7 @@ public class XmlMigration {
                 return graqlInsertQuery;
             }
         });
-        //Define template for contracts file
+        // define template for constructing a contract Graql insert query
         inputs.add(new Input("data/contracts", "contract") {
             @Override
             public String template(Json contract) {
@@ -121,7 +119,7 @@ public class XmlMigration {
                 return graqlInsertQuery;
             }
         });
-        //Define template for calls file
+        // define template for constructing a call Graql insert query
         inputs.add(new Input("data/calls", "call") {
             @Override
             public String template(Json call) {
@@ -140,26 +138,26 @@ public class XmlMigration {
     }
 
     /**
-     * loads the xml data into our Grakn phone_calls keyspace:
+     * loads the xml data into the Grakn phone_calls keyspace:
      * 1. gets the data items as a list of json objects
-     * 2. for each json object
-     * a. creates a Grakn transaction
-     * b. constructs the corresponding Graql insert query
-     * c. runs the query
-     * d. commits the transaction
+     * 2. for each json object:
+     *   a. creates a Grakn transaction
+     *   b. constructs the corresponding Graql insert query
+     *   c. runs the query
+     *   d. commits the transaction
      *
      * @param input   contains details required to parse the data
      * @param session off of which a transaction will be created
      * @throws UnsupportedEncodingException
      */
     static void loadDataIntoGrakn(Input input, Grakn.Session session) throws UnsupportedEncodingException, XMLStreamException {
-        ArrayList<Json> items = parseDataToJson(input);
+        ArrayList<Json> items = parseDataToJson(input); // 1
         items.forEach(item -> {
-            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE);
-            String graqlInsertQuery = input.template(item);
+            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE); // 2a
+            String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.graql().parse(graqlInsertQuery).execute();
-            transaction.commit();
+            transaction.graql().parse(graqlInsertQuery).execute(); // 2c
+            transaction.commit(); // 2d
         });
         System.out.println("\nInserted " + items.size() + " items from [" + input.getDataPath() + "] into Grakn.\n");
     }
@@ -176,7 +174,7 @@ public class XmlMigration {
     static ArrayList<Json> parseDataToJson(Input input) throws UnsupportedEncodingException, XMLStreamException {
         ArrayList<Json> items = new ArrayList<>();
 
-        XMLStreamReader r = XMLInputFactory.newInstance().createXMLStreamReader(getReader(input.getDataPath() + ".xml"));
+        XMLStreamReader r = XMLInputFactory.newInstance().createXMLStreamReader(getReader(input.getDataPath() + ".xml")); // 1
         String key;
         String value = null;
         Boolean inSelector = false;
@@ -199,11 +197,11 @@ public class XmlMigration {
                 case XMLStreamConstants.END_ELEMENT:
                     key = r.getLocalName();
                     if (inSelector && ! key.equals(input.getSelector())) {
-                        item.set(key, value);
+                        item.set(key, value); // 2
                     }
                     if (key.equals(input.getSelector())) {
                         inSelector = false;
-                        items.add(item);
+                        items.add(item); // 3
                     }
 
                     break;
@@ -217,4 +215,3 @@ public class XmlMigration {
         return new InputStreamReader(XmlMigration.class.getClassLoader().getResourceAsStream(relativePath), "UTF-8");
     }
 }
-
