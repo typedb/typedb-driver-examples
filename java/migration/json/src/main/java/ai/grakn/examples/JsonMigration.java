@@ -68,14 +68,14 @@ public class JsonMigration {
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
-        // Define template for companies file
+        // define template for constructing a company Graql insert query
         inputs.add(new Input("data/companies") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company has name " + company.at("name") + ";";
             }
         });
-        //Define template for people file
+        // define template for constructing a person Graql insert query
         inputs.add(new Input("data/people") {
             @Override
             public String template(Json person) {
@@ -98,7 +98,7 @@ public class JsonMigration {
                 return graqlInsertQuery;
             }
         });
-        //Define template for contracts file
+        // define template for constructing a contract Graql insert query
         inputs.add(new Input("data/contracts") {
             @Override
             public String template(Json contract) {
@@ -111,7 +111,7 @@ public class JsonMigration {
                 return graqlInsertQuery;
             }
         });
-        //Define template for calls file
+        // define template for constructing a call Graql insert query
         inputs.add(new Input("data/calls") {
             @Override
             public String template(Json call) {
@@ -133,23 +133,23 @@ public class JsonMigration {
      * loads the json data into our Grakn phone_calls keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
-     * a. creates a Grakn transaction
-     * b. constructs the corresponding Graql insert query
-     * c. runs the query
-     * d. commits the transaction
+     *   a. creates a Grakn transaction
+     *   b. constructs the corresponding Graql insert query
+     *   c. runs the query
+     *   d. commits the transaction
      *
      * @param input   contains details required to parse the data
      * @param session off of which a transaction will be created
      * @throws UnsupportedEncodingException
      */
     static void loadDataIntoGrakn(Input input, Grakn.Session session) throws IOException {
-        ArrayList<Json> items = parseDataToJson(input);
+        ArrayList<Json> items = parseDataToJson(input); // 1
         items.forEach(item -> {
-            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE);
-            String graqlInsertQuery = input.template(item);
+            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE); // 2a
+            String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.graql().parse(graqlInsertQuery).execute();
-            transaction.commit();
+            transaction.graql().parse(graqlInsertQuery).execute(); // 2c
+            transaction.commit(); // 2d
         });
         System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + "] into Grakn.\n");
     }
@@ -166,7 +166,7 @@ public class JsonMigration {
     static ArrayList<Json> parseDataToJson(Input input) throws IOException {
         ArrayList<Json> items = new ArrayList<>();
 
-        JsonReader jsonReader = new JsonReader(getReader(input.getDataPath() + ".json"));
+        JsonReader jsonReader = new JsonReader(getReader(input.getDataPath() + ".json")); // 1
 
         jsonReader.beginArray();
         while (jsonReader.hasNext()) {
@@ -176,15 +176,15 @@ public class JsonMigration {
                 String key = jsonReader.nextName();
                 switch (jsonReader.peek()) {
                     case STRING:
-                        item.set(key, jsonReader.nextString());
+                        item.set(key, jsonReader.nextString()); // 2
                         break;
                     case NUMBER:
-                        item.set(key, jsonReader.nextInt());
+                        item.set(key, jsonReader.nextInt()); // 2
                         break;
                 }
             }
             jsonReader.endObject();
-            items.add(item);
+            items.add(item); // 3
         }
         jsonReader.endArray();
         return items;
