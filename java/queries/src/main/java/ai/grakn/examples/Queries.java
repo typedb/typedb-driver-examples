@@ -222,13 +222,13 @@ public class Queries {
             }
         });
 
-        // to add a new Query Example:
+        // TO ADD A NEW QUERY EXAMPLE:
 //        queryExamples.add(new QueryExample("question goes here") {
 //            @Override
 //            void executeQuery(Grakn.Transaction tx) {
 //                printToLog("Question: ", this.question);
 //
-//                // queries are written as a list for better readibility
+//                // queries are written as a list for better readability
 //                List<String> queryAsList = Arrays.asList(
 //                        "each line;",
 //                        "  as an element;",
