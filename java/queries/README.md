@@ -34,5 +34,5 @@ Run:
 - `git clone git@github.com:graknlabs/examples.git`
 - `cd examples/java/queries`
 - `mvn clean compile assembly:single`
-- `java -cp target/migrate-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.XmlMigration`
+- `java -cp target/queries-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Queries`
 - follow the instructions to run available Graql queries
