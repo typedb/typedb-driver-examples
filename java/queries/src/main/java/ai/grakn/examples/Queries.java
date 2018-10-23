@@ -16,7 +16,7 @@ public class Queries {
             this.question = question;
         }
 
-        String getQuestion() { return question; }
+        String getQuestion() { return this.question; }
 
         abstract void executeQuery(Grakn.Transaction transaction);
     }
@@ -33,14 +33,13 @@ public class Queries {
 
         int qsNumber = -1;
         while (qsNumber < 0 || qsNumber > queryExamples.size()) {
-            System.out.print("choose a number (0 for to answer all questions): ");
+            System.out.print("choose a number (enter 0 for to answer all questions): ");
             try {
                 qsNumber = scanner.nextInt();
             } catch (InputMismatchException e) {
                 scanner.nextLine();
                 System.out.println();
                 System.out.println("Please enter a number!");
-                continue;
             }
 
         }
