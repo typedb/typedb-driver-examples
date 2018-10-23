@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -46,31 +47,9 @@ public class XmlMigration {
         abstract String template(Json data);
     }
 
-    /**
-     * 1. creates a Grakn instance
-     * 2. creates a session to the targeted keyspace
-     * 3. initialises the list of Inputs, each containing details required to parse the data
-     * 4. loads the xml data to Grakn for each file
-     * 5. closes the session
-     */
     public static void main(String[] args)  {
-        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
-        Keyspace keyspace = Keyspace.of("phone_calls");
-        Grakn grakn = new Grakn(localGrakn);
-        Grakn.Session session = grakn.session(keyspace);
         Collection<Input> inputs = initialiseInputs();
-
-
-        inputs.forEach(input -> {
-            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
-            try {
-                loadDataIntoGrakn(input, session);
-            } catch (UnsupportedEncodingException | XMLStreamException e) {
-                e.printStackTrace();
-            }
-        });
-
-        session.close();
+        connectAndMigrate(inputs);
     }
 
     static Collection<Input> initialiseInputs() {
@@ -135,6 +114,30 @@ public class XmlMigration {
             }
         });
         return inputs;
+    }
+
+    /**
+     * 1. creates a Grakn instance
+     * 2. creates a session to the targeted keyspace
+     * 3. loads the csv data to Grakn for each file
+     * 4. closes the session
+     */
+    static void connectAndMigrate(Collection<Input> inputs) {
+        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
+        Grakn grakn = new Grakn(localGrakn); // 1
+        Keyspace keyspace = Keyspace.of("phone_calls");
+        Grakn.Session session = grakn.session(keyspace); // 2
+
+        inputs.forEach(input -> {
+            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
+            try {
+                loadDataIntoGrakn(input, session); // 3
+            } catch (IOException | XMLStreamException e) {
+                e.printStackTrace();
+            }
+        });
+
+        session.close(); // 4
     }
 
     /**
@@ -207,7 +210,7 @@ public class XmlMigration {
                     break;
             }
         }
-        System.out.println(items);
+
         return items;
     }
 

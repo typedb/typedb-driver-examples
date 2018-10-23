@@ -6,7 +6,7 @@ import ai.grakn.client.Grakn;
 import ai.grakn.util.SimpleURI;
 
 /**
- * a collection of  fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
+ * a collection of fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
  * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
  */
 import com.univocity.parsers.csv.CsvParser;
@@ -31,41 +31,16 @@ public class CsvMigration {
      */
     abstract static class Input {
         String path;
-
         public Input(String path) {
             this.path = path;
         }
-
         String getDataPath(){ return path;}
-
         abstract String template(Json data);
     }
 
-    /**
-     * 1. creates a Grakn instance
-     * 2. creates a session to the targeted keyspace
-     * 3. initialises the list of Inputs, each containing details required to parse the data
-     * 4. loads the csv data to Grakn for each file
-     * 5. closes the session
-     */
     public static void main(String[] args) {
-        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
-        Keyspace keyspace = Keyspace.of("phone_calls");
-        Grakn grakn = new Grakn(localGrakn);
-        Grakn.Session session = grakn.session(keyspace);
         Collection<Input> inputs = initialiseInputs();
-
-
-        inputs.forEach(input -> {
-            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
-            try {
-                loadDataIntoGrakn(input, session);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        });
-
-        session.close();
+        connectAndMigrate(inputs);
     }
 
     static Collection<Input> initialiseInputs() {
@@ -133,6 +108,30 @@ public class CsvMigration {
     }
 
     /**
+     * 1. creates a Grakn instance
+     * 2. creates a session to the targeted keyspace
+     * 3. loads the csv data to Grakn for each file
+     * 4. closes the session
+     */
+    static void connectAndMigrate(Collection<Input> inputs) {
+        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
+        Grakn grakn = new Grakn(localGrakn); // 1
+        Keyspace keyspace = Keyspace.of("phone_calls");
+        Grakn.Session session = grakn.session(keyspace); // 2
+
+        inputs.forEach(input -> {
+            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
+            try {
+                loadDataIntoGrakn(input, session); // 3
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        });
+
+        session.close(); // 4
+    }
+
+    /**
      * loads the csv data into our Grakn phone_calls keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
@@ -140,6 +139,7 @@ public class CsvMigration {
      *   b. constructs the corresponding Graql insert query
      *   c. runs the query
      *   d. commits the transaction
+     *   e. closes the transaction
      *
      * @param input   contains details required to parse the data
      * @param session off of which a transaction will be created
@@ -148,11 +148,13 @@ public class CsvMigration {
     static void loadDataIntoGrakn(Input input, Grakn.Session session) throws UnsupportedEncodingException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         items.forEach(item -> {
-            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE); // 2a
+            Grakn.Transaction tx = session.transaction(GraknTxType.WRITE); // 2a
             String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.graql().parse(graqlInsertQuery).execute(); // 2c
-            transaction.commit(); // 2d
+            tx.graql().parse(graqlInsertQuery).execute(); // 2c
+            tx.commit(); // 2d
+            tx.close(); // 2e
+
         });
         System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + "] into Grakn.\n");
     }

@@ -28,41 +28,16 @@ public class JsonMigration {
      */
     abstract static class Input {
         String path;
-
         public Input(String path) {
             this.path = path;
         }
-
         String getDataPath(){ return path;}
-
         abstract String template(Json data);
     }
 
-    /**
-     * 1. creates a Grakn instance
-     * 2. creates a session to the targeted keyspace
-     * 3. initialises the list of Inputs, each containing details required to parse the data
-     * 4. loads the json data to Grakn for each file
-     * 5. closes the session
-     */
     public static void main(String[] args) {
-        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
-        Keyspace keyspace = Keyspace.of("phone_calls");
-        Grakn grakn = new Grakn(localGrakn);
-        Grakn.Session session = grakn.session(keyspace);
         Collection<Input> inputs = initialiseInputs();
-
-
-        inputs.forEach(input -> {
-            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
-            try {
-                loadDataIntoGrakn(input, session);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        session.close();
+        connectAndMigrate(inputs);
     }
 
     static Collection<Input> initialiseInputs() {
@@ -127,6 +102,30 @@ public class JsonMigration {
             }
         });
         return inputs;
+    }
+
+    /**
+     * 1. creates a Grakn instance
+     * 2. creates a session to the targeted keyspace
+     * 3. loads the csv data to Grakn for each file
+     * 4. closes the session
+     */
+    static void connectAndMigrate(Collection<Input> inputs) {
+        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
+        Grakn grakn = new Grakn(localGrakn); // 1
+        Keyspace keyspace = Keyspace.of("phone_calls");
+        Grakn.Session session = grakn.session(keyspace); // 2
+
+        inputs.forEach(input -> {
+            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
+            try {
+                loadDataIntoGrakn(input, session); // 3
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        session.close(); // 4
     }
 
     /**
