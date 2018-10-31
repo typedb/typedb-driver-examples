@@ -20,7 +20,7 @@ This migration example uses the [Grakn Java Client](https://github.com/graknlabs
 
 ### Understanding the code
 
-- Read the **[blog post](...)**
+- Read the **[blog post](https://blog.grakn.ai/loading-data-into-a-grakn-knowledge-graph-using-the-java-client-5f2f1a7f9903)**
 - Read the comments in `src/main/java/ai.grakn.examples/Migration.java`
 
 ## Quick Start
