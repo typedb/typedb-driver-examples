@@ -31,7 +31,7 @@ if __name__ == "__main__":
         return response
 
     with client.session(keyspace=settings.keyspace) as session:
-        with session.transaction(grakn.TxType.WRITE) as transaction:
+        with session.transaction(grakn.TxType.READ) as transaction:
             # count
             # Find the number of stations, routes, tube lines, zones, etc.
             response = perform_query("compute count in station;", transaction)
