@@ -171,14 +171,14 @@ class TubeGui:
     LINE_WIDTH = 2
     LINE_SPACING = 0.5
 
-    def __init__(self, root, grakn_client):
+    def __init__(self, root, client):
         """
         Main visualisation class. Builds an interactive map of the London tube.
         :param root:
-        :param grakn_client:
+        :param client:
         """
         self._root = root
-        self.grakn_client = grakn_client
+        self.client = client
         self.w, self.h = self._root.winfo_screenwidth(), self._root.winfo_screenheight()
         self._root.geometry("%dx%d+0+0" % (self.w, self.h))
         self._root.focus_set()
@@ -197,10 +197,12 @@ class TubeGui:
         # we can query for this easily in Grakn!
         compute_coords_limits = "compute {} of {}, in station;"
 
-        self.min_lat = self.perform_query(compute_coords_limits.format("min", "lat"))
-        self.max_lat = self.perform_query(compute_coords_limits.format("max", "lat"))
-        self.min_lon = self.perform_query(compute_coords_limits.format("min", "lon"))
-        self.max_lon = self.perform_query(compute_coords_limits.format("max", "lon"))
+        with client.session(keyspace=settings.keyspace) as session:
+            with session.transaction(grakn.TxType.WRITE) as transaction:
+                self.min_lat = self.perform_query(compute_coords_limits.format("min", "lat"), transaction)[0].number()
+                self.max_lat = self.perform_query(compute_coords_limits.format("max", "lat"), transaction)[0].number()
+                self.min_lon = self.perform_query(compute_coords_limits.format("min", "lon"), transaction)[0].number()
+                self.max_lon = self.perform_query(compute_coords_limits.format("max", "lon"), transaction)[0].number()
 
         # aspect ratio as width over height, which is longitude over latitude
         aspect_ratio = (self.max_lon - self.min_lon) / (self.max_lat - self.min_lat)
@@ -252,96 +254,100 @@ class TubeGui:
                                  joinstyle=tk.ROUND)
 
     def _draw_tunnels(self):
-        """
-        Render the "tunnels" connecting stations.
-        :return:
-        """
-        tunnels = self.perform_query("match\n"
-                                "$s1 isa station, has lon $lon1, has lat $lat1;\n"
-                                "$s2 isa station, has lon $lon2, has lat $lat2;\n"
-                                "$tunnel(beginning: $s1, end: $s2) isa tunnel;\n"
-                                "get $tunnel, $lon1, $lat1, $lon2, $lat2;")
+        with client.session(keyspace=settings.keyspace) as session:
+            with session.transaction(grakn.TxType.WRITE) as transaction:
+                """
+                Render the "tunnels" connecting stations.
+                :return:
+                """
+                tunnels = self.perform_query("match\n"
+                                        "$s1 isa station, has lon $lon1, has lat $lat1;\n"
+                                        "$s2 isa station, has lon $lon2, has lat $lat2;\n"
+                                        "$tunnel(beginning: $s1, end: $s2) isa tunnel;\n"
+                                        "get $tunnel, $lon1, $lat1, $lon2, $lat2;", transaction)
 
-        for tunnel in tunnels:
-            # Then, using the tunnel's ID, get the tube-lines that run through the tunnel
-            tube_lines = self.perform_query(("match\n"
-                                        "$rs isa route-section;\n"
-                                        "$tunnel(service: $rs) id {};\n"
-                                        "$tube-line isa tube-line, has name $tl-name;\n"
-                                        "$route(section: $rs, route-operator: $tube-line) isa route;\n"
-                                        "get $tl-name;").format(tunnel["tunnel"]['id']))
+                for tunnel in tunnels:
+                    # Then, using the tunnel's ID, get the tube-lines that run through the tunnel
+                    tube_lines = self.perform_query(("match\n"
+                                                "$rs isa route-section;\n"
+                                                "$tunnel(service: $rs) id {};\n"
+                                                "$tube-line isa tube-line, has name $tl-name;\n"
+                                                "$route(section: $rs, route-operator: $tube-line) isa route;\n"
+                                                "get $tl-name;").format(tunnel.get("tunnel").id), transaction)
 
-            lon1, lat1 = self._transform_coords(float(tunnel['lon1']['value']), float(tunnel['lat1']['value']))
-            lon2, lat2 = self._transform_coords(float(tunnel['lon2']['value']), float(tunnel['lat2']['value']))
+                    lon1, lat1 = self._transform_coords(float(tunnel.get('lon1').value()), float(tunnel.get('lat1').value()))
+                    lon2, lat2 = self._transform_coords(float(tunnel.get('lon2').value()), float(tunnel.get('lat2').value()))
 
-            # Sort the tube lines alphabetically to get a consistent ordering, so that when rendered the lines are easy
-            # to follow from station to station
-            tube_line_names = []
-            for tube_line in tube_lines:
-                tube_line_names.append(tube_line['tl-name']['value'])
+                    # Sort the tube lines alphabetically to get a consistent ordering, so that when rendered the lines are easy
+                    # to follow from station to station
+                    tube_line_names = []
+                    for tube_line in tube_lines:
+                        tube_line_names.append(tube_line.get('tl-name').value())
 
-            tube_line_names = sorted(tube_line_names)
+                    tube_line_names = sorted(tube_line_names)
 
-            for i, tube_line_name in enumerate(tube_line_names):
+                    for i, tube_line_name in enumerate(tube_line_names):
 
-                # Trigonometry to draw parallel lines with consistent distance between them
-                dx = lon2 - lon1
-                dy = lat2 - lat1
-                dz = self.LINE_SPACING  # desired orthogonal displacement of parallel lines
-                grad = dy / dx  # gradient of the connection to draw
+                        # Trigonometry to draw parallel lines with consistent distance between them
+                        dx = lon2 - lon1
+                        dy = lat2 - lat1
+                        dz = self.LINE_SPACING  # desired orthogonal displacement of parallel lines
+                        grad = dy / dx  # gradient of the connection to draw
 
-                # The change in coordinates needed to achieve this
-                dy2 = ((grad ** 2 + 1) ** -0.5) * dz
-                dx2 = grad * dy2
+                        # The change in coordinates needed to achieve this
+                        dy2 = ((grad ** 2 + 1) ** -0.5) * dz
+                        dx2 = grad * dy2
 
-                self._canvas.create_line(lon1 - (i * dx2), lat1 + (i * dy2), lon2 - (i * dx2), lat2 + (i * dy2),
-                                         fill=self.TUBE_LINE_COLOURS[tube_line_name],
-                                         width=self.LINE_WIDTH)
+                        self._canvas.create_line(lon1 - (i * dx2), lat1 + (i * dy2), lon2 - (i * dx2), lat2 + (i * dy2),
+                                                fill=self.TUBE_LINE_COLOURS[tube_line_name],
+                                                width=self.LINE_WIDTH)
 
     def _draw_stations(self):
-        """
-        Render a map of the London Underground Stations based on their grid coordinates.
-        :return:
-        """
+        with client.session(keyspace=settings.keyspace) as session:
+            with session.transaction(grakn.TxType.WRITE) as transaction:
+                """
+                Render a map of the London Underground Stations based on their grid coordinates.
+                :return:
+                """
 
-        station_name_labels = dict()
-        suffix = " Underground Station"
+                station_name_labels = dict()
+                suffix = " Underground Station"
 
-        # Get the stations, but limit them to those which have at least one tunnel
-        station_query = match_get("$s isa station, has name $name, has lon $lon, has lat $lat; ($s) isa tunnel;")
-        response = self.perform_query(station_query)
+                # Get the stations, but limit them to those which have at least one tunnel
+                station_query = match_get("$s isa station, has name $name, has lon $lon, has lat $lat; ($s) isa tunnel;")
+                response = self.perform_query(station_query, transaction)
 
-        for match in response:
-            station_id = match['s']['id']
-            name = match['name']['value']
-            if name.endswith(suffix):
-                name = name[:-len(suffix)]
+                for match in response:
+                    station_id = match.get('s').id
+                    name = match.get('name').value()
+                    if name.endswith(suffix):
+                        name = name[:-len(suffix)]
 
-            print("drawing station: {}".format(station_id))
+                    print("drawing station: {}".format(station_id))
 
-            lon, lat = self._transform_coords(float(match['lon']['value']), float(match['lat']['value']))
+                    lon, lat = self._transform_coords(float(match.get('lon').value()), float(match.get('lat').value()))
 
-            self._station_canvas_coords[station_id] = (lon, lat)
-            station_tag = self._canvas.create_circle(lon, lat, self.STATION_CIRCLE_RADIUS,
-                                                     fill="white", outline="black")
-            self._station_point_ids[station_id] = station_tag
+                    self._station_canvas_coords[station_id] = (lon, lat)
+                    station_tag = self._canvas.create_circle(lon, lat, self.STATION_CIRCLE_RADIUS,
+                                                            fill="white", outline="black")
+                    self._station_point_ids[station_id] = station_tag
 
-            # We need to identify the station selected, so we should build a function for each station to hold this
-            def callback_wrapper(event, id=station_id): return self._on_station_select(id)
+                    # We need to identify the station selected, so we should build a function for each station to hold this
+                    def callback_wrapper(event, id=station_id): return self._on_station_select(id)
 
-            event_sequence = "<Shift-ButtonPress-1>"
+                    event_sequence = "<Shift-ButtonPress-1>"
 
-            self._canvas.tag_bind(self._station_point_ids[station_id], event_sequence, callback_wrapper)
+                    self._canvas.tag_bind(self._station_point_ids[station_id], event_sequence, callback_wrapper)
 
-            station_label_tag = self._canvas.create_text(lon + self.STATION_CIRCLE_RADIUS,
-                                                         lat + self.STATION_CIRCLE_RADIUS,
-                                                         text=name, anchor=tk.NW,
-                                                         font=('Johnston', self.STATION_FONT_SIZE, 'bold'),
-                                                         fill="#666")
-            station_name_labels[station_id] = station_label_tag
-            self._canvas.tag_bind(station_label_tag, event_sequence, callback_wrapper)
+                    station_label_tag = self._canvas.create_text(lon + self.STATION_CIRCLE_RADIUS,
+                                                                lat + self.STATION_CIRCLE_RADIUS,
+                                                                text=name, anchor=tk.NW,
+                                                                font=('Johnston', self.STATION_FONT_SIZE, 'bold'),
+                                                                fill="#666")
+                    station_name_labels[station_id] = station_label_tag
+                    self._canvas.tag_bind(station_label_tag, event_sequence, callback_wrapper)
 
-    def perform_query(self, graql_string):
+    def perform_query(self, graql_string, transaction):
         """
         A wrapper for executing Graql queries, so that any other desired behaviour can ba attached, such as printing
         the queries executed.
@@ -350,7 +356,7 @@ class TubeGui:
         """
         print(graql_string)
         # Send the graql query to the server
-        response = self.grakn_client.execute(graql_string)
+        response = list(transaction.query(graql_string))
         print("...query complete")
         return response
 
@@ -423,8 +429,10 @@ class TubeGui:
         if len(self._shortest_path_stations) > 1:
             query = "compute path from {}, to {}, in [station, tunnel];".format(self._shortest_path_stations[-2],
                                                                                 self._shortest_path_stations[-1])
-            shortest_path = self.perform_query(query)
-            self.display_shortest_path(shortest_path, self.TUNNEL_SHORTEST_PATH_COLOUR, self.TUNNEL_SHORTEST_PATH_WIDTH)
+            with client.session(keyspace=settings.keyspace) as session:
+                with session.transaction(grakn.TxType.WRITE) as transaction:
+                    shortest_path = self.perform_query(query, transaction)
+                    self.display_shortest_path(shortest_path, self.TUNNEL_SHORTEST_PATH_COLOUR, self.TUNNEL_SHORTEST_PATH_WIDTH)
 
     def display_shortest_path(self, shortest_path, colour, width):
         """
@@ -438,10 +446,12 @@ class TubeGui:
         station_paths = []
         for path in shortest_path:
             station_ids = []
-            for concept in path:
-                if concept['type']['label'] == 'station':
-                    station_id = concept['id']
-                    station_ids.append(station_id)
+            for concept_id in path.list():
+                with client.session(keyspace=settings.keyspace) as session:
+                    with session.transaction(grakn.TxType.WRITE) as transaction:
+                        concept = list(transaction.query("match $x id {}; get;".format(concept_id)))[0].get("x")
+                        if concept.type().label() == 'station':
+                            station_ids.append(concept_id)
             station_paths.append(station_ids)
 
         # Get the unique paths
@@ -538,29 +548,31 @@ class TubeGui:
         :param colour:
         :return:
         """
-        if not self._displaying_centrality:
-            centrality = self.perform_query(query)
+        with client.session(keyspace=settings.keyspace) as session:
+            with session.transaction(grakn.TxType.WRITE) as transaction:
+                if not self._displaying_centrality:
+                    centralities = self.perform_query(query, transaction)
 
-            # Find the max centrality value, that way we can scale the visualisation up to a maximum radius
-            max_score = max([int(s) for s in centrality.keys()])
+                    # Find the max centrality value, that way we can scale the visualisation up to a maximum radius
+                    max_score = max([int(s.measurement()) for s in centralities])
 
-            for score, concept_ids in centrality.items():
-                for concept_id in concept_ids:
-                    station_element_id = self._station_point_ids[concept_id]
-                    lon, lat = self._station_canvas_coords[concept_id]
+                    for centrality in centralities:
+                        for concept_id in centrality.set():
+                            station_element_id = self._station_point_ids[concept_id]
+                            lon, lat = self._station_canvas_coords[concept_id]
 
-                    lon = self._transform_to_current_scale(lon)
-                    lat = self._transform_to_current_scale(lat)
+                            lon = self._transform_to_current_scale(lon)
+                            lat = self._transform_to_current_scale(lat)
 
-                    radius = self._transform_to_current_scale((int(score) / max_score) * upper_radius)
+                            radius = self._transform_to_current_scale((int(centrality.measurement()) / max_score) * upper_radius)
 
-                    centrality_element_id = self._canvas.create_circle(lon, lat, radius, fill=colour, outline="")
+                            centrality_element_id = self._canvas.create_circle(lon, lat, radius, fill=colour, outline="")
 
-                    self._station_centrality_points[concept_id] = centrality_element_id
+                            self._station_centrality_points[concept_id] = centrality_element_id
 
-                    # Send the drawn elements to behind the station point
-                    self._canvas.tag_lower(centrality_element_id, station_element_id)
-            self._displaying_centrality = True
+                            # Send the drawn elements to behind the station point
+                            self._canvas.tag_lower(centrality_element_id, station_element_id)
+                    self._displaying_centrality = True
 
     def undisplay_centrality(self):
         if self._displaying_centrality:
@@ -572,9 +584,9 @@ class TubeGui:
 if __name__ == "__main__":
     # Set up a connection to Grakn. Grakn needs to be running first, with settings found in the settings file of this
     # project
-    grakn_client = grakn.Client(uri=settings.uri, keyspace=settings.keyspace)
+    client = grakn.Grakn(uri=settings.uri)
 
     # Build the Tkinter application
     root = tk.Tk()
-    tube_gui = TubeGui(root, grakn_client)
+    tube_gui = TubeGui(root, client)
     root.mainloop()
