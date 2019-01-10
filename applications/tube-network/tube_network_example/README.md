@@ -39,7 +39,7 @@ To import, run [timetable_migration.py](src/migrations/timetable_migration.py), 
 python3 -m tube_network_example.src.migrations.timetable_migration
 ```
 
-This is a custom-built python script that just iterates over the downloaded json data.
+This is a custom-built python script that just iterates over the downloaded JSON data.
 
 You should see insertions being made into the Grakn, the logs for this will be created in src/migrations/logs, showing the graql query sent, and the response received.
 
