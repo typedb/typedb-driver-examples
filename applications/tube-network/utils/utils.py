@@ -48,4 +48,4 @@ def match_insert(match_graql_body, insert_graql_body):
 
 
 def get_match_id(match_get_response, var_name):
-    return match_get_response[0][var_name]['id']
+    return match_get_response[0].get(var_name).id
