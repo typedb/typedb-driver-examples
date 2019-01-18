@@ -1,0 +1,23 @@
+# Misc
+**/.DS_Store
+**/logs
+
+# IDE files
+**/.idea
+**/*.iml
+**/.vscode
+**/.settings
+**/.project
+**/.classpath
+**/.factorypath
+
+# Compiled files
+**/target
+
+# NPM
+**/node_modules
+**/package-lock.json
+
+# Python
+**/__pycache__
+
