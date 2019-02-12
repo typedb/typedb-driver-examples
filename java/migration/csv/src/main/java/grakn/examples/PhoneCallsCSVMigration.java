@@ -1,4 +1,4 @@
-package ai.grakn.examples;
+package grakn.examples;
 
 import grakn.core.client.GraknClient;
 import grakn.core.client.GraknClient.Transaction;
