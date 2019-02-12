@@ -1,9 +1,11 @@
 package ai.grakn.examples;
 
-import ai.grakn.GraknTxType;
-import ai.grakn.Keyspace;
-import ai.grakn.client.Grakn;
-import ai.grakn.util.SimpleURI;
+import grakn.core.client.GraknClient;
+import grakn.core.client.GraknClient.Transaction;
+import static grakn.core.graql.query.Graql.*;
+import grakn.core.graql.query.query.GraqlInsert;
+import grakn.core.server.exception.InvalidKBException;
+import grakn.core.server.exception.TransactionException;
 
 /**
  * reads a JSON encoded value as a stream of tokens,
@@ -21,52 +23,76 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class JsonMigration {
+public class PhoneCallsJSONMigration {
     /**
      * representation of Input object that links an input file to its own templating function,
-     * which is used to map a Json object to Graql query string
+     * which is used to map a Json object to a Graql query string
      */
     abstract static class Input {
         String path;
+
         public Input(String path) {
             this.path = path;
         }
-        String getDataPath(){ return path;}
+
+        String getDataPath() {
+            return path;
+        }
+
         abstract String template(Json data);
     }
 
-    public static void main(String[] args) {
+    /**
+     * 1. creates a Grakn instance
+     * 2. creates a session to the targeted keyspace
+     * 3. initialises the list of Inputs, each containing details required to parse the data
+     * 4. loads the csv data to Grakn for each file
+     * 5. closes the session
+     */
+    public static void main(String[] args) throws IOException, InvalidKBException {
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs);
+    }
+
+    static void connectAndMigrate(Collection<Input> inputs) throws IOException, InvalidKBException, TransactionException {
+        GraknClient client = new GraknClient("localhost:48555");
+        GraknClient.Session session = client.session("phone_calls");
+
+        for (Input input : inputs) {
+            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
+            loadDataIntoGrakn(input, session);
+        }
+
+        session.close();
     }
 
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
         // define template for constructing a company Graql insert query
-        inputs.add(new Input("data/companies") {
+        inputs.add(new Input("files/phone-calls/data/companies") {
             @Override
             public String template(Json company) {
-                return "insert $company isa company has name " + company.at("name") + ";";
+                return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
         // define template for constructing a person Graql insert query
-        inputs.add(new Input("data/people") {
+        inputs.add(new Input("files/phone-calls/data/people") {
             @Override
             public String template(Json person) {
                 // insert person
-                String graqlInsertQuery = "insert $person isa person has phone-number " + person.at("phone_number");
+                String graqlInsertQuery = "insert $person isa person, has phone-number " + person.at("phone_number");
 
                 if (! person.has("first_name")) {
                     // person is not a customer
-                    graqlInsertQuery += " has is-customer false";
+                    graqlInsertQuery += ", has is-customer false";
                 } else {
                     // person is a customer
-                    graqlInsertQuery += " has is-customer true";
-                    graqlInsertQuery += " has first-name " + person.at("first_name");
-                    graqlInsertQuery += " has last-name " + person.at("last_name");
-                    graqlInsertQuery += " has city " + person.at("city");
-                    graqlInsertQuery += " has age " + person.at("age").asInteger();
+                    graqlInsertQuery += ", has is-customer true";
+                    graqlInsertQuery += ", has first-name " + person.at("first_name");
+                    graqlInsertQuery += ", has last-name " + person.at("last_name");
+                    graqlInsertQuery += ", has city " + person.at("city");
+                    graqlInsertQuery += ", has age " + person.at("age").asInteger();
                 }
 
                 graqlInsertQuery += ";";
@@ -74,26 +100,26 @@ public class JsonMigration {
             }
         });
         // define template for constructing a contract Graql insert query
-        inputs.add(new Input("data/contracts") {
+        inputs.add(new Input("files/phone-calls/data/contracts") {
             @Override
             public String template(Json contract) {
                 // match company
-                String graqlInsertQuery = "match $company isa company has name " + contract.at("company_name") + ";";
+                String graqlInsertQuery = "match $company isa company, has name " + contract.at("company_name") + ";";
                 // match person
-                graqlInsertQuery += " $customer isa person has phone-number " + contract.at("person_id") + ";";
+                graqlInsertQuery += " $customer isa person, has phone-number " + contract.at("person_id") + ";";
                 // insert contract
                 graqlInsertQuery += " insert (provider: $company, customer: $customer) isa contract;";
                 return graqlInsertQuery;
             }
         });
         // define template for constructing a call Graql insert query
-        inputs.add(new Input("data/calls") {
+        inputs.add(new Input("files/phone-calls/data/calls") {
             @Override
             public String template(Json call) {
                 // match caller
-                String graqlInsertQuery = "match $caller isa person has phone-number " + call.at("caller_id") + ";";
+                String graqlInsertQuery = "match $caller isa person, has phone-number " + call.at("caller_id") + ";";
                 // match callee
-                graqlInsertQuery += " $callee isa person has phone-number " + call.at("callee_id") + ";";
+                graqlInsertQuery += " $callee isa person, has phone-number " + call.at("callee_id") + ";";
                 // insert call
                 graqlInsertQuery += " insert $call(caller: $caller, callee: $callee) isa call;" +
                         " $call has started-at " + call.at("started_at").asString() + ";" +
@@ -105,51 +131,29 @@ public class JsonMigration {
     }
 
     /**
-     * 1. creates a Grakn instance
-     * 2. creates a session to the targeted keyspace
-     * 3. loads the csv data to Grakn for each file
-     * 4. closes the session
-     */
-    static void connectAndMigrate(Collection<Input> inputs) {
-        SimpleURI localGrakn = new SimpleURI("localhost", 48555);
-        Grakn grakn = new Grakn(localGrakn); // 1
-        Keyspace keyspace = Keyspace.of("phone_calls");
-        Grakn.Session session = grakn.session(keyspace); // 2
-
-        inputs.forEach(input -> {
-            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
-            try {
-                loadDataIntoGrakn(input, session); // 3
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        session.close(); // 4
-    }
-
-    /**
-     * loads the json data into our Grakn phone_calls keyspace:
+     * loads the csv data into our Grakn phone_calls keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
-     *   a. creates a Grakn transaction
-     *   b. constructs the corresponding Graql insert query
-     *   c. runs the query
-     *   d. commits the transaction
+     * a. creates a Grakn transaction
+     * b. constructs the corresponding Graql insert query
+     * c. runs the query
+     * d. commits the transaction
+     * e. closes the transaction
      *
      * @param input   contains details required to parse the data
-     * @param session off of which a transaction will be created
+     * @param session off of which a transaction is created
      * @throws UnsupportedEncodingException
      */
-    static void loadDataIntoGrakn(Input input, Grakn.Session session) throws IOException {
+    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws IOException, InvalidKBException {
         ArrayList<Json> items = parseDataToJson(input); // 1
-        items.forEach(item -> {
-            Grakn.Transaction transaction = session.transaction(GraknTxType.WRITE); // 2a
+        for (Json item : items) {
+            Transaction transaction = session.transaction(Transaction.Type.WRITE); // 2a
             String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.graql().parse(graqlInsertQuery).execute(); // 2c
+            transaction.execute((GraqlInsert) parse(graqlInsertQuery)); // 2c
             transaction.commit(); // 2d
-        });
+
+        }
         System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + "] into Grakn.\n");
     }
 
@@ -162,8 +166,8 @@ public class JsonMigration {
      * @return the list of json objects
      * @throws IOException
      */
-    static ArrayList<Json> parseDataToJson(Input input) throws IOException {
-        ArrayList<Json> items = new ArrayList<>();
+    static ArrayList <Json> parseDataToJson(Input input) throws IOException {
+        ArrayList <Json> items = new ArrayList <> ();
 
         JsonReader jsonReader = new JsonReader(getReader(input.getDataPath() + ".json")); // 1
 
@@ -189,7 +193,7 @@ public class JsonMigration {
         return items;
     }
 
-    public static Reader getReader(String relativePath) throws UnsupportedEncodingException {
-        return new InputStreamReader(JsonMigration.class.getClassLoader().getResourceAsStream(relativePath), "UTF-8");
+    public static Reader getReader(String relativePath) throws FileNotFoundException {
+        return new InputStreamReader(new FileInputStream(relativePath));
     }
 }
