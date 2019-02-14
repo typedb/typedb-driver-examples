@@ -14,6 +14,7 @@
 
 define
 
+identifier sub attribute datatype string;
 naptan-id sub attribute datatype string;
 name sub attribute datatype string;
 lat sub attribute datatype double;
@@ -22,23 +23,24 @@ duration sub attribute datatype long;
 distance sub attribute datatype double;
 
 station sub entity,
+	key naptan-id,
+	has name,
+	has lat,
+	has lon,
 	plays stop,
 	plays beginning,
 	plays end,
 	plays origin,
 	plays destination,
 	plays contained-station,
-	plays neighbour,
-	has naptan-id,
-	has name,
-	has lat,
-	has lon;
+	plays neighbour;
 
 # Try using this sentence to formulate the structure of a relationship:
 # A <relationship> has a <role> in the form of a <subject> (<subject> is any concept, which could be an entity, relationship, or attribute)
 # For example: a route has a stop in the form of a station
 
 route sub relationship,
+	key identifier,
 	relates section,
 	relates stop,
 	relates origin as stop,
@@ -46,27 +48,29 @@ route sub relationship,
 	relates route-operator;
 
 route-section sub entity,
+	key identifier,
+	has duration,
 	plays section,
-	plays service,
-	has duration;
+	plays service;
 
 tunnel sub relationship,
+	key identifier,
 	relates beginning,
 	relates end,
 	relates service;
 
 tube-line sub entity,
-	plays route-operator,
-	has name;
+	key name,
+	plays route-operator;
 
 zone sub relationship,
-	relates contained-station,
-	has name;
+	key name,
+	relates contained-station;
 
 # neighbourship is an extra idea that is not critical. Refer to the README for more info
 neighbourship sub relationship,
-	relates neighbour,
-	has distance;
+	has distance,
+	relates neighbour;
 
 neighbouring sub rule,
 	when {

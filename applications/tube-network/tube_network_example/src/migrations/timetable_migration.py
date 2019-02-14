@@ -12,177 +12,347 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import grakn
-import datetime as dt
+import json
 import os
 import tube_network_example.settings as settings
-from utils.utils import check_response_length, match_get, insert, match_insert, get_match_id
-import pathlib
+import multiprocessing
+import datetime as dt
+
+def entity_template(data):
+    query = "insert $x isa " + data["type"]
+    for attribute in data["attributes"]:
+        query += ", has " + attribute["type"] + " " + str(attribute["value"])
+    query += ";"
+    return query
 
 
-def import_query_generator(perform_query, timetables_dir_path):
-    """
-    Builds the Graql statements required to import the transportation data contained in all_routes.json
-    :param perform_query: function to call to query the grakn server
-    :param timetables_dir_path: path to
-    :return:
-    """
+def relationship_template(data):
+    query = "match "
+    for i, roleplayer in enumerate(data["roleplayers"]):
+        query += "$" + str(i) + " has " + roleplayer["key_type"] + " " + str(roleplayer["key_value"]) + "; "
 
-    # Get the locations of the downloaded timetable json data
-    timetable_paths = os.listdir(timetables_dir_path)
-
-    station_query = "$s1 isa station, has naptan-id \"{}\";"
-
-    def add_route_stop_relationship(naptan_id, role_played, route_id):
-        match_query = station_query.format(naptan_id)
-        insert_query = "$r({}: $s1) isa route, id {};".format(role_played, route_id)
-
-        response = list(perform_query(match_insert(match_query, insert_query)))
-        check_response_length(response, min_length=1, max_length=1)
-
-    for timetable_path in timetable_paths:
-        with open(timetables_dir_path + "/" + timetable_path, 'r') as f:
-            data = json.load(f)
-
-            tube_line_query = "$tl isa tube-line, has name \"{}\";".format(data['lineName'])
-            response = list(perform_query(match_get(tube_line_query)))
-
-            if len(response) < 1:
-                # In this case we haven't already added this tube-line before
-                # We do it this way so that we have explicitly asked the database if the tube-line exists, and if not
-                # then we use the same query body but as an insert
-
-                response = list(perform_query(insert(tube_line_query)))
-                check_response_length(response, min_length=1, max_length=1) # Exactly one concept should be inserted
-
-            for station in data["stops"]:
-
-                response = list(perform_query(match_get(station_query.format(station["id"]))))
-
-                if len(response) < 1:
-                    # Only proceed if there is this station isn't already in the database
-                    station_insert_query = (station_query.format(station["id"]) +
-                                            "$s1 has name \"{}\", "
-                                            "has lat {}, has lon {};\n").format(station["name"],
-                                                                                station["lat"],
-                                                                                station["lon"],
-                                                                                )
-                    response = list(perform_query(insert(station_insert_query)))
-                    check_response_length(response, min_length=1, max_length=1)
-
-                    try:
-                        zone_name = station["zone"]
-                    except KeyError:
-                        # In the case that there is no zone information
-                        zone_name = -1
-
-                    response = list(perform_query(match_get("$z isa zone, has name \"{}\";\n".format(zone_name))))
-
-                    if len(response) < 1:
-                        # If the zone doesn't already exist then insert it
-                        zone_query = "$z(contained-station: $s1) isa zone, has name \"{}\";\n".format(zone_name)
-                        response = list(perform_query(match_insert(station_query.format(station["id"]), zone_query)))
-                        check_response_length(response, min_length=1, max_length=1)  # Exactly one concept should be
-                        # inserted
-
-            """
-            Get the time between stops
-            """
-            for routes in data['timetable']["routes"]:
-
-                for station_intervals in routes["stationIntervals"]:
-                    # This actually iterates over the routes, in TFL's infinite wisdom
-
-                    last_naptan_id = data['timetable']["departureStopId"]
-                    last_time_to_arrival = 0
-                    route_query = "$r(route-operator: $tl) isa route;"
-
-                    response = list(perform_query(match_insert(tube_line_query, route_query)))
-                    check_response_length(response, min_length=1, max_length=1)
-                    route_id = get_match_id(response, "r")
-                    # TODO Here we need to execute the query in order to get the ID of the route inserted, since that's
-                    # the only way to uniquely identify it for the insertion of the route-sections below
-
-                    add_route_stop_relationship(last_naptan_id, "origin", route_id)
-
-                    for i, interval in enumerate(station_intervals['intervals']):
-
-                        # === TUNNELS ===
-                        # Now we need to insert a tunnel that can make the connection if there isn't one, or if there
-                        # is one then don't add one and instead use its ID
-                        station_pair_query = ("$s1 isa station, has naptan-id \"{}\";\n"
-                                              "$s2 isa station, has naptan-id \"{}\";\n"
-                                              ).format(last_naptan_id,
-                                                       interval["stopId"])
-
-                        tunnel_query = "$t(beginning: $s1, end: $s2) isa tunnel;"
-
-                        response = list(perform_query(match_get(station_pair_query + tunnel_query)))
-
-                        if len(response) < 1:
-                            response = list(perform_query(match_insert(station_pair_query, tunnel_query)))
-
-                        # Get the ID of either the pre-existing tunnel or the one just inserted
-                        tunnel_id = get_match_id(response, "t")
-
-                        # === Connect Stations to Routes ===
-                        if i == len(station_intervals['intervals']) - 1:
-                            # In this case we're at the last route-section of the route, ending at the last station
-                            role_played = "destination"
-                        else:
-                            role_played = "stop"
-
-                        add_route_stop_relationship(interval["stopId"], role_played, route_id)
-
-                        # === Link routes to tunnels with route-sections ===
-                        duration = int(interval["timeToArrival"] - last_time_to_arrival)
-                        match_query = "$t id {};\n$r id {};".format(tunnel_id, route_id)
-                        # insert_query = "$rs(section: $t, service: $r) isa route-section, has duration {};".format(duration)
-                        insert_query = ("$rs isa route-section, has duration {}; "
-                                        "$r(section: $rs);"
-                                        "$t(service: $rs);").format(duration)
-
-                        response = list(perform_query(match_insert(match_query, insert_query)))
-                        check_response_length(response, min_length=1, max_length=1)
-
-                        # Update variables for the next iteration
-                        last_time_to_arrival = interval["timeToArrival"]
-                        last_naptan_id = interval["stopId"]
+    # match the relationship if required
+    if "key_type" in data:
+        query += "$x has " + data["key_type"] + " " + str(data["key_value"]) + "; "
 
 
-def make_queries(timetables_dir_path, keyspace, uri=settings.uri,
-                 log_file=settings.migration_logs_path + "graql_output_{}.txt".format(dt.datetime.now())):
+    query += "insert $x ("
+    for i, roleplayer in enumerate(data["roleplayers"]):
+        query += roleplayer["role_name"] + ": $" + str(i)
+        if i < len(data["roleplayers"]) - 1:
+            query += ", "
 
-    pathlib.Path(settings.migration_logs_path).mkdir(exist_ok=True)
+    if "key_type" in data:
+        query += ")"
+    else:
+        query += ") isa " + data["type"]
 
-    client = grakn.Grakn(uri=uri)
+    if "attributes" in data:
+        query += "; $x"
+        for attribute in data["attributes"]:
+            query += " has " + attribute["type"] + " " + attribute["value"]
+    query += ";"
+    return query
 
-    start_time = dt.datetime.now()
-    with client.session(keyspace=keyspace) as session:
-        # with session.transaction(grakn.TxType.WRITE) as transaction:
-        with open(log_file, "w") as graql_output:
-            def query_function(graql_string):
-                print(graql_string)
-                print("---")
-                graql_output.write(graql_string)
-                # Send the graql query to the server
-                transaction = session.transaction(grakn.TxType.WRITE)
-                response = list(transaction.query(graql_string))
+
+def string(value): return '"' + value + '"'
+
+
+def unique_append(list, key, item):
+    if item not in list[key]:
+        list[key].append(item)
+
+def zone_already_added(zone_name):
+    zone_already_added = False
+    for zone_query in relationship_queries["zone"]:
+        if 'isa zone; $x has name "' + zone_name + '"' in zone_query:
+            zone_already_added = True
+            break
+    return zone_already_added
+
+
+def construct_queries(entity_queries, relationship_queries):
+    timetable_files = os.listdir(settings.timetables_path)
+
+    for timetable_file in timetable_files:
+        with open(settings.timetables_path + "/" + timetable_file) as template_file:
+            data = json.load(template_file)
+
+            unique_append(entity_queries, "tube-line",
+                entity_template(
+                    {
+                        "type": "tube-line",
+                        "attributes": [
+                            {
+                                "type": "name",
+                                "value": string(data["lineName"])
+                            }
+                        ]
+                    }
+                )
+            )
+
+            for i, station in enumerate(data["stops"]):
+                unique_append(entity_queries, "station",
+                    entity_template(
+                        {
+                            "type": "station",
+                            "attributes": [
+                                {
+                                    "type": "naptan-id",
+                                    "value": string(station["id"])
+                                },
+                                {
+                                    "type": "lon",
+                                    "value": station["lon"]
+                                },
+                                {
+                                    "type": "lat",
+                                    "value": station["lat"]
+                                },
+                                {
+                                    "type": "name",
+                                    "value": string(station["name"])
+                                }
+                            ]
+                        }
+                    )
+                )
+
+                if "zone" in station:
+                    if zone_already_added(station["zone"]):
+                        unique_append(relationship_queries, "zone",
+                            relationship_template(
+                                {
+                                    "type": "zone",
+                                    "key_type": "name",
+                                    "key_value": string(station["zone"]),
+                                    "roleplayers": [
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(station["id"]),
+                                            "role_name": "contained-station"
+                                        }
+                                    ]
+                                }
+                            )
+                        )
+                    else:
+                        unique_append(relationship_queries, "zone",
+                            relationship_template(
+                                {
+                                    "type": "zone",
+                                    "roleplayers": [
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(station["id"]),
+                                            "role_name": "contained-station"
+                                        }
+                                    ],
+                                    "attributes": [
+                                        {
+                                            "type": "name",
+                                            "value": string(station["zone"])
+                                        }
+                                    ]
+                                }
+                            )
+                        )
+
+                for r, route in enumerate(data['timetable']["routes"]):
+                    route_identifier = timetable_file.split(".")[0] + str(r)
+                    unique_append(relationship_queries, "route",
+                        relationship_template(
+                            {
+                                "type": "route",
+                                "roleplayers": [
+                                    {
+                                        "type": "tube-line",
+                                        "key_type": "name",
+                                        "key_value": string(data["lineName"]),
+                                        "role_name": "route-operator"
+                                    }
+                                ],
+                                "attributes": [
+                                    {
+                                        "type": "identifier",
+                                        "value": string(route_identifier)
+                                    }
+                                ]
+                            }
+                        )
+                    )
+
+                    intervals = route["stationIntervals"][0]["intervals"] # first set of intervals is sufficient
+                    for i, interval in enumerate(intervals): # first station is the origin
+                        if i == 0:
+                            unique_append(relationship_queries, "route",
+                                relationship_template(
+                                    {
+                                        "type": "route",
+                                        "key_type": "identifier",
+                                        "key_value": string(route_identifier),
+                                        "roleplayers": [
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(interval["stopId"]),
+                                                "role_name": "origin"
+                                            }
+                                        ]
+                                    }
+                                )
+                            )
+                        elif i == len(intervals) - 1: # last station is the destination
+                            unique_append(relationship_queries, "route",
+                                relationship_template(
+                                    {
+                                        "type": "route",
+                                        "key_type": "identifier",
+                                        "key_value": string(route_identifier),
+                                        "roleplayers": [
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(interval["stopId"]),
+                                                "role_name": "destination"
+                                            }
+                                        ]
+                                    }
+                                )
+                            )
+                        else: # any other station is an ordinary stop
+                            unique_append(relationship_queries, "route",
+                                relationship_template(
+                                    {
+                                        "type": "route",
+                                        "key_type": "identifier",
+                                        "key_value": string(route_identifier),
+                                        "roleplayers": [
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(interval["stopId"]),
+                                                "role_name": "stop"
+                                            }
+                                        ]
+                                    }
+                                )
+                            )
+
+                        if i < len(intervals) - 1: # there is no more stop after the last one
+                            last_time_to_arrival = 0
+                            duration = int(interval["timeToArrival"] - last_time_to_arrival)
+                            route_section_identifier = timetable_file.split(".")[0] + "_route_section_" + str(i)
+                            unique_append(entity_queries, "route-section",
+                                entity_template(
+                                    {
+                                        "type": "route-section",
+                                        "attributes": [
+                                            {
+                                                "type": "duration",
+                                                "value": duration
+                                            },
+                                            {
+                                                "type": "identifier",
+                                                "value": string(route_section_identifier)
+                                            }
+                                        ]
+                                    }
+                                )
+                            )
+                            last_time_to_arrival = interval["timeToArrival"]
+
+                            tunnel_identifier = timetable_file.split(".")[0] + "_tunnel_" + str(i)
+                            unique_append(relationship_queries, "tunnel",
+                                relationship_template(
+                                    {
+                                        "type": "tunnel",
+                                        "roleplayers": [
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(interval["stopId"]), # current stop
+                                                "role_name": "beginning"
+                                            },
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(intervals[i+1]["stopId"]), # next stop
+                                                "role_name": "end"
+                                            },
+                                            {
+                                                "type": "route-section",
+                                                "key_type": "identifier",
+                                                "key_value": string(route_section_identifier),
+                                                "role_name": "service"
+                                            }
+                                        ],
+                                        "attributes": [
+                                            {
+                                                "type": "identifier",
+                                                "value": string(tunnel_identifier)
+                                            }
+                                        ]
+                                    }
+                                )
+                            )
+
+def insert(queries):
+    client = grakn.Grakn(uri=settings.uri)
+    with client.session(keyspace=settings.keyspace) as session:
+        transaction = session.transaction(grakn.TxType.WRITE)
+        for i, query in enumerate(queries):
+            print(query)
+            print("- - - - - - - - - - - - - -")
+            transaction.query(query)
+
+            if i % 500 == 0:
                 transaction.commit()
-                graql_output.write("\n--response:\n" + str(response))
-                graql_output.write("\n{} insertions made \n ----- \n".format(len(response)))
-                return response
+                transaction = session.transaction(grakn.TxType.WRITE)
+        transaction.commit()
 
-            import_query_generator(query_function, timetables_dir_path)
 
-            end_time = dt.datetime.now()
-            time_taken = end_time - start_time
-            time_taken_string = "----------\nTime taken: {}".format(time_taken)
-            graql_output.write(time_taken_string)
-            print(time_taken_string)
+def insert_concurrently(queries, processes):
+    cpu_count = multiprocessing.cpu_count()
+    chunk_size = int(len(queries)/cpu_count)
+
+    for i in range(cpu_count):
+        if i == cpu_count - 1:
+            chunk = queries[i*chunk_size:]
+        else:
+            chunk = queries[i*chunk_size:(i+1)*chunk_size]
+
+        process = multiprocessing.Process(target=insert, args=(chunk,))
+        process.start()
+        processes.append(process)
+
+    for process in processes:
+        process.join()
 
 
 if __name__ == "__main__":
+    start_time = dt.datetime.now()
 
-    make_queries(settings.timetables_path, settings.keyspace)
+    entity_queries = { "tube-line": [], "station": [], "route-section": [] }
+    relationship_queries = { "zone": [], "route": [], "tunnel": [] }
+
+    construct_queries(entity_queries, relationship_queries)
+
+    entities, relationships = [], []
+    for k, v in entity_queries.items(): entities += v
+    for k, v in relationship_queries.items(): relationships += v
+
+    entity_processes = []
+    relationship_processes = []
+
+    insert_concurrently(entities, entity_processes)
+    insert_concurrently(relationships, relationship_processes)
+
+    end_time = dt.datetime.now()
+    print("- - - - - -\nTime taken: " + str(end_time - start_time))
+    print("\n" + str(len(entity_processes)) + " processes used to insert Entities.")
+    print("\n" + str(len(relationship_processes)) + " processes used to insert Relationship.")
