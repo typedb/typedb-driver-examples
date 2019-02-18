@@ -15,6 +15,8 @@
 import grakn
 import json
 import os
+import re
+from math import cos, asin, sqrt
 import tube_network_example.settings as settings
 import multiprocessing
 import datetime as dt
@@ -29,8 +31,8 @@ def entity_template(data):
 
 def relationship_template(data):
     query = "match "
-    for i, roleplayer in enumerate(data["roleplayers"]):
-        query += "$" + str(i) + " has " + roleplayer["key_type"] + " " + str(roleplayer["key_value"]) + "; "
+    for r, roleplayer in enumerate(data["roleplayers"]):
+        query += "$" + str(r) + " has " + roleplayer["key_type"] + " " + str(roleplayer["key_value"]) + "; "
 
     # match the relationship if required
     if "key_type" in data:
@@ -38,9 +40,9 @@ def relationship_template(data):
 
 
     query += "insert $x ("
-    for i, roleplayer in enumerate(data["roleplayers"]):
-        query += roleplayer["role_name"] + ": $" + str(i)
-        if i < len(data["roleplayers"]) - 1:
+    for r, roleplayer in enumerate(data["roleplayers"]):
+        query += roleplayer["role_name"] + ": $" + str(r)
+        if r < len(data["roleplayers"]) - 1:
             query += ", "
 
     if "key_type" in data:
@@ -50,8 +52,10 @@ def relationship_template(data):
 
     if "attributes" in data:
         query += "; $x"
-        for attribute in data["attributes"]:
+        for a, attribute in enumerate(data["attributes"]):
             query += " has " + attribute["type"] + " " + attribute["value"]
+            if a < len(data["attributes"]) - 1:
+                query += ","
     query += ";"
     return query
 
@@ -71,6 +75,34 @@ def zone_already_added(zone_name):
             break
     return zone_already_added
 
+def get_distance_between_stations(data, from_station_id, to_station_id):
+    """
+        Looks up the stations with the given ids, finds their coordinates and
+        calculates their distance using the Haversine formula
+
+        :param data: in which the data for statons with the given ids exist
+        :param from_station_id: naptan-id of the origin station
+        :param to_station_id: naptan-id of the destination station
+        :return: The as-th-crow-flies straight line distance between points 1 & 2
+    """
+    for station in data["stops"]:
+        # print(station)
+        got_from_coordinates, got_to_coordinates = False, False
+        if station["id"] == from_station_id:
+            from_station_lat = station["lat"]
+            from_station_lon = station["lon"]
+            got_from_coordinates = True
+        elif station["id"] == to_station_id:
+            to_station_lat = station["lat"]
+            to_station_lon = station["lon"]
+            got_to_coordinates = True
+
+        if got_from_coordinates and got_to_coordinates:
+            break
+
+    p = 0.017453292519943295
+    a = 0.5 - cos((to_station_lat - from_station_lat) * p)/2 + cos(from_station_lat * p) * cos(to_station_lat * p) * (1 - cos((to_station_lon - from_station_lon) * p)) / 2
+    return 12742 * asin(sqrt(a))
 
 def construct_queries(entity_queries, relationship_queries):
     timetable_files = os.listdir(settings.timetables_path)
@@ -121,46 +153,50 @@ def construct_queries(entity_queries, relationship_queries):
                 )
 
                 if "zone" in station:
-                    if zone_already_added(station["zone"]):
-                        unique_append(relationship_queries, "zone",
-                            relationship_template(
-                                {
-                                    "type": "zone",
-                                    "key_type": "name",
-                                    "key_value": string(station["zone"]),
-                                    "roleplayers": [
-                                        {
-                                            "type": "station",
-                                            "key_type": "naptan-id",
-                                            "key_value": string(station["id"]),
-                                            "role_name": "contained-station"
-                                        }
-                                    ]
-                                }
+                    zone_delimeter = re.compile(r'(\+|/)')
+                    zones = [zone for zone in re.split(zone_delimeter, station["zone"]) if not zone_delimeter.match(zone)]
+
+                    for zone in zones:
+                        if zone_already_added(zone):
+                            unique_append(relationship_queries, "zone",
+                                relationship_template(
+                                    {
+                                        "type": "zone",
+                                        "key_type": "name",
+                                        "key_value": string(zone),
+                                        "roleplayers": [
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(station["id"]),
+                                                "role_name": "contained-station"
+                                            }
+                                        ]
+                                    }
+                                )
                             )
-                        )
-                    else:
-                        unique_append(relationship_queries, "zone",
-                            relationship_template(
-                                {
-                                    "type": "zone",
-                                    "roleplayers": [
-                                        {
-                                            "type": "station",
-                                            "key_type": "naptan-id",
-                                            "key_value": string(station["id"]),
-                                            "role_name": "contained-station"
-                                        }
-                                    ],
-                                    "attributes": [
-                                        {
-                                            "type": "name",
-                                            "value": string(station["zone"])
-                                        }
-                                    ]
-                                }
+                        else:
+                            unique_append(relationship_queries, "zone",
+                                relationship_template(
+                                    {
+                                        "type": "zone",
+                                        "roleplayers": [
+                                            {
+                                                "type": "station",
+                                                "key_type": "naptan-id",
+                                                "key_value": string(station["id"]),
+                                                "role_name": "contained-station"
+                                            }
+                                        ],
+                                        "attributes": [
+                                            {
+                                                "type": "name",
+                                                "value": string(zone)
+                                            }
+                                        ]
+                                    }
+                                )
                             )
-                        )
 
                 for r, route in enumerate(data['timetable']["routes"]):
                     route_identifier = timetable_file.split(".")[0] + str(r)
@@ -266,7 +302,11 @@ def construct_queries(entity_queries, relationship_queries):
                             )
                             last_time_to_arrival = interval["timeToArrival"]
 
-                            tunnel_identifier = timetable_file.split(".")[0] + "_tunnel_" + str(i)
+                            from_station_id = interval["stopId"]
+                            to_station_id = intervals[i+1]["stopId"]
+                            distance = get_distance_between_stations(data, from_station_id, to_station_id)
+
+                            tunnel_identifier = from_station_id + "_tunnel_" + to_station_id
                             unique_append(relationship_queries, "tunnel",
                                 relationship_template(
                                     {
@@ -275,13 +315,13 @@ def construct_queries(entity_queries, relationship_queries):
                                             {
                                                 "type": "station",
                                                 "key_type": "naptan-id",
-                                                "key_value": string(interval["stopId"]), # current stop
+                                                "key_value": string(from_station_id), # current stop
                                                 "role_name": "beginning"
                                             },
                                             {
                                                 "type": "station",
                                                 "key_type": "naptan-id",
-                                                "key_value": string(intervals[i+1]["stopId"]), # next stop
+                                                "key_value": string(to_station_id), # next stop
                                                 "role_name": "end"
                                             },
                                             {
@@ -295,6 +335,10 @@ def construct_queries(entity_queries, relationship_queries):
                                             {
                                                 "type": "identifier",
                                                 "value": string(tunnel_identifier)
+                                            },
+                                            {
+                                                "type": "distance",
+                                                "value": str(distance)
                                             }
                                         ]
                                     }
@@ -349,8 +393,11 @@ if __name__ == "__main__":
     entity_processes = []
     relationship_processes = []
 
-    insert_concurrently(entities, entity_processes)
-    insert_concurrently(relationships, relationship_processes)
+    insert(entities)
+    insert(relationships)
+
+    # insert_concurrently(entities, entity_processes)
+    # insert_concurrently(relationships, relationship_processes)
 
     end_time = dt.datetime.now()
     print("- - - - - -\nTime taken: " + str(end_time - start_time))

@@ -27,6 +27,11 @@ def check_response_length(response, min_length=None, max_length=None):
         if min_length > max_length:
             raise ValueError("Specified minimum length is greater than maximum length, which cannot be satisfied")
 
+def print_to_log(title, content):
+  print(title)
+  print("")
+  print(content)
+  print("\n")
 
 def _match(graql_body):
     prefix = "match "

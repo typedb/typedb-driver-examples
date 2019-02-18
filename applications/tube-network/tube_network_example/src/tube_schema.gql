@@ -14,13 +14,20 @@
 
 define
 
-identifier sub attribute datatype string;
-naptan-id sub attribute datatype string;
-name sub attribute datatype string;
-lat sub attribute datatype double;
-lon sub attribute datatype double;
-duration sub attribute datatype long;
-distance sub attribute datatype double;
+identifier sub attribute,
+	datatype string;
+naptan-id sub attribute,
+	datatype string;
+name sub attribute,
+	datatype string;
+lat sub attribute,
+	datatype double;
+lon sub attribute,
+	datatype double;
+duration sub attribute,
+	datatype long;
+distance sub attribute,
+	datatype double;
 
 station sub entity,
 	key naptan-id,
@@ -55,6 +62,7 @@ route-section sub entity,
 
 tunnel sub relationship,
 	key identifier,
+	has distance,
 	relates beginning,
 	relates end,
 	relates service;
@@ -69,7 +77,6 @@ zone sub relationship,
 
 # neighbourship is an extra idea that is not critical. Refer to the README for more info
 neighbourship sub relationship,
-	has distance,
 	relates neighbour;
 
 neighbouring sub rule,
@@ -77,6 +84,6 @@ neighbouring sub rule,
 		$s1 isa station;
 		$s2 isa station;
 		($s1, $s2) isa tunnel;
-	} then {
+	}, then {
 		(neighbour: $s1, neighbour: $s2) isa neighbourship;
 	};
