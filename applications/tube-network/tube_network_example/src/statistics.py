@@ -14,86 +14,218 @@
 
 import grakn
 import tube_network_example.settings as settings
+from utils.utils import print_to_log
+
+
+# How many stations do exist?
+def execute_query_1(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute count in station;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    number_of_stations = answer.number()
+
+    print("Number of stations: " + str(number_of_stations))
+
+
+# How long is the shortest trip between two stations?
+def execute_query_2(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute min of duration, in route-section;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    min_duration = answer.number()
+
+    print("Shortest Trip: " + str(min_duration))
+
+
+# Which is the west most station in London?
+def execute_query_3(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute min of lat, in station;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    lat = answer.number()
+
+    query = [
+        'match',
+        '   $sta isa station, has lat $lat, has name $nam;',
+        '   $lat ' + str(lat) + ';',
+        'get $nam;'
+    ]
+
+    print_to_log("Query:", "\n".join(query))
+    query = "".join(query)
+
+    answers = transaction.query(query).collect_concepts()
+    result = [ answer.value() for answer in answers ]
+
+
+    print_to_log("West most stations with " + str(lat) + " are: ", result)
+
+
+# How long is the longest trip between two stations?
+def execute_query_4(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute max of duration, in route-section;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    max_duration = answer.number()
+    print(max_duration)
+
+    query = [
+        'match',
+        '   $rou (section: $sec, origin: $ori, destination: $des, route-operator: $tul) isa route;',
+        '   $sec isa route-section, has duration ' + str(max_duration) + ';',
+        '   $tul isa tube-line, has name $tul-nam;',
+        '   $tun (beginning: $sta1, end: $sta2, service: $sec) isa tunnel;',
+        '   $sta1 isa station, has name $sta1-nam;',
+        '   $sta2 isa station, has name $sta2-nam;',
+        '   $ori isa station, has name $ori-nam;',
+        '   $des isa station, has name $des-nam;',
+        'get;'
+    ]
+
+    print_to_log("Query:", "\n".join(query))
+    query = "".join(query)
+
+    answers = transaction.query(query)
+    for answer in answers:
+        answer = answer.map()
+        print_to_log("Longest trip is found in: ", "Tunnel from " +
+                                                    answer.get("sta1-nam").value() +
+                                                    " to " + answer.get("sta2-nam").value() +
+                                                    ", via " + answer.get("tul-nam").value() +
+                                                    ", on the route going from " +
+                                                    answer.get("ori-nam").value() +
+                                                    " to " + answer.get("des-nam").value())
+
+
+# What's the average duration of all trips?
+def execute_query_5(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute mean of duration, in route-section;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    mean_duration = answer.number()
+
+    print("Average duration: " + str(mean_duration))
+
+
+# What's the median duration among all trips?
+def execute_query_6(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute median of duration, in route-section;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    median_duration = answer.number()
+
+    print("Median of durations: " + str(median_duration))
+
+
+# What's the median duration among all trips?
+def execute_query_7(question, transaction):
+    print_to_log("Question: ", question)
+
+    query = 'compute std of duration, in route-section;'
+
+    print_to_log("Query:", query)
+
+    answer = list(transaction.query(query))[0]
+    std_duration = answer.number()
+
+    print("Standard deviation of durations: " + str(std_duration))
+
+
+def execute_query_all(transaction):
+  for qs_func in questions_n_functions:
+    question = qs_func["question"]
+    query_function = qs_func["query_function"]
+    query_function(question, transaction)
+    print("\n - - -  - - -  - - -  - - - \n")
+
 
 if __name__ == "__main__":
 
+    """
+        The code below:
+        - gets user's selection wrt the queries to be executed
+        - creates a Grakn client > session > transaction connected to the keyspace
+        - runs the right function based on the user's selection
+        - closes the session and transaction
+    """
+
+    questions_n_functions = [
+        {
+            "question": "How many stations do exist?",
+            "query_function": execute_query_1
+        },
+        {
+            "question": "How long is the shortest trip between two stations?",
+            "query_function": execute_query_2
+        },
+        {
+            "question": "Which is the west most station in London?",
+            "query_function": execute_query_3
+        },
+        {
+            "question": "How long is the longest trip between two stations?",
+            "query_function": execute_query_4
+        },
+        {
+            "question": "What's the average duration of all trips?",
+            "query_function": execute_query_5
+        },
+        {
+            "question": "What's the median duration among all trips?",
+            "query_function": execute_query_6
+        },
+        {
+            "question": "What's the standard deviation of trip durations?",
+            "query_function": execute_query_7
+        }
+    ]
+
+    # ask user which question to execute the query for
+    print("")
+    print("For which of these questions, on the tube knowledge graph, do you want to execute the query?\n")
+    for index, qs_func in enumerate(questions_n_functions):
+        print(str(index + 1) + ". " + qs_func["question"])
+    print("")
+
+    # get user's question selection
+    qs_number = -1
+    while qs_number < 0 or qs_number > len(questions_n_functions):
+        qs_number = int(
+            input("choose a number (0 for to answer all questions): "))
+    print("")
+
+    # create a transaction to talk to the keyspace
     client = grakn.Grakn(uri=settings.uri)
-
-    def perform_query(graql_string, session):
-        """
-        Just a wrapper function to print the graql query before sending it to the Grakn server.
-        :param graql_string: query string
-        :return: response from Grakn server
-        """
-        print("QUERY: {}".format(graql_string))
-        # Send the graql query to the server
-        response = list(transaction.query(graql_string))
-        return response
-
     with client.session(keyspace=settings.keyspace) as session:
         with session.transaction(grakn.TxType.READ) as transaction:
-            # count
-            # Find the number of stations, routes, tube lines, zones, etc.
-            response = perform_query("compute count in station;", transaction)
-            print(response[0].number())
-            print("-----")
-
-            # min
-            response = perform_query("compute min of duration, in route-section;", transaction)
-            print(response[0].number())
-            print("-----")
-
-            # min again
-            response = perform_query("compute min of lat, in station;", transaction)
-            print(response[0].number())
-            print("-----")
-
-            # max
-            max_duration = perform_query("compute max of duration, in route-section;", transaction)[0].number()
-            print(max_duration)
-            # Now we have the maximum duration we can query to find where in the graph this occurs
-            match_query = ("match\n"
-                        "$s1 isa station, has name $s1-name;\n"
-                        "$s2 isa station, has name $s2-name;\n"
-                        "$o isa station, has name $o-name;\n"
-                        "$d isa station, has name $d-name;\n"
-                        "$rs isa route-section, has duration {};\n"
-                        "$t(beginning: $s1, end: $s2, service: $rs) isa tunnel;\n"
-                        "$tl isa tube-line, has name $tl-name;"
-                        "$r(section: $rs, origin: $o, destination: $d, route-operator: $tl) isa route;\n"
-                        "get $s1-name, $s2-name, $o-name, $d-name, $tl-name;").format(max_duration)
-            response = perform_query(match_query, transaction)
-
-            print("-")
-            print("Answer:")
-            for m in response:
-                print("Tunnel from {} to {}, via {} line, on the route going from {} to {}".format(
-                    m.get('s1-name').value(), m.get('s2-name').value(), m.get('tl-name').value(), m.get('o-name').value(),
-                    m.get('d-name').value()))
-            print("-----")
-
-            # mean
-            response = perform_query("compute mean of duration, in route-section;", transaction)
-            print(response[0].number())
-            print("-----")
-
-            # median
-            response = perform_query("compute median of duration, in route-section;", transaction)
-            print(response[0].number())
-            print("-----")
-
-            # std
-            response = perform_query("compute std of duration, in route-section;", transaction)
-            print(response[0].number())
-            print("-----")
-
-            # sum
-            # Find the sum duration of all of the route-sections that comprise a route. This query makes use of aggregation.
-            query = (
-                "match $s1 isa station has name \"Ealing Broadway Underground Station\"; $s2 isa station has name \"Upminster "
-                "Underground Station\"; $rs isa route-section has duration $d; $r(origin: $s1, destination: $s2, "
-                "section: $rs) isa route; aggregate sum $d;")
-            print("QUERY: {}".format(query))
-            route_duration = perform_query(query, transaction)[0].number()
-            print("Route duration: {}".format(route_duration))
-            print("-----")
+            # execute the query for the selected question
+            if qs_number == 0:
+                execute_query_all(transaction)
+            else:
+                question = questions_n_functions[qs_number - 1]["question"]
+                query_function = questions_n_functions[qs_number - 1]["query_function"]
+                query_function(question, transaction)
