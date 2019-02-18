@@ -302,6 +302,24 @@ def construct_queries(entity_queries, relationship_queries):
                             )
                             last_time_to_arrival = interval["timeToArrival"]
 
+                            unique_append(relationship_queries, "route",
+                                relationship_template(
+                                    {
+                                        "type": "route",
+                                        "key_type": "identifier",
+                                        "key_value": string(route_identifier),
+                                        "roleplayers": [
+                                            {
+                                                "type": "route-section",
+                                                "key_type": "identifier",
+                                                "key_value": string(route_section_identifier),
+                                                "role_name": "section"
+                                            }
+                                        ]
+                                    }
+                                )
+                            )
+
                             from_station_id = interval["stopId"]
                             to_station_id = intervals[i+1]["stopId"]
                             distance = get_distance_between_stations(data, from_station_id, to_station_id)
