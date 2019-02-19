@@ -14,7 +14,12 @@
 
 import grakn
 import tube_network_example.settings as settings
-from utils.utils import print_to_log
+
+def print_to_log(title, content):
+  print(title)
+  print("")
+  print(content)
+  print("\n")
 
 if __name__ == "__main__":
 
@@ -29,7 +34,7 @@ if __name__ == "__main__":
 
             print("Verifying station bane '" + from_station_name + "' ...")
             with session.transaction(grakn.TxType.READ) as transaction:
-                from_station_list = list(transaction.query('match $sta isa station, has name "' + from_station_name + '"; get;'))
+                from_station_list = list(transaction.query('match $sta isa station; { $sta has name "' + from_station_name + '"; } or { $sta has name "' + from_station_name + ' Underground Station"; }; get;'))
                 if len(from_station_list) == 0:
                     print("No station with that name exists! Try again.")
                 else:
@@ -43,7 +48,7 @@ if __name__ == "__main__":
             to_station_name = input("Where to: ")
             print("Verifying station bane '" + from_station_name + "' ...")
             with session.transaction(grakn.TxType.READ) as transaction:
-                to_station_list = list(transaction.query('match $sta isa station, has name "' + to_station_name + '"; get;'))
+                to_station_list = list(transaction.query('match $sta isa station; { $sta has name "' + to_station_name + '"; } or { $sta has name "' + to_station_name + ' Underground Station"; }; get;'))
                 if len(to_station_list) == 0:
                     print("No station with that name exists! Try again.")
                 else:
@@ -75,16 +80,20 @@ if __name__ == "__main__":
             elif path_strategies[selected_path_strategy] == "routes":
                 compute_path_query += ", in [station, route];"
 
-            shortest_path_concept_list = list(transaction.query(compute_path_query))[0]
+            shortest_path_concept_list = list(transaction.query(compute_path_query))
+            if len(shortest_path_concept_list) == 0:
+                print("No path found between the two stations!")
+            else:
+                shortest_path_concept_list = shortest_path_concept_list[0]
 
-            # The response contains the different permutations for each path through stations. We are interested only in
-            # the stations the path passes through
-            shortest_path_stations = []
-            for shortest_path_node_id in shortest_path_concept_list.list():
-                concepts_list= list(transaction.query("match $sta id " + shortest_path_node_id + "; $sta has name $nam; get;"))
-                if len(concepts_list) > 0:
-                    concept = concepts_list[0]
-                    if concept.map().get("sta").type().label() == 'station':
-                        shortest_path_stations.append(concept.map().get("nam").value())
+                # The response contains the different permutations for each path through stations. We are interested only in
+                # the stations the path passes through
+                shortest_path_stations = []
+                for shortest_path_node_id in shortest_path_concept_list.list():
+                    concepts_list= list(transaction.query("match $sta id " + shortest_path_node_id + "; $sta has name $nam; get;"))
+                    if len(concepts_list) > 0:
+                        concept = concepts_list[0]
+                        if concept.map().get("sta").type().label() == 'station':
+                            shortest_path_stations.append(concept.map().get("nam").value())
 
-        print_to_log("Shortest path is: ", shortest_path_stations)
+                print_to_log("Shortest path is: ", shortest_path_stations)
