@@ -214,8 +214,7 @@ if __name__ == "__main__":
     # get user's question selection
     qs_number = -1
     while qs_number < 0 or qs_number > len(questions_n_functions):
-        qs_number = int(
-            input("choose a number (0 for to answer all questions): "))
+        qs_number = int(input("choose a number (0 for to answer all questions): "))
     print("")
 
     # create a transaction to talk to the keyspace
