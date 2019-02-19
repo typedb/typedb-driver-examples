@@ -17,6 +17,7 @@ download_dir_name = "data-downloads"
 routes_path = "{}/{}/routes/".format(os.path.dirname(__file__), download_dir_name)
 timetables_path = "{}/{}/timetables/".format(os.path.dirname(__file__), download_dir_name)
 migration_logs_path = "{}/src/migrations/logs/".format(os.path.dirname(__file__))
+schema_path = "{}/src/schema.gql".format(os.path.dirname(__file__))
 
 uri = 'localhost:48555'
 keyspace = "tube_example"

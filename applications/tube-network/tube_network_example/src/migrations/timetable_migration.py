@@ -411,6 +411,8 @@ if __name__ == "__main__":
     entity_processes = []
     relationship_processes = []
 
+    print(len(entities), len(relationships))
+
     insert_concurrently(entities, entity_processes)
     insert_concurrently(relationships, relationship_processes)
 
