@@ -19,7 +19,7 @@ import re
 from math import cos, asin, sqrt
 import tube_network_example.settings as settings
 import multiprocessing
-import datetime as dt
+import datetime
 
 def entity_template(data):
     query = "insert $x isa " + data["type"]
@@ -397,7 +397,7 @@ def insert_concurrently(queries, processes):
 
 
 if __name__ == "__main__":
-    start_time = dt.datetime.now()
+    start_time = datetime.datetime.now()
 
     entity_queries = { "tube-line": [], "station": [], "route-section": [] }
     relationship_queries = { "zone": [], "route": [], "tunnel": [] }
@@ -411,13 +411,10 @@ if __name__ == "__main__":
     entity_processes = []
     relationship_processes = []
 
-    insert(entities)
-    insert(relationships)
+    insert_concurrently(entities, entity_processes)
+    insert_concurrently(relationships, relationship_processes)
 
-    # insert_concurrently(entities, entity_processes)
-    # insert_concurrently(relationships, relationship_processes)
-
-    end_time = dt.datetime.now()
+    end_time = datetime.datetime.now()
     print("- - - - - -\nTime taken: " + str(end_time - start_time))
     print("\n" + str(len(entity_processes)) + " processes used to insert Entities.")
-    print("\n" + str(len(relationship_processes)) + " processes used to insert Relationship.")
+    print(str(len(relationship_processes)) + " processes used to insert Relationship.")
