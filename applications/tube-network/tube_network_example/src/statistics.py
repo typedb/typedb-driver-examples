@@ -14,8 +14,12 @@
 
 import grakn
 import tube_network_example.settings as settings
-from utils.utils import print_to_log
 
+def print_to_log(title, content):
+  print(title)
+  print("")
+  print(content)
+  print("\n")
 
 # How many stations do exist?
 def execute_query_1(question, transaction):
