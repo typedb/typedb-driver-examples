@@ -14,7 +14,7 @@
 
 import tkinter as tk
 import grakn
-import tube_network_example.settings as settings
+import settings
 import datetime
 
 
@@ -204,12 +204,12 @@ class TubeGui:
                 Draws everything in the visualiser
             '''
 
-            print("\nRetriving coordinates to draw staions and tunnels ...")
+            print("\nRetriving coordinates to draw stations and tunnels ...")
             answers_iterator = self.execute_and_log(
                 'match' +
                 '   $sta1 isa station, has lon $lon1, has lat $lat1, has name $sta1-nam;' +
                 '   $sta2 isa station, has lon $lon2, has lat $lat2, has name $sta2-nam;' +
-                '   $tun (beginning: $sta1, end: $sta2, service: $sec) isa tunnel, has identifier $tun-id;' +
+                '   $tun ($sta1, $sta2, service: $sec) isa tunnel, has identifier $tun-id;' +
                 '   $tul isa tube-line, has name $tul-nam;' +
                 '   (section: $sec, route-operator: $tul) isa route;' +
                 'get $lon1, $lat1, $lon2, $lat2, $tun-id, $tul-nam, $sta1-nam, $sta2-nam, $sta1, $sta2;', transaction
@@ -224,9 +224,10 @@ class TubeGui:
 
                 if tunnel_id in list(coordinates.keys()):
                     current_tube_lines = coordinates[tunnel_id]["tube-lines"]
-                    current_tube_lines.append(tube_line_name)
-                    updated_tube_lines = sorted(current_tube_lines)
-                    coordinates[tunnel_id]["tube-lines"] = updated_tube_lines
+                    if tube_line_name not in current_tube_lines:
+                        current_tube_lines.append(tube_line_name)
+                        updated_tube_lines = sorted(current_tube_lines)
+                        coordinates[tunnel_id]["tube-lines"] = updated_tube_lines
                 else:
                     lon1, lat1 = self._transform_coords(float(answer.get('lon1').value()), float(answer.get('lat1').value()))
                     lon2, lat2 = self._transform_coords(float(answer.get('lon2').value()), float(answer.get('lat2').value()))

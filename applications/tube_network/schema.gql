@@ -39,8 +39,7 @@ station sub entity,
 	plays end,
 	plays origin,
 	plays destination,
-	plays contained-station,
-	plays neighbour;
+	plays contained-station;
 
 tube-line sub entity,
 	key name,

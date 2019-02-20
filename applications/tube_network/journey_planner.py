@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import grakn
-import tube_network_example.settings as settings
+import settings
 
 def print_to_log(title, content):
   print(title)

@@ -17,7 +17,7 @@ import json
 import os
 import re
 from math import cos, asin, sqrt
-import tube_network_example.settings as settings
+import settings
 import multiprocessing
 import datetime
 
@@ -86,7 +86,6 @@ def get_distance_between_stations(data, from_station_id, to_station_id):
         :return: The as-th-crow-flies straight line distance between points 1 & 2
     """
     for station in data["stops"]:
-        # print(station)
         got_from_coordinates, got_to_coordinates = False, False
         if station["id"] == from_station_id:
             from_station_lat = station["lat"]
@@ -198,170 +197,184 @@ def construct_queries(entity_queries, relationship_queries):
                                 )
                             )
 
-                for r, route in enumerate(data['timetable']["routes"]):
-                    route_identifier = timetable_file.split(".")[0] + str(r)
-                    unique_append(relationship_queries, "route",
-                        relationship_template(
-                            {
-                                "type": "route",
-                                "roleplayers": [
-                                    {
-                                        "type": "tube-line",
-                                        "key_type": "name",
-                                        "key_value": string(data["lineName"]),
-                                        "role_name": "route-operator"
-                                    }
-                                ],
-                                "attributes": [
-                                    {
-                                        "type": "identifier",
-                                        "value": string(route_identifier)
-                                    }
-                                ]
-                            }
-                        )
+                # for r, route in enumerate(data['timetable']["routes"]):
+                route_identifier = timetable_file.split(".")[0]
+                unique_append(relationship_queries, "route",
+                    relationship_template(
+                        {
+                            "type": "route",
+                            "roleplayers": [
+                                {
+                                    "type": "tube-line",
+                                    "key_type": "name",
+                                    "key_value": string(data["lineName"]),
+                                    "role_name": "route-operator"
+                                }
+                            ],
+                            "attributes": [
+                                {
+                                    "type": "identifier",
+                                    "value": string(route_identifier)
+                                }
+                            ]
+                        }
                     )
+                )
 
-                    intervals = route["stationIntervals"][0]["intervals"] # first set of intervals is sufficient
-                    for i, interval in enumerate(intervals): # first station is the origin
-                        if i == 0:
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
-                                    {
-                                        "type": "route",
-                                        "key_type": "identifier",
-                                        "key_value": string(route_identifier),
-                                        "roleplayers": [
-                                            {
-                                                "type": "station",
-                                                "key_type": "naptan-id",
-                                                "key_value": string(interval["stopId"]),
-                                                "role_name": "origin"
-                                            }
-                                        ]
-                                    }
-                                )
+                intervals = data["timetable"]["routes"][0]["stationIntervals"][0]["intervals"] # first set of intervals is sufficient
+                if len(intervals) > 0 and intervals[0]["timeToArrival"] > 0:
+                    intervals.insert(0, { "stopId": data["timetable"]["departureStopId"], "timeToArrival": 0 })
+                for i, interval in enumerate(intervals): # first station is the origin
+                    if i == 0:
+                        unique_append(relationship_queries, "route",
+                            relationship_template(
+                                {
+                                    "type": "route",
+                                    "key_type": "identifier",
+                                    "key_value": string(route_identifier),
+                                    "roleplayers": [
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(interval["stopId"]),
+                                            "role_name": "origin"
+                                        },
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(interval["stopId"]),
+                                            "role_name": "stop"
+                                        }
+                                    ]
+                                }
                             )
-                        elif i == len(intervals) - 1: # last station is the destination
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
-                                    {
-                                        "type": "route",
-                                        "key_type": "identifier",
-                                        "key_value": string(route_identifier),
-                                        "roleplayers": [
-                                            {
-                                                "type": "station",
-                                                "key_type": "naptan-id",
-                                                "key_value": string(interval["stopId"]),
-                                                "role_name": "destination"
-                                            }
-                                        ]
-                                    }
-                                )
+                        )
+                    elif i == len(intervals) - 1: # last station is the destination
+                        unique_append(relationship_queries, "route",
+                            relationship_template(
+                                {
+                                    "type": "route",
+                                    "key_type": "identifier",
+                                    "key_value": string(route_identifier),
+                                    "roleplayers": [
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(interval["stopId"]),
+                                            "role_name": "stop"
+                                        },
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(interval["stopId"]),
+                                            "role_name": "destination"
+                                        }
+                                    ]
+                                }
                             )
-                        else: # any other station is an ordinary stop
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
-                                    {
-                                        "type": "route",
-                                        "key_type": "identifier",
-                                        "key_value": string(route_identifier),
-                                        "roleplayers": [
-                                            {
-                                                "type": "station",
-                                                "key_type": "naptan-id",
-                                                "key_value": string(interval["stopId"]),
-                                                "role_name": "stop"
-                                            }
-                                        ]
-                                    }
-                                )
+                        )
+                    else: # any other station is an ordinary stop
+                        unique_append(relationship_queries, "route",
+                            relationship_template(
+                                {
+                                    "type": "route",
+                                    "key_type": "identifier",
+                                    "key_value": string(route_identifier),
+                                    "roleplayers": [
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(interval["stopId"]),
+                                            "role_name": "stop"
+                                        }
+                                    ]
+                                }
                             )
+                        )
 
-                        if i < len(intervals) - 1: # there is no more stop after the last one
-                            last_time_to_arrival = 0
-                            duration = int(interval["timeToArrival"] - last_time_to_arrival)
-                            route_section_identifier = timetable_file.split(".")[0] + "_route_section_" + str(i)
-                            unique_append(entity_queries, "route-section",
-                                entity_template(
-                                    {
-                                        "type": "route-section",
-                                        "attributes": [
-                                            {
-                                                "type": "duration",
-                                                "value": duration
-                                            },
-                                            {
-                                                "type": "identifier",
-                                                "value": string(route_section_identifier)
-                                            }
-                                        ]
-                                    }
-                                )
+                    if i < len(intervals) - 1: # there is no more stop after the last one
+                        last_time_to_arrival = 0
+                        duration = int(interval["timeToArrival"] - last_time_to_arrival)
+                        route_section_identifier = timetable_file.split(".")[0] + "_route_section_" + str(i)
+                        unique_append(entity_queries, "route-section",
+                            entity_template(
+                                {
+                                    "type": "route-section",
+                                    "attributes": [
+                                        {
+                                            "type": "duration",
+                                            "value": duration
+                                        },
+                                        {
+                                            "type": "identifier",
+                                            "value": string(route_section_identifier)
+                                        }
+                                    ]
+                                }
                             )
-                            last_time_to_arrival = interval["timeToArrival"]
+                        )
+                        last_time_to_arrival = interval["timeToArrival"]
 
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
-                                    {
-                                        "type": "route",
-                                        "key_type": "identifier",
-                                        "key_value": string(route_identifier),
-                                        "roleplayers": [
-                                            {
-                                                "type": "route-section",
-                                                "key_type": "identifier",
-                                                "key_value": string(route_section_identifier),
-                                                "role_name": "section"
-                                            }
-                                        ]
-                                    }
-                                )
+                        unique_append(relationship_queries, "route",
+                            relationship_template(
+                                {
+                                    "type": "route",
+                                    "key_type": "identifier",
+                                    "key_value": string(route_identifier),
+                                    "roleplayers": [
+                                        {
+                                            "type": "route-section",
+                                            "key_type": "identifier",
+                                            "key_value": string(route_section_identifier),
+                                            "role_name": "section"
+                                        }
+                                    ]
+                                }
                             )
+                        )
 
-                            from_station_id = interval["stopId"]
-                            to_station_id = intervals[i+1]["stopId"]
-                            distance = get_distance_between_stations(data, from_station_id, to_station_id)
+                        from_station_id = interval["stopId"]
+                        to_station_id = intervals[i+1]["stopId"]
+                        distance = get_distance_between_stations(data, from_station_id, to_station_id)
 
-                            tunnel_identifier = from_station_id + "_tunnel_" + to_station_id
-                            unique_append(relationship_queries, "tunnel",
-                                relationship_template(
-                                    {
-                                        "type": "tunnel",
-                                        "roleplayers": [
-                                            {
-                                                "type": "station",
-                                                "key_type": "naptan-id",
-                                                "key_value": string(from_station_id), # current stop
-                                                "role_name": "beginning"
-                                            },
-                                            {
-                                                "type": "station",
-                                                "key_type": "naptan-id",
-                                                "key_value": string(to_station_id), # next stop
-                                                "role_name": "end"
-                                            },
-                                            {
-                                                "type": "route-section",
-                                                "key_type": "identifier",
-                                                "key_value": string(route_section_identifier),
-                                                "role_name": "service"
-                                            }
-                                        ],
-                                        "attributes": [
-                                            {
-                                                "type": "identifier",
-                                                "value": string(tunnel_identifier)
-                                            },
-                                            {
-                                                "type": "distance",
-                                                "value": str(distance)
-                                            }
-                                        ]
-                                    }
-                                )
+                        tunnel_identifier = from_station_id + "_tunnel_" + to_station_id
+                        unique_append(relationship_queries, "tunnel",
+                            relationship_template(
+                                {
+                                    "type": "tunnel",
+                                    "roleplayers": [
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(from_station_id), # current stop
+                                            "role_name": "beginning"
+                                        },
+                                        {
+                                            "type": "station",
+                                            "key_type": "naptan-id",
+                                            "key_value": string(to_station_id), # next stop
+                                            "role_name": "end"
+                                        },
+                                        {
+                                            "type": "route-section",
+                                            "key_type": "identifier",
+                                            "key_value": string(route_section_identifier),
+                                            "role_name": "service"
+                                        }
+                                    ],
+                                    "attributes": [
+                                        {
+                                            "type": "identifier",
+                                            "value": string(tunnel_identifier)
+                                        },
+                                        {
+                                            "type": "distance",
+                                            "value": str(distance)
+                                        }
+                                    ]
+                                }
                             )
+                        )
 
 def insert(queries):
     client = grakn.Grakn(uri=settings.uri)
