@@ -14,7 +14,7 @@
 
 import tkinter as tk
 import grakn
-import settings
+import tube_network.settings as settings
 import datetime
 
 

@@ -17,7 +17,7 @@ import json
 import os
 import re
 from math import cos, asin, sqrt
-import settings
+import tube_network.settings as settings
 import multiprocessing
 import datetime
 
@@ -293,8 +293,8 @@ def construct_queries(entity_queries, relationship_queries):
                         )
 
                     if i < len(intervals) - 1: # there is no more stop after the last one
-                        last_time_to_arrival = 0
-                        duration = int(interval["timeToArrival"] - last_time_to_arrival)
+                        # last_time_to_arrival = 0
+                        duration = intervals[i+1]["timeToArrival"] - interval["timeToArrival"]
                         route_section_identifier = timetable_file.split(".")[0] + "_route_section_" + str(i)
                         unique_append(entity_queries, "route-section",
                             entity_template(
@@ -313,7 +313,7 @@ def construct_queries(entity_queries, relationship_queries):
                                 }
                             )
                         )
-                        last_time_to_arrival = interval["timeToArrival"]
+                        # last_time_to_arrival = interval["timeToArrival"]
 
                         unique_append(relationship_queries, "route",
                             relationship_template(

@@ -25,7 +25,7 @@ lat sub attribute,
 lon sub attribute,
 	datatype double;
 duration sub attribute,
-	datatype long;
+	datatype double;
 distance sub attribute,
 	datatype double;
 
