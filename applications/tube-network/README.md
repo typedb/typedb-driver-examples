@@ -1,6 +1,106 @@
-# Grakn Examples
-Example applications of Grakn, The Knowledge Graph
+# Tube Network Example
 
-Our first example is the tube_network_example, which should help to introduce you to some of the ways that you can use Grakn.
+Here we demonstrate a way of modelling the London Underground Network using data acquired from the Transport for London (TFL) website.
 
-Please navigate to the [tube network example](tube_network_example) and browse the README there for how to get started.
+Most of the code given here is written in Python to give an example of how to use the Grakn Python client.
+
+See the _Quickstart_ for how to get going immediately, or read on for more info.
+
+## Prerequisites
+- Grakn >= 1.4.2. Learn more about [installing and running Grakn](http://dev.grakn.ai/docs/running-grakn/install-and-run).
+- Python >= 3.6
+
+## Quickstart
+
+- Clone this repository: `git clone git@github.com:graknlabs/examples.git`
+- Start the Grakn Server: `path-to-grakn-dist-directory/grakn server start`
+- Navigate to the source directory of `tube_network`: `cd path-to-cloned-repository/applications/tube-network/src`
+- Load the schema: `path-to-grakn-dist-directory/graql console -k tube_network -f schema.gql`
+- Install the `grakn` module: `pip install grakn`. Learn more about [Client Python](http://dev.grakn.ai/docs/client-api/python).
+- Migrate the dataset: `python3 -m migration`. Learn more about [migrating data to Grakn by example](http://dev.grakn.ai/docs/examples/phone-calls-migration-python).
+- To continue:
+    - Run queries on the London Tube Network using [Graql Console](http://dev.grakn.ai/docs/running-grakn/console) and [Workbase](http://dev.grakn.ai/docs/workbase/overview).
+    - or:
+        - Perform statistical queries: `python3 -m statistics`. Learn more about the [Compute Queries](http://dev.grakn.ai/docs/query/compute-query).
+        - Try the journey planner: `python3 -m journey_planner`
+        - Interact with the journey planner interface: `python3 -m app`
+
+## Downloading Data
+The data necessary to build a Grakn of the Tube Network is already included in this repository, the code to acquire it can be found in [src/data/download.py](src/data/download.py).
+
+## Importing Data
+We can import this data into the Grakn keyspace we have just created. The name of the keyspace is set in `settings.py`, so you can change it there if you need to. You don't have to implement settings in this way in your own application.
+Check Grakn is up and running: `./grakn server status`
+To import, run [`src/migration.py`](src/migration.py), either in your IDE, or from the grakn_examples directory as follows:
+
+```bash
+cd path-to-cloned-repository/applications/tube-network/src
+python3 -m migration
+```
+
+The content of [`src/migration.py`](src/migration.py) is a python script that:
+1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing Graql relationship/entity insert queries.
+2. the constructed Graql insert queries, after basic uniqueness validation, get stored as items of arrays within a dictionary.
+3. the dictionary containing all the Graql queries, gets flattened, to prepare the data in two chunks of entities and relationships for a series of concurrent insertions.
+4. lastly, a set of processes initiate the set of transactions that perform the Graql insert queries on the `tube_network` keyspace.
+
+Once complete, you have stored the tube network data in Grakn!
+Now you're ready to start playing with the data.
+
+
+## Reasoning
+Now you can query the database, you can try asking more complex questions, like asking for time between stations of over 8 minutes:
+```
+match
+    $sta1 isa station, has name $sta1-nam;
+    $sta2 isa station, has name $sta2-nam;
+    $sec isa route-section, has duration $dur; $dur > 8;
+    (beginning: $sta1, end: $sta2, service: $sex) isa tunnel;
+    (route-operator: $tul, section: $sec) isa route;
+    $tul isa tube-line, has name $tul-nam;
+get $sta1-nam, $sta2-nam, $tul-nam, $dur; limit 30;
+```
+
+## Retrieve Statistical Information
+To gain an overall understanding of the available statistical queries in Grakn, try the [`src/statistics.py`](src/statistics.py).
+
+## Try the Journey Planner
+To try the out-of-the-box `compute path` query of Grakn, you can run the [`src/journey-planner.py`](src/journey-planner.py).
+
+```bash
+cd path-to-cloned-repository/applications/tube-network/src
+python3 -m journey-planner
+```
+
+Enter the departing and destination stations, as well as the shortest poth strategy and in return obtain the shortest path of stations that connect the two given stations.
+
+## Visualise and interact with the Tube Network
+
+[src/app.py](src/visualisation/app.py) is a demo application to show the analytics capabilities built into Grakn.
+
+```bash
+cd path-to-cloned-repository/applications/tube-network/src
+python3 -m app
+```
+Opening the demo app for the first time, may take up to a minute.
+
+### The Basics
+
+- Drag mouse to pan
+- Press `=`/`+` to zoom in
+- Press `-`/`_` to zoom out
+- Press `c` to clear the map of analytics
+
+#### Find Shortest Path
+Hold `shift` and click on a station or the station's name (station _A_). Do the same on another station (station _B_). This will show the shortest path via stations and tunnels to connect _A_ and _B_.
+Hold `shift` and click on a further station _C_ to add the path(s) from _B_ to _C_.
+So, you should be able to find the shortest path from some station _A_ to some station _E_, via stations _B_, _C_ and _D_.
+Use `q` to clear the shortest path(s), or `c` to remove anything that has been drawn on top of the map.
+
+#### Compute Centrality
+Keymap:
+
+Press `d` to `compute centrality of station, in [station, tunnel], using degree;`
+Press `k` to `compute centrality of station, in [station, tunnel], using k-core;`
+Press `r` to `compute centrality of station, in [station, route], using degree;`
+From any state, press `c` to clear the map of analytics.
