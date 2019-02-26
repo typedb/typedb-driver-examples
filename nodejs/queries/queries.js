@@ -29,7 +29,7 @@ const readline = require("readline");
 //   printToLog("Query:", query.join("\n"));
 //   // join the query list elements to obtain the quer as a string to be executed
 //   const query = query.join("");
-//   const iterator = await tx.query(query);
+//   const iterator = await transaction.query(query);
 //   // ... retrieve the answers
 //   const result = "example result";
 //   printToLog("Result:", result);
@@ -91,7 +91,7 @@ function printToLog(title, content) {
 }
 
 // From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004?
-async function executeQuery1(question, tx) {
+async function executeQuery1(question, transaction) {
   log(tx);
 
   printToLog("Question: ", question);
@@ -109,7 +109,7 @@ async function executeQuery1(question, tx) {
   printToLog("Query:", query.join("\n"));
   query = query.join("");
 
-  const iterator = await tx.query(query);
+  const iterator = await transaction.query(query);
   const answers = await iterator.collect();
   const result = await Promise.all(
     answers.map(answer =>
@@ -124,7 +124,7 @@ async function executeQuery1(question, tx) {
 }
 
 // who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 60?
-async function executeQuery2(question, tx) {
+async function executeQuery2(question, transaction) {
   printToLog("Question: ", question);
 
   let query = [
@@ -142,7 +142,7 @@ async function executeQuery2(question, tx) {
   printToLog("Query:", query.join("\n"));
   query = query.join("");
 
-  const iterator = await tx.query(query);
+  const iterator = await transaction.query(query);
   const answers = await iterator.collect();
   const result = await Promise.all(
     answers.map(answer =>
@@ -157,7 +157,7 @@ async function executeQuery2(question, tx) {
 }
 
 // "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?
-async function executeQuery3(question, tx) {
+async function executeQuery3(question, transaction) {
   printToLog("Question: ", question);
 
   let query = [
@@ -172,7 +172,7 @@ async function executeQuery3(question, tx) {
   printToLog("Query:", query.join("\n"));
   query = query.join("");
 
-  const iterator = await tx.query(query);
+  const iterator = await transaction.query(query);
   const answers = await iterator.collect();
   const result = await Promise.all(
     answers.map(answer =>
@@ -187,7 +187,7 @@ async function executeQuery3(question, tx) {
 }
 
 //  Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
-async function executeQuery4(question, tx) {
+async function executeQuery4(question, transaction) {
   printToLog("Question: ", question);
 
   let query = [
@@ -206,7 +206,7 @@ async function executeQuery4(question, tx) {
   printToLog("Query:", query.join("\n"));
   query = query.join("");
 
-  const iterator = await tx.query(query);
+  const iterator = await transaction.query(query);
   const answers = await iterator.collect();
   const result = await Promise.all(
     answers.map(answer =>
@@ -221,7 +221,7 @@ async function executeQuery4(question, tx) {
 }
 
 // How does the average call duration among customers aged under 20 compare those aged over 40?
-async function executeQuery5(question, tx) {
+async function executeQuery5(question, transaction) {
   printToLog("Question: ", question);
 
   let queryA = [
@@ -235,7 +235,7 @@ async function executeQuery5(question, tx) {
   printToLog("Query:", queryA.join("\n"));
   queryA = queryA.join("");
 
-  const iteratorA = await tx.query(queryA);
+  const iteratorA = await transaction.query(queryA);
   const answersA = await iteratorA.collect();
   const resultA = answersA[0].number();
   let result =
@@ -253,7 +253,7 @@ async function executeQuery5(question, tx) {
   printToLog("Query:", queryB.join("\n"));
   queryB = queryB.join("");
 
-  const iteratorB = await tx.query(queryB);
+  const iteratorB = await transaction.query(queryB);
   const answersB = await iteratorB.collect();
   const resultB = answersB[0].number();
   result +=
@@ -265,12 +265,12 @@ async function executeQuery5(question, tx) {
 }
 
 //
-async function executeQuery6(question, tx) {
+async function executeQuery6(question, transaction) {
   printToLog("Question: ", question);
 }
 
 //
-async function executeQuery7(question, tx) {
+async function executeQuery7(question, transaction) {
   printToLog("Question: ", question);
 }
 
@@ -279,7 +279,7 @@ async function executeAllQueries(tx) {
   for (qsFunc of questionsAndFunctions) {
     qustion = qsFunc["question"];
     queryFunction = qsFunc["queryFunction"];
-    await queryFunction(qustion, tx);
+    await queryFunction(qustion, transaction);
     log("\n - - -  - - -  - - -  - - - \n");
   }
 }
@@ -333,14 +333,14 @@ function executeBasedOnSelection(rl) {
 async function processSelection(qsNumber) {
   const grakn = new Grakn("localhost:48555"); // 1
   const session = await grakn.session((keyspace = "phone_calls")); // 2
-  const tx = await session.transaction(Grakn.txType.WRITE); // 3
+  const transaction = await session.transaction(Grakn.txType.WRITE); // 3
 
   if (qsNumber == 0) {
     await executeAllQueries(tx); // 4
   } else {
     const question = questionsAndFunctions[qsNumber - 1]["question"];
     const queryFunction = questionsAndFunctions[qsNumber - 1]["queryFunction"];
-    await queryFunction(question, tx); // 4
+    await queryFunction(question, transaction); // 4
   }
 
   session.close(); // 5
