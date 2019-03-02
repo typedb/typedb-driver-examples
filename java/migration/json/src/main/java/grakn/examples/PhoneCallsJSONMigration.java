@@ -1,7 +1,7 @@
 package ai.grakn.examples;
 
-import grakn.core.client.GraknClient;
-import grakn.core.client.GraknClient.Transaction;
+import grakn.client.GraknClient;
+import grakn.client.GraknClient.Transaction;
 import static grakn.core.graql.query.Graql.*;
 import grakn.core.graql.query.query.GraqlInsert;
 import grakn.core.server.exception.InvalidKBException;
@@ -64,6 +64,7 @@ public class PhoneCallsJSONMigration {
         }
 
         session.close();
+        client.close();
     }
 
     static Collection<Input> initialiseInputs() {

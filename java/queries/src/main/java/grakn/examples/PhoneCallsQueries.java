@@ -1,6 +1,6 @@
 package grakn.examples;
 
-import grakn.core.client.GraknClient;
+import grakn.client.GraknClient;
 import grakn.core.graql.query.query.GraqlGet;
 import grakn.core.server.Transaction;
 import grakn.core.server.exception.TransactionException;
@@ -60,6 +60,7 @@ public class PhoneCallsQueries {
 
         transaction.close();
         session.close();
+        client.close();
     }
 
     // GRAQL QUERY EXAMPLES
