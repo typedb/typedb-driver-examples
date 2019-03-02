@@ -4,8 +4,8 @@ import grakn.client.GraknClient;
 import grakn.client.GraknClient.Transaction;
 import static grakn.core.graql.query.Graql.*;
 import grakn.core.graql.query.query.GraqlInsert;
-import grakn.core.server.exception.InvalidKBException;
-import grakn.core.server.exception.TransactionException;
+import grakn.core.server.exceptio;
+import grakn.core.server.exceptio;
 
 /**
  * a collection of fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
@@ -50,12 +50,12 @@ public class PhoneCallsCSVMigration {
      * 4. loads the csv data to Grakn for each file
      * 5. closes the session
      */
-    public static void main(String[] args) throws FileNotFoundException, InvalidKBException {
+    public static void main(String[] args) throws FileNotFoundException {
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs);
     }
 
-    static void connectAndMigrate(Collection<Input> inputs) throws FileNotFoundException, InvalidKBException, TransactionException {
+    static void connectAndMigrate(Collection<Input> inputs) throws FileNotFoundException {
         GraknClient client = new GraknClient("localhost:48555");
         GraknClient.Session session = client.session("phone_calls");
 
@@ -146,7 +146,7 @@ public class PhoneCallsCSVMigration {
      * @param session off of which a transaction is created
      * @throws UnsupportedEncodingException
      */
-    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException, InvalidKBException {
+    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
             Transaction transaction = session.transaction(Transaction.Type.WRITE); // 2a

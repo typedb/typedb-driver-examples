@@ -4,8 +4,8 @@ import grakn.client.GraknClient;
 import grakn.client.GraknClient.Transaction;
 import static grakn.core.graql.query.Graql.*;
 import grakn.core.graql.query.query.GraqlInsert;
-import grakn.core.server.exception.InvalidKBException;
-import grakn.core.server.exception.TransactionException;
+import grakn.core.server.exceptio;
+import grakn.core.server.exceptio;
 
 /**
  * a lean JSON Library for Java,
@@ -53,12 +53,12 @@ public class PhoneCallsXMLMigration {
      * 4. loads the csv data to Grakn for each file
      * 5. closes the session
      */
-    public static void main(String[] args) throws FileNotFoundException, InvalidKBException, XMLStreamException {
+    public static void main(String[] args) throws FileNotFoundException, XMLStreamException {
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs);
     }
 
-    static void connectAndMigrate(Collection<Input> inputs) throws FileNotFoundException, InvalidKBException, TransactionException, XMLStreamException {
+    static void connectAndMigrate(Collection<Input> inputs) throws FileNotFoundException, XMLStreamException {
         GraknClient client = new GraknClient("localhost:48555");
         GraknClient.Session session = client.session("phone_calls");
 
@@ -68,6 +68,7 @@ public class PhoneCallsXMLMigration {
         }
 
         session.close();
+        client.close();
     }
 
     static Collection<Input> initialiseInputs() {
@@ -147,7 +148,7 @@ public class PhoneCallsXMLMigration {
      * @param session off of which a transaction is created
      * @throws UnsupportedEncodingException
      */
-    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException, InvalidKBException, XMLStreamException {
+    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException, XMLStreamException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
             Transaction transaction = session.transaction(Transaction.Type.WRITE); // 2a
