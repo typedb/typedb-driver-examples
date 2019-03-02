@@ -1,4 +1,4 @@
-const Grakn = require("grakn");
+const Grakn = require("grakn-client");
 const readline = require("readline");
 
 // to add a new query implementation:
@@ -36,252 +36,256 @@ const readline = require("readline");
 // }
 
 const getQsFunc = [
-  {
-    question:
-      "From 2018-09-10 onwards, which customers called the person with phone number +86 921 547 9004?",
-    queryFunction: executeQuery1
-  },
-  {
-    question:
-      "Who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 50?",
-    queryFunction: executeQuery2
-  },
-  {
-    question:
-      "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?",
-    queryFunction: executeQuery3
-  },
-  {
-    question:
-      "Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
-    queryFunction: executeQuery4
-  }
+	{
+		question:
+			"From 2018-09-10 onwards, which customers called the person with phone number +86 921 547 9004?",
+		queryFunction: executeQuery1
+	},
+	{
+		question:
+			"Who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 50?",
+		queryFunction: executeQuery2
+	},
+	{
+		question:
+			"Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?",
+		queryFunction: executeQuery3
+	},
+	{
+		question:
+			"Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
+		queryFunction: executeQuery4
+	}
 ];
 
 const aggregateQsFunc = [
-  {
-    question:
-      "How does the average call duration among customers aged under 20 compare those aged over 40?",
-    queryFunction: executeQuery5
-  }
+	{
+		question:
+			"How does the average call duration among customers aged under 20 compare those aged over 40?",
+		queryFunction: executeQuery5
+	}
 ];
 
 const computeQsFunc = [
-  {
-    question: "compute-related first question goes here ",
-    queryFunction: executeQuery6
-  },
-  {
-    question: "compute-elated second question goes here ",
-    queryFunction: executeQuery7
-  }
+	{
+		question: "compute-related first question goes here ",
+		queryFunction: executeQuery6
+	},
+	{
+		question: "compute-elated second question goes here ",
+		queryFunction: executeQuery7
+	}
 ];
 
 const questionsAndFunctions = getQsFunc
-  .concat(aggregateQsFunc)
-  .concat(computeQsFunc);
+	.concat(aggregateQsFunc)
+	.concat(computeQsFunc);
 
 // utils
 const log = console.log;
 function printToLog(title, content) {
-  log(title);
-  log("");
-  log(content);
-  log("\n");
+	log(title);
+	log("");
+	log(content);
+	log("\n");
 }
 
 // From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004?
 async function executeQuery1(question, transaction) {
-  log(tx);
+	printToLog("Question: ", question);
 
-  printToLog("Question: ", question);
+	let query = [
+		"match",
+		"  $customer isa person, has phone-number $phone-number;",
+		'  $company isa company, has name "Telecom";',
+		"  (customer: $customer, provider: $company) isa contract;",
+		'  $target isa person, has phone-number "+86 921 547 9004";',
+		"  (caller: $customer, callee: $target) isa call, has started-at $started-at;",
+		"  $min-date == 2018-09-14T17:18:49; $started-at > $min-date;",
+		"get $phone-number;"
+	];
+	printToLog("Query:", query.join("\n"));
+	query = query.join("");
 
-  let query = [
-    "match",
-    "  $customer isa person has phone-number $phone-number;",
-    '  $company isa company has name "Telecom";',
-    "  (customer: $customer, provider: $company) isa contract;",
-    '  $target isa person has phone-number "+86 921 547 9004";',
-    "  (caller: $customer, callee: $target) isa call has started-at $started-at;",
-    "  $min-date == 2018-09-14T17:18:49; $started-at > $min-date;",
-    "get $phone-number;"
-  ];
-  printToLog("Query:", query.join("\n"));
-  query = query.join("");
+	const iterator = await transaction.query(query);
+	const answers = await iterator.collect();
+	const result = await Promise.all(
+		answers.map(answer =>
+			answer.map()
+				  .get("phone-number")
+				  .value()
+		)
+	);
 
-  const iterator = await transaction.query(query);
-  const answers = await iterator.collect();
-  const result = await Promise.all(
-    answers.map(answer =>
-      answer
-        .map()
-        .get("phone-number")
-        .value()
-    )
-  );
-
-  printToLog("Result:", result);
+	printToLog("Result:", result);
 }
 
 // who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 60?
 async function executeQuery2(question, transaction) {
-  printToLog("Question: ", question);
+	printToLog("Question: ", question);
 
-  let query = [
-    "match ",
-    '  $suspect isa person has city "London", has age > 50;',
-    '  $company isa company has name "Telecom";',
-    "  (customer: $suspect, provider: $company) isa contract;",
-    "  $pattern-callee isa person has age < 20;",
-    "  (caller: $suspect, callee: $pattern-callee) isa call has started-at $pattern-call-date;",
-    "  $target isa person has phone-number $phone-number, has is-customer false;",
-    "  (caller: $suspect, callee: $target) isa call has started-at $target-call-date;",
-    "  $target-call-date > $pattern-call-date;",
-    "get $phone-number;"
-  ];
-  printToLog("Query:", query.join("\n"));
-  query = query.join("");
+	let query = [
+		"match ",
+		'  $suspect isa person, has city "London", has age > 50;',
+		'  $company isa company, has name "Telecom";',
+		"  (customer: $suspect, provider: $company) isa contract;",
+		"  $pattern-callee isa person, has age < 20;",
+		"  (caller: $suspect, callee: $pattern-callee) isa call, has started-at $pattern-call-date;",
+		"  $target isa person, has phone-number $phone-number, has is-customer false;",
+		"  (caller: $suspect, callee: $target) isa call, has started-at $target-call-date;",
+		"  $target-call-date > $pattern-call-date;",
+		"get $phone-number;"
+	];
+	printToLog("Query:", query.join("\n"));
+	query = query.join("");
 
-  const iterator = await transaction.query(query);
-  const answers = await iterator.collect();
-  const result = await Promise.all(
-    answers.map(answer =>
-      answer
-        .map()
-        .get("phone-number")
-        .value()
-    )
-  );
+	const iterator = await transaction.query(query);
+	const answers = await iterator.collect();
+	const result = await Promise.all(
+		answers.map(answer =>
+			answer.map()
+				  .get("phone-number")
+				  .value()
+		)
+	);
 
-  printToLog("Result:", result);
+	printToLog("Result:", result);
 }
 
 // "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?
 async function executeQuery3(question, transaction) {
-  printToLog("Question: ", question);
+	printToLog("Question: ", question);
 
-  let query = [
-    "match ",
-    "  $common-contact isa person has phone-number $phone-number;",
-    '  $customer-a isa person has phone-number "+7 171 898 0853";',
-    '  $customer-b isa person has phone-number "+370 351 224 5176";',
-    "  (caller: $customer-a, callee: $common-contact) isa call;",
-    "  (caller: $customer-b, callee: $common-contact) isa call;",
-    "get $phone-number;"
-  ];
-  printToLog("Query:", query.join("\n"));
-  query = query.join("");
+	let query = [
+		"match ",
+		"  $common-contact isa person, has phone-number $phone-number;",
+		'  $customer-a isa person, has phone-number "+7 171 898 0853";',
+		'  $customer-b isa person, has phone-number "+370 351 224 5176";',
+		"  (caller: $customer-a, callee: $common-contact) isa call;",
+		"  (caller: $customer-b, callee: $common-contact) isa call;",
+		"get $phone-number;"
+	];
+	printToLog("Query:", query.join("\n"));
+	query = query.join("");
 
-  const iterator = await transaction.query(query);
-  const answers = await iterator.collect();
-  const result = await Promise.all(
-    answers.map(answer =>
-      answer
-        .map()
-        .get("phone-number")
-        .value()
-    )
-  );
+	const iterator = await transaction.query(query);
+	const answers = await iterator.collect();
+	const result = await Promise.all(
+		answers.map(answer =>
+			answer.map()
+				  .get("phone-number")
+				  .value()
+		)
+	);
 
-  printToLog("Result:", result);
+	printToLog("Result:", result);
 }
 
 //  Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
 async function executeQuery4(question, transaction) {
-  printToLog("Question: ", question);
+	printToLog("Question: ", question);
 
-  let query = [
-    "match ",
-    '  $target isa person has phone-number "+48 894 777 5173";',
-    '  $company isa company has name "Telecom";',
-    "  $customer-a isa person has phone-number $phone-number-a;",
-    "  (customer: $customer-a, provider: $company) isa contract;",
-    "  (caller: $customer-a, callee: $target) isa call;",
-    "  $customer-b isa person has phone-number $phone-number-b;",
-    "  (customer: $customer-b, provider: $company) isa contract;",
-    "  (caller: $customer-b, callee: $target) isa call;",
-    "  (caller: $customer-a, callee: $customer-b) isa call;",
-    "get $phone-number-a, $phone-number-b;"
-  ];
-  printToLog("Query:", query.join("\n"));
-  query = query.join("");
+	let query = [
+		"match ",
+		'  $target isa person, has phone-number "+48 894 777 5173";',
+		'  $company isa company, has name "Telecom";',
+		"  $customer-a isa person, has phone-number $phone-number-a;",
+		"  (customer: $customer-a, provider: $company) isa contract;",
+		"  (caller: $customer-a, callee: $target) isa call;",
+		"  $customer-b isa person, has phone-number $phone-number-b;",
+		"  (customer: $customer-b, provider: $company) isa contract;",
+		"  (caller: $customer-b, callee: $target) isa call;",
+		"  (caller: $customer-a, callee: $customer-b) isa call;",
+		"get $phone-number-a, $phone-number-b;"
+	];
+	printToLog("Query:", query.join("\n"));
+	query = query.join("");
 
-  const iterator = await transaction.query(query);
-  const answers = await iterator.collect();
-  const result = await Promise.all(
-    answers.map(answer =>
-      answer
-        .map()
-        .get("phone-number-a")
-        .value()
-    )
-  );
+	const iterator = await transaction.query(query);
+	const answers = await iterator.collect();
+	const result = await Promise.all(
+		answers.map(answer =>
+			answer.map()
+				  .get("phone-number-a")
+				  .value()
+		)
+	);
 
-  printToLog("Result:", result);
+	printToLog("Result:", result);
 }
 
 // How does the average call duration among customers aged under 20 compare those aged over 40?
 async function executeQuery5(question, transaction) {
-  printToLog("Question: ", question);
+	printToLog("Question: ", question);
 
-  let queryA = [
-    "match",
-    "  $customer isa person has age < 20;",
-    '  $company isa company has name "Telecom";',
-    "  (customer: $customer, provider: $company) isa contract;",
-    "  (caller: $customer, callee: $anyone) isa call has duration $duration;",
-    "aggregate mean $duration;"
-  ];
-  printToLog("Query:", queryA.join("\n"));
-  queryA = queryA.join("");
+	firstQuery = [
+		'match',
+		'  $customer isa person, has age < 20;',
+		'  $company isa company, has name "Telecom";',
+		'  (customer: $customer, provider: $company) isa contract;',
+		'  (caller: $customer, callee: $anyone) isa call, has duration $duration;',
+		'get $duration; mean $duration;'
+	];
 
-  const iteratorA = await transaction.query(queryA);
-  const answersA = await iteratorA.collect();
-  const resultA = answersA[0].number();
-  let result =
-    "Customers aged under 20 have made calls with average duration of " +
-    Math.round(resultA) +
-    " seconds.\n";
+	printToLog("Query:", firstQuery.join("\n"));
+	firstQuery = firstQuery.join("");
 
-  let queryB = [
-    "match " + "  $customer isa person has age > 40;",
-    '  $company isa company has name "Telecom";',
-    "  (customer: $customer, provider: $company) isa contract;",
-    "  (caller: $customer, callee: $anyone) isa call has duration $duration;",
-    "aggregate mean $duration;"
-  ];
-  printToLog("Query:", queryB.join("\n"));
-  queryB = queryB.join("");
+	const firstIterator = await transaction.query(firstQuery);
+	const firstAnswer = await firstIterator.collect();
+	let firstResult = 0;
+	if(firstAnswer.length > 0) {
+		firstResult = firstAnswer[0].number();
+	}
 
-  const iteratorB = await transaction.query(queryB);
-  const answersB = await iteratorB.collect();
-  const resultB = answersB[0].number();
-  result +=
-    "Customers aged over 40 have made calls with average duration of " +
-    Math.round(resultB) +
-    " seconds.\n";
+	let result =
+		"Customers aged under 20 have made calls with average duration of " +
+		Math.round(firstResult) +
+		" seconds.\n";
 
-  printToLog("Result:", result);
+	secondQuery = [
+		'match ' +
+		'  $customer isa person, has age > 40;',
+		'  $company isa company, has name "Telecom";',
+		'  (customer: $customer, provider: $company) isa contract;',
+		'  (caller: $customer, callee: $anyone) isa call, has duration $duration;',
+		'get $duration; mean $duration;'
+	];
+	printToLog("Query:", secondQuery.join("\n"));
+	secondQuery = secondQuery.join("");
+
+	const secondIterator = await transaction.query(secondQuery);
+	const secondAnswer = await secondIterator.collect();
+	let secondResult = 0;
+	if(secondAnswer.length > 0) {
+		secondResult = secondAnswer[0].number();
+	}
+
+	result +=
+		"Customers aged over 40 have made calls with average duration of " +
+		Math.round(secondResult) +
+		" seconds.\n";
+
+	printToLog("Result:", result);
 }
 
 //
 async function executeQuery6(question, transaction) {
-  printToLog("Question: ", question);
+	printToLog("Question: ", question);
 }
 
 //
 async function executeQuery7(question, transaction) {
-  printToLog("Question: ", question);
+	printToLog("Question: ", question);
 }
 
 // execute all queries for all questions
-async function executeAllQueries(tx) {
-  for (qsFunc of questionsAndFunctions) {
-    qustion = qsFunc["question"];
-    queryFunction = qsFunc["queryFunction"];
-    await queryFunction(qustion, transaction);
-    log("\n - - -  - - -  - - -  - - - \n");
-  }
+async function executeAllQueries(transaction) {
+	for (qsFunc of questionsAndFunctions) {
+		qustion = qsFunc["question"];
+		queryFunction = qsFunc["queryFunction"];
+		await queryFunction(qustion, transaction);
+		log("\n - - -  - - -  - - -  - - - \n");
+	}
 }
 
 // Go
@@ -293,18 +297,18 @@ executeQueries();
  * to execute the query is called
  */
 async function executeQueries() {
-  // print questions
-  log("\nSelect a question for which you'd like to execute the query?\n");
-  for (let [index, qsFunc] of questionsAndFunctions.entries())
-    log(index + 1 + ". " + qsFunc["question"]);
-  log("");
+	// print questions
+	log("\nSelect a question for which you'd like to execute the query?\n");
+	for (let [index, qsFunc] of questionsAndFunctions.entries())
+		log(index + 1 + ". " + qsFunc["question"]);
+	log("");
 
-  // get user's selection and call the function for it
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-  executeBasedOnSelection(rl);
+	// get user's selection and call the function for it
+	const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout
+	});
+	executeBasedOnSelection(rl);
 }
 /**
  * a recursive function that terminates after receiving a valid input
@@ -313,14 +317,14 @@ async function executeQueries() {
  * exists on completion
  */
 function executeBasedOnSelection(rl) {
-  const question = "choose a number (0 for to answer all questions): ";
-  rl.question(question, async function(answer, rl) {
-    if (answer >= 0 && answer < questionsAndFunctions.length + 1) {
-      await processSelection(answer);
-      process.exit(0);
-    }
-    executeBasedOnSelection(rl);
-  });
+	const question = "choose a number (0 for to answer all questions): ";
+	rl.question(question, async function (answer, rl) {
+		if (answer >= 0 && answer < questionsAndFunctions.length + 1) {
+			await processSelection(answer);
+			process.exit(0);
+		}
+		executeBasedOnSelection(rl);
+	});
 }
 /**
  * 1. create an instance of Grakn, connecting to the server
@@ -331,17 +335,17 @@ function executeBasedOnSelection(rl) {
  * @param {integer} qsNumber the (question) number selected by the user
  */
 async function processSelection(qsNumber) {
-  const grakn = new Grakn("localhost:48555"); // 1
-  const session = await grakn.session((keyspace = "phone_calls")); // 2
-  const transaction = await session.transaction(Grakn.txType.WRITE); // 3
+	const grakn = new Grakn("localhost:48555"); // 1
+	const session = await grakn.session((keyspace = "phone_calls")); // 2
+	const transaction = await session.transaction(Grakn.txType.WRITE); // 3
 
-  if (qsNumber == 0) {
-    await executeAllQueries(tx); // 4
-  } else {
-    const question = questionsAndFunctions[qsNumber - 1]["question"];
-    const queryFunction = questionsAndFunctions[qsNumber - 1]["queryFunction"];
-    await queryFunction(question, transaction); // 4
-  }
+	if (qsNumber == 0) {
+		await executeAllQueries(transaction); // 4
+	} else {
+		const question = questionsAndFunctions[qsNumber - 1]["question"];
+		const queryFunction = questionsAndFunctions[qsNumber - 1]["queryFunction"];
+		await queryFunction(question, transaction); // 4
+	}
 
-  session.close(); // 5
+	session.close(); // 5
 }

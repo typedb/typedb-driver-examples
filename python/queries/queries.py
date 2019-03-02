@@ -171,14 +171,17 @@ def execute_query_5(question, transaction):
     '  $customer isa person has age > 40;',
     '  $company isa company has name "Telecom";',
     '  (customer: $customer, provider: $company) isa contract;',
-    '  (caller: $customer, callee: $anyone) isa call has duration $duration;',
-    'aggregate mean $duration;'
+    '  (caller: $customer, callee: $anyone) isa call, has duration $duration;',
+    'get $duration; mean $duration;'
   ]
   print_to_log("Query:", "\n".join(second_query))
   second_query = "".join(second_query)
 
   second_answer = list(transaction.query(second_query))
   second_result = 0
+
+  if len(second_answer) > 0:
+    second_result = second_answer.number()
 
   result += ("Customers aged over 40 have made calls with average duration of " +
     str(round(second_result)) + " seconds.\n")
@@ -262,9 +265,9 @@ if __name__ == "__main__":
   print("")
 
   ## create a transaction to talk to the phone_calls keyspace
-  client = grakn.Grakn(uri = "localhost:48555")
-  with client.session(keyspace = "phone_calls") as session:
-    with session.transaction(grakn.transactionType.READ) as transaction:
+  client = grakn.Grakn(uri="localhost:48555")
+  with client.session(keyspace="phone_calls") as session:
+    with session.transaction(grakn.TxType.READ) as transaction:
       ## execute the query for the selected question
       if qs_number == 0:
         execute_query_all(transaction)
