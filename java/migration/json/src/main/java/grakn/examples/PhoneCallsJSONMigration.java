@@ -140,12 +140,12 @@ public class PhoneCallsJSONMigration {
      *
      * @param input   contains details required to parse the data
      * @param session off of which a transaction is created
-     * @throws UnsupportedEncodingException
+     * @throws IOException
      */
     static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws IOException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
-            Transaction transaction = session.transaction(Transaction.Type.WRITE); // 2a
+            GraknClient.Transaction transaction = session.transaction(GraknClient.Transaction.Type.WRITE); // 2a
             String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
             transaction.execute((GraqlInsert) parse(graqlInsertQuery)); // 2c
