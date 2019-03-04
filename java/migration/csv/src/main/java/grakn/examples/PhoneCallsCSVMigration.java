@@ -1,11 +1,8 @@
-package grakn.examples;
+package grakn.example;
 
 import grakn.client.GraknClient;
-import grakn.client.GraknClient.Transaction;
-import static grakn.core.graql.query.Graql.*;
-import grakn.core.graql.query.query.GraqlInsert;
-import grakn.core.server.exceptio;
-import grakn.core.server.exceptio;
+import static graql.lang.Graql.*;
+import graql.lang.query.GraqlInsert;
 
 /**
  * a collection of fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
