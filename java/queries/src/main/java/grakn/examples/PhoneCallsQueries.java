@@ -1,10 +1,9 @@
-package grakn.examples;
+package grakn.example.phoneCalls;
 
 import grakn.client.GraknClient;
-import grakn.core.graql.query.query.GraqlGet;
-import grakn.core.server.Transaction;
-import grakn.core.server.exception.TransactionException;
-import static grakn.core.graql.query.Graql.*;
+import grakn.core.concept.answer.Numeric;
+import graql.lang.query.GraqlGet;
+import static graql.lang.Graql.*;
 
 import java.util.*;
 
@@ -19,7 +18,7 @@ public class PhoneCallsQueries {
 
         String getQuestion() { return this.question; }
 
-        abstract void executeQuery(Grakn.Transaction transaction);
+        abstract void executeQuery(GraknClient.Transaction transaction);
     }
 
     public static void main(String[] args) {
@@ -48,7 +47,7 @@ public class PhoneCallsQueries {
 
         GraknClient client = new GraknClient("localhost:48555");
         GraknClient.Session session = client.session("phone_calls");
-        GraknClient.Transaction transaction = session.transaction(Transaction.Type.READ);
+        GraknClient.Transaction transaction = session.transaction(GraknClient.Transaction.Type.READ);
 
         if (qsNumber == 0) {
             queryExamples.forEach(queryExample -> {
