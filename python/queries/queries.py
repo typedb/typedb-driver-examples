@@ -32,7 +32,7 @@ import sys
 #   ## join the query list elements to obtain the quer as a string to be executed
 #   query = "".join(query)
 
-#   iterator = tx.query(query)
+#   iterator = transaction.query(query)
 #   ## ... retrieve the answers
 #   result = "example result"
 
@@ -45,16 +45,16 @@ def print_to_log(title, content):
   print("\n")
 
 ## From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004?
-def execute_query_1(question, tx):
+def execute_query_1(question, transaction):
   print_to_log("Question: ", question)
 
   query = [
     'match',
-    '  $customer isa person has phone-number $phone-number;',
-    '  $company isa company has name "Telecom";',
+    '  $customer isa person, has phone-number $phone-number;',
+    '  $company isa company, has name "Telecom";',
     '  (customer: $customer, provider: $company) isa contract;',
-    '  $target isa person has phone-number "+86 921 547 9004";',
-    '  (caller: $customer, callee: $target) isa call has started-at $started-at;',
+    '  $target isa person, has phone-number "+86 921 547 9004";',
+    '  (caller: $customer, callee: $target) isa call, has started-at $started-at;',
     '  $min-date == 2018-09-14T17:18:49; $started-at > $min-date;',
     'get $phone-number;'
   ]
@@ -62,25 +62,25 @@ def execute_query_1(question, tx):
   print_to_log("Query:", "\n".join(query))
   query = "".join(query)
 
-  iterator = tx.query(query)
+  iterator = transaction.query(query)
   answers = iterator.collect_concepts()
   result = [ answer.value() for answer in answers ]
 
   print_to_log("Result:", result)
 
 ## Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?
-def execute_query_2(question, tx):
+def execute_query_2(question, transaction):
   print_to_log("Question: ", question)
 
   query = [
     'match ',
-    '  $suspect isa person has city "London", has age > 50;',
-    '  $company isa company has name "Telecom";',
+    '  $suspect isa person, has city "London", has age > 50;',
+    '  $company isa company, has name "Telecom";',
     '  (customer: $suspect, provider: $company) isa contract;',
-    '  $pattern-callee isa person has age < 20;',
-    '  (caller: $suspect, callee: $pattern-callee) isa call has started-at $pattern-call-date;',
-    '  $target isa person has phone-number $phone-number, has is-customer false;',
-    '  (caller: $suspect, callee: $target) isa call has started-at $target-call-date;',
+    '  $pattern-callee isa person, has age < 20;',
+    '  (caller: $suspect, callee: $pattern-callee) isa call, has started-at $pattern-call-date;',
+    '  $target isa person, has phone-number $phone-number, has is-customer false;',
+    '  (caller: $suspect, callee: $target) isa call, has started-at $target-call-date;',
     '  $target-call-date > $pattern-call-date;',
     'get $phone-number;'
   ]
@@ -88,46 +88,47 @@ def execute_query_2(question, tx):
   print_to_log("Query:", "\n".join(query))
   query = "".join(query)
 
-  iterator = tx.query(query)
+  iterator = transaction.query(query)
   answers = iterator.collect_concepts()
   result = [ answer.value() for answer in answers ]
 
   print_to_log("Result:", result)
 
 ## "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?
-def execute_query_3(question, tx):
+def execute_query_3(question, transaction):
   print_to_log("Question: ", question)
 
   query = [
     'match ',
-    '  $common-contact isa person has phone-number $phone-number;',
-    '  $customer-a isa person has phone-number "+7 171 898 0853";',
-    '  $customer-b isa person has phone-number "+370 351 224 5176";',
+    '  $common-contact isa person, has phone-number $phone-number;',
+    '  $customer-a isa person, has phone-number "+7 171 898 0853";',
+    '  $customer-b isa person, has phone-number "+370 351 224 5176";',
     '  (caller: $customer-a, callee: $common-contact) isa call;',
     '  (caller: $customer-b, callee: $common-contact) isa call;',
     'get $phone-number;'
   ]
+
   print_to_log("Query:", "\n".join(query))
   query = "".join(query)
 
-  iterator = tx.query(query)
+  iterator = transaction.query(query)
   answers = iterator.collect_concepts()
   result = [ answer.value() for answer in answers ]
 
   print_to_log("Result:", result)
 
 ## Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
-def execute_query_4(question, tx):
+def execute_query_4(question, transaction):
   print_to_log("Question: ", question)
 
   query = [
     'match ',
-    '  $target isa person has phone-number "+48 894 777 5173";',
-    '  $company isa company has name "Telecom";',
-    '  $customer-a isa person has phone-number $phone-number-a;',
+    '  $target isa person, has phone-number "+48 894 777 5173";',
+    '  $company isa company, has name "Telecom";',
+    '  $customer-a isa person, has phone-number $phone-number-a;',
     '  (customer: $customer-a, provider: $company) isa contract;',
     '  (caller: $customer-a, callee: $target) isa call;',
-    '  $customer-b isa person has phone-number $phone-number-b;',
+    '  $customer-b isa person, has phone-number $phone-number-b;',
     '  (customer: $customer-b, provider: $company) isa contract;',
     '  (caller: $customer-b, callee: $target) isa call;',
     '  (caller: $customer-a, callee: $customer-b) isa call;',
@@ -136,63 +137,70 @@ def execute_query_4(question, tx):
   print_to_log("Query:", "\n".join(query))
   query = "".join(query)
 
-  iterator = tx.query(query)
+  iterator = transaction.query(query)
   answers = iterator.collect_concepts()
   result = [ answer.value() for answer in answers ]
 
   print_to_log("Result:", result)
 
 ## How does the average call duration among customers aged under 20 compare those aged over 40?
-def execute_query_5(question, tx):
+def execute_query_5(question, transaction):
   print_to_log("Question: ", question)
 
-  query_a = [
+  first_query = [
     'match',
-    '  $customer isa person has age < 20;',
-    '  $company isa company has name "Telecom";',
+    '  $customer isa person, has age < 20;',
+    '  $company isa company, has name "Telecom";',
     '  (customer: $customer, provider: $company) isa contract;',
-    '  (caller: $customer, callee: $anyone) isa call has duration $duration;',
-    'aggregate mean $duration;'
+    '  (caller: $customer, callee: $anyone) isa call, has duration $duration;',
+    'get $duration; mean $duration;'
   ]
-  print_to_log("Query:", "\n".join(query_a))
-  query_a = "".join(query_a)
+  print_to_log("Query:", "\n".join(first_query))
+  first_query = "".join(first_query)
 
-  iterator_a = tx.query(query_a)
-  result_a = next(iterator_a).number()
+  first_answer = list(transaction.query(first_query))
+  first_result = 0
+  if len(first_answer) > 0:
+    first_result = first_answer.number()
+
   result = ("Customers aged under 20 have made calls with average duration of " +
-  str(round(result_a)) + " seconds.\n")
+  str(round(first_result)) + " seconds.\n")
 
-  query_b = [
+  second_query = [
     'match ' +
     '  $customer isa person has age > 40;',
     '  $company isa company has name "Telecom";',
     '  (customer: $customer, provider: $company) isa contract;',
-    '  (caller: $customer, callee: $anyone) isa call has duration $duration;',
-    'aggregate mean $duration;'
+    '  (caller: $customer, callee: $anyone) isa call, has duration $duration;',
+    'get $duration; mean $duration;'
   ]
-  print_to_log("Query:", "\n".join(query_b))
-  query_b = "".join(query_b)
+  print_to_log("Query:", "\n".join(second_query))
+  second_query = "".join(second_query)
 
-  iterator_b = tx.query(query_b)
-  result_b = next(iterator_b).number()
+  second_answer = list(transaction.query(second_query))
+  second_result = 0
+
+  if len(second_answer) > 0:
+    second_result = second_answer.number()
+
   result += ("Customers aged over 40 have made calls with average duration of " +
-    str(round(result_b)) + " seconds.\n")
+    str(round(second_result)) + " seconds.\n")
 
   print_to_log("Result:", result)
 
 ##
-def execute_query_6(question, tx):
+def execute_query_6(question, transaction):
   print_to_log("Question: ", question)
 
 ##
-def execute_query_7(question, tx):
+def execute_query_7(question, transaction):
   print_to_log("Question: ", question)
 
-def execute_query_all(tx):
+def execute_query_all(transaction):
   for qs_func in questions_n_functions:
     qustion = qs_func["question"]
     query_function = qs_func["query_function"]
-    query_function(qustion, tx)
+    query_function(qustion, transaction)
     print("\n - - -  - - -  - - -  - - - \n")
 
 get_qs_func = [
@@ -257,13 +265,13 @@ if __name__ == "__main__":
   print("")
 
   ## create a transaction to talk to the phone_calls keyspace
-  client = grakn.Grakn(uri = "localhost:48555")
-  with client.session(keyspace = "phone_calls") as session:
-    with session.transaction(grakn.TxType.READ) as tx:
+  client = grakn.Grakn(uri="localhost:48555")
+  with client.session(keyspace="phone_calls") as session:
+    with session.transaction(grakn.TxType.READ) as transaction:
       ## execute the query for the selected question
       if qs_number == 0:
-        execute_query_all(tx)
+        execute_query_all(transaction)
       else:
         qustion = questions_n_functions[qs_number - 1]["question"]
         query_function = questions_n_functions[qs_number - 1]["query_function"]
-        query_function(qustion, tx)
+        query_function(qustion, transaction)
