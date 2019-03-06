@@ -56,7 +56,7 @@ bazel_rules_python()
 load("//dependencies/maven:dependencies.bzl", maven_dependencies_for_build = "maven_dependencies")
 maven_dependencies_for_build()
 
-## for Node.js
+# for Node.js
 
 load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
 rules_nodejs_dependencies()
@@ -69,22 +69,17 @@ npm_install(
     package_json = "//nodejs:package.json"
 )
 
-## for Python
-#git_repository(
-#    name = "io_bazel_rules_python",
-#    remote = "https://github.com/bazelbuild/rules_python.git",
-#    commit = "e6399b601e2f72f74e5aa635993d69166784dde1",
-#)
-#
-#load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
-#pip_repositories()
-#
-#pip_import(
-#    name = "local_pypi_dependencies",
-#    requirements = "//test/standalone/python:requirements.txt",
-#)
-#load("@local_pypi_dependencies//:requirements.bzl", "pip_install")
-#pip_install()
+# for Python
+
+load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+pip_repositories()
+
+pip_import(
+    name = "phone_calls_migration_json_pypi_dependencies",
+    requirements = "//python/migration/json:requirements.txt",
+)
+load("@phone_calls_migration_json_pypi_dependencies//:requirements.bzl", "pip_install")
+pip_install()
 
 
 ################################

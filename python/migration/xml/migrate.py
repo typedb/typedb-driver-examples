@@ -131,26 +131,25 @@ def parse_data_to_dictionaries(input):
 
 inputs = [
     {
-        "data_path": "files/phone-calls/data/companies",
+        "data_path": "python/migration/xml/files/phone-calls/data/companies",
         "template": company_template,
         "selector": "company"
     },
     {
-        "data_path": "files/phone-calls/data/people",
+        "data_path": "python/migration/xml/files/phone-calls/data/people",
         "template": person_template,
         "selector": "person"
     },
     {
-        "data_path": "files/phone-calls/data/contracts",
+        "data_path": "python/migration/xml/files/phone-calls/data/contracts",
         "template": contract_template,
         "selector": "contract"
     },
     {
-        "data_path": "files/phone-calls/data/calls",
+        "data_path": "python/migration/xml/files/phone-calls/data/calls",
         "template": call_template,
         "selector": "call"
     }
 ]
 
-if __name__ == "__main__":
-    build_phone_call_graph(inputs=inputs)
+build_phone_call_graph(inputs)
