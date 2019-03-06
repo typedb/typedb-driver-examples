@@ -24,6 +24,10 @@ public class PhoneCallsQueries {
     public static void main(String[] args) {
         List<QueryExample> queryExamples = initialiseQueryExamples();
 
+        if (args[0]) {
+            return queryExamples;
+        }
+
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("For which of these questions, on the phone_calls knowledge graph, do you want to execute the query?\n");

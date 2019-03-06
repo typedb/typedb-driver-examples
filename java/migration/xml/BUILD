@@ -1,26 +1,25 @@
 
 java_test(
-    name = "test-phone-calls-migration-json-java",
-    test_class = "grakn.example.TestPhoneCallsJSONMigration",
+    name = "test-phone-calls-migration-xml-java",
+    test_class = "grakn.example.TestPhoneCallsXMLMigration",
     srcs = [
-        "TestPhoneCallsJSONMigration.java",
-        "src/main/java/grakn/example/PhoneCallsJSONMigration.java"
+        "TestPhoneCallsXMLMigration.java",
+        "src/main/java/grakn/example/PhoneCallsXMLMigration.java"
     ],
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "@graknlabs_grakn_core//concept:concept",
         "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/com/google/code/gson:gson",
+        "//dependencies/maven/artifacts/javax/xml/stream:stax-api"
     ],
     classpath_resources = [
         "@graknlabs_grakn_core//test-integration/resources:logback-test",
     ],
     data = [
         "//java:schema.gql",
-        "files/phone-calls/data/calls.json",
-        "files/phone-calls/data/people.json",
-        "files/phone-calls/data/contracts.json",
-        "files/phone-calls/data/companies.json"
+        "files/phone-calls/data/calls.xml",
+        "files/phone-calls/data/people.xml",
+        "files/phone-calls/data/contracts.xml",
+        "files/phone-calls/data/companies.xml"
     ]
 )

@@ -3,22 +3,23 @@ package grakn.example;
 import grakn.client.GraknClient;
 import graql.lang.Graql;
 import static graql.lang.Graql.*;
-import static org.junit.Assert.assertEquals;
-
+import graql.lang.query.GraqlDefine;
 import graql.lang.query.GraqlGet;
-import graql.lang.query.GraqlQuery;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.*;
-import org.junit.runners.MethodSorters;
+import javax.xml.stream.XMLStreamException;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TestPhoneCallsJSONMigration {
+import org.junit.*;
+import static org.junit.Assert.assertEquals;
+
+
+public class TestPhoneCallsXMLMigration {
 
     static GraknClient client = new GraknClient("localhost:48555");
     static GraknClient.Session session = client.session("phone_calls");
@@ -30,19 +31,19 @@ public class TestPhoneCallsJSONMigration {
         try {
             byte[] encoded = Files.readAllBytes(Paths.get("java/schema.gql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
-            transaction.execute((GraqlQuery) Graql.parse(query));
+            transaction.execute((GraqlDefine) Graql.parse(query));
             transaction.commit();
             System.out.println("Loaded the phone_calls schema");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.setProperty("user.dir", new File("java/migration/json/").getAbsolutePath());
+        System.setProperty("user.dir", new File("java/migration/xml/").getAbsolutePath());
     }
 
     @Test
-    public void testPhoneCallsJSONMigration() throws IOException {
-        PhoneCallsJSONMigration.main(new String[]{});
+    public void testPhoneCallsXMLMigration() throws FileNotFoundException, XMLStreamException {
+        PhoneCallsXMLMigration.main(new String[]{});
         assertResults();
     }
 

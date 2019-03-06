@@ -72,14 +72,14 @@ public class PhoneCallsXMLMigration {
         Collection<Input> inputs = new ArrayList<>();
 
         // define template for constructing a company Graql insert query
-        inputs.add(new Input("files/phone-calls/data/companies", "company") {
+        inputs.add(new Input("/files/phone-calls/data/companies", "company") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
         // define template for constructing a person Graql insert query
-        inputs.add(new Input("files/phone-calls/data/people", "person") {
+        inputs.add(new Input("/files/phone-calls/data/people", "person") {
             @Override
             public String template(Json person) {
                 // insert person
@@ -102,7 +102,7 @@ public class PhoneCallsXMLMigration {
             }
         });
         // define template for constructing a contract Graql insert query
-        inputs.add(new Input("files/phone-calls/data/contracts", "contract") {
+        inputs.add(new Input("/files/phone-calls/data/contracts", "contract") {
             @Override
             public String template(Json contract) {
                 // match company
@@ -115,7 +115,7 @@ public class PhoneCallsXMLMigration {
             }
         });
         // define template for constructing a call Graql insert query
-        inputs.add(new Input("files/phone-calls/data/calls", "call") {
+        inputs.add(new Input("/files/phone-calls/data/calls", "call") {
             @Override
             public String template(Json call) {
                 // match caller
@@ -210,6 +210,6 @@ public class PhoneCallsXMLMigration {
     }
 
     public static Reader getReader(String relativePath) throws FileNotFoundException {
-        return new InputStreamReader(new FileInputStream(relativePath));
+        return new InputStreamReader(new FileInputStream(System.getProperty("user.dir") + relativePath));
     }
 }

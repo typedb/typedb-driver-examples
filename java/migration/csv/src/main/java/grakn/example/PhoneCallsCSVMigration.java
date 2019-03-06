@@ -69,14 +69,15 @@ public class PhoneCallsCSVMigration {
         Collection<Input> inputs = new ArrayList<>();
 
         // define template for constructing a company Graql insert query
-        inputs.add(new Input("files/phone-calls/data/companies") {
+        inputs.add(new Input("/files/phone-calls/data/companies") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
+
         // define template for constructing a person Graql insert query
-        inputs.add(new Input("files/phone-calls/data/people") {
+        inputs.add(new Input("/files/phone-calls/data/people") {
             @Override
             public String template(Json person) {
                 // insert person
@@ -98,8 +99,9 @@ public class PhoneCallsCSVMigration {
                 return graqlInsertQuery;
             }
         });
+
         // define template for constructing a contract Graql insert query
-        inputs.add(new Input("files/phone-calls/data/contracts") {
+        inputs.add(new Input("/files/phone-calls/data/contracts") {
             @Override
             public String template(Json contract) {
                 // match company
@@ -111,8 +113,9 @@ public class PhoneCallsCSVMigration {
                 return graqlInsertQuery;
             }
         });
+
         // define template for constructing a call Graql insert query
-        inputs.add(new Input("files/phone-calls/data/calls") {
+        inputs.add(new Input("/files/phone-calls/data/calls") {
             @Override
             public String template(Json call) {
                 // match caller
@@ -126,6 +129,7 @@ public class PhoneCallsCSVMigration {
                 return graqlInsertQuery;
             }
         });
+
         return inputs;
     }
 
@@ -185,6 +189,6 @@ public class PhoneCallsCSVMigration {
     }
 
     public static Reader getReader(String relativePath) throws FileNotFoundException {
-        return new InputStreamReader(new FileInputStream(relativePath));
+        return new InputStreamReader(new FileInputStream(System.getProperty("user.dir") + relativePath));
     }
 }
