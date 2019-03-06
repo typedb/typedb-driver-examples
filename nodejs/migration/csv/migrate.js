@@ -11,10 +11,10 @@ const fs = require("fs");
 const papa = require("papaparse");
 
 const inputs = [
-	{ dataPath: "files/phone-calls/data/companies", template: companyTemplate },
-	{ dataPath: "files/phone-calls/data/people", template: personTemplate },
-	{ dataPath: "files/phone-calls/data/contracts", template: contractTemplate },
-	{ dataPath: "files/phone-calls/data/calls", template: callTemplate }
+	{ dataPath: "nodejs/migration/csv/files/phone-calls/data/companies", template: companyTemplate },
+	{ dataPath: "nodejs/migration/csv/files/phone-calls/data/people", template: personTemplate },
+	{ dataPath: "nodejs/migration/csv/files/phone-calls/data/contracts", template: contractTemplate },
+	{ dataPath: "nodejs/migration/csv/files/phone-calls/data/calls", template: callTemplate }
 ];
 
 /**
@@ -23,6 +23,7 @@ const inputs = [
  * 2. creates a session to the targeted keyspace
  * 3. loads csv to Grakn for each file
  * 4. closes the session
+ * 5. closes the client
  */
 async function buildPhoneCallGraph() {
 	const client = new Grakn("localhost:48555"); // 1
@@ -34,6 +35,7 @@ async function buildPhoneCallGraph() {
 	}
 
 	await session.close(); // 4
+	client.close(); // 5
 }
 
 /**
@@ -46,7 +48,7 @@ async function loadDataIntoGrakn(input, session) {
 
 	for (item of items) {
 		let transaction;
-		transaction = await session.transaction(Grakn.txType.WRITE);
+		transaction = await session.transaction().write();
 
 		const graqlInsertQuery = input.template(item);
 		console.log("Executing Graql Query: " + graqlInsertQuery);

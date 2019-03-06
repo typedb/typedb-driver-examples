@@ -1,0 +1,1 @@
+exports_files(["schema.gql", "package.json"])

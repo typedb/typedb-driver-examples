@@ -12,22 +12,22 @@ const xmlStream = require("xml-stream");
 
 const inputs = [
 	{
-		dataPath: "files/phone-calls/data/companies",
+		dataPath: "nodejs/migration/xml/files/phone-calls/data/companies",
 		template: companyTemplate,
 		selector: "company"
 	},
 	{
-		dataPath: "files/phone-calls/data/people",
+		dataPath: "nodejs/migration/xml/files/phone-calls/data/people",
 		template: personTemplate,
 		selector: "person"
 	},
 	{
-		dataPath: "files/phone-calls/data/contracts",
+		dataPath: "nodejs/migration/xml/files/phone-calls/data/contracts",
 		template: contractTemplate,
 		selector: "contract"
 	},
 	{
-		dataPath: "files/phone-calls/data/calls",
+		dataPath: "nodejs/migration/xml/files/phone-calls/data/calls",
 		template: callTemplate,
 		selector: "call"
 	}
@@ -39,6 +39,7 @@ const inputs = [
  * 2. creates a session to the targeted keyspace
  * 3. loads xml to Grakn for each file
  * 4. closes the session
+ * 5. closes the client
  */
 async function buildPhoneCallGraph() {
 	const client = new Grakn("localhost:48555"); // 1
@@ -50,6 +51,7 @@ async function buildPhoneCallGraph() {
 	}
 
 	await session.close(); // 4
+    client.close(); // 5
 };
 
 /**
@@ -61,7 +63,7 @@ async function loadDataIntoGrakn(input, session) {
 	const items = await parseDataToObjects(input);
 
 	for (item of items) {
-		const transaction = await session.transaction(Grakn.txType.WRITE);
+		const transaction = await session.transaction().write();
 
 		const graqlInsertQuery = input.template(item);
 		console.log("Executing Graql Query: " + graqlInsertQuery);

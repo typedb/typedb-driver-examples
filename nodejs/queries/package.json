@@ -4,7 +4,8 @@
   "description": "A number of graql query examples executed on the phone_calls knowledge graph",
   "main": "queries.js",
   "scripts": {
-    "queries": "node queries.js"
+    "queries": "node -e 'require(\"./queries\").init()'"
+
   },
   "repository": {
     "type": "git",

@@ -31,43 +31,44 @@ pip_repositories()
 git_repository(
     name = "graknlabs_build_tools",
     remote = "https://github.com/graknlabs/build-tools.git",
-    commit = "e474eb86f67f56640da5cb91604aaf23d3eb7147"
+    commit = "ded946f120c6194f82c7ed6b3f80d4d330e79ac3"
 )
-load("@graknlabs_build_tools//bazel:dependencies.bzl", "bazel_common", "bazel_deps")
+
+####################
+# Load Build Tools #
+####################
+
+load("@graknlabs_build_tools//bazel:dependencies.bzl", "bazel_common", "bazel_deps",
+     "bazel_toolchain", "bazel_rules_docker", "bazel_rules_nodejs", "bazel_rules_python")
 bazel_common()
 bazel_deps()
+bazel_toolchain()
+bazel_rules_docker()
+bazel_rules_nodejs()
+bazel_rules_python()
 
 ###########################
 # Load local dependencies #
 ###########################
 
 # for Java
+
 load("//dependencies/maven:dependencies.bzl", maven_dependencies_for_build = "maven_dependencies")
 maven_dependencies_for_build()
 
 ## for Node.js
-#git_repository(
-#    name = "build_bazel_rules_nodejs",
-#    remote = "https://github.com/graknlabs/rules_nodejs.git",
-#    commit = "1c9b8cb1e1f39214fe27bafa44d1597cdc9d8ff5",
-#)
-#
-#load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
-#rules_nodejs_dependencies()
-#
-#load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "npm_install")
-#node_repositories()
-#
-#npm_install(
-#    name = "nodejs_dependencies",
-#    package_json = "//test/standalone/nodejs:package.json",
-#    data = [
-#      "@build_bazel_rules_nodejs//internal/babel_library:package.json",
-#      "@build_bazel_rules_nodejs//internal/babel_library:babel.js",
-#      "@build_bazel_rules_nodejs//internal/babel_library:yarn.lock"
-#    ]
-#)
-#
+
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+rules_nodejs_dependencies()
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "npm_install")
+node_repositories()
+
+npm_install(
+    name = "nodejs_dependencies",
+    package_json = "//nodejs:package.json"
+)
+
 ## for Python
 #git_repository(
 #    name = "io_bazel_rules_python",

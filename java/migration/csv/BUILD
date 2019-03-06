@@ -1,6 +1,6 @@
 
 java_test(
-    name = "test-phone-calls-migration-csv-java",
+    name = "test-phone-calls-migration-csv-java-java",
     test_class = "grakn.example.TestPhoneCallsCSVMigration",
     srcs = [
         "TestPhoneCallsCSVMigration.java",
@@ -27,7 +27,7 @@ java_test(
 ## The following is used by test-phone-calls-queries-java
 
 java_library(
-    name = "phone-calls-migration-csv",
+    name = "phone-calls-migration-csv-java",
     srcs = ["src/main/java/grakn/example/PhoneCallsCSVMigration.java"],
     deps = [
         "@graknlabs_client_java//:client-java",

@@ -77,7 +77,7 @@ const computeQsFunc = [
 	}
 ];
 
-const questionsAndFunctions = getQsFunc
+const queryExamples = getQsFunc
 	.concat(aggregateQsFunc)
 	.concat(computeQsFunc);
 
@@ -118,6 +118,8 @@ async function executeQuery1(question, transaction) {
 	);
 
 	printToLog("Result:", result);
+
+	return result;
 }
 
 // who are the people aged under 20 who have received at least one phone call from a Cambridge customer aged over 60?
@@ -150,6 +152,8 @@ async function executeQuery2(question, transaction) {
 	);
 
 	printToLog("Result:", result);
+
+    return result;
 }
 
 // "Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?
@@ -179,6 +183,8 @@ async function executeQuery3(question, transaction) {
 	);
 
 	printToLog("Result:", result);
+
+    return result;
 }
 
 //  Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?",
@@ -212,6 +218,8 @@ async function executeQuery4(question, transaction) {
 	);
 
 	printToLog("Result:", result);
+
+    return result;
 }
 
 // How does the average call duration among customers aged under 20 compare those aged over 40?
@@ -230,6 +238,7 @@ async function executeQuery5(question, transaction) {
 	printToLog("Query:", firstQuery.join("\n"));
 	firstQuery = firstQuery.join("");
 
+    result = [];
 	const firstIterator = await transaction.query(firstQuery);
 	const firstAnswer = await firstIterator.collect();
 	let firstResult = 0;
@@ -237,10 +246,12 @@ async function executeQuery5(question, transaction) {
 		firstResult = firstAnswer[0].number();
 	}
 
-	let result =
+	let output =
 		"Customers aged under 20 have made calls with average duration of " +
 		Math.round(firstResult) +
 		" seconds.\n";
+
+	result.push(firstResult);
 
 	secondQuery = [
 		'match ' +
@@ -260,12 +271,16 @@ async function executeQuery5(question, transaction) {
 		secondResult = secondAnswer[0].number();
 	}
 
-	result +=
+	output +=
 		"Customers aged over 40 have made calls with average duration of " +
 		Math.round(secondResult) +
 		" seconds.\n";
 
-	printToLog("Result:", result);
+    result.push(secondResult);
+
+	printToLog("Result:", output);
+
+    return result;
 }
 
 //
@@ -280,16 +295,13 @@ async function executeQuery7(question, transaction) {
 
 // execute all queries for all questions
 async function executeAllQueries(transaction) {
-	for (qsFunc of questionsAndFunctions) {
-		qustion = qsFunc["question"];
-		queryFunction = qsFunc["queryFunction"];
+	for (queryExample of queryExamples) {
+		qustion = queryExample["question"];
+		queryFunction = queryExample["queryFunction"];
 		await queryFunction(qustion, transaction);
 		log("\n - - -  - - -  - - -  - - - \n");
 	}
 }
-
-// Go
-executeQueries();
 
 /**
  * this is the main function
@@ -299,8 +311,8 @@ executeQueries();
 async function executeQueries() {
 	// print questions
 	log("\nSelect a question for which you'd like to execute the query?\n");
-	for (let [index, qsFunc] of questionsAndFunctions.entries())
-		log(index + 1 + ". " + qsFunc["question"]);
+	for (let [index, queryExample] of queryExamples.entries())
+		log(index + 1 + ". " + queryExample["question"]);
 	log("");
 
 	// get user's selection and call the function for it
@@ -319,7 +331,7 @@ async function executeQueries() {
 function executeBasedOnSelection(rl) {
 	const question = "choose a number (0 for to answer all questions): ";
 	rl.question(question, async function (answer, rl) {
-		if (answer >= 0 && answer < questionsAndFunctions.length + 1) {
+		if (answer >= 0 && answer < queryExamples.length + 1) {
 			await processSelection(answer);
 			process.exit(0);
 		}
@@ -332,6 +344,7 @@ function executeBasedOnSelection(rl) {
  * 3. create a transaction, off the session
  * 4. call the function corresponding to the selected question
  * 5. close the session
+ * 6. closes the client
  * @param {integer} qsNumber the (question) number selected by the user
  */
 async function processSelection(qsNumber) {
@@ -342,10 +355,14 @@ async function processSelection(qsNumber) {
 	if (qsNumber == 0) {
 		await executeAllQueries(transaction); // 4
 	} else {
-		const question = questionsAndFunctions[qsNumber - 1]["question"];
-		const queryFunction = questionsAndFunctions[qsNumber - 1]["queryFunction"];
+		const question = queryExamples[qsNumber - 1]["question"];
+		const queryFunction = queryExamples[qsNumber - 1]["queryFunction"];
 		await queryFunction(question, transaction); // 4
 	}
 
-	session.close(); // 5
+	await session.close(); // 5
+	client.close(); // 6
 }
+
+module.exports.queryExamples = queryExamples;
+module.exports.init = executeQueries;

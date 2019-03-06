@@ -19,10 +19,10 @@ const { streamArray } = require("stream-json/streamers/StreamArray");
 const { chain } = require("stream-chain");
 
 const inputs = [
-	{ dataPath: "files/phone-calls/data/companies", template: companyTemplate },
-	{ dataPath: "files/phone-calls/data/people", template: personTemplate },
-	{ dataPath: "files/phone-calls/data/contracts", template: contractTemplate },
-	{ dataPath: "files/phone-calls/data/calls", template: callTemplate }
+	{ dataPath: "nodejs/migration/json/files/phone-calls/data/companies", template: companyTemplate },
+	{ dataPath: "nodejs/migration/json/files/phone-calls/data/people", template: personTemplate },
+	{ dataPath: "nodejs/migration/json/files/phone-calls/data/contracts", template: contractTemplate },
+	{ dataPath: "nodejs/migration/json/files/phone-calls/data/calls", template: callTemplate }
 ];
 
 /**
@@ -31,6 +31,7 @@ const inputs = [
  * 2. creates a session to the targeted keyspace
  * 3. loads json to Grakn for each file
  * 4. closes the session
+ * 5. closes the client
  */
 
 async function buildPhoneCallGraph() {
@@ -43,6 +44,7 @@ async function buildPhoneCallGraph() {
 	}
 
 	await session.close(); // 4
+	client.close(); // 5
 }
 
 /**
@@ -54,7 +56,7 @@ async function loadDataIntoGrakn(input, session) {
 	const items = await parseDataToObjects(input);
 
 	for (item of items) {
-		const transaction = await session.transaction(Grakn.txType.WRITE);
+		const transaction = await session.transaction().write();
 
 		const graqlInsertQuery = input.template(item);
 		console.log("Executing Graql Query: " + graqlInsertQuery);
