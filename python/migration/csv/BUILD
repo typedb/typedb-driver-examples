@@ -26,3 +26,13 @@ py_test(
         "files/phone-calls/data/companies.csv"
     ]
 )
+
+## The following is used by test-phone-calls-queries-python
+
+exports_files(["migrate.py"])
+
+filegroup(
+    name = "phone-calls-csv-data",
+    srcs = glob(["files/**/*.csv"]),
+    visibility = ["//visibility:public"]
+)

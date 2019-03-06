@@ -77,9 +77,7 @@ const computeQsFunc = [
 	}
 ];
 
-const queryExamples = getQsFunc
-	.concat(aggregateQsFunc)
-	.concat(computeQsFunc);
+const queryExamples = getQsFunc.concat(aggregateQsFunc).concat(computeQsFunc);
 
 // utils
 const log = console.log;

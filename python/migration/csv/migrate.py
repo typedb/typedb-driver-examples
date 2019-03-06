@@ -110,7 +110,8 @@ def parse_data_to_dictionaries(input):
             items.append(item)  # 2
     return items
 
-inputs = [
+
+Inputs = [
     {
         "data_path": "python/migration/csv/files/phone-calls/data/companies",
         "template": company_template
@@ -129,4 +130,5 @@ inputs = [
     }
 ]
 
-build_phone_call_graph(inputs)
+if __name__ == "__main__":
+    build_phone_call_graph(inputs=Inputs)

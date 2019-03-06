@@ -1,6 +1,8 @@
 import grakn
 import unittest
 
+import migrate
+
 
 class TestPhoneCallsJSONMigration(unittest.TestCase):
 
@@ -16,7 +18,7 @@ class TestPhoneCallsJSONMigration(unittest.TestCase):
                 print("Loaded the phone_calls schema")
 
     def test_phone_calls_csv_migration(self):
-        import migrate
+        migrate.build_phone_call_graph(migrate.Inputs)
 
         with self._session.transaction(grakn.TxType.READ) as transaction:
             number_of_people = transaction.query("match $x isa person; get $x; count;").next().number()
