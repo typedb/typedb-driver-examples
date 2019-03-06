@@ -23,3 +23,24 @@ java_test(
         "files/phone-calls/data/companies.csv"
     ]
 )
+
+## The following is used by test-phone-calls-queries-java
+
+java_library(
+    name = "phone-calls-migration-csv",
+    srcs = ["src/main/java/grakn/example/PhoneCallsCSVMigration.java"],
+    deps = [
+        "@graknlabs_client_java//:client-java",
+        "@graknlabs_graql//java:graql",
+        "//dependencies/maven/artifacts/org/sharegov:mjson",
+        "//dependencies/maven/artifacts/com/univocity:univocity-parsers",
+    ],
+    visibility = ["//visibility:public"]
+)
+
+
+filegroup(
+    name = "phone-calls-data-csv",
+    srcs = glob(["files/phone-calls/data/*.csv"]),
+    visibility = ["//visibility:public"]
+)

@@ -9,7 +9,7 @@ import java.util.*;
 
 
 public class PhoneCallsQueries {
-    abstract static class QueryExample {
+    public abstract static class QueryExample {
         String question;
 
         public QueryExample(String question) {
@@ -18,15 +18,11 @@ public class PhoneCallsQueries {
 
         String getQuestion() { return this.question; }
 
-        abstract void executeQuery(GraknClient.Transaction transaction);
+        public abstract <T> T executeQuery(GraknClient.Transaction transaction);
     }
 
     public static void main(String[] args) {
         List<QueryExample> queryExamples = initialiseQueryExamples();
-
-        if (args[0]) {
-            return queryExamples;
-        }
 
         Scanner scanner = new Scanner(System.in);
 
@@ -51,7 +47,7 @@ public class PhoneCallsQueries {
 
         GraknClient client = new GraknClient("localhost:48555");
         GraknClient.Session session = client.session("phone_calls");
-        GraknClient.Transaction transaction = session.transaction(GraknClient.Transaction.Type.READ);
+        GraknClient.Transaction transaction = session.transaction().read();
 
         if (qsNumber == 0) {
             queryExamples.forEach(queryExample -> {
@@ -72,7 +68,7 @@ public class PhoneCallsQueries {
 
         queryExamples.add(new QueryExample("Since September 14th, which customers called the person with phone number +86 921 547 9004?") {
             @Override
-            void executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(GraknClient.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -92,16 +88,19 @@ public class PhoneCallsQueries {
                 List<String> result = new ArrayList<>();
                 transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
                     result.add(
-                            answer.asConceptMap().get("phone-number").asAttribute().value().toString()
+                            answer.get("phone-number").asAttribute().value().toString()
                     );
                 });
+
                 printToLog("Result: ", String.join(", ", result));
+
+                return (T) result;
             }
         });
 
         queryExamples.add(new QueryExample("Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?") {
             @Override
-            void executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(GraknClient.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -123,16 +122,19 @@ public class PhoneCallsQueries {
                 List<String> result = new ArrayList<>();
                 transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
                     result.add(
-                            answer.asConceptMap().get("phone-number").asAttribute().value().toString()
+                            answer.get("phone-number").asAttribute().value().toString()
                     );
                 });
+
                 printToLog("Result: ", String.join(", ", result));
+
+                return (T) result;
             }
         });
 
         queryExamples.add(new QueryExample("Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?") {
             @Override
-            void executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(GraknClient.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -148,18 +150,22 @@ public class PhoneCallsQueries {
                 printToLog("Query:", String.join("\n", queryAsList));
                 String query = String.join("", queryAsList);
 
+                Set<String> result = new HashSet<>();
                 transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
                     result.add(
-                            answer.asConceptMap().get("phone-number").asAttribute().value().toString()
+                            answer.get("phone-number").asAttribute().value().toString()
                     );
                 });
+
                 printToLog("Result: ", String.join(", ", result));
+
+                return (T) result;
             }
         });
 
         queryExamples.add(new QueryExample("Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?") {
             @Override
-            void executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(GraknClient.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -181,16 +187,19 @@ public class PhoneCallsQueries {
 
                 Set<String> result = new HashSet<>();
                 transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
-                    result.add(answer.asConceptMap().get("phone-number-a").asAttribute().value().toString());
-                    result.add(answer.asConceptMap().get("phone-number-b").asAttribute().value().toString());
+                    result.add(answer.get("phone-number-a").asAttribute().value().toString());
+                    result.add(answer.get("phone-number-b").asAttribute().value().toString());
                 });
+
                 printToLog("Result: ", String.join(", ", result));
+
+                return (T) result;
             }
         });
 
         queryExamples.add(new QueryExample("How does the average call duration among customers aged under 20 compare those aged over 40?") {
             @Override
-            void executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(GraknClient.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> firstQueryAsList = Arrays.asList(
@@ -205,13 +214,16 @@ public class PhoneCallsQueries {
                 printToLog("First Query:", String.join("\n", firstQueryAsList));
                 String firstQuery = String.join("", firstQueryAsList);
 
-                List<Value> firstAnswers = transaction.execute((GraqlGet.Aggregate) parse(firstQuery));
+                List<Float> result = new ArrayList<>();
+
+                List<Numeric> firstAnswers = transaction.execute((GraqlGet.Aggregate) parse(firstQuery));
                 float fisrtResult = 0;
                 if (firstAnswers.size() > 0) {
-                    fisrtResult = firstAnswers.get(0).asValue().number().floatValue();
+                    fisrtResult = firstAnswers.get(0).number().floatValue();
+                    result.add(fisrtResult);
                 }
 
-                String result = "Customers aged under 20 have made calls with average duration of " + fisrtResult + " seconds.\n";
+                String output = "Customers aged under 20 have made calls with average duration of " + fisrtResult + " seconds.\n";
 
                 List<String> secondQueryAsList = Arrays.asList(
                         "match",
@@ -226,13 +238,16 @@ public class PhoneCallsQueries {
                 String secondQuery = String.join("", secondQueryAsList);
 
                 float secondResult = 0;
-                List<Value> secondAnswers = transaction.execute((GraqlGet.Aggregate) parse(secondQuery));
+                List<Numeric> secondAnswers = transaction.execute((GraqlGet.Aggregate) parse(secondQuery));
                 if (secondAnswers.size() > 0) {
-                    secondResult = secondAnswers.get(0).asValue().number().floatValue();
+                    secondResult = secondAnswers.get(0).number().floatValue();
+                    result.add(secondResult);
                 }
-                result += "Customers aged over 40 have made calls with average duration of " + secondResult + " seconds.\n";
+                output += "Customers aged over 40 have made calls with average duration of " + secondResult + " seconds.\n";
 
-                printToLog("Result: ", String.join(", ", result));
+                printToLog("Result: ", output);
+
+                return (T) result;
 
             }
         });
@@ -264,6 +279,10 @@ public class PhoneCallsQueries {
 //        });
 
         return queryExamples;
+    }
+
+    public static List<QueryExample> getTestSubjects() {
+        return initialiseQueryExamples();
     }
 
     static void printToLog(String title, String content) {
