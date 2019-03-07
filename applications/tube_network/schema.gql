@@ -14,15 +14,6 @@
 
 define
 
-<<<<<<< HEAD:applications/tube-network/tube_network_example/src/tube_schema.gql
-identifier sub attribute datatype string;
-naptan-id sub attribute datatype string;
-name sub attribute datatype string;
-lat sub attribute datatype double;
-lon sub attribute datatype double;
-duration sub attribute datatype long;
-distance sub attribute datatype double;
-=======
 identifier sub attribute,
 	datatype string;
 naptan-id sub attribute,
@@ -37,7 +28,6 @@ duration sub attribute,
 	datatype double;
 distance sub attribute,
 	datatype double;
->>>>>>> 24fe9781eb26a8f42a3b307d293d057a9a31dc33:applications/tube_network/schema.gql
 
 station sub entity,
 	key naptan-id,
@@ -49,10 +39,6 @@ station sub entity,
 	plays end,
 	plays origin,
 	plays destination,
-<<<<<<< HEAD:applications/tube-network/tube_network_example/src/tube_schema.gql
-	plays contained-station,
-	plays neighbour;
-=======
 	plays contained-station;
 
 tube-line sub entity,
@@ -64,7 +50,6 @@ route-section sub entity,
 	has duration,
 	plays section,
 	plays service;
->>>>>>> 24fe9781eb26a8f42a3b307d293d057a9a31dc33:applications/tube_network/schema.gql
 
 # Try using this sentence to formulate the structure of a relationship:
 # A <relationship> has a <role> in the form of a <subject> (<subject> is any concept, which could be an entity, relationship, or attribute)
@@ -78,48 +63,13 @@ route sub relationship,
 	relates destination as stop,
 	relates route-operator;
 
-<<<<<<< HEAD:applications/tube-network/tube_network_example/src/tube_schema.gql
-route-section sub entity,
-	key identifier,
-	has duration,
-	plays section,
-	plays service;
-
-tunnel sub relationship,
-	key identifier,
-=======
 tunnel sub relationship,
 	key identifier,
 	has distance,
->>>>>>> 24fe9781eb26a8f42a3b307d293d057a9a31dc33:applications/tube_network/schema.gql
 	relates beginning,
 	relates end,
 	relates service;
 
-<<<<<<< HEAD:applications/tube-network/tube_network_example/src/tube_schema.gql
-tube-line sub entity,
-	key name,
-	plays route-operator;
-
 zone sub relationship,
 	key name,
 	relates contained-station;
-
-# neighbourship is an extra idea that is not critical. Refer to the README for more info
-neighbourship sub relationship,
-	has distance,
-	relates neighbour;
-
-neighbouring sub rule,
-	when {
-		$s1 isa station;
-		$s2 isa station;
-		($s1, $s2) isa tunnel;
-	} then {
-		(neighbour: $s1, neighbour: $s2) isa neighbourship;
-	};
-=======
-zone sub relationship,
-	key name,
-	relates contained-station;
->>>>>>> 24fe9781eb26a8f42a3b307d293d057a9a31dc33:applications/tube_network/schema.gql
