@@ -22,7 +22,7 @@ def print_to_log(title, content):
   print("\n")
 
 # How many stations do exist?
-def execute_query_1(question, transaction):
+def query_station_count(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute count in station;'
@@ -36,7 +36,7 @@ def execute_query_1(question, transaction):
 
 
 # How long is the shortest trip between two stations?
-def execute_query_2(question, transaction):
+def query_shortest_trip(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute min of duration, in route-section;'
@@ -50,7 +50,7 @@ def execute_query_2(question, transaction):
 
 
 # Which is the west most station in London?
-def execute_query_3(question, transaction):
+def query_northernmost_station(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute min of lat, in station;'
@@ -74,11 +74,11 @@ def execute_query_3(question, transaction):
     result = [ answer.value() for answer in answers ]
 
 
-    print_to_log("West most stations with " + str(lat) + " are: ", result)
+    print_to_log("Northmost stations with " + str(lat) + " are: ", result)
 
 
 # How long is the longest trip between two stations?
-def execute_query_4(question, transaction):
+def query_longest_trip(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute max of duration, in route-section;'
@@ -118,7 +118,7 @@ def execute_query_4(question, transaction):
 
 
 # What's the average duration of all trips?
-def execute_query_5(question, transaction):
+def query_avg_duration(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute mean of duration, in route-section;'
@@ -132,7 +132,7 @@ def execute_query_5(question, transaction):
 
 
 # What's the median duration among all trips?
-def execute_query_6(question, transaction):
+def query_median_duration(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute median of duration, in route-section;'
@@ -145,8 +145,8 @@ def execute_query_6(question, transaction):
     print("Median of durations: " + str(median_duration))
 
 
-# What's the median duration among all trips?
-def execute_query_7(question, transaction):
+# What's the standard deviation of trip durations?
+def query_std_duration(question, transaction):
     print_to_log("Question: ", question)
 
     query = 'compute std of duration, in route-section;'
@@ -180,31 +180,31 @@ if __name__ == "__main__":
     questions_n_functions = [
         {
             "question": "How many stations do exist?",
-            "query_function": execute_query_1
+            "query_function": query_station_count
         },
         {
             "question": "How long is the shortest trip between two stations?",
-            "query_function": execute_query_2
+            "query_function": query_shortest_trip
         },
         {
-            "question": "Which is the west most station in London?",
-            "query_function": execute_query_3
+            "question": "Which is the northernmost station in London?",
+            "query_function": query_northernmost_station
         },
         {
             "question": "How long is the longest trip between two stations?",
-            "query_function": execute_query_4
+            "query_function": query_longest_trip
         },
         {
             "question": "What's the average duration of all trips?",
-            "query_function": execute_query_5
+            "query_function": query_avg_duration
         },
         {
             "question": "What's the median duration among all trips?",
-            "query_function": execute_query_6
+            "query_function": query_median_duration
         },
         {
             "question": "What's the standard deviation of trip durations?",
-            "query_function": execute_query_7
+            "query_function": query_std_duration
         }
     ]
 
