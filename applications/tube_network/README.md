@@ -66,7 +66,7 @@ get $sta1-nam, $sta2-nam, $tul-nam, $dur; limit 30;
 To gain an overall understanding of the available statistical queries in Grakn, try the [`src/statistics.py`](src/statistics.py).
 As soon as you run `python3 -m tube_network.src.statistics`, the terminal enters the interactive mode, where you'll be able to select a question of your choice and observe how the answer is obtained.
 
-![statistics](images/statistics.py)
+![statistics](images/statistics.png)
 
 ## Try the Journey Planner
 To try the out-of-the-box `compute path` query of Grakn, you can run the [`src/journey_planner.py`](src/journey_planner.py).
