@@ -26,10 +26,10 @@ See the _Quickstart_ for how to get going immediately, or read on for more info.
         - Try the journey planner: `python3 -m tube_network.src.journey_planner`
         - Interact with the journey planner interface: `python3 -m tube_network.src.app`
 
-## Downloading Data
+## Download Data
 The data necessary to build a Grakn of the Tube Network is already included in this repository, the code to acquire it can be found in [`data/download.py`](data/download.py).
 
-## Importing Data
+## Import Data
 We can import this data into the Grakn keyspace we have just created. The name of the keyspace is set in `settings.py`, so you can change it there if you need to. You don't have to implement settings in this way in your own application.
 Check Grakn is up and running: `./grakn server status`
 To import, run the [`src/migration.py`](src/migration.py), either in your IDE, or from the grakn_examples directory as follows:
@@ -49,7 +49,7 @@ Once complete, you have stored the tube network data in Grakn!
 Now you're ready to start playing with the data.
 
 
-## Insights
+## Gain Insights
 Now you can query the database, you can try asking more complex questions, like asking for the time between stations of over 8 minutes:
 ```
 match
