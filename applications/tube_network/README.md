@@ -95,7 +95,7 @@ Opening the demo app for the first time may take up to a minute.
 - Press `-`/`_` to zoom out
 - Press `c` to clear the map of analytics
 
-#### Find Shortest Path
+### Find Shortest Path
 Hold `shift` and click on a station or the station's name (station _A_). Do the same on another station (station _B_). This will show the shortest path via stations and tunnels to connect _A_ and _B_.
 Hold `shift` and click on a further station _C_ to add the path(s) from _B_ to _C_.
 So, you should be able to find the shortest path from some station _A_ to some station _E_, via stations _B_, _C_ and _D_.
@@ -103,16 +103,16 @@ Use `q` to clear the shortest path(s), or `c` to remove anything that has been d
 ![shortest path](images/shortest-path.png)
 
 
-#### Compute Centrality
+### Compute Centrality
 Keymap:
 
-Press `d` to `compute centrality of station, in [station, tunnel], using degree;`
+#### Press `d` to `compute centrality of station, in [station, tunnel], using degree;`
 ![centrality tunnel degree](images/centrality-tunnel-degree.png)
 
-Press `k` to `compute centrality of station, in [station, tunnel], using k-core;`
+#### Press `k` to `compute centrality of station, in [station, tunnel], using k-core;`
 ![centrality tunnel k-core](images/centrality-tunnel-k-core.png)
 
-Press `r` to `compute centrality of the station, in [station, route], using degree;`
+#### Press `r` to `compute centrality of the station, in [station, route], using degree;`
 ![centrality route degree](images/centrality-route-degree.png)
 
-From any state, press `c` to clear the map of analytics.
+#### From any state, press `c` to clear the map of analytics.
