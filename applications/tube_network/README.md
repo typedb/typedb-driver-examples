@@ -42,14 +42,14 @@ python3 -m tube_network.src.migration
 The content of [`src/migration.py`](src/migration.py) is a python script that:
 1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing Graql relationship/entity insert queries.
 2. the constructed Graql insert queries, after basic uniqueness validation, get stored as items of arrays within a dictionary.
-3. the dictionary containing all the Graql queries, gets flattened, to prepare the data in two chunks of entities and relationships for a series of concurrent insertions.
+3. the dictionary containing all the Graql queries is flattened to prepare the data in two chunks, one chunk of entities and one chunk of relationships, for a series of concurrent insertions.
 4. lastly, a set of processes initiate the set of transactions that perform the Graql insert queries on the `tube_network` keyspace.
 
 Once complete, you have stored the tube network data in Grakn!
 Now you're ready to start playing with the data.
 
 
-## Reasoning
+## Insights
 Now you can query the database, you can try asking more complex questions, like asking for the time between stations of over 8 minutes:
 ```
 match
@@ -64,6 +64,9 @@ get $sta1-nam, $sta2-nam, $tul-nam, $dur; limit 30;
 
 ## Retrieve Statistical Information
 To gain an overall understanding of the available statistical queries in Grakn, try the [`src/statistics.py`](src/statistics.py).
+As soon as you run `python3 -m tube_network.src.statistics`, the terminal enters the interactive mode, where you'll be able to select a question of your choice and observe how the answer is obtained.
+
+![statistics](images/statistics.py)
 
 ## Try the Journey Planner
 To try the out-of-the-box `compute path` query of Grakn, you can run the [`src/journey_planner.py`](src/journey_planner.py).
@@ -97,11 +100,19 @@ Hold `shift` and click on a station or the station's name (station _A_). Do the 
 Hold `shift` and click on a further station _C_ to add the path(s) from _B_ to _C_.
 So, you should be able to find the shortest path from some station _A_ to some station _E_, via stations _B_, _C_ and _D_.
 Use `q` to clear the shortest path(s), or `c` to remove anything that has been drawn on top of the map.
+![shortest path](images/shortest-path.png)
+
 
 #### Compute Centrality
 Keymap:
 
 Press `d` to `compute centrality of station, in [station, tunnel], using degree;`
+![centrality tunnel degree](images/centrality-tunnel-degree.png)
+
 Press `k` to `compute centrality of station, in [station, tunnel], using k-core;`
+![centrality tunnel k-core](images/centrality-tunnel-k-core.png)
+
 Press `r` to `compute centrality of the station, in [station, route], using degree;`
+![centrality route degree](images/centrality-route-degree.png)
+
 From any state, press `c` to clear the map of analytics.
