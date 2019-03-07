@@ -32,7 +32,7 @@ if __name__ == "__main__":
         while not valid_from_name:
             from_station_name = input("Enter the name of the station you're travelling from: ").title()
 
-            print("Verifying station bane '" + from_station_name + "' ...")
+            print("Verifying station name '" + from_station_name + "' ...")
             with session.transaction(grakn.TxType.READ) as transaction:
                 from_station_list = list(transaction.query('match $sta isa station; { $sta has name "' + from_station_name + '"; } or { $sta has name "' + from_station_name + ' Underground Station"; }; get;'))
                 if len(from_station_list) == 0:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         valid_to_name = False
         while not valid_to_name:
             to_station_name = input("Where to: ")
-            print("Verifying station bane '" + to_station_name + "' ...")
+            print("Verifying station name '" + to_station_name + "' ...")
             with session.transaction(grakn.TxType.READ) as transaction:
                 to_station_list = list(transaction.query('match $sta isa station; { $sta has name "' + to_station_name + '"; } or { $sta has name "' + to_station_name + ' Underground Station"; }; get;'))
                 if len(to_station_list) == 0:
