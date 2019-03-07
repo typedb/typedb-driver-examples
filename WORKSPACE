@@ -18,21 +18,22 @@
 
 workspace(name = "graknlabs_examples")
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+################################
+# Load Grakn Labs Dependencies #
+################################
+load("//dependencies/graknlabs:dependencies.bzl",
+     "graknlabs_grakn_core", "graknlabs_client_java", "graknlabs_client_python", "graknlabs_build_tools")
+graknlabs_grakn_core()
+graknlabs_client_java()
+graknlabs_client_python()
+graknlabs_build_tools()
 
-git_repository(
-    name = "io_bazel_rules_python",
-    remote = "https://github.com/bazelbuild/rules_python.git",
-    commit = "e6399b601e2f72f74e5aa635993d69166784dde1",
-)
-load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
-pip_repositories()
+load("@graknlabs_grakn_core//dependencies/graknlabs:dependencies.bzl", "graknlabs_graql")
+graknlabs_graql()
 
-git_repository(
-    name = "graknlabs_build_tools",
-    remote = "https://github.com/graknlabs/build-tools.git",
-    commit = "ded946f120c6194f82c7ed6b3f80d4d330e79ac3"
-)
+load("@graknlabs_build_tools//distribution:dependencies.bzl", "graknlabs_bazel_distribution")
+graknlabs_bazel_distribution()
+
 
 ####################
 # Load Build Tools #
@@ -48,7 +49,7 @@ bazel_rules_nodejs()
 bazel_rules_python()
 
 ###########################
-# Load local dependencies #
+# Load Local Dependencies #
 ###########################
 
 # for Java
@@ -66,7 +67,7 @@ node_repositories()
 
 npm_install(
     name = "nodejs_dependencies",
-    package_json = "//nodejs:package.json"
+    package_json = "//nodejs/phone-calls:package.json"
 )
 
 # for Python
@@ -76,31 +77,17 @@ pip_repositories()
 
 pip_import(
     name = "phone_calls_migration_json_pypi_dependencies",
-    requirements = "//python/migration/json:requirements.txt",
+    requirements = "//python/phone_calls:requirements.txt"
 )
 load("@phone_calls_migration_json_pypi_dependencies//:requirements.bzl", "pip_install")
 pip_install()
 
 
-################################
-# Load Grakn Core dependencies #
-################################
-
-git_repository(
-    name = "graknlabs_grakn_core",
-    remote = "https://github.com/graknlabs/grakn",
-    commit = '20750ca0a46b4bc252ad81edccdfd8d8b7c46caa' # grabl-marker: do not remove this comment, this is used for dependency-update by @graknlabs_grakn_core
-)
-
-load("@graknlabs_grakn_core//dependencies/maven:dependencies.bzl", maven_dependencies_for_grakn_core = "maven_dependencies")
-maven_dependencies_for_grakn_core()
-
-
 #######################################
-# Load compiler dependencies for GRPC #
+# Load Compiler Dependencies for GRPC #
 #######################################
 
-load("@graknlabs_grakn_core//dependencies/compilers:dependencies.bzl", "grpc_dependencies")
+load("@graknlabs_build_tools//grpc:dependencies.bzl", "grpc_dependencies")
 grpc_dependencies()
 
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", com_github_grpc_grpc_bazel_grpc_deps = "grpc_deps")
@@ -110,18 +97,26 @@ load("@stackb_rules_proto//java:deps.bzl", "java_grpc_compile")
 java_grpc_compile()
 
 
+################################
+# Load Grakn Core Dependencies #
+################################
+
+load("@graknlabs_grakn_core//dependencies/maven:dependencies.bzl", grakn_core_dependencies = "maven_dependencies")
+grakn_core_dependencies()
+
+load("@graknlabs_build_tools//bazel:dependencies.bzl", "bazel_rules_docker")
+bazel_rules_docker()
+
+
 ###########################
-# Load Graql dependencies #
+# Load Graql Dependencies #
 ###########################
 
-load("@graknlabs_grakn_core//dependencies/git:dependencies.bzl", "graknlabs_graql")
-graknlabs_graql()
-
-# Load ANTLR dependencies for Bazel
+# for Bazel
 load("@graknlabs_graql//dependencies/compilers:dependencies.bzl", "antlr_dependencies")
 antlr_dependencies()
 
-# Load ANTLR dependencies for ANTLR programs
+# for ANTLR programs
 load("@rules_antlr//antlr:deps.bzl", "antlr_dependencies")
 antlr_dependencies()
 
@@ -129,26 +124,9 @@ load("@graknlabs_graql//dependencies/maven:dependencies.bzl", graql_dependencies
 graql_dependencies()
 
 
-#################################
-# Load Client Java dependencies #
-#################################
-
-git_repository(
-    name = "graknlabs_client_java",
-    remote = "https://github.com/graknlabs/client-java",
-    commit = 'e2d3cba2216c5aadf58184c9abeb16dd3718c677' # grabl-marker: do not remove this comment, this is used for dependency-update by @graknlabs_client_java
-)
-
-
 ###################################
 # Load Client Python dependencies #
 ###################################
-
-git_repository(
-    name = "graknlabs_client_python",
-    remote = "https://github.com/graknlabs/client-python",
-    commit = 'bf27d7b0872ffadba15bd72db1716080875e7dd2' # grabl-marker: do not remove this comment, this is used for dependency-update by @graknlabs_client_python
-)
 
 # TODO: client python's pip_import should be called pypi_dependencies_grakn_client
 pip_import(
@@ -156,29 +134,19 @@ pip_import(
     requirements = "@graknlabs_client_python//:requirements.txt",
 )
 
-load("@pypi_dependencies//:requirements.bzl", grakn_client_pip_install = "pip_install")
-grakn_client_pip_install()
-
-
-##################################
-# Load Distribution Dependencies #
-##################################
-
-load("@graknlabs_build_tools//distribution:dependencies.bzl", "graknlabs_bazel_distribution")
-graknlabs_bazel_distribution()
-
-load("@graknlabs_bazel_distribution//github:dependencies.bzl", "github_dependencies_for_deployment")
-github_dependencies_for_deployment()
-
-load("@com_github_google_bazel_common//:workspace_defs.bzl", "google_common_workspace_rules")
-google_common_workspace_rules()
-
-load("@graknlabs_grakn_core//dependencies/docker:dependencies.bzl", "docker_dependencies")
-docker_dependencies()
-
 pip_import(
     name = "pypi_deployment_dependencies",
     requirements = "@graknlabs_bazel_distribution//pip:requirements.txt",
 )
-load("@pypi_deployment_dependencies//:requirements.bzl", "pip_install")
-pip_install()
+
+load("@pypi_dependencies//:requirements.bzl", client_python_pip_install = "pip_install")
+client_python_pip_install()
+
+
+#####################################
+# Load Bazel common workspace rules #
+#####################################
+
+# TODO: Figure out why this cannot be loaded at earlier at the top of the file
+load("@com_github_google_bazel_common//:workspace_defs.bzl", "google_common_workspace_rules")
+google_common_workspace_rules()

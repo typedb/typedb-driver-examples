@@ -16,7 +16,7 @@ import os
 download_dir_name = "data"
 routes_path = "{}/{}/routes/".format(os.path.dirname(__file__), download_dir_name)
 timetables_path = "{}/{}/timetables/".format(os.path.dirname(__file__), download_dir_name)
-schema_path = "{}/src/schema.gql".format(os.path.dirname(__file__))
+schema_path = "{}/src/phone-calls-schema.gql".format(os.path.dirname(__file__))
 
 uri = 'localhost:48555'
 keyspace = "tube_network"
