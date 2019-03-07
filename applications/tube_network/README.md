@@ -7,7 +7,7 @@ Most of the code given here is written in Python to give an example of how to us
 See the _Quickstart_ for how to get going immediately, or read on for more info.
 
 ## Prerequisites
-- Grakn >= 1.4.2. Learn more about [installing and running Grakn](http://dev.grakn.ai/docs/running-grakn/install-and-run).
+- Grakn >= 1.5.0 Learn more about [installing and running Grakn](http://dev.grakn.ai/docs/running-grakn/install-and-run).
 - Python >= 3.6
 
 ## Quickstart
@@ -55,8 +55,8 @@ Now you can query the database, you can try asking more complex questions, like 
 match
     $sta1 isa station, has name $sta1-nam;
     $sta2 isa station, has name $sta2-nam;
-    $sec isa route-section, has duration $dur; $dur > 8;
-    (beginning: $sta1, end: $sta2, service: $sex) isa tunnel;
+    (beginning: $sta1, end: $sta2, service: $sec) isa tunnel;
+    $sec isa route-section, has duration $dur; $dur > 8.0;
     (route-operator: $tul, section: $sec) isa route;
     $tul isa tube-line, has name $tul-nam;
 get $sta1-nam, $sta2-nam, $tul-nam, $dur; limit 30;
