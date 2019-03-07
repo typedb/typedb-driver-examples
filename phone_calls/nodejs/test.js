@@ -16,27 +16,39 @@ let client;
 let session;
 
 beforeEach(async function() {
-    client = new GraknClient("localhost:48555");
-    session = await client.session("phone_calls");
-    const transaction = await session.transaction().write();
-    const defineQuery = fs.readFileSync("schemas/phone-calls-schema.gql", "utf8");
-    await transaction.query(defineQuery);
-    await transaction.commit();
-    console.log("Loaded the phone_calls schema");
+    console.log("beforeEach")
+    try {
+        client = new GraknClient("localhost:48555");
+        console.log(client)
+        session = await client.session("phone_calls");
+        console.log(session)
+        const transaction = await session.transaction().write();
+        console.log(transaction)
+        const defineQuery = fs.readFileSync("schemas/phone-calls-schema.gql", "utf8");
+        console.log(defineQuery)
+        await transaction.query(defineQuery);
+        await transaction.commit();
+        console.log("Loaded the phone_calls schema");
+    } catch (e) {
+        console.log(e)
+    }
 });
 
 describe("Migration of data into Grakn", function() {
     it("tests migrateCsv.js", async function() {
+        console.log("tests migrateCsv.js")
         await csvMigration.init();
         await assertMigrationResults();
     });
 
     it("tests migrateJson.js", async function() {
+        console.log("tests migrateJson.js")
         await jsonMigration.init();
         await assertMigrationResults();
     });
 
     it("tests migrateXml.js", async function() {
+        console.log("tests migrateXml.js")
         await xmlMigration.init();
         await assertMigrationResults();
     });
@@ -44,6 +56,7 @@ describe("Migration of data into Grakn", function() {
 
 describe("Queries on phone_calls keyspace", function() {
     it("tests queries.js", async function() {
+        console.log("tests queries.js")
         await csvMigration.init();
 
         const firstActualAnswer = await queries.queryExamples[0].queryFunction("", await session.transaction().read());

@@ -67,7 +67,7 @@ node_repositories()
 
 npm_install(
     name = "nodejs_dependencies",
-    package_json = "//nodejs/phone-calls:package.json"
+    package_json = "//phone_calls/nodejs:package.json"
 )
 
 # for Python
@@ -77,7 +77,7 @@ pip_repositories()
 
 pip_import(
     name = "phone_calls_migration_json_pypi_dependencies",
-    requirements = "//python/phone_calls:requirements.txt"
+    requirements = "//phone_calls/python:requirements.txt"
 )
 load("@phone_calls_migration_json_pypi_dependencies//:requirements.bzl", "pip_install")
 pip_install()

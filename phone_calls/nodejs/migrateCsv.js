@@ -11,10 +11,10 @@ const fs = require("fs");
 const papa = require("papaparse");
 
 const inputs = [
-	{ dataPath: "datasets//phone-calls/companies", template: companyTemplate },
-	{ dataPath: "datasets//phone-calls/people", template: personTemplate },
-	{ dataPath: "datasets//phone-calls/contracts", template: contractTemplate },
-	{ dataPath: "datasets//phone-calls/calls", template: callTemplate }
+	{ dataPath: "datasets/phone-calls/companies", template: companyTemplate },
+	{ dataPath: "datasets/phone-calls/people", template: personTemplate },
+	{ dataPath: "datasets/phone-calls/contracts", template: contractTemplate },
+	{ dataPath: "datasets/phone-calls/calls", template: callTemplate }
 ];
 
 /**
@@ -44,21 +44,25 @@ async function buildPhoneCallGraph() {
  * @param {object} session a Grakn session, off of which a transaction will be created
  */
 async function loadDataIntoGrakn(input, session) {
-	const items = await parseDataToObjects(input);
+    try {
+        const items = await parseDataToObjects(input);
 
-	for (item of items) {
-		let transaction;
-		transaction = await session.transaction().write();
+        for (item of items) {
+            let transaction;
+            transaction = await session.transaction().write();
 
-		const graqlInsertQuery = input.template(item);
-		console.log("Executing Graql Query: " + graqlInsertQuery);
-		await transaction.query(graqlInsertQuery);
-		await transaction.commit();
-	}
+            const graqlInsertQuery = input.template(item);
+            console.log("Executing Graql Query: " + graqlInsertQuery);
+            await transaction.query(graqlInsertQuery);
+            await transaction.commit();
+        }
 
-	console.log(
-		`\nInserted ${items.length} items from [${input.dataPath}] into Grakn.\n`
-	);
+        console.log(
+            `\nInserted ${items.length} items from [${input.dataPath}] into Grakn.\n`
+        );
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 function companyTemplate(company) {

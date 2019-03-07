@@ -16,7 +16,7 @@
   "author": "Grakn Labs (community@grakn.ai)",
   "license": "ISC",
   "dependencies": {
-    "grakn-client": "http://repo.grakn.ai/repository/test-npm-group/grakn-client/-/grakn-client-1.5.0-b70bc23322d1a29b482dac991a068b8c15c396fe.tgz",
+    "grakn-client": "http://repo.grakn.ai/repository/test-npm-group/grakn-client/-/grakn-client-1.5.0-c0749c6fe82b9f0beb70104ec9b86aca1f5f5125.tgz",
     "jasmine": "^2.9.0",
     "jasmine-reporters": "^2.3.2",
     "papaparse": "^4.6.3",

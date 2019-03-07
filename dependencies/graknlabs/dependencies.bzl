@@ -22,7 +22,7 @@ def graknlabs_grakn_core():
     git_repository(
         name = "graknlabs_grakn_core",
         remote = "https://github.com/graknlabs/grakn",
-        commit = 'eba6de1a7c23a66f85986d3dc77942a0e4a77780' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_grakn_core
+        commit = '630247f81a39ce45dd822fc09c297ccef9a3b82f' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_grakn_core
     )
 
 def graknlabs_client_java():
@@ -46,3 +46,33 @@ def graknlabs_build_tools():
          commit = "b4d8600e093321bf8c81a5d1b70f34760a9bc036", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_build_tools
      )
 
+
+
+
+#def graknlabs_grakn_core():
+#    git_repository(
+#        name = "graknlabs_grakn_core",
+#        remote = "https://github.com/graknlabs/grakn",
+#        commit = '630247f81a39ce45dd822fc09c297ccef9a3b82f' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_grakn_core
+#    )
+#
+#def graknlabs_client_java():
+#     git_repository(
+#         name = "graknlabs_client_java",
+#         remote = "https://github.com/graknlabs/client-java",
+#         commit = '3166c8f2c58f69336d1c02d604884a0b4a129a9e' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
+#     )
+#
+#def graknlabs_client_python():
+#     git_repository(
+#         name = "graknlabs_client_python",
+#         remote = "https://github.com/graknlabs/client-python",
+#         commit = 'acffb3190ad6d720f9ebd5d8261bd8607c3e2d2b' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_python
+#     )
+#
+#def graknlabs_build_tools():
+#     git_repository(
+#         name = "graknlabs_build_tools",
+#         remote = "https://github.com/graknlabs/build-tools",
+#         commit = "bd394a67896413dffdf50c2e66983483783d171d", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_build_tools
+#     )

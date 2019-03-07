@@ -68,6 +68,6 @@ java_test(
         "@graknlabs_grakn_core//test-integration/resources:logback-test",
     ],
     data = [
-        "//schemas:phone-calls-schema.gql",
+        "//schemas:phone-calls-schema.gql"
     ]
 )
