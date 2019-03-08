@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
         self.assert_migration_results()
 
     def test_statistics(self):
-        # migration.init()
+        migration.init()
 
         query_examples = statistics.query_examples
 
@@ -96,8 +96,6 @@ class Test(unittest.TestCase):
                 # TODO: make sure this is actually the right answer
                 [u'Green Park Underground Station', u'Holloway Road Underground Station']
             )
-
-
 
     def assert_migration_results(self):
         client = grakn.GraknClient(uri="localhost:48555")
