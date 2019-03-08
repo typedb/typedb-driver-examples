@@ -51,11 +51,11 @@ route-section sub entity,
 	plays section,
 	plays service;
 
-# Try using this sentence to formulate the structure of a relationship:
-# A <relationship> has a <role> in the form of a <subject> (<subject> is any concept, which could be an entity, relationship, or attribute)
+# Try using this sentence to formulate the structure of a relation:
+# A <relation> has a <role> in the form of a <subject> (<subject> is any concept, which could be an entity, relation, or attribute)
 # For example: a route has a stop in the form of a station
 
-route sub relationship,
+route sub relation,
 	key identifier,
 	relates section,
 	relates stop,
@@ -63,13 +63,13 @@ route sub relationship,
 	relates destination as stop,
 	relates route-operator;
 
-tunnel sub relationship,
+tunnel sub relation,
 	key identifier,
 	has distance,
 	relates beginning,
 	relates end,
 	relates service;
 
-zone sub relationship,
+zone sub relation,
 	key name,
 	relates contained-station;

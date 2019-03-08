@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import grakn
-import tube_network.settings as settings
+
 
 def print_to_log(title, content):
   print(title)
   print("")
   print(content)
   print("\n")
+
 
 # How many stations do exist?
 def query_station_count(question, transaction):
@@ -222,8 +223,8 @@ if __name__ == "__main__":
     print("")
 
     # create a transaction to talk to the keyspace
-    client = grakn.Grakn(uri=settings.uri)
-    with client.session(keyspace=settings.keyspace) as session:
+    client = grakn.Grakn(uri="localhost:48555")
+    with client.session(keyspace="tube_network") as session:
         with session.transaction(grakn.TxType.READ) as transaction:
             # execute the query for the selected question
             if qs_number == 0:

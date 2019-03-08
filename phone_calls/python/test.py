@@ -13,7 +13,7 @@ class TestPhoneCallsCSVMigration(unittest.TestCase):
     def setUp(self):
         self._client = grakn.Grakn(uri="localhost:48555")
         self._session = self._client.session(keyspace="phone_calls")
-        with open('schemas/phone-calls-schema.gql', 'r') as schema:
+        with open('schemas/phone-calls-tube-network-schema.gql', 'r') as schema:
             define_query = schema.read()
             with self._session.transaction(grakn.TxType.WRITE) as transaction:
                 transaction.query(define_query)

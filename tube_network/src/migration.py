@@ -11,15 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import time
 
 import grakn
 import json
 import os
 import re
 from math import cos, asin, sqrt
-import tube_network.settings as settings
 import multiprocessing
 import datetime
+
 
 def entity_template(data):
     query = "insert $x isa " + data["type"]
@@ -29,15 +30,14 @@ def entity_template(data):
     return query
 
 
-def relationship_template(data):
+def relation_template(data):
     query = "match "
     for r, roleplayer in enumerate(data["roleplayers"]):
         query += "$" + str(r) + " has " + roleplayer["key_type"] + " " + str(roleplayer["key_value"]) + "; "
 
-    # match the relationship if required
+    # match the relation if required
     if "key_type" in data:
         query += "$x has " + data["key_type"] + " " + str(data["key_value"]) + "; "
-
 
     query += "insert $x ("
     for r, roleplayer in enumerate(data["roleplayers"]):
@@ -63,17 +63,19 @@ def relationship_template(data):
 def string(value): return '"' + value + '"'
 
 
-def unique_append(list, key, item):
-    if item not in list[key]:
-        list[key].append(item)
+def unique_append(data, key, item):
+    if item not in data[key]:
+        data[key].append(item)
+
 
 def zone_already_added(zone_name):
-    zone_already_added = False
-    for zone_query in relationship_queries["zone"]:
+    already_added = False
+    for zone_query in relation_queries["zone"]:
         if 'isa zone; $x has name "' + zone_name + '"' in zone_query:
-            zone_already_added = True
+            already_added = True
             break
-    return zone_already_added
+    return already_added
+
 
 def get_distance_between_stations(data, from_station_id, to_station_id):
     """
@@ -103,11 +105,12 @@ def get_distance_between_stations(data, from_station_id, to_station_id):
     a = 0.5 - cos((to_station_lat - from_station_lat) * p)/2 + cos(from_station_lat * p) * cos(to_station_lat * p) * (1 - cos((to_station_lon - from_station_lon) * p)) / 2
     return 12742 * asin(sqrt(a))
 
-def construct_queries(entity_queries, relationship_queries):
-    timetable_files = os.listdir(settings.timetables_path)
+
+def construct_queries(entity_queries, relation_queries):
+    timetable_files = os.listdir("datasets/tube-network/timetables/")
 
     for timetable_file in timetable_files:
-        with open(settings.timetables_path + "/" + timetable_file) as template_file:
+        with open("datasets/tube-network/timetables/" + "/" + timetable_file) as template_file:
             data = json.load(template_file)
 
             unique_append(entity_queries, "tube-line",
@@ -157,8 +160,8 @@ def construct_queries(entity_queries, relationship_queries):
 
                     for zone in zones:
                         if zone_already_added(zone):
-                            unique_append(relationship_queries, "zone",
-                                relationship_template(
+                            unique_append(relation_queries, "zone",
+                                relation_template(
                                     {
                                         "type": "zone",
                                         "key_type": "name",
@@ -175,8 +178,8 @@ def construct_queries(entity_queries, relationship_queries):
                                 )
                             )
                         else:
-                            unique_append(relationship_queries, "zone",
-                                relationship_template(
+                            unique_append(relation_queries, "zone",
+                                relation_template(
                                     {
                                         "type": "zone",
                                         "roleplayers": [
@@ -199,8 +202,8 @@ def construct_queries(entity_queries, relationship_queries):
 
                 for r, route in enumerate(data['timetable']["routes"]):
                     route_identifier = timetable_file.split(".")[0] + "_" + str(r)
-                    unique_append(relationship_queries, "route",
-                        relationship_template(
+                    unique_append(relation_queries, "route",
+                        relation_template(
                             {
                                 "type": "route",
                                 "roleplayers": [
@@ -226,8 +229,8 @@ def construct_queries(entity_queries, relationship_queries):
                         intervals.insert(0, { "stopId": data["timetable"]["departureStopId"], "timeToArrival": 0 })
                     for i, interval in enumerate(intervals): # first station is the origin
                         if i == 0:
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
+                            unique_append(relation_queries, "route",
+                                relation_template(
                                     {
                                         "type": "route",
                                         "key_type": "identifier",
@@ -250,8 +253,8 @@ def construct_queries(entity_queries, relationship_queries):
                                 )
                             )
                         elif i == len(intervals) - 1: # last station is the destination
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
+                            unique_append(relation_queries, "route",
+                                relation_template(
                                     {
                                         "type": "route",
                                         "key_type": "identifier",
@@ -274,8 +277,8 @@ def construct_queries(entity_queries, relationship_queries):
                                 )
                             )
                         else: # any other station is an ordinary stop
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
+                            unique_append(relation_queries, "route",
+                                relation_template(
                                     {
                                         "type": "route",
                                         "key_type": "identifier",
@@ -315,8 +318,8 @@ def construct_queries(entity_queries, relationship_queries):
                             )
                             # last_time_to_arrival = interval["timeToArrival"]
 
-                            unique_append(relationship_queries, "route",
-                                relationship_template(
+                            unique_append(relation_queries, "route",
+                                relation_template(
                                     {
                                         "type": "route",
                                         "key_type": "identifier",
@@ -338,8 +341,8 @@ def construct_queries(entity_queries, relationship_queries):
                             distance = get_distance_between_stations(data, from_station_id, to_station_id)
 
                             tunnel_identifier = from_station_id + "_tunnel_" + to_station_id
-                            unique_append(relationship_queries, "tunnel",
-                                relationship_template(
+                            unique_append(relation_queries, "tunnel",
+                                relation_template(
                                     {
                                         "type": "tunnel",
                                         "roleplayers": [
@@ -376,10 +379,11 @@ def construct_queries(entity_queries, relationship_queries):
                                 )
                             )
 
+
 def insert(queries):
-    client = grakn.Grakn(uri=settings.uri)
-    with client.session(keyspace=settings.keyspace) as session:
-        transaction = session.transaction(grakn.TxType.WRITE)
+    client = grakn.GraknClient(uri="localhost:48555")
+    with client.session(keyspace="tube_network") as session:
+        transaction = session.transaction().write()
         for i, query in enumerate(queries):
             print(query)
             print("- - - - - - - - - - - - - -")
@@ -387,8 +391,9 @@ def insert(queries):
 
             if i % 500 == 0:
                 transaction.commit()
-                transaction = session.transaction(grakn.TxType.WRITE)
+                transaction = session.transaction().write()
         transaction.commit()
+    client.close()
 
 
 def insert_concurrently(queries, processes):
@@ -409,22 +414,30 @@ def insert_concurrently(queries, processes):
         process.join()
 
 
-if __name__ == "__main__":
+entity_queries = {
+    "tube-line": [],
+    "station": [],
+    "route-section": []
+}
+
+relation_queries = {
+    "zone": [],
+    "route": [],
+    "tunnel": []
+}
+
+
+def init():
     start_time = datetime.datetime.now()
 
-    entity_queries = { "tube-line": [], "station": [], "route-section": [] }
-    relationship_queries = { "zone": [], "route": [], "tunnel": [] }
-
-    construct_queries(entity_queries, relationship_queries)
+    construct_queries(entity_queries, relation_queries)
 
     entities, relationships = [], []
     for k, v in entity_queries.items(): entities += v
-    for k, v in relationship_queries.items(): relationships += v
+    for k, v in relation_queries.items(): relationships += v
 
     entity_processes = []
     relationship_processes = []
-
-    print(len(entities), len(relationships))
 
     insert_concurrently(entities, entity_processes)
     insert_concurrently(relationships, relationship_processes)
@@ -433,3 +446,7 @@ if __name__ == "__main__":
     print("- - - - - -\nTime taken: " + str(end_time - start_time))
     print("\n" + str(len(entity_processes)) + " processes used to insert Entities.")
     print(str(len(relationship_processes)) + " processes used to insert Relationship.")
+
+
+if __name__ == "__main__":
+    init()

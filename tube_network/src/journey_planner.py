@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import grakn
-import tube_network.settings as settings
+
 
 def print_to_log(title, content):
   print(title)
@@ -21,10 +21,11 @@ def print_to_log(title, content):
   print(content)
   print("\n")
 
+
 if __name__ == "__main__":
 
-    client = grakn.Grakn(uri=settings.uri)
-    with client.session(keyspace=settings.keyspace) as session:
+    client = grakn.Grakn(uri="localhost:48555")
+    with client.session(keyspace="tube_network") as session:
 
         # Get the departing station
         print("")
