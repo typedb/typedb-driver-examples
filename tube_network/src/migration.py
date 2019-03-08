@@ -298,7 +298,7 @@ def construct_queries(entity_queries, relation_queries):
                         if i < len(intervals) - 1: # there is no more stop after the last one
                             # last_time_to_arrival = 0
                             duration = intervals[i+1]["timeToArrival"] - interval["timeToArrival"]
-                            route_section_identifier = timetable_file.split(".")[0] + "_route_section_" + str(i)
+                            route_section_identifier = route_identifier + "_route_section_" + str(i)
                             unique_append(entity_queries, "route-section",
                                 entity_template(
                                     {
@@ -340,7 +340,7 @@ def construct_queries(entity_queries, relation_queries):
                             to_station_id = intervals[i+1]["stopId"]
                             distance = get_distance_between_stations(data, from_station_id, to_station_id)
 
-                            tunnel_identifier = from_station_id + "_tunnel_" + to_station_id
+                            tunnel_identifier = from_station_id + "_tunnel_" + to_station_id + "_" + route_section_identifier
                             unique_append(relation_queries, "tunnel",
                                 relation_template(
                                     {
