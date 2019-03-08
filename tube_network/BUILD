@@ -15,27 +15,21 @@ py_library(
     ]
 )
 
-#py_library(
-#    name = "migrate-json",
-#    srcs = ["migrate_json.py"],
-#    deps = [
-#        "@graknlabs_client_python//:client_python"
-#    ],
-#    data = [
-#        "//datasets:phone-calls-data-json"
-#    ]
-#)
-#
-#py_library(
-#    name = "migrate-xml",
-#    srcs = ["migrate_xml.py"],
-#    deps = [
-#        "@graknlabs_client_python//:client_python"
-#    ],
-#    data = [
-#        "//datasets:phone-calls-data-xml"
-#    ]
-#)
+py_library(
+    name = "statistics",
+    srcs = ["src/statistics.py"],
+    deps = [
+        "@graknlabs_client_python//:client_python"
+    ]
+)
+
+py_library(
+    name = "journey-planner",
+    srcs = ["src/journey_planner.py"],
+    deps = [
+        "@graknlabs_client_python//:client_python"
+    ]
+)
 #
 #py_library(
 #    name = "queries",
@@ -51,7 +45,9 @@ py_test(
     main = "test.py",
     srcs = [
         "test.py",
-        ":migration"
+        ":migration",
+        ":statistics",
+        ":journey-planner"
     ],
     deps = [
         "@graknlabs_client_python//:client_python",
