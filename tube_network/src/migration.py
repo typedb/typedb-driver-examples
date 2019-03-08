@@ -438,8 +438,11 @@ def init():
     entity_processes = []
     relationship_processes = []
 
-    insert_concurrently(entities, entity_processes)
-    insert_concurrently(relationships, relationship_processes)
+    # insert_concurrently(entities, entity_processes)
+    # insert_concurrently(relationships, relationship_processes)
+
+    insert(entities)
+    insert(relationships)
 
     # insert(entities)
     # insert(relationships)
