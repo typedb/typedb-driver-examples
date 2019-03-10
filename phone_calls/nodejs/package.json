@@ -4,7 +4,7 @@
   "description": "An example that illustrates how CSV data can be loaded into Grakn using the Node.js Client",
   "main": "index.js",
   "scripts": {
-    "migrate": "node -e 'require(\"./migrate\").init()'"
+    "migratecsv": "node -e 'require(\"./migrateCsv\").init()'"
   },
   "keywords": [
     "Grakn",

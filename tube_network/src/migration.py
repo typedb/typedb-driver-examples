@@ -76,7 +76,6 @@ def zone_already_added(zone_name):
             break
     return already_added
 
-
 def get_distance_between_stations(data, from_station_id, to_station_id):
     """
         Looks up the stations with the given ids, finds their coordinates and
@@ -340,7 +339,7 @@ def construct_queries(entity_queries, relation_queries):
                             to_station_id = intervals[i+1]["stopId"]
                             distance = get_distance_between_stations(data, from_station_id, to_station_id)
 
-                            tunnel_identifier = from_station_id + "_tunnel_" + to_station_id + "_" + route_section_identifier
+                            tunnel_identifier = from_station_id + "_tunnel_" + to_station_id + "_" + route_section_identifier + "_" + str(i)
                             unique_append(relation_queries, "tunnel",
                                 relation_template(
                                     {
@@ -439,11 +438,11 @@ def init():
     entity_processes = []
     relationship_processes = []
 
-    # insert_concurrently(entities, entity_processes)
-    # insert_concurrently(relationships, relationship_processes)
+    insert_concurrently(entities, entity_processes)
+    insert_concurrently(relationships, relationship_processes)
 
-    insert(entities)
-    insert(relationships)
+    # insert(entities)
+    # insert(relationships)
 
     end_time = datetime.datetime.now()
     print("- - - - - -\nTime taken: " + str(end_time - start_time))

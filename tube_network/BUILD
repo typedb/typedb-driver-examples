@@ -30,10 +30,10 @@ py_library(
         "@graknlabs_client_python//:client_python"
     ]
 )
-#
+
 #py_library(
-#    name = "queries",
-#    srcs = ["queries.py"],
+#    name = "app",
+#    srcs = ["src/app.py"],
 #    deps = [
 #        "@graknlabs_client_python//:client_python"
 #    ]
@@ -47,12 +47,37 @@ py_test(
         "test.py",
         ":migration",
         ":statistics",
-        ":journey-planner"
+        ":journey-planner",
+        ":app"
     ],
     deps = [
         "@graknlabs_client_python//:client_python",
     ],
     data = [
         "//schemas:tube-network-schema.gql"
+    ]
+)
+
+py_test(
+    name = "test-migration",
+    main = "test_migration.py",
+    srcs = [
+        "test_migration.py",
+        ":migration",
+    ],
+    deps = [
+        "@graknlabs_client_python//:client_python",
+    ],
+    data = [
+        "//schemas:tube-network-schema.gql"
+    ]
+)
+
+py_binary(
+    name = "app",
+    srcs = ["src/app.py"],
+#    data = [":transform"],  # a cc_binary which we invoke at run time
+    deps = [
+        "@graknlabs_client_python//:client_python"
     ]
 )

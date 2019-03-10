@@ -4,9 +4,9 @@ import grakn
 '''
   to add a new query implementation:
     1. add the question and function to the approriate list of dictionaries:
-      current lists are: get_qs_func, aggregate_qs_func and compute_qs_func
+      current lists are: get_query_examples, aggregate_query_examples and compute_query_examples
       example:
-        get_qs_func = [
+        get_query_examples = [
           ...
           {
             "question": "new question?"
@@ -236,7 +236,7 @@ def execute_query_all(transaction):
         print("\n - - -  - - -  - - -  - - - \n")
 
 
-get_qs_func = [
+get_query_examples = [
     {
         "question": "Since September 10th, which customers called the person with phone number +86 921 547 9004?",
         "query_function": execute_query_1
@@ -255,14 +255,14 @@ get_qs_func = [
     }
 ]
 
-aggregate_qs_func = [
+aggregate_query_examples = [
     {
         "question": "How does the average call duration among customers aged under 20 compare those aged over 40?",
         "query_function": execute_query_5
     }
 ]
 
-compute_qs_func = [
+compute_query_examples = [
     {
         "question": "compute #1 related question goes here ",
         "query_function": execute_query_6
@@ -273,7 +273,7 @@ compute_qs_func = [
     }
 ]
 
-query_examples = get_qs_func + aggregate_qs_func + compute_qs_func
+query_examples = get_query_examples + aggregate_query_examples + compute_query_examples
 
 if __name__ == "__main__":
 
