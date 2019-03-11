@@ -34,7 +34,7 @@ public class PhoneCallsTest {
         GraknClient.Transaction transaction = session.transaction().write();
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("schemas/phone-calls-schema.gql"));
+            byte[] encoded = Files.readAllBytes(Paths.get("schemas/phone-calls-tube-network-schema.gql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
             transaction.execute((GraqlDefine) Graql.parse(query));
             transaction.commit();

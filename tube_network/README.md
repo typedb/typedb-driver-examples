@@ -40,9 +40,9 @@ python3 -m tube_network.src.migration
 ```
 
 The content of [`src/migration.py`](src/migration.py) is a python script that:
-1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing Graql relationship/entity insert queries.
+1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing Graql relation/entity insert queries.
 2. the constructed Graql insert queries, after basic uniqueness validation, get stored as items of arrays within a dictionary.
-3. the dictionary containing all the Graql queries is flattened to prepare the data in two chunks, one chunk of entities and one chunk of relationships, for a series of concurrent insertions.
+3. the dictionary containing all the Graql queries is flattened to prepare the data in two chunks, one chunk of entities and one chunk of relations, for a series of concurrent insertions.
 4. lastly, a set of processes initiate the set of transactions that perform the Graql insert queries on the `tube_network` keyspace.
 
 Once complete, you have stored the tube network data in Grakn!

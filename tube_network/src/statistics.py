@@ -13,12 +13,17 @@
 # limitations under the License.
 
 import grakn
+<<<<<<< HEAD:applications/tube_network/src/statistics.py
+=======
+
+>>>>>>> bazelise-tube-network:tube_network/src/statistics.py
 
 def print_to_log(title, content):
   print(title)
   print("")
   print(content)
   print("\n")
+
 
 # How many stations do exist?
 def query_station_count(question, transaction):
@@ -33,6 +38,8 @@ def query_station_count(question, transaction):
 
     print("Number of stations: " + str(number_of_stations))
 
+    return number_of_stations
+
 
 # How long is the shortest trip between two stations?
 def query_shortest_trip(question, transaction):
@@ -46,6 +53,8 @@ def query_shortest_trip(question, transaction):
     min_duration = answer.number()
 
     print("Shortest Trip: " + str(min_duration))
+
+    return min_duration
 
 
 # Which is the west most station in London?
@@ -70,10 +79,11 @@ def query_northernmost_station(question, transaction):
     query = "".join(query)
 
     answers = transaction.query(query).collect_concepts()
-    result = [ answer.value() for answer in answers ]
-
+    result = [answer.value() for answer in answers]
 
     print_to_log("Northmost stations with " + str(lat) + " are: ", result)
+
+    return [lat, result]
 
 
 # How long is the longest trip between two stations?
@@ -105,16 +115,26 @@ def query_longest_trip(question, transaction):
     query = "".join(query)
 
     answers = transaction.query(query)
+    result = []
     for answer in answers:
         answer = answer.map()
         print_to_log("Longest trip is found in: ", "Tunnel from " +
-                                                    answer.get("sta1-nam").value() +
-                                                    " to " + answer.get("sta2-nam").value() +
-                                                    ", via " + answer.get("tul-nam").value() +
-                                                    ", on the route going from " +
-                                                    answer.get("ori-nam").value() +
-                                                    " to " + answer.get("des-nam").value())
+                     answer.get("sta1-nam").value() +
+                     " to " + answer.get("sta2-nam").value() +
+                     ", via " + answer.get("tul-nam").value() +
+                     ", on the route going from " +
+                     answer.get("ori-nam").value() +
+                     " to " + answer.get("des-nam").value())
 
+        result.append([
+            answer.get("sta1-nam").value(),
+            answer.get("sta2-nam").value(),
+            answer.get("tul-nam").value(),
+            answer.get("ori-nam").value(),
+            answer.get("des-nam").value()
+        ])
+
+    return [max_duration, result]
 
 # What's the average duration of all trips?
 def query_avg_duration(question, transaction):
@@ -128,6 +148,8 @@ def query_avg_duration(question, transaction):
     mean_duration = answer.number()
 
     print("Average duration: " + str(mean_duration))
+
+    return mean_duration
 
 
 # What's the median duration among all trips?
@@ -143,6 +165,8 @@ def query_median_duration(question, transaction):
 
     print("Median of durations: " + str(median_duration))
 
+    return median_duration
+
 
 # What's the standard deviation of trip durations?
 def query_std_duration(question, transaction):
@@ -157,14 +181,47 @@ def query_std_duration(question, transaction):
 
     print("Standard deviation of durations: " + str(std_duration))
 
+    return std_duration
+
 
 def execute_query_all(transaction):
-  for qs_func in questions_n_functions:
+  for qs_func in query_examples:
     question = qs_func["question"]
     query_function = qs_func["query_function"]
     query_function(question, transaction)
     print("\n - - -  - - -  - - -  - - - \n")
 
+
+query_examples = [
+    {
+        "question": "How many stations do exist?",
+        "query_function": query_station_count
+    },
+    {
+        "question": "How long is the shortest trip between two stations?",
+        "query_function": query_shortest_trip
+    },
+    {
+        "question": "Which is the northernmost station in London?",
+        "query_function": query_northernmost_station
+    },
+    {
+        "question": "How long is the longest trip between two stations?",
+        "query_function": query_longest_trip
+    },
+    {
+        "question": "What's the average duration of all trips?",
+        "query_function": query_avg_duration
+    },
+    {
+        "question": "What's the median duration among all trips?",
+        "query_function": query_median_duration
+    },
+    {
+        "question": "What's the standard deviation of trip durations?",
+        "query_function": query_std_duration
+    }
+]
 
 if __name__ == "__main__":
 
@@ -176,58 +233,32 @@ if __name__ == "__main__":
         - closes the session and transaction
     """
 
-    questions_n_functions = [
-        {
-            "question": "How many stations do exist?",
-            "query_function": query_station_count
-        },
-        {
-            "question": "How long is the shortest trip between two stations?",
-            "query_function": query_shortest_trip
-        },
-        {
-            "question": "Which is the northernmost station in London?",
-            "query_function": query_northernmost_station
-        },
-        {
-            "question": "How long is the longest trip between two stations?",
-            "query_function": query_longest_trip
-        },
-        {
-            "question": "What's the average duration of all trips?",
-            "query_function": query_avg_duration
-        },
-        {
-            "question": "What's the median duration among all trips?",
-            "query_function": query_median_duration
-        },
-        {
-            "question": "What's the standard deviation of trip durations?",
-            "query_function": query_std_duration
-        }
-    ]
-
     # ask user which question to execute the query for
     print("")
     print("For which of these questions, on the tube knowledge graph, do you want to execute the query?\n")
-    for index, qs_func in enumerate(questions_n_functions):
+    for index, qs_func in enumerate(query_examples):
         print(str(index + 1) + ". " + qs_func["question"])
     print("")
 
     # get user's question selection
     qs_number = -1
-    while qs_number < 0 or qs_number > len(questions_n_functions):
+    while qs_number < 0 or qs_number > len(query_examples):
         qs_number = int(input("choose a number (0 for to answer all questions): "))
     print("")
 
     # create a transaction to talk to the keyspace
     client = grakn.Grakn(uri="localhost:48555")
     with client.session(keyspace="tube_network") as session:
+<<<<<<< HEAD:applications/tube_network/src/statistics.py
         with session.transaction(grakn.TxType.READ) as transaction:
+=======
+        with session.transaction().read() as transaction:
+>>>>>>> bazelise-tube-network:tube_network/src/statistics.py
             # execute the query for the selected question
             if qs_number == 0:
                 execute_query_all(transaction)
             else:
-                question = questions_n_functions[qs_number - 1]["question"]
-                query_function = questions_n_functions[qs_number - 1]["query_function"]
+                question = query_examples[qs_number - 1]["question"]
+                query_function = query_examples[qs_number - 1]["query_function"]
                 query_function(question, transaction)
+    client.close()
