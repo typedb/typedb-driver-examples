@@ -66,18 +66,7 @@ const aggregateQsFunc = [
 	}
 ];
 
-const computeQsFunc = [
-	{
-		question: "compute-related first question goes here ",
-		queryFunction: executeQuery6
-	},
-	{
-		question: "compute-elated second question goes here ",
-		queryFunction: executeQuery7
-	}
-];
-
-const queryExamples = getQsFunc.concat(aggregateQsFunc).concat(computeQsFunc);
+const queryExamples = getQsFunc.concat(aggregateQsFunc);
 
 // utils
 const log = console.log;

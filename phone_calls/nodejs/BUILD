@@ -1,6 +1,6 @@
 exports_files(["package.json"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test", "nodejs_binary")
 
 jasmine_node_test(
     name = "test",

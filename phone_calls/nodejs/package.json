@@ -4,19 +4,24 @@
   "description": "An example that illustrates how CSV data can be loaded into Grakn using the Node.js Client",
   "main": "index.js",
   "scripts": {
-    "migrate": "node -e 'require(\"./migrate\").init()'"
+    "migrateCsv": "node -e 'require(\"./migrateCsv\").init(\"../../datasets/phone-calls/\")'",
+    "migrateJson": "node -e 'require(\"./migrateJson\").init(\"../../datasets/phone-calls/\")'",
+    "migrateXml": "node -e 'require(\"./migrateXml\").init(\"../../datasets/phone-calls/\")'",
+    "queries": "node queries.js"
   },
   "keywords": [
     "Grakn",
     "Graql",
     "csv",
+    "json",
+    "xml",
     "migration",
     "knowledge-graph"
   ],
   "author": "Grakn Labs (community@grakn.ai)",
   "license": "ISC",
   "dependencies": {
-    "grakn-client": "http://repo.grakn.ai/repository/test-npm-group/grakn-client/-/grakn-client-1.5.0-c0749c6fe82b9f0beb70104ec9b86aca1f5f5125.tgz",
+    "grakn-client": "https://repo.grakn.ai/repository/test-npm-group/grakn-client/-/grakn-client-1.5.0-c0749c6fe82b9f0beb70104ec9b86aca1f5f5125.tgz",
     "jasmine": "^2.9.0",
     "jasmine-reporters": "^2.3.2",
     "papaparse": "^4.6.3",

@@ -19,28 +19,31 @@ const { streamArray } = require("stream-json/streamers/StreamArray");
 const { chain } = require("stream-chain");
 
 const inputs = [
-	{ dataPath: "datasets/phone-calls/companies", template: companyTemplate },
-	{ dataPath: "datasets/phone-calls/people", template: personTemplate },
-	{ dataPath: "datasets/phone-calls/contracts", template: contractTemplate },
-	{ dataPath: "datasets/phone-calls/calls", template: callTemplate }
+	{ file: "companies", template: companyTemplate },
+	{ file: "people", template: personTemplate },
+	{ file: "contracts", template: contractTemplate },
+	{ file: "calls", template: callTemplate }
 ];
 
 /**
  * gets the job done:
- * 1. creates a Grakn instance
+ * 1. creates an instance of Grakn Client
  * 2. creates a session to the targeted keyspace
- * 3. loads json to Grakn for each file
+ * 3. for each input:
+ *      - a. constructs the full path to the data file
+ *      - b. loads csv to Grakn
  * 4. closes the session
  * 5. closes the client
  */
-
-async function buildPhoneCallGraph() {
+async function buildPhoneCallGraph(dataPath, keyspace = "phone_calls") {
 	const client = new Grakn("localhost:48555"); // 1
-	const session = await client.session("phone_calls"); // 2
+	const session = await client.session(keyspace); // 2
 
 	for (input of inputs) {
-		console.log("Loading from [" + input.dataPath + "] into Grakn ...");
-		await loadDataIntoGrakn(input, session); // 3
+	    input.file = input.file.replace(dataPath, "") // for testing purposes
+	    input.file = dataPath + input.file // 3a
+		console.log("Loading from [" + input.file + ".json] into Grakn ...");
+		await loadDataIntoGrakn(input, session); // 3b
 	}
 
 	await session.close(); // 4
@@ -65,7 +68,7 @@ async function loadDataIntoGrakn(input, session) {
 	}
 
 	console.log(
-		`\nInserted ${items.length} items from [${input.dataPath}] into Grakn.\n`
+		`\nInserted ${items.length} items from [${input.file}.json] into Grakn.\n`
 	);
 }
 
@@ -120,14 +123,14 @@ function callTemplate(call) {
 /**
  * 1. reads the file through a stream,
  * 2. adds the  object to the list of items
- * @param {string} input.dataPath path to the data file
+ * @param {string} input.file path to the data file
  * @returns items that is, a list of objects each representing a data item
  */
 function parseDataToObjects(input) {
 	const items = [];
 	return new Promise(function (resolve, reject) {
 		const pipeline = chain([
-			fs.createReadStream(input.dataPath + ".json"), // 1
+			fs.createReadStream(input.file + ".json"), // 1
 			parser(),
 			streamArray()
 		]);

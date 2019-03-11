@@ -1,99 +1,18 @@
----
-title: Example Queries using the Java Client
-keywords: graql queries, grakn, java client
-tags: [example]
-sidebar: documentation_sidebar
-permalink: /examples/java/queries
-folder: examples
-symlink: false
----
+## Phone Calls: Migrate and Query Using Client Java
 
-## Example Queries using the Java Client
+The Phone Calls Java example showcases:
+1. basic migration of CSV, JSON and XML data into a Grakn knowledge graph
+2. writing and performing expressive Graql queries to gain insights over the dataset
 
-The `src/main/java/ai.grakn.examples/Queries.java`, contains query examples that get executed on the phone_calls knowledge graph.
-
-### Prerequisites
-
-- [Migrating data into the phone_calls Grakn keyspace](https://github.com/graknlabs/examples/tree/master/java/migration)
-- Java 8 (OpenJDK or Oracle Java) with the $JAVA_HOME set accordingly
-- If running on Windows version prior to 10, make sure to have Visual Studio C++ Runtime
-- Basic understading of [GRAKN.AI](http://dev.grakn.ai/docs)
-- Basic knowledge of Java
-
-### Understanding the code
-
-- Read the **[blog post](...)**
-- Study the code/comments in `Queries.java`
-
-## Quick Start
-
-Run:
-
-- [migrate data into the phone_calls Grakn keyspace](https://github.com/graknlabs/examples/tree/master/java/migration)
-- `path-to-grakn-dist-directory/grakn server start` (if Grakn server is not yet running)
-- `git clone git@github.com:graknlabs/examples.git`
-- `cd examples/java/queries`
-- `mvn clean compile assembly:single`
-- `java -cp target/queries-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.Queries`
-- follow the instructions to run available Graql queries
-
-
-
-
----
-title: Loading CSV, JSON and XML data into Grakn using the Java Client - an Example
-keywords: migration, csv to grakn, json to grakn, xml to grakn, java client
-tags: [example]
-sidebar: documentation_sidebar
-permalink: /examples/java/migration
-folder: examples
-symlink: false
----
-
-## Loading CSV, JSON and XML data into Grakn using the Java Client - an Example
-
-This migration example uses the [Grakn Java Client](https://github.com/graknlabs/grakn/tree/master/client-java) to load a dataset in CSV, JSON or XML format into a Grakn keyspace.
-
-### Prerequisites
-- Java 8 (OpenJDK or Oracle Java) with the $JAVA_HOME set accordingly
-- If running on Windows version prior to 10, make sure to have Visual Studio C++ Runtime for Visual Studio 2015 installed
-- Basic understading of [GRAKN.AI](http://dev.grakn.ai/docs)
-- Basic knowledge of Java
-
-### Understanding the code
-
-- Read the **[blog post](https://blog.grakn.ai/loading-data-into-a-grakn-knowledge-graph-using-the-java-client-5f2f1a7f9903)**
-- Read the comments in `src/main/java/ai.grakn.examples/Migration.java`
-
-## Quick Start
-
-Run:
-
-- `git clone git@github.com:graknlabs/examples.git`
-- `path-to-grakn-dist-directory/grakn server start`
-- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/java/migration/schema.gql`
-- `cd examples/java/migration`
-- for migrating:
-    - csv data:
-        - `cd csv`
-        - `mvn clean compile assembly:single`
-        - `java -cp target/migrate-csv-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.CsvMigration`
-    - json data:
-        - `cd json`
-        - `mvn clean compile assembly:single`
-        - `java -cp target/migrate-json-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.JsonMigration`
-    - xml data:
-        - `cd xml`
-        - `mvn clean compile assembly:single`
-        - `java -cp target/migrate-xml-to-grakn-1.0-SNAPSHOT-jar-with-dependencies.jar ai.grakn.examples.XmlMigration`
-
-### Before running the migration for a second time
-
-The `phone_calls` keyspace needs to be cleaned. Run:
-
-- `path-to-grakn-dist-directory/graql console -k phone_calls`
-- `clean`
-- `confirm`
-- `exit`
-- `path-to-grakn-dist-directory/graql console -k phone_calls -f path-to-cloned-repository/java/migration/schema.gql`
-
+### Quickstart
+1. Install [Grakn 1.5.0](http://dev.grakn.ai/docs/running-grakn/install-and-run#download-and-install-grakn)
+2. Clone this repository
+3. Via terminal while inside the Grakn distribution, run: `./grakn console -k phone_calls -f path-to-the-cloned-repo/schemas/phone-calls-schema.gql`
+4. Start the [Grakn Sever](http://dev.grakn.ai/docs/running-grakn/install-and-run#start-the-grakn-server).
+5. Install [Bazel](https://docs.bazel.build/versions/master/install.html). (you may also declare dependencies and run using Maven. See [Grakn Client Java documentation](http://dev.grakn.ai/docs/client-api/java).)
+6. To install all the dependencies, run `bazel build //...`.
+7. To migrate the dataset into Grakn, run:
+- `bazel run //phone_calls/java:csv-migration`,
+- `bazel run //phone_calls/java:json-migration`, or
+- `bazel run //phone_calls/java:xml-migration`.
+8. To initiate the interactive query runner, run `bazel run //phone_calls/java:queries`.

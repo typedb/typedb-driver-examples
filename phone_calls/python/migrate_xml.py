@@ -1,26 +1,30 @@
 # the Python client for Grakn
-# https://github.com/graknlabs/grakn/tree/master/client-python
-import grakn
+# https://github.com/graknlabs/client-python
+from grakn.client import GraknClient
+
 # Python's built in module for dealing with .xml files.
 # we will use it read data source files.
 # https://medium.com/r/?url=https%3A%2F%2Fdocs.python.org%2F2%2Flibrary%2Fxml.etree.elementtree.html
 import xml.etree.cElementTree as et
 
 
-def build_phone_call_graph(inputs):
-    '''
+def build_phone_call_graph(inputs, data_path, keyspace_name):
+    """
       gets the job done:
       1. creates a Grakn instance
       2. creates a session to the targeted keyspace
-      3. loads the xml data to Grakn for each file
-      4. closes the session
+      3. for each input:
+        - a. constructs the full path to the data file
+        - b. loads csv to Grakn
       :param input as list of dictionaties: each dictionary contains details required to parse the data
-    '''
-    client = grakn.Grakn(uri="localhost:48555")  # 1
-    with client.session(keyspace="phone_calls") as session:  # 2 and 4
-        for input in inputs:
-            print("Loading from [" + input["data_path"] + "] into Grakn ...")
-            load_data_into_grakn(input, session)  # 3
+    """
+    with GraknClient(uri="localhost:48555") as client:  # 1
+        with client.session(keyspace=keyspace_name) as session:  # 2
+            for input in inputs:
+                input["file"] = input["file"].replace(data_path, "")  # for testing purposes
+                input["file"] = data_path + input["file"]  # 3a
+                print("Loading from [" + input["file"] + ".csv] into Grakn ...")
+                load_data_into_grakn(input, session)  # 3b
 
 
 def load_data_into_grakn(input, session):
@@ -38,14 +42,14 @@ def load_data_into_grakn(input, session):
     items = parse_data_to_dictionaries(input)  # 1
 
     for item in items:  # 2
-        with session.transaction(grakn.TxType.WRITE) as tx:  # a
+        with session.transaction().write() as transaction:  # a
             graql_insert_query = input["template"](item)  # b
             print("Executing Graql Query: " + graql_insert_query)
-            tx.query(graql_insert_query)  # c
-            tx.commit()  # d
+            transaction.query(graql_insert_query)  # c
+            transaction.commit()  # d
 
     print("\nInserted " + str(len(items)) +
-          " items from [ " + input["data_path"] + "] into Grakn.\n")
+          " items from [ " + input["file"] + ".xml] into Grakn.\n")
 
 
 def company_template(company):
@@ -100,11 +104,11 @@ def parse_data_to_dictionaries(input):
     '''
       1. reads the file through a stream,
       2. adds the dictionary to the list of items
-      :param input.data_path as string: the path to the data file, minus the format
-      :returns items as list of dictionaries: each item representing a data item from the file at input.data_path
+      :param input.file as string: the path to the data file, minus the format
+      :returns items as list of dictionaries: each item representing a data item from the file at input.file
     '''
     items = []
-    with open(input["data_path"] + ".xml", "rb") as inputfile:
+    with open(input["file"] + ".xml", "rb") as inputfile:
         append = False
         for line in inputfile:
             if "<" + input["selector"] + ">" in str(line):
@@ -131,26 +135,26 @@ def parse_data_to_dictionaries(input):
 
 Inputs = [
     {
-        "data_path": "datasets/phone-calls/companies",
+        "file": "companies",
         "template": company_template,
         "selector": "company"
     },
     {
-        "data_path": "datasets/phone-calls/people",
+        "file": "people",
         "template": person_template,
         "selector": "person"
     },
     {
-        "data_path": "datasets/phone-calls/contracts",
+        "file": "contracts",
         "template": contract_template,
         "selector": "contract"
     },
     {
-        "data_path": "datasets/phone-calls/calls",
+        "file": "calls",
         "template": call_template,
         "selector": "call"
     }
 ]
 
 if __name__ == "__main__":
-    build_phone_call_graph(inputs=Inputs)
+    build_phone_call_graph(inputs=Inputs, data_path="../../datasets/phone-calls/", keyspace_name = "phone_calls")

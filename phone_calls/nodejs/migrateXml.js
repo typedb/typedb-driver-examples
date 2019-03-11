@@ -12,22 +12,22 @@ const xmlStream = require("xml-stream");
 
 const inputs = [
 	{
-		dataPath: "datasets/phone-calls/companies",
+		file: "companies",
 		template: companyTemplate,
 		selector: "company"
 	},
 	{
-		dataPath: "datasets/phone-calls/people",
+		file: "people",
 		template: personTemplate,
 		selector: "person"
 	},
 	{
-		dataPath: "datasets/phone-calls/contracts",
+		file: "contracts",
 		template: contractTemplate,
 		selector: "contract"
 	},
 	{
-		dataPath: "datasets/phone-calls/calls",
+		file: "calls",
 		template: callTemplate,
 		selector: "call"
 	}
@@ -35,24 +35,28 @@ const inputs = [
 
 /**
  * gets the job done:
- * 1. creates a Grakn instance
+ * 1. creates an instance of Grakn Client
  * 2. creates a session to the targeted keyspace
- * 3. loads xml to Grakn for each file
+ * 3. for each input,
+ *      - a. constructs the full path to the data file
+ *      - b. loads csv to Grakn
  * 4. closes the session
  * 5. closes the client
  */
-async function buildPhoneCallGraph() {
+async function buildPhoneCallGraph(dataPath, keyspace = "phone_calls") {
 	const client = new Grakn("localhost:48555"); // 1
-	const session = await client.session("phone_calls"); // 2
+	const session = await client.session(keyspace); // 2
 
 	for (input of inputs) {
-		console.log("Loading from [" + input.dataPath + "] into Grakn ...");
-		await loadDataIntoGrakn(input, session); // 3
+	    input.file = input.file.replace(dataPath, "") // for testing purposes
+	    input.file = dataPath + input.file // 3a
+		console.log("Loading from [" + input.file + ".xml] into Grakn ...");
+		await loadDataIntoGrakn(input, session); // 3b
 	}
 
 	await session.close(); // 4
-    client.close(); // 5
-};
+	client.close(); // 5
+}
 
 /**
  * loads the xml data into our Grakn phone_calls keyspace
@@ -72,7 +76,7 @@ async function loadDataIntoGrakn(input, session) {
 	}
 
 	console.log(
-		`\nInserted ${items.length} items from [${input.dataPath}] into Grakn.\n`
+		`\nInserted ${items.length} items from [${input.file}.xml] into Grakn.\n`
 	);
 }
 
@@ -128,7 +132,7 @@ function callTemplate(call) {
  * 1. reads the file through a stream,
  * 2. parses the xml element to a json object
  * 3. adds it to items
- * @param {string} input.dataPath path to the data file
+ * @param {string} input.file path to the data file
  * @param {string} input.selector an xml-stream option to determine the main selector to be parsed
  * @returns items that is, a list of objects each representing a data item the Grakn keyspace
  */
@@ -136,7 +140,7 @@ function parseDataToObjects(input) {
 	const items = [];
 	return new Promise((resolve, reject) => {
 		const pipeline = new xmlStream(
-			fs.createReadStream(input.dataPath + ".xml") // 1
+			fs.createReadStream(input.file + ".xml") // 1
 		);
 		// 2
 		pipeline.on(`endElement: ${input.selector}`, function (result) {

@@ -39,24 +39,26 @@ public class JSONMigration {
         abstract String template(Json data);
     }
 
+    public static void main(String[] args) throws IOException {
+        String keyspaceName = (args[0] != null) ? args[0] : "phone_calls";
+        Collection<Input> inputs = initialiseInputs();
+        connectAndMigrate(inputs, keyspaceName);
+    }
+
     /**
      * 1. creates a Grakn instance
      * 2. creates a session to the targeted keyspace
      * 3. initialises the list of Inputs, each containing details required to parse the data
      * 4. loads the csv data to Grakn for each file
      * 5. closes the session
+     * 6. closes the client
      */
-    public static void main(String[] args) throws IOException {
-        Collection<Input> inputs = initialiseInputs();
-        connectAndMigrate(inputs);
-    }
-
-    static void connectAndMigrate(Collection<Input> inputs) throws IOException {
+    static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws IOException {
         GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session("phone_calls");
+        GraknClient.Session session = client.session(keyspaceName);
 
         for (Input input : inputs) {
-            System.out.println("Loading from [" + input.getDataPath() + "] into Grakn ...");
+            System.out.println("Loading from [" + input.getDataPath() + ".json] into Grakn ...");
             loadDataIntoGrakn(input, session);
         }
 
@@ -152,7 +154,7 @@ public class JSONMigration {
             transaction.commit(); // 2d
 
         }
-        System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + "] into Grakn.\n");
+        System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + ".json] into Grakn.\n");
     }
 
     /**

@@ -1,6 +1,5 @@
 # coding=utf-8
-import grakn
-
+from grakn.client import GraknClient
 '''
   to add a new query implementation:
     1. add the question and function to the approriate list of dictionaries:
@@ -19,7 +18,7 @@ import grakn
 
 
 ## The template for execute_query functions
-# def execute_query_format(question)
+# def execute_query_format(question, transaction)
 #   print_to_log("Question: ", question)
 
 #   ## queries are written as a list for better readibility
@@ -262,18 +261,7 @@ aggregate_qs_func = [
     }
 ]
 
-compute_qs_func = [
-    {
-        "question": "compute #1 related question goes here ",
-        "query_function": execute_query_6
-    },
-    {
-        "question": "compute #2 related question goes here ",
-        "query_function": execute_query_7
-    }
-]
-
-query_examples = get_qs_func + aggregate_qs_func + compute_qs_func
+query_examples = get_qs_func + aggregate_qs_func
 
 if __name__ == "__main__":
 
@@ -299,13 +287,13 @@ if __name__ == "__main__":
     print("")
 
     ## create a transaction to talk to the phone_calls keyspace
-    client = grakn.Grakn(uri="localhost:48555")
-    with client.session(keyspace="phone_calls") as session:
-        with session.transaction(grakn.TxType.READ) as transaction:
-            ## execute the query for the selected question
-            if qs_number == 0:
-                execute_query_all(transaction)
-            else:
-                qustion = query_examples[qs_number - 1]["question"]
-                query_function = query_examples[qs_number - 1]["query_function"]
-                query_function(qustion, transaction)
+    with GraknClient(uri="localhost:48555") as client:
+        with client.session(keyspace="phone_calls") as session:
+            with session.transaction().read() as transaction:
+                ## execute the query for the selected question
+                if qs_number == 0:
+                    execute_query_all(transaction)
+                else:
+                    qustion = query_examples[qs_number - 1]["question"]
+                    query_function = query_examples[qs_number - 1]["query_function"]
+                    query_function(qustion, transaction)

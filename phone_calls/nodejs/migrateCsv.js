@@ -11,27 +11,32 @@ const fs = require("fs");
 const papa = require("papaparse");
 
 const inputs = [
-	{ dataPath: "datasets/phone-calls/companies", template: companyTemplate },
-	{ dataPath: "datasets/phone-calls/people", template: personTemplate },
-	{ dataPath: "datasets/phone-calls/contracts", template: contractTemplate },
-	{ dataPath: "datasets/phone-calls/calls", template: callTemplate }
+	{ file: "companies", template: companyTemplate },
+	{ file: "people", template: personTemplate },
+	{ file: "contracts", template: contractTemplate },
+	{ file: "calls", template: callTemplate }
 ];
 
 /**
  * gets the job done:
- * 1. creates a Grakn instance
+ * 1. creates an instance of Grakn Client
  * 2. creates a session to the targeted keyspace
- * 3. loads csv to Grakn for each file
+ * 3. for each input:
+ *      - a. constructs the full path to the data file
+ *      - b. loads csv to Grakn
  * 4. closes the session
  * 5. closes the client
  */
-async function buildPhoneCallGraph() {
+async function buildPhoneCallGraph(dataPath, keyspaceName = "phone_calls") {
 	const client = new Grakn("localhost:48555"); // 1
-	const session = await client.session("phone_calls"); // 2
+	const session = await client.session(keyspaceName); // 2
 
 	for (input of inputs) {
-		console.log("Loading from [" + input.dataPath + "] into Grakn ...");
-		await loadDataIntoGrakn(input, session); // 3
+	    console.log(input.file);
+	    input.file = input.file.replace(dataPath, ""); // for testing purposes
+	    input.file = dataPath + input.file // 3a
+		console.log("Loading from [" + input.file + ".csv] into Grakn ...");
+		await loadDataIntoGrakn(input, session); // 3b
 	}
 
 	await session.close(); // 4
@@ -44,25 +49,21 @@ async function buildPhoneCallGraph() {
  * @param {object} session a Grakn session, off of which a transaction will be created
  */
 async function loadDataIntoGrakn(input, session) {
-    try {
-        const items = await parseDataToObjects(input);
+    const items = await parseDataToObjects(input);
 
-        for (item of items) {
-            let transaction;
-            transaction = await session.transaction().write();
+    for (item of items) {
+        let transaction;
+        transaction = await session.transaction().write();
 
-            const graqlInsertQuery = input.template(item);
-            console.log("Executing Graql Query: " + graqlInsertQuery);
-            await transaction.query(graqlInsertQuery);
-            await transaction.commit();
-        }
-
-        console.log(
-            `\nInserted ${items.length} items from [${input.dataPath}] into Grakn.\n`
-        );
-    } catch (e) {
-        console.log(e)
+        const graqlInsertQuery = input.template(item);
+        console.log("Executing Graql Query: " + graqlInsertQuery);
+        await transaction.query(graqlInsertQuery);
+        await transaction.commit();
     }
+
+    console.log(
+        `\nInserted ${items.length} items from [${input.file}.csv] into Grakn.\n`
+    );
 }
 
 function companyTemplate(company) {
@@ -117,25 +118,25 @@ function callTemplate(call) {
  * 1. reads the file through a stream,
  * 2. parses the csv line to a json object
  * 3. adds the parsed object to the list of items
- * @param {string} input.dataPath path to the data file
+ * @param {string} input.file path to the data file
  * @returns items that is, a list of objects each representing a row in the csv file
  */
 function parseDataToObjects(input) {
 	const items = [];
 	return new Promise(function (resolve, reject) {
-		papa.parse(
-			fs.createReadStream(input.dataPath + ".csv"), // 1
-			{
-				header: true, // a Papaparse config option
-				// 2
-				step: function (results, parser) {
-					items.push(results.data[0]); // 3
-				},
-				complete: function () {
-					resolve(items);
-				}
-			}
-		);
+        papa.parse(
+            fs.createReadStream(input.file + ".csv"), // 1
+            {
+                header: true, // a Papaparse config option
+                // 2
+                step: function (results, parser) {
+                    items.push(results.data[0]); // 3
+                },
+                complete: function () {
+                    resolve(items);
+                }
+            }
+        );
 	});
 }
 
