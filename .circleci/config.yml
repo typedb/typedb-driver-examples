@@ -85,6 +85,7 @@ jobs:
     steps:
       - checkout
       - install-bazel
+      - run: sudo apt-get install tk-dev
       - run-grakn-server
       - run: bazel test //tube_network:test --test_output=errors
       - run: bazel test //tube_network:test-migration --test_output=errors
