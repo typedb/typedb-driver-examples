@@ -11,7 +11,7 @@ import queries
 keyspace_name = "phone_calls_python"
 data_path = "datasets/phone-calls/"
 
-class TestPhoneCallsCSVMigration(unittest.TestCase):
+class Test(unittest.TestCase):
 
     def setUp(self):
         self._client = GraknClient(uri="localhost:48555")
