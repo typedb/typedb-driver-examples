@@ -12,11 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import grakn
-<<<<<<< HEAD:applications/tube_network/src/statistics.py
-=======
-
->>>>>>> bazelise-tube-network:tube_network/src/statistics.py
+from grakn.client import GraknClient
 
 def print_to_log(title, content):
   print(title)
@@ -247,18 +243,13 @@ if __name__ == "__main__":
     print("")
 
     # create a transaction to talk to the keyspace
-    client = grakn.Grakn(uri="localhost:48555")
-    with client.session(keyspace="tube_network") as session:
-<<<<<<< HEAD:applications/tube_network/src/statistics.py
-        with session.transaction(grakn.TxType.READ) as transaction:
-=======
-        with session.transaction().read() as transaction:
->>>>>>> bazelise-tube-network:tube_network/src/statistics.py
-            # execute the query for the selected question
-            if qs_number == 0:
-                execute_query_all(transaction)
-            else:
-                question = query_examples[qs_number - 1]["question"]
-                query_function = query_examples[qs_number - 1]["query_function"]
-                query_function(question, transaction)
-    client.close()
+    with GraknClient(uri="localhost:48555") as client:
+        with client.session(keyspace="tube_network") as session:
+            with session.transaction().read() as transaction:
+                # execute the query for the selected question
+                if qs_number == 0:
+                    execute_query_all(transaction)
+                else:
+                    question = query_examples[qs_number - 1]["question"]
+                    query_function = query_examples[qs_number - 1]["query_function"]
+                    query_function(question, transaction)

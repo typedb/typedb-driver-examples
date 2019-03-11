@@ -55,35 +55,45 @@ jobs:
       - run-bazel-rbe:
           command: bazel build //...
 
-  test-java-examples:
+  test-phone-calls-java:
     machine: true
     steps:
       - checkout
       - install-bazel
       - run-grakn-server
-      - run: bazel test //phone-calls/java:test --test_output=errors
+      - run: bazel test //phone_calls/java:test --test_output=errors
 
 
-  test-nodejs-examples:
+  test-phone-calls-nodejs:
     machine: true
     steps:
       - checkout
       - install-bazel
       - run-grakn-server
-      - run: bazel test //phone-calls/nodejs:test --test_output=errors
+      - run: bazel test //phone_calls/nodejs:test --test_output=errors
 
-  test-python-examples:
+  test-phone-calls-python:
     machine: true
     steps:
       - checkout
       - install-bazel
       - run-grakn-server
-      - run: bazel test //phone-calls/python:test --test_output=errors
+      - run: bazel test //phone_calls/python:test --test_output=errors
+
+  test-tube-network:
+    machine: true
+    steps:
+      - checkout
+      - install-bazel
+      - run-grakn-server
+      - run: bazel test //tube_network:test --test_output=errors
+      - run: bazel test //tube_network:test-migration --test_output=errors
 
 workflows:
   docs:
     jobs:
       - build
-      - test-java-examples
-      - test-nodejs-examples
-      - test-python-examples
+      - test-phone-calls-java
+      - test-phone-calls-nodejs
+      - test-phone-calls-python
+      - test-tube-network

@@ -13,11 +13,9 @@
 # limitations under the License.
 
 import Tkinter as tk
-import grakn
+from grakn.client import GraknClient
 import datetime
 
-
-print("start!")
 
 def transform_to_range(val, old_min, old_max, new_min, new_max):
     """
@@ -111,7 +109,7 @@ class TubeGui:
 
     COMPUTE_CENTRALITY_TUNNEL_DEGREE = "compute centrality of station, in [station, tunnel], using degree;"
     COMPUTE_CENTRALITY_TUNNEL_KCORE = "compute centrality of station, in [station, tunnel], using k-core;"
-    COMPUTE_CENTRALITY_ROUTE_KCORE = "compute centrality of station, in [station, route], using degree;"
+    COMPUTE_CENTRALITY_ROUTE_DEGREE = "compute centrality of station, in [station, route], using degree;"
 
     def __init__(self, session, root=tk.Tk()):
         """
@@ -230,9 +228,7 @@ class TubeGui:
 
     @staticmethod
     def find_shortest_path(session, ids):
-        print("find_shortest_path")
         query = "compute path from " + ids[0] + ", to " + ids[1] + ", in [station, tunnel];"
-        print(query)
         with session.transaction().read() as transaction:
             shortest_path_concept_list = list(execute_and_log(query, transaction))[0]
 
@@ -250,21 +246,28 @@ class TubeGui:
 
     @staticmethod
     def compute_centrality(session, query):
-        concept_ids = []
+        centrality_details = {
+            "centrality_set": [],
+            "max_score": 0
+        }
 
         with session.transaction().read() as transaction:
             centralities = list(execute_and_log(query, transaction))
             # Find the max centrality value, that way we can scale the visualisation up to a maximum radius
-            max_score = max([int(centrality.measurement()) for centrality in centralities])
+            centrality_details["max_score"] = max([int(centrality.measurement()) for centrality in centralities])
 
             for centrality in centralities:
-                for concept_id in centrality.set():
-                    concept_ids.append(concept_id)
+                centrality_set = {
+                    "measurement": centrality.measurement(),
+                    "concept_ids": []
+                }
 
-        centrality_details = {
-            "concept_ids": concept_ids,
-            "max_score": max_score
-        }
+                for concept_id in centrality.set():
+                    centrality_set["concept_ids"].append(concept_id)
+
+                centrality_details["centrality_set"].append(centrality_set)
+
+        print(centrality_details)
 
         return centrality_details
 
@@ -360,7 +363,8 @@ class TubeGui:
             for station in [details["from"], details["to"]]:
                 station_id = station["station_id"]
                 if station_id not in drawn_station_ids: # draw each station only once
-                    lon, lat = station["lon"], station["lat"]
+                    lon, lat = self._transform_coords(float(station["lon"]), float(station["lat"]))
+                    # lon, lat = station["lon"], station["lat"]
                     stating_name = station["station_name"]
 
                     # Write label
@@ -429,18 +433,24 @@ class TubeGui:
         """
         if event.char == "+" or event.char == "=":
             self.zoom("in")
-        elif event.char == "-" or event.char == "_":
+
+        if event.char == "-" or event.char == "_":
             self.zoom("out")
-        elif not self._displaying_centrality:
+
+        if not self._displaying_centrality:
             if event.char == self.STATION_DEGREE_KEY:
                 self.display_centrality(self.COMPUTE_CENTRALITY_TUNNEL_DEGREE, self.STATION_DEGREE_MAX_RADIUS, self.STATION_DEGREE_COLOUR)
-            elif event.char == self.STATION_K_CORE_KEY:
+
+            if event.char == self.STATION_K_CORE_KEY:
                 self.display_centrality(self.COMPUTE_CENTRALITY_TUNNEL_KCORE, self.STATION_K_CORE_MAX_RADIUS, self.STATION_K_CORE_COLOUR)
-            elif event.char == self.ROUTES_DEGREE_KEY:
+
+            if event.char == self.ROUTES_DEGREE_KEY:
                 self.display_centrality(self.COMPUTE_CENTRALITY_ROUTE_DEGREE, self.ROUTES_DEGREE_MAX_RADIUS, self.ROUTES_DEGREE_COLOUR)
-        elif event.char == self.CLEAR_SHORTEST_PATH_KEY:
+
+        if event.char == self.CLEAR_SHORTEST_PATH_KEY:
                 self.clear_shortest_path()
-        elif event.char == self.CLEAR_ALL_KEY:
+
+        if event.char == self.CLEAR_ALL_KEY:
             self.clear_all()
 
     def _on_station_select(self, station_id):
@@ -459,8 +469,11 @@ class TubeGui:
 
         self._shortest_path_elements.append(c)
 
+        print(self._shortest_path_stations)
+
         if len(self._shortest_path_stations) > 1:
-            self.find_shortest_path(self._session, [self.__shortest_path_stations[-2], self.__shortest_path_stations[-1]])
+            shortest_path_ids = self.find_shortest_path(self._session, [self._shortest_path_stations[-2], self._shortest_path_stations[-1]])
+            self.display_shortest_path(shortest_path_ids)
 
     def display_shortest_path(self, shortest_path_ids):
         """
@@ -559,23 +572,28 @@ class TubeGui:
             :return:
         """
 
-        centrality = self.compute_centrality(self._session, query)
+        centrality_details = self.compute_centrality(self._session, query)
 
-        for concept_id in centrality["concepts"]:
-            station_element_id = self._station_point_ids[concept_id]
-            lon, lat = self._station_canvas_coords[concept_id]
-            lon = self._transform_to_current_scale(lon)
-            lat = self._transform_to_current_scale(lat)
+        for centrality_set in centrality_details["centrality_set"]:
+            radius = self._transform_to_current_scale(
+                (int(int(centrality_set["measurement"])) / centrality_details["max_score"]) * upper_radius
+            )
 
-            radius = self._transform_to_current_scale((int(centrality.measurement()) / centrality["max_score"]) * upper_radius)
+            for concept_id in centrality_set["concept_ids"]:
+                print(concept_id, centrality_set["measurement"], centrality_details["max_score"])
 
-            centrality_element_id = self._canvas.create_circle(lon, lat, radius, fill=colour, outline="")
+                station_element_id = self._station_point_ids[concept_id]
+                lon, lat = self._station_canvas_coords[concept_id]
+                lon = self._transform_to_current_scale(lon)
+                lat = self._transform_to_current_scale(lat)
 
-            self._station_centrality_points[concept_id] = centrality_element_id
+                centrality_element_id = self._canvas.create_circle(lon, lat, radius, fill=colour, outline="")
 
-            # Send the drawn elements to behind the station point
-            self._canvas.tag_lower(centrality_element_id, station_element_id)
+                self._station_centrality_points[concept_id] = centrality_element_id
 
+                # Send the drawn elements to behind the station point
+                self._canvas.tag_lower(centrality_element_id, station_element_id)
+        print(self._station_centrality_points)
         self._displaying_centrality = True
 
     def hide_centrality(self):
@@ -586,21 +604,8 @@ class TubeGui:
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD:applications/tube_network/src/app.py
-    client = grakn.Grakn(uri="localhost:48555")
-
     root = tk.Tk() # Build the Tkinter application
-    with client.session(keyspace="tube_network") as session:
-        tube_gui = TubeGui(root, client)
-=======
-    client = grakn.GraknClient(uri="localhost:48555")
-
-    root = tk.Tk() # Build the Tkinter application
-    with client.session(keyspace="tube_network") as session:
-        tube_gui = TubeGui(session, root)
->>>>>>> bazelise-tube-network:tube_network/src/app.py
-        root.mainloop()
-
-    client.close()
-
-    print("done!")
+    with GraknClient(uri="localhost:48555") as client:
+        with client.session(keyspace="tube_network") as session:
+            tube_gui = TubeGui(session, root)
+            root.mainloop()

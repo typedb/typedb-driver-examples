@@ -30,7 +30,7 @@ distance sub attribute,
 	datatype double;
 
 station sub entity,
-	key naptan-id,
+	has naptan-id,
 	has name,
 	has lat,
 	has lon,
@@ -42,11 +42,11 @@ station sub entity,
 	plays contained-station;
 
 tube-line sub entity,
-	key name,
+	has name,
 	plays route-operator;
 
 route-section sub entity,
-	key identifier,
+	has identifier,
 	has duration,
 	plays section,
 	plays service;
@@ -56,7 +56,7 @@ route-section sub entity,
 # For example: a route has a stop in the form of a station
 
 route sub relation,
-	key identifier,
+	has identifier,
 	relates section,
 	relates stop,
 	relates origin as stop,
@@ -64,12 +64,12 @@ route sub relation,
 	relates route-operator;
 
 tunnel sub relation,
-	key identifier,
+	has identifier,
 	has distance,
 	relates beginning,
 	relates end,
 	relates service;
 
 zone sub relation,
-	key name,
+	has name,
 	relates contained-station;
