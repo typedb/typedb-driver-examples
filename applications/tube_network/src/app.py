@@ -14,7 +14,6 @@
 
 import tkinter as tk
 import grakn
-import tube_network.settings as settings
 import datetime
 
 
@@ -544,11 +543,9 @@ class TubeGui:
 
 
 if __name__ == "__main__":
-    # Set up a connection to Grakn. Grakn needs to be running first, with settings found in the settings file of this
-    # project
-    client = grakn.Grakn(uri=settings.uri)
+    client = grakn.Grakn(uri="localhost:48555")
 
     root = tk.Tk() # Build the Tkinter application
-    with client.session(keyspace=settings.keyspace) as session:
+    with client.session(keyspace="tube_network") as session:
         tube_gui = TubeGui(root, client)
         root.mainloop()

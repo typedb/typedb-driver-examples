@@ -17,7 +17,6 @@ import json
 import os
 import re
 from math import cos, asin, sqrt
-import tube_network.settings as settings
 import multiprocessing
 import datetime
 
@@ -104,10 +103,10 @@ def get_distance_between_stations(data, from_station_id, to_station_id):
     return 12742 * asin(sqrt(a))
 
 def construct_queries(entity_queries, relationship_queries):
-    timetable_files = os.listdir(settings.timetables_path)
+    timetable_files = os.listdir("../../datasets/tube-network/timetables/")
 
     for timetable_file in timetable_files:
-        with open(settings.timetables_path + "/" + timetable_file) as template_file:
+        with open("../../datasets/tube-network/timetables/" + timetable_file) as template_file:
             data = json.load(template_file)
 
             unique_append(entity_queries, "tube-line",
@@ -377,9 +376,9 @@ def construct_queries(entity_queries, relationship_queries):
                             )
 
 def insert(queries):
-    client = grakn.Grakn(uri=settings.uri)
-    with client.session(keyspace=settings.keyspace) as session:
-        transaction = session.transaction(grakn.TxType.WRITE)
+    client = grakn.Grakn(uri="localhost:48555")
+    with client.session(keyspace="tube_network") as session:
+        transaction = session.transaction().write()
         for i, query in enumerate(queries):
             print(query)
             print("- - - - - - - - - - - - - -")
@@ -387,7 +386,7 @@ def insert(queries):
 
             if i % 500 == 0:
                 transaction.commit()
-                transaction = session.transaction(grakn.TxType.WRITE)
+                transaction = session.transaction().write()
         transaction.commit()
 
 
@@ -412,8 +411,8 @@ def insert_concurrently(queries, processes):
 if __name__ == "__main__":
     start_time = datetime.datetime.now()
 
-    entity_queries = { "tube-line": [], "station": [], "route-section": [] }
-    relationship_queries = { "zone": [], "route": [], "tunnel": [] }
+    entity_queries = {"tube-line": [], "station": [], "route-section": []}
+    relationship_queries = {"zone": [], "route": [], "tunnel": []}
 
     construct_queries(entity_queries, relationship_queries)
 
