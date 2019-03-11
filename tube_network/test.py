@@ -1,7 +1,7 @@
 from grakn.client import GraknClient
 import unittest
 
-from tube_network.src import migration, statistics, journey_planner, app
+from tube_network.src import migration, statistics, journey_planner
 
 
 class Test(unittest.TestCase):
