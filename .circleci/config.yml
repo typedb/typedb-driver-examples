@@ -90,7 +90,7 @@ jobs:
       - run: bazel test //tube_network:test-migration --test_output=errors
 
 workflows:
-  docs:
+  examples:
     jobs:
       - build
       - test-phone-calls-java
