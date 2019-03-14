@@ -48,6 +48,27 @@ bazel_rules_docker()
 bazel_rules_nodejs()
 bazel_rules_python()
 
+load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+pip_repositories()
+
+# Python dependencies for @graknlabs_build_tools and @graknlabs_bazel_distribution
+
+pip_import(
+    name = "graknlabs_build_tools_ci_pip",
+    requirements = "@graknlabs_build_tools//ci:requirements.txt",
+)
+load("@graknlabs_build_tools_ci_pip//:requirements.bzl", graknlabs_build_tools_ci_pip_install = "pip_install")
+graknlabs_build_tools_ci_pip_install()
+
+pip_import(
+    # TODO: bazel-distribution's pip_import should be called graknlabs_bazel_distribution_pip, set in client-python
+    name = "pypi_deployment_dependencies",
+    requirements = "@graknlabs_bazel_distribution//pip:requirements.txt",
+)
+load("@pypi_deployment_dependencies//:requirements.bzl", graknlabs_bazel_distribution_pip_install = "pip_install")
+graknlabs_bazel_distribution_pip_install()
+
+
 ###########################
 # Load Local Dependencies #
 ###########################
@@ -71,9 +92,6 @@ npm_install(
 )
 
 # for Python
-
-load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
-pip_repositories()
 
 pip_import(
     name = "phone_calls_migration_json_pypi_dependencies",
@@ -134,13 +152,8 @@ pip_import(
     requirements = "@graknlabs_client_python//:requirements.txt",
 )
 
-pip_import(
-    name = "pypi_deployment_dependencies",
-    requirements = "@graknlabs_bazel_distribution//pip:requirements.txt",
-)
-
-load("@pypi_dependencies//:requirements.bzl", client_python_pip_install = "pip_install")
-client_python_pip_install()
+load("@pypi_dependencies//:requirements.bzl", graknlabs_client_python_pip_install = "pip_install")
+graknlabs_client_python_pip_install()
 
 
 #####################################
