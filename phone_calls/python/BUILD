@@ -1,8 +1,12 @@
 exports_files(["requirements.txt"])
 
 load("@io_bazel_rules_python//python:python.bzl", "py_library", "py_test")
-load("@pypi_dependencies//:requirements.bzl", "requirement")
-load("@phone_calls_migration_json_pypi_dependencies//:requirements.bzl", phone_calls_requirement = "requirement")
+
+load("@graknlabs_client_python_pip//:requirements.bzl",
+       graknlabs_client_python_requirement = "requirement")
+
+load("@phone_calls_pip//:requirements.bzl",
+       phone_calls_requirement = "requirement")
 
 py_library(
     name = "migrate-csv",

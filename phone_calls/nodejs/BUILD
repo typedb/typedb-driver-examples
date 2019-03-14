@@ -12,12 +12,12 @@ jasmine_node_test(
         "queries.js"
     ],
     deps = [
-        "@nodejs_dependencies//jasmine",
-        "@nodejs_dependencies//jasmine-reporters",
-        "@nodejs_dependencies//grakn-client",
-        "@nodejs_dependencies//papaparse",
-        "@nodejs_dependencies//stream-json",
-        "@nodejs_dependencies//xml-stream"
+        "@phone_calls_npm//jasmine",
+        "@phone_calls_npm//jasmine-reporters",
+        "@phone_calls_npm//grakn-client",
+        "@phone_calls_npm//papaparse",
+        "@phone_calls_npm//stream-json",
+        "@phone_calls_npm//xml-stream"
 
     ],
     data = [
