@@ -21,6 +21,7 @@ workspace(name = "graknlabs_examples")
 ################################
 # Load Grakn Labs Dependencies #
 ################################
+
 load("//dependencies/graknlabs:dependencies.bzl",
      "graknlabs_grakn_core", "graknlabs_client_java", "graknlabs_client_python", "graknlabs_build_tools")
 graknlabs_grakn_core()
@@ -35,9 +36,9 @@ load("@graknlabs_build_tools//distribution:dependencies.bzl", "graknlabs_bazel_d
 graknlabs_bazel_distribution()
 
 
-####################
-# Load Build Tools #
-####################
+###########################
+# Load Bazel Dependencies #
+###########################
 
 load("@graknlabs_build_tools//bazel:dependencies.bzl", "bazel_common", "bazel_deps",
      "bazel_toolchain", "bazel_rules_docker", "bazel_rules_nodejs", "bazel_rules_python")
@@ -51,7 +52,10 @@ bazel_rules_python()
 load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
 pip_repositories()
 
-# Python dependencies for @graknlabs_build_tools and @graknlabs_bazel_distribution
+
+#################################
+# Load Build Tools Dependencies #
+#################################
 
 pip_import(
     name = "graknlabs_build_tools_ci_pip",
@@ -103,9 +107,9 @@ phone_calls_pip_install = "pip_install")
 phone_calls_pip_install()
 
 
-#######################################
-# Load Compiler Dependencies for GRPC #
-#######################################
+##########################
+# Load GRPC Dependencies #
+##########################
 
 load("@graknlabs_build_tools//grpc:dependencies.bzl", "grpc_dependencies")
 grpc_dependencies()
@@ -148,7 +152,7 @@ graknlabs_graql_maven_dependencies()
 
 
 ###################################
-# Load Client Python dependencies #
+# Load Client Python Dependencies #
 ###################################
 
 pip_import(
@@ -162,7 +166,7 @@ graknlabs_client_python_pip_install()
 
 
 #####################################
-# Load Bazel common workspace rules #
+# Load Bazel Common Workspace Rules #
 #####################################
 
 # TODO: Figure out why this cannot be loaded at earlier at the top of the file
