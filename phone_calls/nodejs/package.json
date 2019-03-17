@@ -1,31 +1,31 @@
 {
-  "name": "grakn-nodejs-migration-csv-example",
-  "version": "1.0.0",
-  "description": "An example that illustrates how CSV data can be loaded into Grakn using the Node.js Client",
-  "main": "index.js",
-  "scripts": {
-    "migrateCsv": "node -e 'require(\"./migrateCsv\").init(\"../../datasets/phone-calls/\")'",
-    "migrateJson": "node -e 'require(\"./migrateJson\").init(\"../../datasets/phone-calls/\")'",
-    "migrateXml": "node -e 'require(\"./migrateXml\").init(\"../../datasets/phone-calls/\")'",
-    "queries": "node queries.js"
-  },
-  "keywords": [
-    "Grakn",
-    "Graql",
-    "csv",
-    "json",
-    "xml",
-    "migration",
-    "knowledge-graph"
-  ],
-  "author": "Grakn Labs (community@grakn.ai)",
-  "license": "ISC",
-  "dependencies": {
-    "grakn-client": "https://repo.grakn.ai/repository/test-npm-group/grakn-client/-/grakn-client-1.5.0-c0749c6fe82b9f0beb70104ec9b86aca1f5f5125.tgz",
-    "jasmine": "^2.9.0",
-    "jasmine-reporters": "^2.3.2",
-    "papaparse": "^4.6.3",
-    "stream-json": "^1.1.4",
-    "xml-stream": "^0.4.5"
-  }
+    "name": "grakn-nodejs-migration-csv-example",
+    "version": "1.0.0",
+    "description": "An example that illustrates how CSV data can be loaded into Grakn using the Node.js Client",
+    "main": "index.js",
+    "scripts": {
+        "migrateCsv": "node -e 'require(\"./migrateCsv\").init(\"../../datasets/phone-calls/\")'",
+        "migrateJson": "node -e 'require(\"./migrateJson\").init(\"../../datasets/phone-calls/\")'",
+        "migrateXml": "node -e 'require(\"./migrateXml\").init(\"../../datasets/phone-calls/\")'",
+        "queries": "node queries.js"
+    },
+    "keywords": [
+        "Grakn",
+        "Graql",
+        "csv",
+        "json",
+        "xml",
+        "migration",
+        "knowledge-graph"
+    ],
+    "author": "Grakn Labs (community@grakn.ai)",
+    "license": "ISC",
+    "dependencies": {
+        "grakn-client": "https://repo.grakn.ai/repository/test-npm-group/grakn-client/-/grakn-client-1.5.0-0795f2ff411c9a547be7493a8132e97a49246e91.tgz",
+        "jasmine": "^2.9.0",
+        "jasmine-reporters": "^2.3.2",
+        "papaparse": "^4.6.3",
+        "stream-json": "^1.1.4",
+        "xml-stream": "^0.4.5"
+    }
 }
