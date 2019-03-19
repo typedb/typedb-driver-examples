@@ -3,7 +3,8 @@
 logs/
 
 # IDE files
-.idea
+.idea/
+.ijwb/
 *.iml
 .vscode
 .settings
@@ -12,19 +13,15 @@ logs/
 .factorypath
 
 # Compiled files
-target
+target/
+bin/
 
 # NPM
 node_modules/
 package-lock.json
 
 # Python
-__pycache__/
+__pycache__
 
 # Bazel
-.ijwb/
-bazel-bin
-bazel-examples
-bazel-genfiles
-bazel-out
-bazel-testlogs
+bazel-*
