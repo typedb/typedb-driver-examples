@@ -18,25 +18,19 @@
 
 version: 2.1
 commands:
-  install-bazel:
+  install-bazel-linux-rbe:
     steps:
-      - run:
-          name: Install bazel and RBE credential
-          command: |
-            # Install bazel
-            curl -OL https://github.com/bazelbuild/bazel/releases/download/0.20.0/bazel-0.20.0-installer-linux-x86_64.sh
-            chmod +x bazel-0.20.0-installer-linux-x86_64.sh
-            sudo ./bazel-0.20.0-installer-linux-x86_64.sh
-
-            # Install RBE credential
-            bazel run @graknlabs_build_tools//ci:install-bazel-rbe-credential
+      - run: curl -OL https://raw.githubusercontent.com/graknlabs/build-tools/master/ci/install-bazel-linux.sh
+      - run: bash ./install-bazel-linux.sh && rm ./install-bazel-linux.sh
+      - run: curl -OL https://raw.githubusercontent.com/graknlabs/build-tools/master/ci/install-bazel-rbe.sh
+      - run: bash ./install-bazel-rbe.sh && rm ./install-bazel-rbe.sh
 
   run-bazel-rbe:
     parameters:
       command:
         type: string
     steps:
-      - run: bazel run @graknlabs_build_tools//ci:run-bazel-rbe << parameters.command >>
+      - run: bazel run @graknlabs_build_tools//ci:run-bazel-rbe -- << parameters.command >>
 
   run-grakn-server:
     steps:
@@ -48,43 +42,47 @@ commands:
 jobs:
   build:
     machine: true
-    working_directory: ~/grakn
+    working_directory: ~/examples
     steps:
+      - install-bazel-linux-rbe
       - checkout
-      - install-bazel
       - run-bazel-rbe:
           command: bazel build //...
 
   test-phone-calls-java:
     machine: true
+    working_directory: ~/examples
     steps:
+      - install-bazel-linux-rbe
       - checkout
-      - install-bazel
       - run-grakn-server
       - run: bazel test //phone_calls/java:test --test_output=errors
 
 
   test-phone-calls-nodejs:
     machine: true
+    working_directory: ~/examples
     steps:
+      - install-bazel-linux-rbe
       - checkout
-      - install-bazel
       - run-grakn-server
       - run: bazel test //phone_calls/nodejs:test --test_output=errors
 
   test-phone-calls-python:
     machine: true
+    working_directory: ~/examples
     steps:
+      - install-bazel-linux-rbe
       - checkout
-      - install-bazel
       - run-grakn-server
       - run: bazel test //phone_calls/python:test --test_output=errors
 
   test-tube-network:
     machine: true
+    working_directory: ~/examples
     steps:
+      - install-bazel-linux-rbe
       - checkout
-      - install-bazel
       - run-grakn-server
       - run: bazel test //tube_network:test --test_output=errors
       - run: bazel test //tube_network:test-migration --test_output=errors
