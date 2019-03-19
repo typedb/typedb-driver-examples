@@ -1,23 +1,27 @@
 # Misc
-**/.DS_Store
-**/logs
+.DS_Store
+logs/
 
 # IDE files
-**/.idea
-**/*.iml
-**/.vscode
-**/.settings
-**/.project
-**/.classpath
-**/.factorypath
+.idea/
+.ijwb/
+*.iml
+.vscode
+.settings
+.project
+.classpath
+.factorypath
 
 # Compiled files
-**/target
+target/
+bin/
 
 # NPM
-**/node_modules
-**/package-lock.json
+node_modules/
+package-lock.json
 
 # Python
-**/__pycache__
+__pycache__
+
+bazel-*
 

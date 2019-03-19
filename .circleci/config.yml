@@ -1,0 +1,99 @@
+#
+# GRAKN.AI - THE KNOWLEDGE GRAPH
+# Copyright (C) 2018 Grakn Labs Ltd
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+version: 2.1
+commands:
+  install-bazel:
+    steps:
+      - run:
+          name: Install bazel and RBE credential
+          command: |
+            # Install bazel
+            curl -OL https://github.com/bazelbuild/bazel/releases/download/0.20.0/bazel-0.20.0-installer-linux-x86_64.sh
+            chmod +x bazel-0.20.0-installer-linux-x86_64.sh
+            sudo ./bazel-0.20.0-installer-linux-x86_64.sh
+
+            # Install RBE credential
+            bazel run @graknlabs_build_tools//ci:install-bazel-rbe-credential
+
+  run-bazel-rbe:
+    parameters:
+      command:
+        type: string
+    steps:
+      - run: bazel run @graknlabs_build_tools//ci:run-bazel-rbe << parameters.command >>
+
+  run-grakn-server:
+    steps:
+      - run-bazel-rbe:
+          command: bazel build @graknlabs_grakn_core//:assemble-linux-targz
+      - run: mkdir dist && tar -xvzf bazel-genfiles/external/graknlabs_grakn_core/grakn-core-all-linux.tar.gz -C ./dist/
+      - run: nohup ./dist/grakn-core-all-linux/grakn server start
+
+jobs:
+  build:
+    machine: true
+    working_directory: ~/grakn
+    steps:
+      - checkout
+      - install-bazel
+      - run-bazel-rbe:
+          command: bazel build //...
+
+  test-phone-calls-java:
+    machine: true
+    steps:
+      - checkout
+      - install-bazel
+      - run-grakn-server
+      - run: bazel test //phone_calls/java:test --test_output=errors
+
+
+  test-phone-calls-nodejs:
+    machine: true
+    steps:
+      - checkout
+      - install-bazel
+      - run-grakn-server
+      - run: bazel test //phone_calls/nodejs:test --test_output=errors
+
+  test-phone-calls-python:
+    machine: true
+    steps:
+      - checkout
+      - install-bazel
+      - run-grakn-server
+      - run: bazel test //phone_calls/python:test --test_output=errors
+
+  test-tube-network:
+    machine: true
+    steps:
+      - checkout
+      - install-bazel
+      - run-grakn-server
+      - run: bazel test //tube_network:test --test_output=errors
+      - run: bazel test //tube_network:test-migration --test_output=errors
+
+workflows:
+  examples:
+    jobs:
+      - build
+      - test-phone-calls-java
+      - test-phone-calls-nodejs
+      - test-phone-calls-python
+      - test-tube-network
