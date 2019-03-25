@@ -26,11 +26,11 @@ def graknlabs_grakn_core():
     )
 
 def graknlabs_client_java():
-     git_repository(
-         name = "graknlabs_client_java",
-         remote = "https://github.com/graknlabs/client-java",
-         commit = 'b8bb8808556b98aa29f90af8c6d6b8973d665518' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
-     )
+    git_repository(
+        name = "graknlabs_client_java",
+        remote = "https://github.com/graknlabs/client-java",
+        commit = 'b8bb8808556b98aa29f90af8c6d6b8973d665518' # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
+    )
 
 def graknlabs_client_python():
     git_repository(
@@ -47,8 +47,8 @@ def graknlabs_client_nodejs():
     )
 
 def graknlabs_build_tools():
-     git_repository(
-         name = "graknlabs_build_tools",
-         remote = "https://github.com/graknlabs/build-tools",
-         commit = "1bf86f3f41977c3be6cfb0f3c949329019973b78", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_build_tools
-     )
+    git_repository(
+        name = "graknlabs_build_tools",
+        remote = "https://github.com/graknlabs/build-tools",
+        commit = "1bf86f3f41977c3be6cfb0f3c949329019973b78", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_build_tools
+    )
