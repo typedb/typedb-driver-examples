@@ -1,2 +1,1 @@
-https://repo.grakn.ai/repository/test-pypi-group/packages/grakn-client/1.5.0-6ee2b05b6521dad004ec81c832b55a494ea1171a/grakn-client-1.5.0-6ee2b05b6521dad004ec81c832b55a494ea1171a.tar.gz
 ijson==2.3
