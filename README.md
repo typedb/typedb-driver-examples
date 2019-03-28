@@ -4,7 +4,7 @@ This repository includes examples that showcase usage of Grakn Clients in readin
 
 ## Explore Client Examples
 
-Grakn officially supports development of clients for Java, Node.js and Python. Learn more about [Grakn Clients](http://dev.grakn.ai/docs/client-api/overview).
+Grakn officially supports clients for Java, Node.js and Python. Learn more about [Grakn Clients](http://dev.grakn.ai/docs/client-api/overview).
 
 ### Client Java Examples
 - [Phone Calls: Migrate and perform expressive queries using Client Java](phone_calls/java/)
