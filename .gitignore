@@ -23,5 +23,5 @@ package-lock.json
 # Python
 __pycache__
 
+# Bazel
 bazel-*
-

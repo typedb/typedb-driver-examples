@@ -1,0 +1,908 @@
+define
+
+################
+## ATTRIBITES ##
+################
+	name sub attribute,
+		datatype string;
+	full-name sub name;
+	nickname sub name;
+
+	title sub attribute,
+		datatype string;
+
+	event-date sub attribute,
+		abstract,
+		datatype date;
+	approved-date sub event-date;
+	birth-date sub event-date;
+	start-date sub event-date;
+	end-date sub event-date;
+	engagement-date sub event-date;
+
+	published-date sub attribute,
+		datatype date;
+
+	reference-id sub attribute,
+		datatype string;
+
+	salary sub attribute,
+		datatype long;
+
+	registration-number sub attribute,
+		datatype string;
+
+	identifier sub attribute,
+    		datatype string;
+
+	graduated sub attribute,
+		datatype boolean;
+
+	score sub attribute,
+		datatype double;
+
+	ranking sub attribute,
+		datatype long;
+
+	phone-number sub attribute,
+		datatype string;
+
+	email sub attribute,
+		datatype string;
+
+	gender sub attribute,
+		datatype string;
+
+	engaged sub attribute,
+		datatype boolean;
+	separated sub attribute,
+		datatype boolean;
+	divorced sub attribute,
+		datatype boolean;
+
+	file sub attribute,
+		datatype string;
+
+	caption sub attribute,
+		datatype string;
+
+	language sub attribute,
+		datatype string,
+		plays spoken,
+		plays mutual-language;
+
+	content sub attribute,
+		datatype string,
+		has language;
+
+	emotion sub attribute,
+		datatype string,
+		regex "^(like|love|funny|shocking|sad|angry)$",
+		plays reacted-emotion;
+
+	link sub attribute,
+		datatype string,
+		plays attached;
+
+	person sub entity,
+		has full-name,
+		has nickname,
+		has gender,
+		has phone-number,
+		key email;
+
+###################
+## GENERIC TYPES ##
+###################
+
+	location-of-everything sub relation,
+		abstract,
+		relates located-subject,
+		relates subject-location;
+
+	location-hierarchy sub relation,
+		relates subordinate-location,
+		relates superior-location;
+
+	ownership sub relation,
+		relates owner,
+		relates owned;
+
+	location sub entity,
+		key name,
+		plays subordinate-location,
+		plays superior-location;
+
+	request sub relation,
+		relates approved-subject,
+		relates requester,
+		relates respondent;
+
+	periodic-event sub relation,
+		abstract,
+		has start-date,
+		has end-date,
+		plays overlapped-event;
+
+	########################
+	## events overlapping ##
+	########################
+
+	event-overlapping sub relation,
+		relates overlapped-event;
+
+	events-overlap sub rule,
+		when {
+			$e1 isa periodic-event;
+			$e1 has start-date $sd1, has end-date $ed1;
+			$e2 isa periodic-event;
+			$e2 has start-date $sd2, has end-date $ed2;
+			$sd2 > $sd1;
+			$sd2 < $ed1;
+			$e1 != $e2;
+		}, then {
+			(overlapped-event: $e1, overlapped-event: $e2) isa event-overlapping;
+		};
+
+###########
+## BIRTH ##
+###########
+
+## query the schema section
+# match
+# 	$per sub person;
+# 	$lob sub location-of-birth;
+# 	$bir sub birth;
+# 	$loc sub location;
+# 	$blm sub birth-location-mutuality;
+# get;
+
+	location-of-birth sub location-of-everything,
+		relates located-birth as located-subject,
+		relates birth-location as subject-location;
+
+	birth sub relation,
+		has birth-date,
+		relates birthed-child,
+		plays located-birth,
+		plays mutual-birth;
+
+	person sub entity,
+		plays birthed-child,
+		plays mutual-birthed-child;
+
+	location sub entity,
+		plays birth-location,
+		plays mutual-birth-location;
+
+	##############################
+	## birth location in common ##
+	##############################
+
+	birth-mutuality sub relation,
+		relates mutual-birthed-child,
+		relates mutual-birth-location,
+		relates mutual-birth;
+
+	people-born-at-the-same-location sub rule,
+		when {
+			$b1 (birthed-child: $p1) isa birth;
+			$b2 (birthed-child: $p2) isa birth;
+			($b1, birth-location: $l) isa location-of-birth;
+			($b2, birth-location: $l) isa location-of-birth;
+			$p1 != $p2;
+		}, then {
+			(mutual-birthed-child: $p1, mutual-birthed-child: $p2, mutual-birth-location: $l, mutual-birth: $b1, mutual-birth: $b2) isa birth-mutuality;
+		};
+
+###############
+## RESIDENCY ##
+###############
+
+## query the schema section
+# match
+# 	$per sub person;
+# 	$lor sub location-of-residence;
+# 	$res sub residency;
+# 	$loc sub location;
+# get;
+
+	location-of-residence sub location-of-everything,
+		relates located-residence as located-subject,
+		relates residence as subject-location;
+
+	residency sub periodic-event,
+		relates resident,
+		plays located-residence,
+		plays mutual-residency;
+
+	person sub entity,
+		plays resident,
+		plays mutual-resident;
+
+	location sub entity,
+		plays residence,
+		plays mutual-residence;
+
+	#########################
+	## residence in common ##
+	#########################
+
+	residence-mutuality sub relation,
+		relates mutual-resident,
+		relates mutual-residency,
+		relates mutual-residence;
+
+	people-resided-at-the-same-location sub rule,
+		when {
+			$r1 (resident: $p1) isa residency;
+			$r2 (resident: $p2) isa residency;
+			($r1, residence: $l) isa location-of-residence;
+			($r2, residence: $l) isa location-of-residence;
+			$p1 != $p2;
+		}, then {
+			(mutual-resident: $p1, mutual-resident: $p2, mutual-residence: $l, mutual-residency: $r1, mutual-residency: $r2) isa residence-mutuality;
+		};
+
+###############
+## EDUCATION ##
+###############
+
+## query the schema section
+# match
+# 	$sco sub school-course-offerring;
+# 	$los sub location-of-school;
+# 	$sce sub school-course-enrollment;
+# 	$sch sub school;
+# 	$scc sub school-course;
+# 	$per sub person;
+# 	$loc sub location;
+# get;
+
+	location-of-school sub location-of-everything,
+		relates located-school as located-subject,
+		relates school-location as subject-location;
+
+	school-course-enrollment sub periodic-event,
+		has graduated,
+		has score,
+		relates student,
+		relates enrolled-course,
+		relates enrolling-school,
+		plays mutual-course-enrollment;
+
+	school sub entity,
+		key name,
+		has ranking,
+		plays offerring-school,
+		plays located-school,
+		plays enrolling-school,
+		plays mutual-school;
+
+	school-course sub entity,
+		key title,
+		plays offered-course,
+		plays enrolled-course;
+
+	person sub entity,
+		plays student,
+		plays schoolmate,
+		plays coursemate;
+
+	location sub entity,
+		plays school-location;
+
+	##########################
+	## school offerings ##
+	##########################
+
+	school-course-offerring sub relation,
+		relates offerring-school,
+		relates offered-course;
+
+	school-offers-the-enrolled-courses sub rule,
+		when {
+			(student: $p, enrolled-course: $c, enrolling-school: $s) isa school-course-enrollment;
+		}, then {
+			(offerring-school: $s, offered-course: $c) isa school-course-offerring;
+		};
+
+	##########################
+	## educations in common ##
+	##########################
+
+	school-mutuality sub relation,
+		relates schoolmate,
+		relates mutual-school;
+
+	people-gone-to-the-same-school sub rule,
+		when {
+			(student: $p1, enrolled-course: $c1) isa school-course-enrollment;
+			(student: $p2, enrolled-course: $c2) isa school-course-enrollment;
+			(offered-course: $c1, offerring-school: $s) isa school-course-offerring;
+			(offered-course: $c2, offerring-school: $s) isa school-course-offerring;
+			$p1 != $p2;
+		}, then {
+			(schoolmate: $p1, schoolmate: $p2, mutual-school: $s) isa school-mutuality;
+		};
+
+	course-enrollment-mutuality sub relation,
+		relates coursemate,
+		relates mutual-course-enrollment;
+
+	people-taken-the-same-course sub rule,
+		when {
+			$sce1 (student: $p1, enrolled-course: $sc) isa school-course-enrollment;
+			$sce2 (student: $p2, enrolled-course: $sc) isa school-course-enrollment;
+			$p1 != $p2;
+		}, then {
+			(coursemate: $p1, coursemate: $p2, mutual-course-enrollment: $sce1, mutual-course-enrollment: $sce2) isa course-enrollment-mutuality;
+		};
+
+############
+## TRAVEL ##
+############
+
+## query the schema section
+# match
+# 	$lot sub location-of-travel;
+# 	$tra sub travel;
+# 	$per sub person;
+# 	$loc sub location;
+# get;
+
+	location-of-travel sub location-of-everything,
+		relates located-travel as located-subject,
+		relates travel-location as subject-location;
+
+	travel sub periodic-event,
+		relates traveler,
+		plays located-travel,
+		plays mutual-travel;
+
+	person sub entity,
+		plays traveler,
+		plays mutual-traveler;
+
+	location sub entity,
+		plays travel-location,
+		plays mutual-travel-location;
+
+	#######################
+	## travels in common ##
+	#######################
+
+	travel-mutuality sub relation,
+		relates mutual-traveler,
+		relates mutual-travel,
+		relates mutual-travel-location;
+
+	people-traveled-to-the-same-location sub rule,
+		when {
+			$t1 (traveler: $p1) isa travel;
+			$t2 (traveler: $p2) isa travel;
+			($t1, travel-location: $l) isa location-of-travel;
+			($t2, travel-location: $l) isa location-of-travel;
+			$p1 != $p2;
+		}, then {
+			(mutual-traveler: $p1, mutual-traveler: $p2, mutual-travel-location: $l, mutual-travel: $t1, mutual-travel: $t2) isa travel-mutuality;
+		};
+
+##########
+## WORK ##
+##########
+
+## query the schema section
+# match
+# 	$oow sub office-ownership;
+# 	$emp sub employment;
+# 	$loo sub location-of-office;
+# 	$wpo sub work-position;
+# 	$org sub organisation;
+# 	$off sub office;
+# 	$loc sub location;
+# 	$per sub person;
+# 	$emm sub employment-mutuality;
+# 	$wpm sub work-position-mutuality;
+# get;
+
+	employment sub periodic-event,
+		key reference-id,
+		has salary,
+		relates employer,
+		relates employee,
+		relates offered-position,
+		plays mutual-employment;
+
+	location-of-office sub location-of-everything,
+		relates located-office as located-subject,
+		relates office-location as subject-location;
+
+	office-ownership sub ownership,
+		relates office-owner as owner,
+		relates owned-office as owned;
+
+	work-position sub entity,
+		key title,
+		plays offered-position,
+		plays mutual-position;
+
+	organisation sub entity,
+		key name,
+		key registration-number,
+		plays office-owner,
+		plays employer,
+		plays mutual-organisation;
+
+	office sub entity,
+	    key registration-number,
+		plays owned-office,
+		plays located-office;
+
+	location sub entity,
+		plays office-location;
+
+	person sub entity,
+		plays employee,
+		plays mutual-employee;
+
+	##########################
+	## employment in common ##
+	##########################
+
+	employment-mutuality sub relation,
+		relates mutual-employee,
+		relates mutual-employment,
+		relates mutual-organisation;
+
+	people-work-at-the-same-organisation sub rule,
+		when {
+			$e1 (employee: $p1, employer: $o) isa employment;
+			$e2 (employee: $p2, employer: $o) isa employment;
+			$p1 != $p2;
+		}, then {
+			(mutual-employee: $p1, mutual-employee: $p2, mutual-organisation: $o, mutual-employment: $e1, mutual-employment: $e2) isa employment-mutuality;
+		};
+
+	work-position-mutuality sub relation,
+		relates mutual-employee,
+		relates mutual-employment,
+		relates mutual-position;
+
+	people-work-at-the-same-position sub rule,
+		when {
+			$e1 (employee: $p1, offered-position: $p) isa employment;
+			$e2 (employee: $p2, offered-position: $p) isa employment;
+			$p1 != $p2;
+		}, then {
+			(mutual-employee: $p1, mutual-employee: $p2, mutual-position: $p, mutual-employment: $e1, mutual-employment: $e2) isa work-position-mutuality;
+		};
+
+##############
+## Language ##
+##############
+
+## query the schema section
+# match
+# 	$sol sub speaking-of-language;
+# 	$per sub person;
+# 	$lan sub language;
+# 	$slm sub speaking-language-mutuality;
+# get;
+
+	speaking-of-language sub relation,
+		relates speaker,
+		relates spoken,
+		plays mutual-language-speaking;
+
+	person sub entity,
+		plays speaker,
+		plays mutual-speaker;
+
+	##################################
+	## speaking languages in common ##
+	##################################
+
+	speaking-language-mutuality sub relation,
+		relates mutual-speaker,
+		relates mutual-language-speaking,
+		relates mutual-language;
+
+	people-speak-the-same-language sub rule,
+		when {
+			$sol1 (speaker: $p1, spoken: $l) isa speaking-of-language;
+			$sol2 (speaker: $p2, spoken: $l) isa speaking-of-language;
+			$p1 != $p2;
+		}, then {
+			(mutual-speaker: $p1, mutual-speaker: $p2, mutual-language: $l, mutual-language-speaking: $sol1, mutual-language-speaking: $sol2) isa speaking-language-mutuality;
+		};
+
+#########################
+## RELATIONSHIP STATUS ##
+#########################
+
+## query the schema section
+# match
+# 	$ror sub romantic-relationship;
+# 	$mar sub marriage;
+# 	$per sub person;
+# get;
+
+	romantic-relationship sub relation,
+		has start-date,
+		has end-date,
+		has engaged,
+		has engagement-date,
+		relates partner;
+
+	open-relationship sub romantic-relationship,
+		relates partner;
+
+	domestic-relationship sub romantic-relationship,
+		relates partner;
+
+	complicated-relationship sub romantic-relationship,
+		relates partner;
+
+	marriage sub relation,
+		has start-date,
+		has end-date,
+		has separated,
+		has divorced,
+		relates husband,
+		relates wife,
+		relates spouse;
+
+	person sub entity,
+		plays partner,
+		plays spouse,
+		plays wife,
+		plays husband;
+
+################
+## FRIENDSHIP ##
+################
+
+## query the schema section
+# match
+# 	$fri sub friendship;
+# 	$frr sub friend-request;
+# 	$frl sub friends-list;
+# 	$per sub person;
+# 	$muf sub mutual-friendship;
+# get;
+
+	friendship sub relation,
+		relates friend,
+		plays approved-friendship,
+		plays listed-friendship;
+
+	friend-request sub request,
+		has approved-date,
+		relates approved-friendship as approved-subject,
+		relates friendship-requester as requester,
+		relates friendship-respondent as respondent;
+
+	friends-list sub relation,
+		has title,
+		relates list-owner,
+		relates listed-friendship;
+
+	person sub entity,
+		plays friend,
+		plays friendship-requester,
+		plays friendship-respondent,
+		plays list-owner,
+		plays mutual-friend,
+		plays one-degree-friend;
+
+	#######################
+	## mutual friendship ##
+	#######################
+
+	mutual-friendship sub relation,
+		relates mutual-friend,
+		relates one-degree-friend;
+
+	people-have-mutual-friends sub rule,
+		when {
+			($p1, $p2) isa friendship;
+			($p2, $p3) isa friendship;
+		}, then {
+			(one-degree-friend: $p1, one-degree-friend: $p3, mutual-friend: $p2) isa mutual-friendship;
+		};
+
+###########
+## GROUP ##
+###########
+
+## query the schema section
+# match
+# 	$gro sub group-ownership;
+# 	$grm sub group-membership;
+# 	$gmr sub group-membership-request;
+# 	$pug sub public-group;
+# 	$clg sub closed-group;
+# 	$seg sub secret-group;
+# 	$per sub person;
+# get;
+
+	group-ownership sub ownership,
+		relates group-owner as owner,
+		relates owned-group as owned;
+
+	group-membership sub relation,
+		has approved-date,
+		plays approved-group-membership,
+		relates group-member,
+		relates membership-grouping;
+
+	group-membership-request sub request,
+		has approved-date,
+		relates approved-group-membership as approved-subject,
+		relates group-membership-requester as requester,
+		relates group-membership-respondent as respondent;
+
+	social-group sub entity,
+		abstract,
+		key name,
+		plays owned-group,
+		plays membership-grouping,
+		plays shared-in;
+
+	public-group sub social-group;
+
+	closed-group sub social-group;
+
+	secret-group sub social-group;
+
+	person sub entity,
+		plays group-owner,
+		plays group-member,
+		plays group-membership-requester,
+		plays group-membership-respondent;
+
+	#####################################
+	## public group membership request ##
+	#####################################
+
+	public-group-membership-is-automatically-approved sub rule,
+		when {
+			$group isa public-group;
+			(group-owner: $owner, owned-group: $group) isa group-ownership;
+			$membership (group-member: $member, membership-grouping: $group) isa group-membership;
+		}, then {
+			(approved-group-membership: $membership, group-membership-requester: $member, group-membership-respondent: $owner) isa group-membership-request;
+		};
+
+	###################################
+	## group owner is always member ##
+	###################################
+
+	group-owner-is-always-member sub rule,
+		when {
+			$group isa social-group;
+			(group-owner: $owner, owned-group: $group) isa group-ownership;
+		}, then {
+			(group-member: $owner, membership-grouping: $group) isa group-membership;
+		};
+
+##############
+## TIMELINE ##
+##############
+
+## query the schema section
+# match
+# 	$tow sub timeline-ownership;
+# 	$tim sub timeline;
+# 	$per sub person;
+# get;
+
+	timeline-ownership sub ownership,
+		relates timeline-owner as owner,
+		relates owned-timeline as owned;
+
+	timeline sub entity,
+	    key identifier,
+		plays owned-timeline,
+		plays shared-in;
+
+	person sub entity,
+		plays timeline-owner;
+
+##########
+## POST ##
+##########
+
+## query the schema section
+# match
+# 	$rep sub reply;
+# 	$tag sub tagging;
+# 	$att sub attachment;
+# 	$rea sub reaction;
+# 	$emo sub emotion;
+# 	$lin sub link;
+# 	$stu sub status-update;
+# 	$com sub comment;
+# 	$mow sub media-ownership;
+# 	$alb sub album;
+# 	$vid sub video;
+# 	$pho sub photo;
+# 	$per sub person;
+# get;
+
+	reply sub relation,
+		relates replied-to,
+		relates reply-content,
+		relates replied-by;
+
+	tagging sub relation,
+		relates tagged,
+		relates tagged-in;
+
+	attachment sub relation,
+		relates attached,
+		relates attached-to;
+
+	reaction sub relation,
+		relates reacted-emotion,
+		relates reacted-to,
+		relates reacted-by;
+
+	post sub entity,
+		abstract,
+		key identifier,
+		plays permitted-content,
+		plays shared-content,
+		plays replied-to,
+		plays tagged-in,
+		plays reacted-to;
+
+	status-update sub post,
+		has content,
+		plays attached-to;
+
+	comment sub post,
+		has content,
+		plays reply-content,
+		plays attached-to;
+
+	media-ownership sub ownership,
+		relates media-owner as owner,
+		relates owned-media as owned;
+
+	album sub post,
+		has title,
+		has published-date,
+		plays media-owner;
+
+	media sub post,
+		abstract,
+		has caption,
+		has file,
+		plays owned-media,
+		plays attached;
+
+	video sub media;
+
+	photo sub media;
+
+	person sub entity,
+		plays tagged,
+		plays reacted-by,
+		plays replied-by;
+
+#############
+## SHARING ##
+#############
+
+## query the schema section
+# match
+# 	$pus sub public-sharing;
+# 	$frs sub friends-sharing;
+# 	$ins sub inclusive-sharing;
+# 	$fes sub friends-with-exclusion-sharing;
+# 	$prs sub private-sharing;
+# 	$pos sub post;
+# 	$pts sub permitted-to-see;
+# 	$per sub person;
+# 	$puu sub public-user;
+# get;
+
+	sharing sub relation,
+		abstract,
+		relates shared-content,
+		relates shared-by,
+		relates shared-in;
+
+	public-sharing sub sharing,
+		relates shared-content,
+		relates shared-by,
+		relates shared-in;
+
+	friends-sharing sub sharing,
+		relates shared-content,
+		relates shared-by,
+		relates shared-in;
+
+	inclusive-sharing sub sharing,
+		relates shared-content,
+		relates shared-by,
+		relates shared-in,
+		relates shared-with;
+
+	friends-with-exclusion-sharing sub sharing,
+		relates shared-content,
+		relates shared-by,
+		relates shared-in,
+		relates hidden-from;
+
+	private-sharing sub sharing,
+		relates shared-content,
+		relates shared-in,
+		relates shared-by;
+
+	permitted-to-see sub relation,
+		relates permitted-content,
+		relates permission-grantee;
+
+	person sub entity,
+		plays shared-by,
+		plays shared-with,
+		plays hidden-from,
+		plays permission-grantee;
+
+	public-user sub entity,
+		plays permission-grantee;
+
+	###########################
+	## posts view permission ##
+	###########################
+
+	public-permission sub rule,
+		when {
+			(shared-content: $sc) isa public-sharing;
+			$pu isa public-user;
+		}, then {
+			(permitted-content: $sc, permission-grantee: $pu) isa permitted-to-see;
+		};
+
+	friends-permission sub rule,
+		when {
+			(shared-content: $sc, shared-by: $sb) isa friends-sharing;
+			(friend: $sb, $f) isa friendship;
+		}, then {
+			(permitted-content: $sc, permission-grantee: $f) isa permitted-to-see;
+		};
+
+	inclusive-permissions sub rule,
+		when {
+			(shared-content: $sc, shared-with: $sw) isa inclusive-sharing;
+		}, then {
+			(permitted-content: $sc, permission-grantee: $sw) isa permitted-to-see;
+		};
+
+	friends-excluded-permission sub rule,
+		when {
+			(shared-content: $sc, shared-by: $sb, hidden-from: $hf) isa friends-with-exclusion-sharing;
+			(friend: $sb, $f) isa friendship;
+			$f != $hf;
+		}, then {
+			(permitted-content: $sc, permission-grantee: $f) isa permitted-to-see;
+		};
+
+	private-permission sub rule,
+		when {
+			(shared-content: $sc, shared-by: $sb) isa private-sharing;
+			$pu isa public-user;
+		}, then {
+			(permitted-content: $sc, permission-grantee: $sb) isa permitted-to-see;
+		};
+
+	author-permission sub rule,
+		when {
+			(shared-content: $sc, shared-by: $sb) isa sharing;
+			$pu isa public-user;
+		}, then {
+			(permitted-content: $sc, permission-grantee: $sb) isa permitted-to-see;
+		};

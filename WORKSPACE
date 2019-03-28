@@ -21,7 +21,6 @@ workspace(name = "graknlabs_examples")
 ################################
 # Load Grakn Labs Dependencies #
 ################################
-
 load("//dependencies/graknlabs:dependencies.bzl",
      "graknlabs_grakn_core", "graknlabs_client_java", "graknlabs_client_python", "graknlabs_build_tools")
 graknlabs_grakn_core()
