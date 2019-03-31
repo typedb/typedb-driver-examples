@@ -20,7 +20,7 @@ Grakn officially supports clients for Java, Node.js and Python. Learn more about
 - Migrate data to Grakn:
     - serialised:
         - Java: [CSV](phone_calls/java/CSVMigration.java) | [JSON](phone_calls/java/JSONMigration.java) | [XML](phone_calls/java/XMLMigration.java)
-        - Node.js: [CSV](phone_calls/nodejs/migrateCSV.js) | [JSON](phone_calls/nodejs/migrateJSON.js) | [XML](phone_calls/nodejs/migrateXML.js)
+        - Node.js: [CSV](phone_calls/nodejs/migrateCsv.js) | [JSON](phone_calls/nodejs/migrateJson.js) | [XML](phone_calls/nodejs/migrateXml.js)
         - Python: [CSV](phone_calls/python/migrate_csv.py) | [JSON](phone_calls/python/migrate_json.py) | [XML](phone_calls/python/migrate_xml.py)
     - concurrent:
         - Python: [JSON](tube_network/src/migration.py)
