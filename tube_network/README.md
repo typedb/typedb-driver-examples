@@ -16,7 +16,7 @@ See the _Quickstart_ for how to get going immediately, or read on for more info.
 - Navigate to the Grakn distribution directory: `cd path-to-grakn-dist-directory` (this step isn't required if Grakn is installed using a package manager such as `brew`)
 - Start the Grakn Server: `./grakn server start`
 - Create the keyspace and load the schema: `./grakn console -k tube_network -f path-to-the-cloned-examples-dir/schemas/tube-network-schema.gql`
-- Install the `grakn` module: `pip install grakn`. Learn more about [Client Python](http://dev.grakn.ai/docs/client-api/python).
+- Install the `grakn` module: `pip install grakn-client`. Learn more about [Client Python](http://dev.grakn.ai/docs/client-api/python).
 - Migrate the dataset: `python3 -m tube_network.src.migration`. Learn more about [migrating data to Grakn by example](http://dev.grakn.ai/docs/examples/phone-calls-migration-python).
 - To continue:
     - Run queries on the London Tube Network using [Graql Console](http://dev.grakn.ai/docs/running-grakn/console) and [Workbase](http://dev.grakn.ai/docs/workbase/overview).
