@@ -5,7 +5,7 @@ The Phone Calls Java example showcases:
 2. writing and performing expressive Graql queries to gain insights over the dataset
 
 ### Quickstart
-1. Install [Grakn 1.5.0](http://dev.grakn.ai/docs/running-grakn/install-and-run#download-and-install-grakn)
+1. Install [Grakn 1.5.2](http://dev.grakn.ai/docs/running-grakn/install-and-run#download-and-install-grakn)
 2. Clone this repository
 3. Via terminal while inside the Grakn distribution, run: `./grakn console -k phone_calls -f path-to-the-cloned-repo/schemas/phone-calls-schema.gql`
 4. Start the [Grakn Sever](http://dev.grakn.ai/docs/running-grakn/install-and-run#start-the-grakn-server).

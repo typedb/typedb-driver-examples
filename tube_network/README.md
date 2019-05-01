@@ -8,7 +8,7 @@ See the _Quickstart_ for how to get going immediately, or read on for more info.
 
 ## Prerequisites
 
-- Grakn >= 1.5.0 Learn more about [installing and running Grakn](http://dev.grakn.ai/docs/running-grakn/install-and-run).
+- Grakn >= 1.5.2 Learn more about [installing and running Grakn](http://dev.grakn.ai/docs/running-grakn/install-and-run).
 - Python >= 3.6
 
 ## Quickstart
