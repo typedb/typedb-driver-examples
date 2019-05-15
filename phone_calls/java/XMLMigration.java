@@ -87,12 +87,7 @@ public class XMLMigration {
                 // insert person
                 String graqlInsertQuery = "insert $person isa person, has phone-number " + person.at("phone_number");
 
-                if (! person.has("first_name")) {
-                    // person is not a customer
-                    graqlInsertQuery += ", has is-customer false";
-                } else {
-                    // person is a customer
-                    graqlInsertQuery += ", has is-customer true";
+                if (person.has("first_name")) {
                     graqlInsertQuery += ", has first-name " + person.at("first_name");
                     graqlInsertQuery += ", has last-name " + person.at("last_name");
                     graqlInsertQuery += ", has city " + person.at("city");
