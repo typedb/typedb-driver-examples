@@ -1,4 +1,4 @@
-const Grakn = require("grakn-client");
+const GraknClient = require("grakn-client");
 const readline = require("readline");
 
 // to add a new query implementation:
@@ -120,7 +120,8 @@ async function executeQuery2(question, transaction) {
 		"  (customer: $suspect, provider: $company) isa contract;",
 		"  $pattern-callee isa person, has age < 20;",
 		"  (caller: $suspect, callee: $pattern-callee) isa call, has started-at $pattern-call-date;",
-		"  $target isa person, has phone-number $phone-number, has is-customer false;",
+		"  $target isa person, has phone-number $phone-number;",
+        "  not { (customer: $target, provider: $company) isa contract; };",
 		"  (caller: $suspect, callee: $target) isa call, has started-at $target-call-date;",
 		"  $target-call-date > $pattern-call-date;",
 		"get $phone-number;"
@@ -283,9 +284,9 @@ async function executeQuery7(question, transaction) {
 // execute all queries for all questions
 async function executeAllQueries(transaction) {
 	for (queryExample of queryExamples) {
-		qustion = queryExample["question"];
+		question = queryExample["question"];
 		queryFunction = queryExample["queryFunction"];
-		await queryFunction(qustion, transaction);
+		await queryFunction(question, transaction);
 		log("\n - - -  - - -  - - -  - - - \n");
 	}
 }
@@ -312,7 +313,7 @@ async function executeQueries() {
 /**
  * a recursive function that terminates after receiving a valid input
  * otherwise keeps asking
- * @param {pnkect} rl the readline insterface to receive input via console
+ * @param {object} rl the readline insterface to receive input via console
  * exists on completion
  */
 function executeBasedOnSelection(rl) {
@@ -335,9 +336,9 @@ function executeBasedOnSelection(rl) {
  * @param {integer} qsNumber the (question) number selected by the user
  */
 async function processSelection(qsNumber) {
-	const grakn = new Grakn("localhost:48555"); // 1
-	const session = await grakn.session((keyspace = "phone_calls")); // 2
-	const transaction = await session.transaction(Grakn.txType.WRITE); // 3
+	const client = new GraknClient("localhost:48555"); // 1
+	const session = await client.session((keyspace = "phone_calls")); // 2
+	const transaction = await session.transaction().write(); // 3
 
 	if (qsNumber == 0) {
 		await executeAllQueries(transaction); // 4
@@ -350,6 +351,7 @@ async function processSelection(qsNumber) {
 	await session.close(); // 5
 	client.close(); // 6
 }
+
 
 module.exports.queryExamples = queryExamples;
 module.exports.init = executeQueries;

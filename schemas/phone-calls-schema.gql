@@ -16,8 +16,6 @@ define
       datatype string;
     age sub attribute,
       datatype long;
-    is-customer sub attribute,
-      datatype boolean;
 
     contract sub relation,
         relates provider,
@@ -41,5 +39,4 @@ define
         has last-name,
         has phone-number,
         has city,
-        has age,
-        has is-customer;
+        has age;

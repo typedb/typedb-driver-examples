@@ -60,12 +60,7 @@ def person_template(person):
     # insert person
     graql_insert_query = 'insert $person isa person, has phone-number "' + \
         person["phone_number"] + '"'
-    if person["first_name"] == "":
-        # person is not a customer
-        graql_insert_query += ", has is-customer false"
-    else:
-        # person is a customer
-        graql_insert_query += ", has is-customer true"
+    if person["first_name"] != "":
         graql_insert_query += ', has first-name "' + person["first_name"] + '"'
         graql_insert_query += ', has last-name "' + person["last_name"] + '"'
         graql_insert_query += ', has city "' + person["city"] + '"'
