@@ -93,7 +93,7 @@ public class CSVMigration {
                 // insert person
                 String graqlInsertQuery = "insert $person isa person, has phone-number " + person.at("phone_number");
 
-                if (!person.at("first_name").isNull()) {
+                if (! person.at("first_name").isNull()) {
                     graqlInsertQuery += ", has first-name " + person.at("first_name");
                     graqlInsertQuery += ", has last-name " + person.at("last_name");
                     graqlInsertQuery += ", has city " + person.at("city");
