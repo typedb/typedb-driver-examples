@@ -25,7 +25,7 @@
         "migrateCsv": "node -e 'require(\"./migrateCsv\").init(\"../../datasets/phone-calls/\")'",
         "migrateJson": "node -e 'require(\"./migrateJson\").init(\"../../datasets/phone-calls/\")'",
         "migrateXml": "node -e 'require(\"./migrateXml\").init(\"../../datasets/phone-calls/\")'",
-        "queries": "node queries.js"
+        "queries": "node -e 'require(\"./queries\").init()'"
     },
     "version": "1.0.0"
 }

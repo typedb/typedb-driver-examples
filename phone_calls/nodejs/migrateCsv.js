@@ -74,13 +74,8 @@ function personTemplate(person) {
 	const { first_name, last_name, phone_number, city, age } = person;
 	// insert person
 	let graqlInsertQuery = `insert $person isa person, has phone-number "${phone_number}"`;
-	const isNotCustomer = first_name === "";
-	if (isNotCustomer) {
-		// person is not a customer
-		graqlInsertQuery += ", has is-customer false";
-	} else {
-		// person is a customer
-		graqlInsertQuery += `, has is-customer true`;
+
+	if (first_name !== "") {
 		graqlInsertQuery += `, has first-name "${first_name}"`;
 		graqlInsertQuery += `, has last-name "${last_name}"`;
 		graqlInsertQuery += `, has city "${city}"`;
