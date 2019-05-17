@@ -67,5 +67,5 @@ py_test(
     data = [
         "//schemas:phone-calls-schema.gql"
     ],
-    python_version = "PY3"
+    srcs_version = "PY3"
 )
