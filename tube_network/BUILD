@@ -45,6 +45,7 @@ py_library(
 py_test(
     name = "test",
     main = "test.py",
+    size = "large",
     srcs = [
         "test.py",
         ":migration",
