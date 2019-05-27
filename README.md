@@ -1,5 +1,7 @@
 # Grakn Examples
 
+[![CircleCI](https://circleci.com/gh/graknlabs/examples/tree/master.svg?style=shield)](https://circleci.com/gh/graknlabs/examples)
+
 This repository includes examples that showcase usage of Grakn Clients in reading from and writing to a Grakn knowledge graph.
 
 ## Explore Client Examples
