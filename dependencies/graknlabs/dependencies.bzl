@@ -29,26 +29,26 @@ def graknlabs_grakn_core():
     git_repository(
         name = "graknlabs_grakn_core",
         remote = "https://github.com/graknlabs/grakn",
-        commit = "da9732073a0762361a0f979f615fdddd45860c67" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_grakn_core
+        commit = "d67ab976aa94beca0b991c87b606e68b8d02f775" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_grakn_core
     )
 
 def graknlabs_client_java():
     git_repository(
         name = "graknlabs_client_java",
         remote = "https://github.com/graknlabs/client-java",
-        commit = "13440585f37371ce774966ea8c107d6dfd861c59" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
+        commit = "d12c924e6ffd0ad701a47c297d78bf1e13c6846c" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
     )
 
 def graknlabs_client_python():
     git_repository(
         name = "graknlabs_client_python",
         remote = "https://github.com/graknlabs/client-python",
-        commit = "cbd3cc439853f788827fb1eddafe46ea890cd828" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_python
+        commit = "e8473c76e6cc3103801aaaef7fd3cfeafcc3a139" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_python
     )
 
 def graknlabs_client_nodejs():
     git_repository(
         name = "graknlabs_client_nodejs",
         remote = "https://github.com/graknlabs/client-nodejs",
-        commit = "81d6767aa54a8659169e1ae9573999ab79ae2453" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_nodejs
+        commit = "d714d07528e983b07eadb001ce5deba22eea533f" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_nodejs
     )
