@@ -64,9 +64,11 @@ public class PhoneCallsTest {
 
     @Test
     public void testQueries() throws FileNotFoundException {
-        CSVMigration.main(new String[]{ keyspaceName });
-
         List<Queries.QueryExample> queryExamples = Queries.getTestSubjects();
+
+        Queries.processSelection(0, queryExamples);
+
+        CSVMigration.main(new String[]{ keyspaceName });
 
         GraknClient.Transaction transaction = session.transaction().read();
 

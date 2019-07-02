@@ -331,14 +331,15 @@ function executeBasedOnSelection(rl) {
  * 2. create a session of the instance, connecting to the keyspace phone_calls
  * 3. create a transaction, off the session
  * 4. call the function corresponding to the selected question
- * 5. close the session
- * 6. closes the client
+ * 5. close the transaction
+ * 6. close the session
+ * 7. closes the client
  * @param {integer} qsNumber the (question) number selected by the user
  */
 async function processSelection(qsNumber) {
 	const client = new GraknClient("localhost:48555"); // 1
 	const session = await client.session((keyspace = "phone_calls")); // 2
-	const transaction = await session.transaction().write(); // 3
+	const transaction = await session.transaction().read(); // 3
 
 	if (qsNumber == 0) {
 		await executeAllQueries(transaction); // 4
@@ -347,11 +348,11 @@ async function processSelection(qsNumber) {
 		const queryFunction = queryExamples[qsNumber - 1]["queryFunction"];
 		await queryFunction(question, transaction); // 4
 	}
-
-	await session.close(); // 5
-	client.close(); // 6
+	await transaction.close(); // 5
+	await session.close(); // 6
+	client.close(); // 7
 }
 
-
+module.exports.processSelection = processSelection;
 module.exports.queryExamples = queryExamples;
 module.exports.init = executeQueries;

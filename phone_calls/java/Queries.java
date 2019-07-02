@@ -45,7 +45,10 @@ public class Queries {
 
         }
         System.out.println();
+        processSelection(qsNumber, queryExamples);
+    }
 
+    static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples) {
         GraknClient client = new GraknClient("localhost:48555");
         GraknClient.Session session = client.session("phone_calls");
         GraknClient.Transaction transaction = session.transaction().read();
