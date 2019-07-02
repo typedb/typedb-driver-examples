@@ -96,13 +96,13 @@ class Test(unittest.TestCase):
                 )
 
     def test_visualisation_queries(self):
-        app.init(False)
+        # app.init(False)
 
-        with GraknClient(uri="localhost:48555") as client:
-            with client.session(keyspace="tube_network") as session:
-                for query in app.TubeGui.ANALYTICAL_QUERIES:
-                    with session.transaction().read() as read_transaction:
-                        read_transaction.query(query)
+        # with GraknClient(uri="localhost:48555") as client:
+        #     with client.session(keyspace="tube_network") as session:
+        #         for query in app.TubeGui.ANALYTICAL_QUERIES:
+        #             with session.transaction().read() as read_transaction:
+        #                 read_transaction.query(query)
 
     @classmethod
     def tearDownClass(cls):
