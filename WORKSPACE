@@ -121,22 +121,6 @@ com_github_grpc_grpc_deps()
 load("@stackb_rules_proto//java:deps.bzl", "java_grpc_compile")
 java_grpc_compile()
 
-pip_import(
-    name = "protobuf_py_deps",
-    requirements = "@stackb_rules_proto//python/requirements:protobuf.txt",
-)
-load("@protobuf_py_deps//:requirements.bzl",
-protobuf_pip_install = "pip_install")
-protobuf_pip_install()
-
-pip_import(
-    name = "grpc_py_deps",
-    requirements = "@stackb_rules_proto//python:requirements.txt",
-)
-load("@grpc_py_deps//:requirements.bzl",
-grpc_pip_install = "pip_install")
-grpc_pip_install()
-
 
 ################################
 # Load Grakn Core Dependencies #
