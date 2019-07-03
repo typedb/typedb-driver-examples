@@ -95,7 +95,7 @@ class Test(unittest.TestCase):
                     [u'Green Park Underground Station', u'Holloway Road Underground Station']
                 )
 
-    def test_visualisation_queries(self):
+    # def test_visualisation_queries(self):
         # app.init(False)
 
         # with GraknClient(uri="localhost:48555") as client:

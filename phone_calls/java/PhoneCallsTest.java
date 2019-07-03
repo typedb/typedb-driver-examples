@@ -66,7 +66,7 @@ public class PhoneCallsTest {
     public void testQueries() throws FileNotFoundException {
         List<Queries.QueryExample> queryExamples = Queries.getTestSubjects();
 
-        Queries.processSelection(0, queryExamples);
+        Queries.processSelection(0, queryExamples, keyspaceName);
 
         CSVMigration.main(new String[]{ keyspaceName });
 

@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
         self.assert_migration_results()
 
     def test_queries(self):
-        queries.init(0)
+        queries.process_selection(0, keyspace_name)
 
         migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, keyspace_name)
 

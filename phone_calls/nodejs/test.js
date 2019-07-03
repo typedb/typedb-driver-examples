@@ -46,7 +46,7 @@ describe("Migration of data into Grakn", function() {
 
 describe("Queries on phone_calls_nodejs keyspace", function() {
     it("tests queries.js", async function() {
-        queries.processSelection(0);
+        queries.processSelection(0, keyspaceName);
 
         await csvMigration.init(dataPath, keyspaceName);
 

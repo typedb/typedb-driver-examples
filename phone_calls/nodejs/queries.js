@@ -320,7 +320,7 @@ function executeBasedOnSelection(rl) {
 	const question = "choose a number (0 for to answer all questions): ";
 	rl.question(question, async function (answer, rl) {
 		if (answer >= 0 && answer < queryExamples.length + 1) {
-			await processSelection(answer);
+			await processSelection(answer, "phone_calls");
 			process.exit(0);
 		}
 		executeBasedOnSelection(rl);
@@ -336,9 +336,9 @@ function executeBasedOnSelection(rl) {
  * 7. closes the client
  * @param {integer} qsNumber the (question) number selected by the user
  */
-async function processSelection(qsNumber) {
+async function processSelection(qsNumber, keyspaceName) {
 	const client = new GraknClient("localhost:48555"); // 1
-	const session = await client.session((keyspace = "phone_calls")); // 2
+	const session = await client.session((keyspace = keyspaceName)); // 2
 	const transaction = await session.transaction().read(); // 3
 
 	if (qsNumber == 0) {
