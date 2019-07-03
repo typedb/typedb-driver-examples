@@ -83,15 +83,18 @@ jobs:
     steps:
       - install-bazel-linux-rbe
       - checkout
+      - run: sudo apt-get update
+      - run: pyenv install 3.6.3
+      - run: pyenv global 3.6.3
       - run-grakn-server
-      - run: bazel test //tube_network:test --test_output=errors
-      - run: bazel test //tube_network:test-migration --test_output=errors
+      - run: bazel test //tube_network:test --test_output=errors --force_python PY3 --python_path $(which python)
+      - run: bazel test //tube_network:test-migration --test_output=errors --force_python PY3 --python_path $(which python)
 
 workflows:
   examples:
     jobs:
-      - build
-      - test-phone-calls-java
-      - test-phone-calls-nodejs
-      - test-phone-calls-python
+#      - build
+#      - test-phone-calls-java
+#      - test-phone-calls-nodejs
+#      - test-phone-calls-python
       - test-tube-network
