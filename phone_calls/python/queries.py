@@ -230,9 +230,9 @@ def execute_query_7(question, transaction):
 
 def execute_query_all(transaction):
     for query_example in query_examples:
-        qustion = query_example["question"]
+        question = query_example["question"]
         query_function = query_example["query_function"]
-        query_function(qustion, transaction)
+        query_function(question, transaction)
         print("\n - - -  - - -  - - -  - - - \n")
 
 
@@ -264,6 +264,20 @@ aggregate_query_examples = [
 
 query_examples = get_query_examples + aggregate_query_examples
 
+def process_selection(qs_number, keyspace_name):
+    ## create a transaction to talk to the phone_calls keyspace
+    with GraknClient(uri="localhost:48555") as client:
+        with client.session(keyspace=keyspace_name) as session:
+            with session.transaction().read() as transaction:
+                ## execute the query for the selected question
+                if qs_number == 0:
+                    execute_query_all(transaction)
+                else:
+                    question = query_examples[qs_number - 1]["question"]
+                    query_function = query_examples[qs_number - 1]["query_function"]
+                    query_function(question, transaction)
+
+
 if __name__ == "__main__":
 
     '''
@@ -287,14 +301,4 @@ if __name__ == "__main__":
         qs_number = int(input("choose a number (0 for to answer all questions): "))
     print("")
 
-    ## create a transaction to talk to the phone_calls keyspace
-    with GraknClient(uri="localhost:48555") as client:
-        with client.session(keyspace="phone_calls") as session:
-            with session.transaction().read() as transaction:
-                ## execute the query for the selected question
-                if qs_number == 0:
-                    execute_query_all(transaction)
-                else:
-                    question = query_examples[qs_number - 1]["question"]
-                    query_function = query_examples[qs_number - 1]["query_function"]
-                    query_function(question, transaction)
+    process_selection(qs_number, "phone_calls")

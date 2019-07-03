@@ -20,6 +20,8 @@ class Test(unittest.TestCase):
         print("Loaded the tube_network data")
 
     def test_statistics(self):
+        statistics.init(0)
+
         query_examples = statistics.query_examples
 
         with GraknClient(uri="localhost:48555") as client:
@@ -62,6 +64,8 @@ class Test(unittest.TestCase):
                     )
 
     def test_journey_planner(self):
+        journey_planner.init(from_station_name="Green Park", to_station_name="Holloway Road", selected_path_strategy=1)
+
         with GraknClient(uri="localhost:48555") as client:
             with client.session(keyspace="tube_network") as session:
                 # not containing 'Underground Station'
@@ -91,12 +95,14 @@ class Test(unittest.TestCase):
                     [u'Green Park Underground Station', u'Holloway Road Underground Station']
                 )
 
-    # TODO: reinclude this test,
-    #       once `import _tkinter # If this fails your Python may not be configured for Tk` is resolved
     # def test_visualisation_queries(self):
-    #     with GraknClient(uri="localhost:48555") as client:
-    #         with client.session(keyspace="tube_network") as session:
-    #             app.TubeGui(session)
+        # app.init(False)
+
+        # with GraknClient(uri="localhost:48555") as client:
+        #     with client.session(keyspace="tube_network") as session:
+        #         for query in app.TubeGui.ANALYTICAL_QUERIES:
+        #             with session.transaction().read() as read_transaction:
+        #                 read_transaction.query(query)
 
     @classmethod
     def tearDownClass(cls):

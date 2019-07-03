@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import grakn
+from grakn.client import GraknClient
 
 
 def print_to_log(title, content):
@@ -68,54 +68,56 @@ def get_station_by_name(session, station_name):
         else:
             return station_list[0].map().get("sta").id
 
+def init(from_station_name, to_station_name, selected_path_strategy):
+    with GraknClient(uri="localhost:48555") as client:
+        with client.session(keyspace="tube_network") as session:
+            # Get the departing station
+            valid_from_name = False
+            while not valid_from_name:
+                if from_station_name is None:
+                    from_station_name = input("Enter the name of the station you're travelling from: ").title()
+                print("Verifying station name '" + from_station_name + "' ...\n")
+                from_station_id = get_station_by_name(session, from_station_name)
+                print(from_station_id)
+
+                if from_station_id:
+                    valid_from_name = True
+                else:
+                    print("No station with that name exists! Try again.\n")
+
+            # Get the destination station
+            valid_to_name = False
+            while not valid_to_name:
+                if to_station_name is None:
+                    to_station_name = input("Where to: ")
+                print("Verifying station name '" + to_station_name + "' ...\n")
+                to_station_id = get_station_by_name(session, to_station_name)
+
+                if to_station_id:
+                    valid_to_name = True
+                else:
+                    print("No station with that name exists! Try again.\n")
+
+            # Get the shortest path strategy
+            print("Shortest path strategies: ")
+            print("1. Via fewest stops")
+            print("2. Via fewest route changes")
+            path_strategies = ["stops", "routes"]
+
+            if selected_path_strategy is None:
+                selected_path_strategy = -1
+
+            while selected_path_strategy < 0 or selected_path_strategy > len(path_strategies) - 1:
+                selected_path_strategy = int(input("Select a shortest path strategy: ")) - 1
+                print("")
+
+            # Retrieve the shortest path
+            print(
+                    "Finding the shortest path between " + from_station_name +
+                    " to " + to_station_name +
+                    " via the fewest " + path_strategies[selected_path_strategy] + " ...")
+
+            find_path(session, from_station_id, to_station_id, path_strategies[selected_path_strategy])
 
 if __name__ == "__main__":
-
-    client = grakn.Grakn(uri="localhost:48555")
-
-    with client.session(keyspace="tube_network") as session:
-        # Get the departing station
-        valid_from_name = False
-        while not valid_from_name:
-            from_station_name = input("Enter the name of the station you're travelling from: ").title()
-
-            print("Verifying station name '" + from_station_name + "' ...\n")
-            from_station_id = get_station_by_name(session, from_station_name)
-
-            if from_station_id:
-                valid_from_name = True
-            else:
-                print("No station with that name exists! Try again.\n")
-
-        # Get the destination station
-        valid_to_name = False
-        while not valid_to_name:
-            to_station_name = input("Where to: ")
-
-            print("Verifying station name '" + to_station_name + "' ...\n")
-            to_station_id = get_station_by_name(session, to_station_name)
-
-            if to_station_id:
-                valid_from_name = True
-            else:
-                print("No station with that name exists! Try again.\n")
-
-        # Get the shortest path strategy
-        print("Shortest path strategies: ")
-        print("1. Via fewest stops")
-        print("2. Via fewest route changes")
-        path_strategies = ["stops", "routes"]
-        selected_path_strategy = -1
-        while selected_path_strategy < 0 or selected_path_strategy > len(path_strategies) - 1:
-            selected_path_strategy = int(input("Select a shortest path strategy: ")) - 1
-            print("")
-
-        # Retrieve the shortest path
-        print(
-                "Finding the shortest path between " + from_station_name +
-                " to " + to_station_name +
-                " via the fewest " + path_strategies[selected_path_strategy] + " ...")
-
-        find_path(session, from_station_id, to_station_id, path_strategies[selected_path_strategy])
-
-    client.close()
+    init(None, None, None)

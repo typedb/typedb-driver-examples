@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import tkinter as tk
+import Tkinter as tk
 from grakn.client import GraknClient
 import datetime
 
@@ -110,6 +110,7 @@ class TubeGui:
     COMPUTE_CENTRALITY_TUNNEL_DEGREE = "compute centrality of station, in [station, tunnel], using degree;"
     COMPUTE_CENTRALITY_TUNNEL_KCORE = "compute centrality of station, in [station, tunnel], using k-core;"
     COMPUTE_CENTRALITY_ROUTE_DEGREE = "compute centrality of station, in [station, route], using degree;"
+    ANALYTICAL_QUERIES = [COMPUTE_CENTRALITY_TUNNEL_DEGREE, COMPUTE_CENTRALITY_TUNNEL_KCORE, COMPUTE_CENTRALITY_ROUTE_DEGREE]
 
     def __init__(self, session, root=tk.Tk()):
         """
@@ -603,9 +604,14 @@ class TubeGui:
             self._displaying_centrality = False
 
 
-if __name__ == "__main__":
+def init(shouldHalt):
     root = tk.Tk() # Build the Tkinter application
     with GraknClient(uri="localhost:48555") as client:
         with client.session(keyspace="tube_network") as session:
             tube_gui = TubeGui(session, root)
-            root.mainloop()
+            if shouldHalt:
+                root.mainloop()
+
+
+if __name__ == "__main__":
+    init(True)
