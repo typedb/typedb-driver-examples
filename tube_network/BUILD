@@ -52,6 +52,7 @@ py_test(
         ":journey-planner",
         ":app"
     ],
+    timeout = "long",
     deps = [
         "@graknlabs_client_python//:client_python",
     ],
