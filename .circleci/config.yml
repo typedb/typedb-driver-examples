@@ -87,8 +87,8 @@ jobs:
       - run: pyenv install 3.6.3
       - run: pyenv global 3.6.3
       - run-grakn-server
-      - run: bazel test //tube_network:test --test_output=errors --force_python PY3 --python_path $(which python)
-      - run: bazel test //tube_network:test-migration --test_output=errors --force_python PY3 --python_path $(which python)
+      - run: bazel test //tube_network:test --test_output=errors --python_version PY3 --python_path $(which python)
+      - run: bazel test //tube_network:test-migration --test_output=errors --python_version PY3 --python_path $(which python)
 
 workflows:
   examples:
