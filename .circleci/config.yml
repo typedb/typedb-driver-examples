@@ -98,8 +98,8 @@ jobs:
 workflows:
   examples:
     jobs:
-#      - build
-#      - test-phone-calls-java
-#      - test-phone-calls-nodejs
-#      - test-phone-calls-python
+      - build
+      - test-phone-calls-java
+      - test-phone-calls-nodejs
+      - test-phone-calls-python
       - test-tube-network
