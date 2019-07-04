@@ -37,12 +37,12 @@ class Test(unittest.TestCase):
                         1.0
                     )
 
-                    self.assertItemsEqual(
+                    self.assertEqual(
                         query_examples[2].get("query_function")("", transaction),
                         [51.402142, [u'Morden Underground Station']]
                     )
 
-                    self.assertItemsEqual(
+                    self.assertEqual(
                         query_examples[3].get("query_function")("", transaction),
                         [9.0, [[u'Chesham Underground Station', u'Chalfont & Latimer Underground Station',
                                 u'Metropolitan', u'Chesham Underground Station', u'Aldgate Underground Station']]]
@@ -71,7 +71,7 @@ class Test(unittest.TestCase):
                 # not containing 'Underground Station'
                 # not Title Case
                 # fewest stops
-                self.assertItemsEqual(
+                self.assertEqual(
                     journey_planner.find_path(
                         session,
                         journey_planner.get_station_by_name(session, "Green Park"),  # not containing 'Underground Station'
@@ -84,7 +84,7 @@ class Test(unittest.TestCase):
                 )
 
                 # fewest route changes
-                self.assertItemsEqual(
+                self.assertEqual(
                     journey_planner.find_path(
                         session,
                         journey_planner.get_station_by_name(session, "Green Park"),
