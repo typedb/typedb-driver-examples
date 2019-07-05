@@ -50,5 +50,5 @@ def graknlabs_client_nodejs():
     git_repository(
         name = "graknlabs_client_nodejs",
         remote = "https://github.com/graknlabs/client-nodejs",
-        commit = "e8485907fac938286d594dd8311eb198806d6dec" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_nodejs
+        commit = "a1673abe44b82ba88518490bcfd6dd82a265afc5" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_nodejs
     )
