@@ -83,9 +83,17 @@ jobs:
     steps:
       - install-bazel-linux-rbe
       - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install python3-tk tk-dev  # Required for tkinter
+      - run: pyenv install 3.6.3
+      - run: pyenv global 3.6.3
       - run-grakn-server
-      - run: bazel test //tube_network:test --test_output=errors
-      - run: bazel test //tube_network:test-migration --test_output=errors
+      - run:
+          name: "Run test with a virtual X-server running"
+          command: |
+            Xvfb :0 -screen 0 1024x768x24 &
+            bazel test //tube_network:test --test_output=errors --python_version PY3 --python_path $(which python) --action_env=DISPLAY=":0"
+      - run: bazel test //tube_network:test-migration --test_output=errors --python_version PY3 --python_path $(which python)
 
 workflows:
   examples:

@@ -1,7 +1,7 @@
 from grakn.client import GraknClient
 import unittest
 
-from tube_network.src import migration, statistics, journey_planner
+from tube_network.src import migration, statistics, journey_planner, app
 
 
 class Test(unittest.TestCase):
@@ -37,12 +37,12 @@ class Test(unittest.TestCase):
                         1.0
                     )
 
-                    self.assertItemsEqual(
+                    self.assertEqual(
                         query_examples[2].get("query_function")("", transaction),
                         [51.402142, [u'Morden Underground Station']]
                     )
 
-                    self.assertItemsEqual(
+                    self.assertEqual(
                         query_examples[3].get("query_function")("", transaction),
                         [9.0, [[u'Chesham Underground Station', u'Chalfont & Latimer Underground Station',
                                 u'Metropolitan', u'Chesham Underground Station', u'Aldgate Underground Station']]]
@@ -71,7 +71,7 @@ class Test(unittest.TestCase):
                 # not containing 'Underground Station'
                 # not Title Case
                 # fewest stops
-                self.assertItemsEqual(
+                self.assertEqual(
                     journey_planner.find_path(
                         session,
                         journey_planner.get_station_by_name(session, "Green Park"),  # not containing 'Underground Station'
@@ -84,7 +84,7 @@ class Test(unittest.TestCase):
                 )
 
                 # fewest route changes
-                self.assertItemsEqual(
+                self.assertEqual(
                     journey_planner.find_path(
                         session,
                         journey_planner.get_station_by_name(session, "Green Park"),
@@ -95,14 +95,14 @@ class Test(unittest.TestCase):
                     [u'Green Park Underground Station', u'Holloway Road Underground Station']
                 )
 
-    # def test_visualisation_queries(self):
-        # app.init(False)
+    def test_visualisation_queries(self):
+        app.init(False)
 
-        # with GraknClient(uri="localhost:48555") as client:
-        #     with client.session(keyspace="tube_network") as session:
-        #         for query in app.TubeGui.ANALYTICAL_QUERIES:
-        #             with session.transaction().read() as read_transaction:
-        #                 read_transaction.query(query)
+        with GraknClient(uri="localhost:48555") as client:
+            with client.session(keyspace="tube_network") as session:
+                for query in app.TubeGui.ANALYTICAL_QUERIES:
+                    with session.transaction().read() as read_transaction:
+                        read_transaction.query(query)
 
     @classmethod
     def tearDownClass(cls):
