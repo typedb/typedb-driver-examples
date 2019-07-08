@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import tkinter as tk
+from six.moves import tkinter as tk
 from grakn.client import GraknClient
 import datetime
 
