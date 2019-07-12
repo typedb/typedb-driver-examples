@@ -19,19 +19,24 @@ Grakn officially supports clients for Java, Node.js and Python. Learn more about
 - [Phone Calls: Migrate and perform expressive queries using Client Python](phone_calls/python/)
 
 ## Explore Use Cases
-- Migrate data to Grakn:
-    - serialised:
-        - Java: [CSV](phone_calls/java/CSVMigration.java) | [JSON](phone_calls/java/JSONMigration.java) | [XML](phone_calls/java/XMLMigration.java)
-        - Node.js: [CSV](phone_calls/nodejs/migrateCsv.js) | [JSON](phone_calls/nodejs/migrateJson.js) | [XML](phone_calls/nodejs/migrateXml.js)
-        - Python: [CSV](phone_calls/python/migrate_csv.py) | [JSON](phone_calls/python/migrate_json.py) | [XML](phone_calls/python/migrate_xml.py)
-    - concurrent:
-        - Python: [JSON](tube_network/src/migration.py)
-- Perform expressive queries:
-    - [Java](phone_calls/java/Queries.java)
-    - [Node.js](phone_calls/nodejs/queries.js)
-    - [Python](phone_calls/python/queries.py)
-- Perform statistical and analytical queries:
-    - Python: [statistical](tube_network/src/statistics.py) | [shortest path](tube_network/src/journey_planner.py) | [centrality](tube_network/src/app.py)
+
+### Migrate data to Grakn:
+
+#### serialised:
+- Java: [CSV](phone_calls/java/CSVMigration.java) | [JSON](phone_calls/java/JSONMigration.java) | [XML](phone_calls/java/XMLMigration.java)
+- Node.js: [CSV](phone_calls/nodejs/migrateCsv.js) | [JSON](phone_calls/nodejs/migrateJson.js) | [XML](phone_calls/nodejs/migrateXml.js)
+- Python: [CSV](phone_calls/python/migrate_csv.py) | [JSON](phone_calls/python/migrate_json.py) | [XML](phone_calls/python/migrate_xml.py)
+
+#### concurrent:
+- Python: [JSON](tube_network/src/migration.py)
+
+### Perform expressive queries:
+- [Java](phone_calls/java/Queries.java)
+- [Node.js](phone_calls/nodejs/queries.js)
+- [Python](phone_calls/python/queries.py)
+
+### Perform statistical and analytical queries:
+- Python: [statistical](tube_network/src/statistics.py) | [shortest path](tube_network/src/journey_planner.py) | [centrality](tube_network/src/app.py)
     
 ## Explore BioGrakn
 [BioGrakn](https://github.com/graknlabs/biograkn) is a collection of knowledge graphs of biomedical data.
