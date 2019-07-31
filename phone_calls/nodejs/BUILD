@@ -1,6 +1,6 @@
-exports_files(["package.json"])
+exports_files(["package.json", "yarn.lock"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test", "nodejs_binary")
+load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
 
 jasmine_node_test(
     name = "test",
@@ -12,12 +12,12 @@ jasmine_node_test(
         "queries.js"
     ],
     deps = [
-        "@phone_calls_npm//jasmine",
-        "@phone_calls_npm//jasmine-reporters",
-        "@phone_calls_npm//grakn-client",
-        "@phone_calls_npm//papaparse",
-        "@phone_calls_npm//stream-json",
-        "@phone_calls_npm//xml-stream"
+        "@npm//jasmine",
+        "@npm//jasmine-reporters",
+        "@npm//grakn-client",
+        "@npm//papaparse",
+        "@npm//stream-json",
+        "@npm//xml-stream"
 
     ],
     data = [

@@ -85,16 +85,17 @@ maven_dependencies()
 
 # for Node.js
 
-load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
-rules_nodejs_dependencies()
-
-load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "npm_install")
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
 node_repositories()
 
-npm_install(
-    name = "phone_calls_npm",
-    package_json = "//phone_calls/nodejs:package.json"
+yarn_install(
+    name = "npm",
+    package_json = "//phone_calls/nodejs:package.json",
+    yarn_lock = "//phone_calls/nodejs:yarn.lock"
 )
+
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+install_bazel_dependencies()
 
 # for Python
 
