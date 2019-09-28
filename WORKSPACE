@@ -144,6 +144,8 @@ graknlabs_benchmark_maven_dependencies()
 load("@graknlabs_build_tools//bazel:dependencies.bzl", "bazel_rules_docker")
 bazel_rules_docker()
 
+load("@graknlabs_bazel_distribution//common:dependencies.bzl", "bazelbuild_rules_pkg")
+bazelbuild_rules_pkg()
 
 ###########################
 # Load Graql Dependencies #
