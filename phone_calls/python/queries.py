@@ -45,7 +45,7 @@ def print_to_log(title, content):
     print("\n")
 
 
-""" From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004? """
+""" From 2018-09-10 onwards, which customers called person with phone number +86 921 547 9004? """
 
 
 def execute_query_1(question, transaction):
@@ -74,7 +74,7 @@ def execute_query_1(question, transaction):
     return result
 
 
-""" Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20? """
+""" Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20? """
 
 
 def execute_query_2(question, transaction):
@@ -238,11 +238,11 @@ def execute_query_all(transaction):
 
 get_query_examples = [
     {
-        "question": "Since September 10th, which customers called the person with phone number +86 921 547 9004?",
+        "question": "Since September 10th, which customers called the person with phone number +86 921 547 9004?",
         "query_function": execute_query_1
     },
     {
-        "question": "Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?",
+        "question": "Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?",
         "query_function": execute_query_2
     },
     {
