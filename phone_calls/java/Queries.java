@@ -1,7 +1,7 @@
 package grakn.example.phoneCalls;
 
 import grakn.client.GraknClient;
-import grakn.core.concept.answer.Numeric;
+import grakn.client.answer.Numeric;
 import graql.lang.query.GraqlGet;
 
 import java.util.*;
