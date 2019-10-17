@@ -66,6 +66,7 @@ jobs:
       - install-bazel-linux-rbe
       - checkout
       - run-grakn-server
+      - run: sleep 60
       - run: bazel test //phone_calls/nodejs:test --test_output=errors
 
   test-phone-calls-python:
