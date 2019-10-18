@@ -46,7 +46,6 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "@graknlabs_grakn_core//concept:concept"
     ]
 )
 
@@ -133,7 +132,6 @@ java_binary(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "@graknlabs_grakn_core//concept:concept"
     ],
     classpath_resources = [
         "@graknlabs_grakn_core//test-integration/resources:logback-test",
