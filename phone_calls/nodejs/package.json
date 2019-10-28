@@ -2,7 +2,7 @@
     "author": "Grakn Labs (community@grakn.ai)",
     "dependencies": {
         "@bazel/jasmine": "latest",
-        "grakn-client": "https://repo.grakn.ai/repository/npm-snapshot-group/grakn-client/-/grakn-client-0.0.0-4d5dfef7f5e0572c9a9666596f56a2c570191cbf.tgz",
+        "grakn-client": "https://repo.grakn.ai/repository/npm-snapshot-group/grakn-client/-/grakn-client-0.0.0-0d8022a7aba6e4ca8200b9fbeeed3255361a3524.tgz",
         "jasmine-reporters": "^2.3.2",
         "papaparse": "^4.6.3",
         "stream-json": "^1.1.4",
