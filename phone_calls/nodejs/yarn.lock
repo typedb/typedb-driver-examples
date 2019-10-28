@@ -6,7 +6,7 @@ grakn-nodejs-migration-csv-example@1.0.0:
   version "1.0.0"
   dependencies:
     "@bazel/jasmine" latest
-    grakn-client "https://repo.grakn.ai/repository/npm-snapshot-group/grakn-client/-/grakn-client-0.0.0-0d8022a7aba6e4ca8200b9fbeeed3255361a3524.tgz"
+    grakn-client "1.5.6"
     jasmine-reporters "^2.3.2"
     papaparse "^4.6.3"
     stream-json "^1.1.4"
