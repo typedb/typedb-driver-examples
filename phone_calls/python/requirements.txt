@@ -1,1 +1,2 @@
 ijson==2.3
+grakn-client
