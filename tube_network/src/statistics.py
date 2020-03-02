@@ -74,7 +74,7 @@ def query_northernmost_station(question, transaction):
     print_to_log("Query:", "\n".join(query))
     query = "".join(query)
 
-    answers = transaction.query(query).collect_concepts()
+    answers = [ans.get("nam") for ans in transaction.query(query)]
     result = [answer.value() for answer in answers]
 
     print_to_log("Northmost stations with " + str(lat) + " are: ", result)

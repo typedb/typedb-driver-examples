@@ -66,7 +66,7 @@ def execute_query_1(question, transaction):
     query = "".join(query)
 
     iterator = transaction.query(query)
-    answers = iterator.collect_concepts()
+    answers = [ans.get("phone-number") for ans in iterator]
     result = [answer.value() for answer in answers]
 
     print_to_log("Result:", result)
@@ -98,7 +98,7 @@ def execute_query_2(question, transaction):
     query = "".join(query)
 
     iterator = transaction.query(query)
-    answers = iterator.collect_concepts()
+    answers = [ans.get("phone-number") for ans in iterator]
     result = [answer.value() for answer in answers]
 
     print_to_log("Result:", result)
@@ -126,7 +126,7 @@ def execute_query_3(question, transaction):
     query = "".join(query)
 
     iterator = transaction.query(query)
-    answers = iterator.collect_concepts()
+    answers = [ans.get("phone-number") for ans in iterator]
     result = [answer.value() for answer in answers]
 
     print_to_log("Result:", result)
@@ -157,7 +157,9 @@ def execute_query_4(question, transaction):
     query = "".join(query)
 
     iterator = transaction.query(query)
-    answers = iterator.collect_concepts()
+    answers = []
+    for answer in iterator:
+        answers.extend(answer.map().values())
     result = [answer.value() for answer in answers]
 
     print_to_log("Result:", result)
