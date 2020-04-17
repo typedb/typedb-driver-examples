@@ -5,10 +5,10 @@ The Phone Calls Java example showcases:
 2. writing and performing expressive Graql queries to gain insights over the dataset
 
 ### Quickstart
-1. Install [the latest Grakn](http://dev.grakn.ai/docs/running-grakn/install-and-run#download-and-install-grakn)
+1. Install the latest version of [Grakn](https://github.com/graknlabs/grakn/releases) that is compatible with the latest version of Client Node.js (see the [dependency table](http://dev.grakn.ai/docs/client-api/java#dependencies))
 2. Clone this repository
-3. Via terminal while inside the Grakn distribution, run: `./grakn console -k phone_calls -f path-to-the-cloned-repo/schemas/phone-calls-schema.gql`
-4. Start the [Grakn Sever](http://dev.grakn.ai/docs/running-grakn/install-and-run#start-the-grakn-server).
+3. Start the [Grakn Sever](http://dev.grakn.ai/docs/running-grakn/install-and-run#start-the-grakn-server).
+4. Via terminal while inside the Grakn distribution, run: `./grakn console -k phone_calls -f path-to-the-cloned-repo/schemas/phone-calls-schema.gql`
 5. Install [Bazel](https://docs.bazel.build/versions/master/install.html). (you may also declare dependencies and run using Maven. See [Grakn Client Java documentation](http://dev.grakn.ai/docs/client-api/java).)
 6. To install all the dependencies, run `bazel build //...`.
 7. To migrate the dataset into Grakn, run:
