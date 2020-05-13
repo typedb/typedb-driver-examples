@@ -28,7 +28,7 @@ project sub relation,
 	relates task,
 	has progress,
 	has completed,
-	plays requires;
+	plays prerequisite;
 
 research-project sub project,
 	relates research as task;
