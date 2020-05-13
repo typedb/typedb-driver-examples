@@ -1,0 +1,179 @@
+tech||
+name||
+Alien Biotech||
+Alien Encryption||
+Resistance Communications||
+Resistance Radio||
+Psionics||
+Hybrid Materials||
+Plated Armor||
+Modular Weapons||
+Magnetic Weapons||
+Gauss Weapons||
+Elerium||
+Powered Armor||
+Plasma Rifle||
+Storm Gun||
+Beam Cannon||
+Plasma Lance||
+Experimental Weapons||
+Assassin Weapons||
+Hunter Weapons||
+Warlock Weapon||
+ADVENT Datapad Decryption||
+Alien Data Cache Decryption||
+Facility Lead||
+ADVENT Officer Autopsy||
+ADVENT MEC Breakdown||
+ADVENT Turret Breakdown||
+ADVENT Priest Autopsy||
+ADVENT Purifier Autopsy||
+ADVENT Shieldbearer Autopsy||
+ADVENT Stun Lancer Autopsy||
+ADVENT Trooper Autopsy||
+The Lost Autopsy||
+Sectoid Autopsy||
+Faceless Autopsy||
+Chryssalid Autopsy||
+Viper Autopsy||
+Muton Autopsy||
+Berserker Autopsy||
+Archon Autopsy||
+Spectre Autopsy||
+Andromedon Autopsy||
+Sectopod Breakdown||
+Gatekeeper Autopsy||
+Viper King Autopsy||
+Berserker Queen Autopsy||
+Archon King Autopsy||
+||
+resource||
+name||
+Elerium Crystals||
+ADVENT Trooper Corpse||
+Alien Alloys||
+ADVENT Datapad||
+Alien Data Cache||
+Facility Lead||
+Arashi||
+Katana||
+Darklance||
+Darkclaw||
+Disruptor Rifle||
+ADVENT Officer Corpse||
+ADVENT MEC Wreck||
+ADVENT Turret Wreck||
+ADVENT Priest Corpse||
+ADVENT Purifier Corpse||
+ADVENT Shieldbearer Corpse||
+ADVENT Stun Lancer Corpse||
+ADVENT Trooper Corpse||
+The Lost Corpse||
+Sectoid Corpse||
+Faceless Corpse||
+Chryssalid Corpse||
+Viper Corpse||
+Muton Corpse||
+Berserker Corpse||
+Archon Corpse||
+Spectre Corpse||
+Andromedon Wreck||
+Sectopod Wreck||
+Gatekeeper Shell||
+Viper King Corpse||
+Berserker Queen Corpse||
+Archon King Corpse||
+||
+event||
+name||
+Skulljack Officer OR Complete Blacksite||
+Complete a Guerrilla Op||
+||
+tech_required_tech||
+tech|required_tech|
+Resistance Radio|Resistance Communications|
+Psionics|Sectoid Autopsy|
+Plated Armor|Hybrid Materials|
+Magnetic Weapons|Modular Weapons|
+Gauss Weapons|Magnetic Weapons|
+Elerium|Gauss Weapons|
+Elerium|Plated Armor|
+Elerium|ADVENT MEC Breakdown|
+Powered Armor|Elerium|
+Plasma Rifle|Elerium|
+Plasma Lance|Plasma Rifle|
+Plasma Lance|Archon Autopsy|
+Beam Cannon|Plasma Rifle|
+Storm Gun|Plasma Rifle|
+ADVENT Officer Autopsy|Alien Biotech|
+ADVENT MEC Breakdown|ADVENT Officer Autopsy|
+ADVENT Turret Breakdown|ADVENT Officer Autopsy|
+ADVENT Priest Autopsy|ADVENT Officer Autopsy|
+ADVENT Purifier Autopsy|ADVENT Officer Autopsy|
+ADVENT Shieldbearer Autopsy|ADVENT Officer Autopsy|
+ADVENT Stun Lancer Autopsy|ADVENT Officer Autopsy|
+ADVENT Trooper Autopsy|ADVENT Officer Autopsy|
+Sectoid Autopsy|Alien Biotech|
+Faceless Autopsy|Alien Biotech|
+Chryssalid Autopsy|Alien Biotech|
+Viper Autopsy|Alien Biotech|
+Muton Autopsy|Alien Biotech|
+Berserker Autopsy|Alien Biotech|
+Archon Autopsy|Alien Biotech|
+Spectre Autopsy|Alien Biotech|
+Andromedon Autopsy|Alien Biotech|
+Sectopod Breakdown|ADVENT Officer Autopsy|
+Gatekeeper Autopsy|Alien Biotech|
+Viper King Autopsy|Alien Biotech|
+Berserker Queen Autopsy|Alien Biotech|
+Archon King Autopsy|Alien Biotech|
+||
+tech_required_resource||
+tech|required_resource|required_resource_count
+Psionics|Elerium Crystals|5
+Hybrid Materials|ADVENT Trooper Corpse|2
+Plated Armor|Alien Alloys|10
+Elerium|Elerium Crystals|20
+Powered Armor|Alien Alloys|20
+Powered Armor|Elerium Crystals|5
+Plasma Rifle|Alien Alloys|10
+Plasma Rifle|Elerium Crystals|10
+Storm Gun|Alien Alloys|10
+Plasma Lance|Alien Alloys|5
+Plasma Lance|Elerium Crystals|5
+Assassin Weapons|Arashi|1
+Assassin Weapons|Katana|1
+Hunter Weapons|Darklance|1
+Hunter Weapons|Darkclaw|1
+Warlock Weapon|Disruptor Rifle|1
+ADVENT Datapad Decryption|ADVENT Datapad|1
+Alien Data Cache Decryption|Alien Data Cache|1
+Facility Lead|Facility Lead|1
+ADVENT Officer Autopsy|ADVENT Officer Corpse|1
+ADVENT MEC Breakdown|ADVENT MEC Wreck|1
+ADVENT Turret Breakdown|ADVENT Turret Wreck|1
+ADVENT Priest Autopsy|ADVENT Priest Corpse|1
+ADVENT Purifier Autopsy|ADVENT Purifier Corpse|1
+ADVENT Shieldbearer Autopsy|ADVENT Shieldbearer Corpse|1
+ADVENT Stun Lancer Autopsy|ADVENT Stun Lancer Corpse|1
+ADVENT Trooper Autopsy|ADVENT Trooper Corpse|1
+The Lost Autopsy|The Lost Corpse|1
+Sectoid Autopsy|Sectoid Corpse|1
+Faceless Autopsy|Faceless Corpse|1
+Chryssalid Autopsy|Chryssalid Corpse|1
+Viper Autopsy|Viper Corpse|1
+Muton Autopsy|Muton Corpse|1
+Berserker Autopsy|Berserker Corpse|1
+Archon Autopsy|Archon Corpse|1
+Spectre Autopsy|Spectre Corpse|1
+Andromedon Autopsy|Andromedon Wreck|1
+Sectopod Breakdown|Sectopod Wreck|1
+Gatekeeper Autopsy|Gatekeeper Shell|1
+Viper King Autopsy|Viper King Corpse|1
+Berserker Queen Autopsy|Berserker Queen Corpse|1
+Archon King Autopsy|Archon King Corpse|1
+||
+tech_required_event||
+tech|required_event|
+Alien Encryption|Skulljack Officer OR Complete Blacksite|
+Resistance Communications|Complete a Guerrilla Op|
