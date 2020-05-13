@@ -4,7 +4,11 @@ name sub attribute,
 	datatype string;
 progress sub attribute,
 	datatype double;
-achieved sub attribute,
+completed sub attribute,
+	datatype boolean;
+fulfilled sub attribute,
+	datatype boolean;
+can-proceed sub attribute,
 	datatype boolean;
 
 # Entities
@@ -28,6 +32,7 @@ project sub relation,
 	relates task,
 	has progress,
 	has completed,
+	has can-proceed,
 	plays prerequisite;
 
 research-project sub project,
@@ -88,13 +93,35 @@ when {
 	(prerequisite: $prereq, outcome: $outcome) has fulfilled false;
 }
 
-# Queries (for visualization; remove later)
+project-can-not-proceed-if-it-is-completed sub rule,
+when {
+	$project isa project, has completed true;
+} then {
+	$project has can-proceed false;
+}
 
-# Fetch all techs currently available for research in Campaign 1
-match
-	$campaign isa campaign, has name = "Campaign 1";
+research-project-can-not-proceed-if-any-prerequisite-is-not-fulfilled sub rule,
+when {
+	(scope: $campaign, research: $tech) isa research-project;
+	(research: $tech, prerequisite: $prereq) isa requirement-to-unlock-research, has fulfilled false;
+} then {
+	(scope: $campaign, research: $tech) has can-proceed false;
+}
+
+research-project-can-proceed-if-all-prerequisites-are-fulfilled-and-it-is-not-completed sub rule,
+when {
 	(scope: $campaign, research: $tech) isa research-project, has completed false;
 	not {
 		(research: $tech, prerequisite: $prereq) isa requirement-to-unlock-research, has fulfilled false;
-	};
-get $tech;
+	}
+} then {
+	(scope: $campaign, research: $tech) has can-proceed true;
+}
+
+# Queries (for visualization; remove later)
+
+# Fetch all research projects currently available to work on, and their current progress % in Campaign 1
+match
+	$campaign isa campaign, has name = "Campaign 1";
+	(scope: $campaign, research: $tech) isa research-project, has can-proceed true, has progress $progress;
+get $tech, $progress;
