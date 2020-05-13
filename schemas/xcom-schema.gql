@@ -1,0 +1,100 @@
+# Attributes
+
+name sub attribute,
+	datatype string;
+progress sub attribute,
+	datatype double;
+achieved sub attribute,
+	datatype boolean;
+
+# Entities
+
+campaign sub entity,
+	has name,
+	plays scope;
+
+tech sub entity,
+	has name,
+	plays research;
+
+event sub entity,
+	has name;
+
+# Relations
+
+project sub relation,
+	abstract,
+	relates scope,
+	relates task,
+	has progress,
+	has completed,
+	plays requires;
+
+research-project sub project,
+	relates research as task;
+
+requirement sub relation,
+	abstract,
+	relates prerequisite,
+	relates outcome,
+	has fulfilled;
+
+requirement-to-unlock-research sub requirement,
+	relates research as outcome;
+
+# Test data (for visualization purposes, move out of this file later)
+
+insert
+
+# Static data
+$sectoid_autopsy isa tech, has name "Sectoid Autopsy";
+$alien_biotech isa tech, has name "Alien Biotech";
+(research: $sectoid_autopsy, prerequisite: $alien_biotech) isa requirement-to-unlock-research;
+
+# Dynamic data
+$campaign1 isa campaign, has name "Campaign 1";
+(scope: $campaign1, research: $alien_biotech) isa research-project, has progress 0;
+(scope: $campaign1, research: $sectoid_autopsy) isa research-project, has progress 0;
+
+# Rules
+
+project-is-completed-if-progress-is-100 sub rule,
+when {
+	$project isa project, has progress = 100;
+} then {
+	$project has completed true;
+}
+
+project-is-not-completed-if-progress-is-less-than-100 sub rule,
+when {
+	$project isa project, has progress < 100;
+} then {
+	$project has completed false;
+}
+
+requirement-is-fulfilled-if-prerequisite-is-a-completed-project sub rule,
+when {
+	(prerequisite: $prereq, outcome: $outcome) isa requirement;
+	$prereq isa project, has completed true;
+} then {
+	(prerequisite: $prereq, outcome: $outcome) has fulfilled true;
+}
+
+requirement-is-not-fulfilled-if-prerequisite-is-an-incomplete-project sub rule,
+when {
+	(prerequisite: $prereq, outcome: $outcome) isa requirement;
+	$prereq isa project, has completed false;
+} then {
+	(prerequisite: $prereq, outcome: $outcome) has fulfilled false;
+}
+
+# Queries (for visualization; remove later)
+
+# Fetch all techs currently available for research in Campaign 1
+match
+	$campaign isa campaign, has name = "Campaign 1";
+	(scope: $campaign, research: $tech) isa research-project, has completed false;
+	not {
+		(research: $tech, prerequisite: $prereq) isa requirement-to-unlock-research, has fulfilled false;
+	};
+get $tech;
