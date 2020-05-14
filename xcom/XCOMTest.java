@@ -21,7 +21,7 @@ import static graql.lang.Graql.parse;
 import static org.junit.Assert.assertEquals;
 
 
-public class PhoneCallsTest {
+public class XCOMTest {
 
     GraknClient client;
     GraknClient.Session session;

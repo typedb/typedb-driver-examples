@@ -49,7 +49,7 @@ public class Migration {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String keyspaceName = (args[0] != null) ? args[0] : "xcom";
+        String keyspaceName = "xcom";
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs, keyspaceName);
     }

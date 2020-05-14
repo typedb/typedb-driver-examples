@@ -26,5 +26,5 @@ Storm Gun requires Beam Weapons, which requires Elerium and Magnetic Weapons; no
 5. Install [Bazel](https://docs.bazel.build/versions/master/install.html). (you may also declare dependencies and run using Maven. See [Grakn Client Java documentation](http://dev.grakn.ai/docs/client-api/java).)
 6. To install all the dependencies, run `bazel build //...`.
 7. To migrate the dataset into Grakn, run:
-- `bazel run //xcom/java:migration`
-8. To initiate the interactive query runner, run `bazel run //xcom/java:queries`.
+- `bazel run //xcom:migration`
+8. To initiate the interactive query runner, run `bazel run //xcom:queries`.
