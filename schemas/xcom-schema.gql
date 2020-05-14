@@ -64,17 +64,17 @@ campaign-research-task sub campaign-task,
 
 # Test data (for visualization purposes, move out of this file later)
 
-insert
+# insert
 
-# Static data
-$sectoid_autopsy isa research-project, has name "Sectoid Autopsy";
-$alien_biotech isa research-project, has name "Alien Biotech";
-(required-tech: $alien_biotech, research-to-begin: $sectoid_autopsy) isa tech-requirement-to-begin-research;
+# # Static data
+# $sectoid_autopsy isa research-project, has name "Sectoid Autopsy";
+# $alien_biotech isa research-project, has name "Alien Biotech";
+# (required-tech: $alien_biotech, research-to-begin: $sectoid_autopsy) isa tech-requirement-to-begin-research;
 
-# Dynamic data
-$campaign1 isa campaign, has name "Campaign 1";
-($campaign1, research-task: $alien_biotech) isa campaign-research-task, has progress 0;
-($campaign1, research-task: $sectoid_autopsy) isa campaign-research-task, has progress 0;
+# # Dynamic data
+# $campaign1 isa campaign, has name "Campaign 1";
+# ($campaign1, research-task: $alien_biotech) isa campaign-research-task, has progress 0;
+# ($campaign1, research-task: $sectoid_autopsy) isa campaign-research-task, has progress 0;
 
 # Rules
 
@@ -139,8 +139,8 @@ when {
 # Queries (for visualization; remove later)
 
 # Fetch all research projects currently available to work on, and their current progress % in Campaign 1
-match
-	$campaign isa campaign, has name = "Campaign 1";
-	$research_project isa research-project;
-	($campaign, research-task: $research_project) isa campaign-research-task, has can-proceed true, has progress $progress;
-get $project, $research_project;
+# match
+# 	$campaign isa campaign, has name = "Campaign 1";
+# 	$research_project isa research-project;
+# 	($campaign, research-task: $research_project) isa campaign-research-task, has can-proceed true, has progress $progress;
+# get $project, $research_project;
