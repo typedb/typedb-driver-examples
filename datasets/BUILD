@@ -35,3 +35,13 @@ filegroup(
     srcs = glob(["tube-network/routes/*.json"]),
     visibility = ["//visibility:public"]
 )
+
+########
+# xcom #
+########
+
+filegroup(
+    name = "xcom-data",
+    srcs = glob(["xcom/*.csv"]),
+    visibility = ["//visibility:public"]
+)
