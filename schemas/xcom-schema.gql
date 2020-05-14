@@ -2,120 +2,138 @@
 
 name sub attribute,
 	datatype string;
+can-proceed sub attribute,
+	datatype boolean;
+started sub attribute,
+	datatype boolean;
 progress sub attribute,
 	datatype double;
 completed sub attribute,
 	datatype boolean;
-fulfilled sub attribute,
-	datatype boolean;
-can-proceed sub attribute,
-	datatype boolean;
 
-# Entities
+# Static entities
+
+research-project sub entity,
+	has name,
+	plays research-task,
+	plays required-tech,
+	plays research-to-begin,
+	plays research-tech;
+
+# event sub entity,
+#	has name;
+
+# Dynamic entities
 
 campaign sub entity,
 	has name,
-	plays scope;
+	plays campaign-with-tasks;
 
-tech sub entity,
-	has name,
-	plays research;
-
-event sub entity,
-	has name;
-
-# Relations
-
-project sub relation,
-	abstract,
-	relates scope,
-	relates task,
-	has progress,
-	has completed,
-	has can-proceed,
-	plays prerequisite;
-
-research-project sub project,
-	relates research as task;
+# Static relations
 
 requirement sub relation,
 	abstract,
 	relates prerequisite,
 	relates outcome,
-	has fulfilled;
+	plays task;
 
-requirement-to-unlock-research sub requirement,
-	relates research as outcome;
+tech-requirement sub relation,
+	abstract,
+	relates required-tech as prerequisite;
+
+tech-requirement-to-begin-task sub tech-requirement,
+	abstract,
+	relates task-to-begin as outcome;
+
+tech-requirement-to-begin-research sub tech-requirement-to-begin-task,
+	relates research-to-begin as outcome;
+
+# Dynamic relations
+
+campaign-task sub relation,
+	abstract,
+	relates campaign-with-tasks,
+	relates task,
+	has started,
+	has progress,
+	has can-proceed,
+	has completed;
+
+campaign-research-task sub campaign-task,
+	relates research-task as task;
 
 # Test data (for visualization purposes, move out of this file later)
 
 insert
 
 # Static data
-$sectoid_autopsy isa tech, has name "Sectoid Autopsy";
-$alien_biotech isa tech, has name "Alien Biotech";
-(research: $sectoid_autopsy, prerequisite: $alien_biotech) isa requirement-to-unlock-research;
+$sectoid_autopsy isa research-project, has name "Sectoid Autopsy";
+$alien_biotech isa research-project, has name "Alien Biotech";
+(required-tech: $alien_biotech, research-to-begin: $sectoid_autopsy) isa tech-requirement-to-begin-research;
 
 # Dynamic data
 $campaign1 isa campaign, has name "Campaign 1";
-(scope: $campaign1, research: $alien_biotech) isa research-project, has progress 0;
-(scope: $campaign1, research: $sectoid_autopsy) isa research-project, has progress 0;
+($campaign1, research-task: $alien_biotech) isa campaign-research-task, has progress 0;
+($campaign1, research-task: $sectoid_autopsy) isa campaign-research-task, has progress 0;
 
 # Rules
 
-project-is-completed-if-progress-is-100 sub rule,
+## campaign task
+task-is-not-started-in-this-campaign-if-progress-is-at-most-0 sub rule,
 when {
-	$project isa project, has progress = 100;
+	$task isa campaign-task, has progress <= 0;
 } then {
-	$project has completed true;
+	$task has started false;
 }
 
-project-is-not-completed-if-progress-is-less-than-100 sub rule,
+task-is-started-in-this-campaign-if-progress-is-greater-than-0 sub rule,
 when {
-	$project isa project, has progress < 100;
+	$task isa campaign-task, has progress > 0;
 } then {
-	$project has completed false;
+	$task has started true;
 }
 
-requirement-is-fulfilled-if-prerequisite-is-a-completed-project sub rule,
+task-is-not-completed-in-this-campaign-if-progress-is-less-than-100 sub rule,
 when {
-	(prerequisite: $prereq, outcome: $outcome) isa requirement;
-	$prereq isa project, has completed true;
+	$task isa campaign-task, has progress < 100;
 } then {
-	(prerequisite: $prereq, outcome: $outcome) has fulfilled true;
+	$task has completed false;
 }
 
-requirement-is-not-fulfilled-if-prerequisite-is-an-incomplete-project sub rule,
+task-is-completed-in-this-campaign-if-progress-is-at-least-100 sub rule,
 when {
-	(prerequisite: $prereq, outcome: $outcome) isa requirement;
-	$prereq isa project, has completed false;
+	$task isa campaign-task, has progress >= 100;
 } then {
-	(prerequisite: $prereq, outcome: $outcome) has fulfilled false;
+	$task has completed true;
 }
 
-project-can-not-proceed-if-it-is-completed sub rule,
+task-can-not-proceed-in-this-campaign-if-it-is-completed sub rule,
 when {
-	$project isa project, has completed true;
+	$task isa campaign-task, has completed true;
 } then {
-	$project has can-proceed false;
+	$task has can-proceed false;
 }
 
-research-project-can-not-proceed-if-any-prerequisite-is-not-fulfilled sub rule,
+task-can-not-proceed-in-this-campaign-if-any-prerequisite-tasks-are-not-completed sub rule,
 when {
-	(scope: $campaign, research: $tech) isa research-project;
-	(research: $tech, prerequisite: $prereq) isa requirement-to-unlock-research, has fulfilled false;
+	$campaign isa campaign;
+	$campaign_task($campaign, task: $task) isa campaign-task;
+	($task, $prerequisite) isa requirement-to-begin-task;
+	($campaign, $prerequisite) isa campaign-task, has completed false;
 } then {
-	(scope: $campaign, research: $tech) has can-proceed false;
+	$campaign_task has can-proceed false;
 }
 
-research-project-can-proceed-if-all-prerequisites-are-fulfilled-and-it-is-not-completed sub rule,
+task-can-proceed-in-this-campaign-if-it-is-not-completed-and-all-its-prerequisite-tasks-are-completed sub rule,
 when {
-	(scope: $campaign, research: $tech) isa research-project, has completed false;
+	$campaign isa campaign;
+	$campaign_task($campaign, task: $task) isa campaign-task, has completed false;
 	not {
-		(research: $tech, prerequisite: $prereq) isa requirement-to-unlock-research, has fulfilled false;
-	}
+		($task, $prerequisite) isa requirement-to-begin-task;
+		($campaign, $prerequisite) isa campaign-task, has completed false;
+	};
 } then {
-	(scope: $campaign, research: $tech) has can-proceed true;
+	$campaign_task has can-proceed true;
 }
 
 # Queries (for visualization; remove later)
@@ -123,5 +141,6 @@ when {
 # Fetch all research projects currently available to work on, and their current progress % in Campaign 1
 match
 	$campaign isa campaign, has name = "Campaign 1";
-	(scope: $campaign, research: $tech) isa research-project, has can-proceed true, has progress $progress;
-get $tech, $progress;
+	$research_project isa research-project;
+	($campaign, research-task: $research_project) isa campaign-research-task, has can-proceed true, has progress $progress;
+get $project, $research_project;
