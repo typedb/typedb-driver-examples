@@ -49,7 +49,7 @@ public class CSVMigration {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String keyspaceName = (args[0] != null) ? args[0] : "phone_calls";
+        String keyspaceName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "phone_calls";
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs, keyspaceName);
     }
