@@ -49,7 +49,7 @@ public class Migration {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String keyspaceName = "xcom";
+        String keyspaceName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "xcom";
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs, keyspaceName);
     }
@@ -78,16 +78,25 @@ public class Migration {
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
-        // define template for constructing a research project Graql insert query
-        inputs.add(new Input("datasets/xcom/tech") {
+        //inputs.add(initialiseTechInput());
+        inputs.add(initialiseResearchProjectTechRequirementInput());
+
+        return inputs;
+    }
+
+    /** define template for constructing a research project Graql insert query */
+    static Input initialiseTechInput() {
+        return new Input("datasets/xcom/tech") {
             @Override
             public String template(Json researchProject) {
                 return "insert $research_project isa research-project, has name " + researchProject.at("name") + ";";
             }
-        });
+        };
+    }
 
-        // define template for constructing a research project tech requirement Graql insert query
-        inputs.add(new Input("datasets/xcom/tech_required_tech") {
+    /** define template for constructing a research project tech requirement Graql insert query */
+    static Input initialiseResearchProjectTechRequirementInput() {
+        return new Input("datasets/xcom/tech_required_tech") {
             @Override
             public String template(Json techRequirement) {
                 // match tech
@@ -98,9 +107,7 @@ public class Migration {
                 graqlInsertQuery += " insert (research-to-begin: $tech, required-tech: $required_tech) isa tech-requirement-to-begin-research;";
                 return graqlInsertQuery;
             }
-        });
-
-        return inputs;
+        };
     }
 
     /**
