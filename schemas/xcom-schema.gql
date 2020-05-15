@@ -78,8 +78,8 @@ campaign-research-task sub campaign-task,
 
 # # Dynamic data
 # $campaign1 isa campaign, has name "Campaign 1";
-# ($campaign1, research-task: $alien_biotech) isa campaign-research-task, has progress 0;
-# ($campaign1, research-task: $sectoid_autopsy) isa campaign-research-task, has progress 0;
+# (campaign-with-tasks: $campaign1, research-task: $alien_biotech) isa campaign-research-task, has progress 0;
+# (campaign-with-tasks: $campaign1, research-task: $sectoid_autopsy) isa campaign-research-task, has progress 0;
 
 # Rules
 

@@ -1,64 +1,172 @@
 package grakn.example.xcom;
 
 import grakn.client.GraknClient;
-import grakn.client.answer.Numeric;
 import graql.lang.query.GraqlGet;
+import graql.lang.query.GraqlInsert;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static graql.lang.Graql.parse;
 
 
 public class Queries {
-	public abstract static class QueryExample {
-		String question;
+	public abstract static class Question<TChoice> {
+		public abstract String getDescription();
+		public abstract Result onSubmit(TChoice choice);
+	}
 
-		public QueryExample(String question) {
+	public abstract static class MultipleChoiceQuestion extends Question<Integer> {
+		public abstract Map<Integer, String> getChoices();
+	}
+
+	public abstract static class FreeTextQuestion<TChoice> extends Question<TChoice> {
+	}
+
+	public static class Result {
+		private Result(boolean valid, Question<?> question) {
+			this.valid = valid;
 			this.question = question;
 		}
 
-		String getQuestion() { return this.question; }
+		public static Result ok() {
+			return new Result(true, null);
+		}
 
-		public abstract <T> T executeQuery(GraknClient.Transaction transaction);
+		public static Result ok(Question<?> question) {
+			return new Result(true, question);
+		}
+
+		public static Result invalid() {
+			return new Result(false, null);
+		}
+
+		public Question<?> getQuestion() {
+			return question;
+		}
+
+		public boolean isValid() {
+			return valid;
+		}
+
+		private final boolean valid;
+		private final Question<?> question;
 	}
+
+	static String keyspaceName = "xcom";
 
 	public static void main(String[] args) {
-		List<QueryExample> queryExamples = initialiseQueryExamples();
-
 		Scanner scanner = new Scanner(System.in);
 
-		System.out.print("For which of these questions, on the phone_calls knowledge graph, do you want to execute the query?\n");
-		for (int i = 0; i < queryExamples.size(); i++) {
-			System.out.println(i + 1 + ": " + queryExamples.get(i).getQuestion());
-		}
+		System.out.print("Hello, Commander.");
 
-		int qsNumber = -1;
-		while (qsNumber < 0 || qsNumber > queryExamples.size()) {
-			System.out.print("choose a number (enter 0 for to answer all questions): ");
-			try {
-				qsNumber = scanner.nextInt();
-			} catch (InputMismatchException e) {
+		final Stack<Question<?>> questions = new Stack<>();
+		questions.push(initialQuestion);
+		while (true) {
+			final Question<?> question = questions.peek();
+			Result result = null;
+			System.out.println();
+			System.out.print(question.getDescription());
+            if (question instanceof MultipleChoiceQuestion) {
+            	MultipleChoiceQuestion multipleChoiceQuestion = (MultipleChoiceQuestion) question;
+            	System.out.println("\n");
+	            for (Map.Entry<Integer, String> option : multipleChoiceQuestion.getChoices().entrySet()) {
+		            System.out.println(option.getKey() + ": " + option.getValue());
+	            }
+	            System.out.print("choose a number (enter 0 to exit): ");
+	            try {
+		            int input = scanner.nextInt();
+		            if (input == 0) {
+			            break;
+		            }
+		            result = multipleChoiceQuestion.onSubmit(input);
+	            } catch (InputMismatchException e) {
+		            scanner.nextLine();
+		            System.out.println("\nPlease enter a number!");
+		            continue;
+	            }
+            } else if (question instanceof FreeTextQuestion) {
+            	FreeTextQuestion freeTextQuestion = (FreeTextQuestion) question;
+                String input = scanner.next();
+                result = freeTextQuestion.onSubmit(input);
+            }
+
+			if (!result.isValid()) {
 				scanner.nextLine();
-				System.out.println();
-				System.out.println("Please enter a number!");
+				System.out.println("\nPlease enter a valid value!");
+				continue;
 			}
-
+			if (result.getQuestion() != null) {
+				scanner.nextLine();
+				questions.push(result.getQuestion());
+				continue;
+			}
+			questions.clear();
+			questions.push(initialQuestion);
 		}
-		System.out.println();
-		processSelection(qsNumber, queryExamples, "phone_calls");
 	}
 
-	static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples, String keyspaceName) {
+	static Question initialQuestion = new MultipleChoiceQuestion() {
+		private final int START_NEW_CAMPAIGN = 1;
+
+		@Override
+		public String getDescription() {
+			return "What would you like to do?";
+		}
+
+		@Override
+		public SortedMap<Integer, String> getChoices() {
+			final SortedMap<Integer, String> choices = new TreeMap<>();
+			choices.put(START_NEW_CAMPAIGN, "Start a new campaign");
+			return choices;
+		}
+
+		@Override
+		public Result onSubmit(Integer option) {
+			switch (option) {
+				case START_NEW_CAMPAIGN:
+					return Result.ok(chooseCampaignName);
+				default:
+					return Result.invalid();
+			}
+		}
+	};
+
+	static Question chooseCampaignName = new FreeTextQuestion<String>() {
+		@Override
+		public String getDescription() {
+			return "Enter your new campaign name: ";
+		}
+
+		@Override
+		public Result onSubmit(String campaignName) {
+			transaction(t -> {
+				String query = "insert $campaign isa campaign, has name \"" + campaignName + "\";";
+				System.out.println("Executing Graql Query: " + query);
+				t.execute((GraqlInsert) parse(query));
+
+				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+						+ " $research_project isa research-project;"
+						+ " insert (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task, has progress 0;";
+				System.out.println("Executing Graql Query: " + query);
+				t.execute((GraqlInsert) parse(query));
+			}, TransactionMode.WRITE);
+
+			System.out.println("Success");
+			return Result.ok();
+		}
+	};
+
+	static void transaction(Consumer<GraknClient.Transaction> queries, final TransactionMode mode) {
 		GraknClient client = new GraknClient("localhost:48555");
 		GraknClient.Session session = client.session(keyspaceName);
-		GraknClient.Transaction transaction = session.transaction().read();
+		GraknClient.Transaction transaction = mode == TransactionMode.WRITE
+				? session.transaction().write()
+				: session.transaction().read();
 
-		if (qsNumber == 0) {
-			queryExamples.forEach(queryExample -> {
-				queryExample.executeQuery(transaction);
-			});
-		} else {
-			queryExamples.get(qsNumber - 1).executeQuery(transaction);
+		queries.accept(transaction);
+		if (mode == TransactionMode.WRITE) {
+			transaction.commit();
 		}
 
 		transaction.close();
@@ -66,14 +174,14 @@ public class Queries {
 		client.close();
 	}
 
-	// GRAQL QUERY EXAMPLES
+	/*// GRAQL QUERY EXAMPLES
 	static List<QueryExample> initialiseQueryExamples() {
 		List<QueryExample> queryExamples = new ArrayList<>();
 
 		queryExamples.add(new QueryExample("Since September 14th, which customers called the person with phone number +86 921 547 9004?") {
 			@Override
 			public <T> T executeQuery(GraknClient.Transaction transaction) {
-				printToLog("Question: ", this.question);
+				printToLog("Question: ", this.description);
 
 				List<String> queryAsList = Arrays.asList(
 						"match",
@@ -99,161 +207,6 @@ public class Queries {
 				printToLog("Result: ", String.join(", ", result));
 
 				return (T) result;
-			}
-		});
-
-		queryExamples.add(new QueryExample("Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?") {
-			@Override
-			public <T> T executeQuery(GraknClient.Transaction transaction) {
-				printToLog("Question: ", this.question);
-
-				List<String> queryAsList = Arrays.asList(
-						"match ",
-						"  $suspect isa person, has city \"London\", has age > 50;",
-						"  $company isa company, has name \"Telecom\";",
-						"  (customer: $suspect, provider: $company) isa contract;",
-						"  $pattern-callee isa person, has age < 20;",
-						"  (caller: $suspect, callee: $pattern-callee) isa call, has started-at $pattern-call-date;",
-						"  $target isa person, has phone-number $phone-number;",
-						"  not { (customer: $target, provider: $company) isa contract; };",
-						"  (caller: $suspect, callee: $target) isa call, has started-at $target-call-date;",
-						"  $target-call-date > $pattern-call-date;",
-						"get $phone-number;"
-				);
-
-				printToLog("Query:", String.join("\n", queryAsList));
-				String query = String.join("", queryAsList);
-
-				List<String> result = new ArrayList<>();
-				transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
-					result.add(
-							answer.get("phone-number").asAttribute().value().toString()
-					);
-				});
-
-				printToLog("Result: ", String.join(", ", result));
-
-				return (T) result;
-			}
-		});
-
-		queryExamples.add(new QueryExample("Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?") {
-			@Override
-			public <T> T executeQuery(GraknClient.Transaction transaction) {
-				printToLog("Question: ", this.question);
-
-				List<String> queryAsList = Arrays.asList(
-						"match ",
-						"  $common-contact isa person, has phone-number $phone-number;",
-						"  $customer-a isa person, has phone-number \"+7 171 898 0853\";",
-						"  $customer-b isa person, has phone-number \"+370 351 224 5176\";",
-						"  (caller: $customer-a, callee: $common-contact) isa call;",
-						"  (caller: $customer-b, callee: $common-contact) isa call;",
-						"get $phone-number;"
-				);
-
-				printToLog("Query:", String.join("\n", queryAsList));
-				String query = String.join("", queryAsList);
-
-				Set<String> result = new HashSet<>();
-				transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
-					result.add(
-							answer.get("phone-number").asAttribute().value().toString()
-					);
-				});
-
-				printToLog("Result: ", String.join(", ", result));
-
-				return (T) result;
-			}
-		});
-
-		queryExamples.add(new QueryExample("Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?") {
-			@Override
-			public <T> T executeQuery(GraknClient.Transaction transaction) {
-				printToLog("Question: ", this.question);
-
-				List<String> queryAsList = Arrays.asList(
-						"match ",
-						"  $target isa person, has phone-number \"+48 894 777 5173\";",
-						"  $company isa company, has name \"Telecom\";",
-						"  $customer-a isa person, has phone-number $phone-number-a;",
-						"  (customer: $customer-a, provider: $company) isa contract;",
-						"  (caller: $customer-a, callee: $target) isa call;",
-						"  $customer-b isa person, has phone-number $phone-number-b;",
-						"  (customer: $customer-b, provider: $company) isa contract;",
-						"  (caller: $customer-b, callee: $target) isa call;",
-						"  (caller: $customer-a, callee: $customer-b) isa call;",
-						"get $phone-number-a, $phone-number-b;"
-				);
-
-				printToLog("Query:", String.join("\n", queryAsList));
-				String query = String.join("", queryAsList);
-
-				Set<String> result = new HashSet<>();
-				transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
-					result.add(answer.get("phone-number-a").asAttribute().value().toString());
-					result.add(answer.get("phone-number-b").asAttribute().value().toString());
-				});
-
-				printToLog("Result: ", String.join(", ", result));
-
-				return (T) result;
-			}
-		});
-
-		queryExamples.add(new QueryExample("How does the average call duration among customers aged under 20 compare those aged over 40?") {
-			@Override
-			public <T> T executeQuery(GraknClient.Transaction transaction) {
-				printToLog("Question: ", this.question);
-
-				List<String> firstQueryAsList = Arrays.asList(
-						"match",
-						"  $customer isa person, has age < 20;",
-						"  $company isa company, has name \"Telecom\";",
-						"  (customer: $customer, provider: $company) isa contract;",
-						"  (caller: $customer, callee: $anyone) isa call, has duration $duration;",
-						"get $duration; mean $duration;"
-				);
-
-				printToLog("First Query:", String.join("\n", firstQueryAsList));
-				String firstQuery = String.join("", firstQueryAsList);
-
-				List<Float> result = new ArrayList<>();
-
-				List<Numeric> firstAnswers = transaction.execute((GraqlGet.Aggregate) parse(firstQuery));
-				float fisrtResult = 0;
-				if (firstAnswers.size() > 0) {
-					fisrtResult = firstAnswers.get(0).number().floatValue();
-					result.add(fisrtResult);
-				}
-
-				String output = "Customers aged under 20 have made calls with average duration of " + fisrtResult + " seconds.\n";
-
-				List<String> secondQueryAsList = Arrays.asList(
-						"match",
-						"  $customer isa person, has age > 40;",
-						"  $company isa company, has name \"Telecom\";",
-						"  (customer: $customer, provider: $company) isa contract;",
-						"  (caller: $customer, callee: $anyone) isa call, has duration $duration;",
-						"get $duration; mean $duration;"
-				);
-
-				printToLog("Second Query:", String.join("\n", secondQueryAsList));
-				String secondQuery = String.join("", secondQueryAsList);
-
-				float secondResult = 0;
-				List<Numeric> secondAnswers = transaction.execute((GraqlGet.Aggregate) parse(secondQuery));
-				if (secondAnswers.size() > 0) {
-					secondResult = secondAnswers.get(0).number().floatValue();
-					result.add(secondResult);
-				}
-				output += "Customers aged over 40 have made calls with average duration of " + secondResult + " seconds.\n";
-
-				printToLog("Result: ", output);
-
-				return (T) result;
-
 			}
 		});
 
@@ -284,11 +237,7 @@ public class Queries {
 //        });
 
 		return queryExamples;
-	}
-
-	public static List<QueryExample> getTestSubjects() {
-		return initialiseQueryExamples();
-	}
+	}*/
 
 	static void printToLog(String title, String content) {
 		System.out.println(title);
