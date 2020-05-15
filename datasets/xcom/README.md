@@ -10,7 +10,7 @@ An OpenDocument spreadsheet used to enter the data by hand from the wiki.
 
 ## xcom-db.csv
 
-This is **xcom-db.ods** in CSV format, separated by pipes.
+This is **xcom-db.ods** in CSV format.
 
 ## *.csv
 
