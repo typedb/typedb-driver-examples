@@ -119,22 +119,22 @@ when {
 	$task has can-proceed false;
 };
 
-task-can-not-proceed-in-this-campaign-if-any-prerequisite-techs-are-not-researched sub rule,
+research-can-not-proceed-in-this-campaign-if-any-prerequisite-techs-are-not-researched sub rule,
 when {
 	$campaign isa campaign;
 	$campaign_task($campaign, task: $task) isa campaign-task;
-	(task-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-task;
+	(research-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-research;
 	($campaign, $prerequisite) isa campaign-task, has completed false;
 }, then {
 	$campaign_task has can-proceed false;
 };
 
-task-can-proceed-in-this-campaign-if-it-is-not-completed-and-all-its-prerequisite-techs-are-researched sub rule,
+research-can-proceed-in-this-campaign-if-it-is-not-completed-and-all-its-prerequisite-techs-are-researched sub rule,
 when {
 	$campaign isa campaign;
 	$campaign_task($campaign, task: $task) isa campaign-task, has completed false;
 	not {
-		(task-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-task;
+		(research-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-research;
 		($campaign, $prerequisite) isa campaign-task, has completed false;
 	};
 }, then {

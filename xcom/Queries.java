@@ -1,11 +1,15 @@
 package grakn.example.xcom;
 
 import grakn.client.GraknClient;
+import graql.lang.query.GraqlDelete;
 import graql.lang.query.GraqlGet;
 import graql.lang.query.GraqlInsert;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static graql.lang.Graql.parse;
 
@@ -20,7 +24,10 @@ public class Queries {
 		public abstract Map<Integer, String> getChoices();
 	}
 
-	public abstract static class FreeTextQuestion<TChoice> extends Question<TChoice> {
+	public abstract static class TextInputQuestion extends Question<String> {
+	}
+
+	public abstract static class NumericInputQuestion extends Question<Double> {
 	}
 
 	public static class Result {
@@ -85,10 +92,14 @@ public class Queries {
 		            System.out.println("\nPlease enter a number!");
 		            continue;
 	            }
-            } else if (question instanceof FreeTextQuestion) {
-            	FreeTextQuestion freeTextQuestion = (FreeTextQuestion) question;
+            } else if (question instanceof TextInputQuestion) {
+            	TextInputQuestion textInputQuestion = (TextInputQuestion) question;
                 String input = scanner.next();
-                result = freeTextQuestion.onSubmit(input);
+                result = textInputQuestion.onSubmit(input);
+            } else if (question instanceof NumericInputQuestion) {
+            	NumericInputQuestion numericInputQuestion = (NumericInputQuestion) question;
+            	double input = scanner.nextDouble();
+            	result = numericInputQuestion.onSubmit(input);
             }
 
 			if (!result.isValid()) {
@@ -108,6 +119,8 @@ public class Queries {
 
 	static Question initialQuestion = new MultipleChoiceQuestion() {
 		private final int START_NEW_CAMPAIGN = 1;
+		private final int GET_AVAILABLE_RESEARCH = 2;
+		private final int ADVANCE_RESEARCH = 3;
 
 		@Override
 		public String getDescription() {
@@ -118,21 +131,46 @@ public class Queries {
 		public SortedMap<Integer, String> getChoices() {
 			final SortedMap<Integer, String> choices = new TreeMap<>();
 			choices.put(START_NEW_CAMPAIGN, "Start a new campaign");
+			choices.put(GET_AVAILABLE_RESEARCH, "Get available research");
+			choices.put(ADVANCE_RESEARCH, "Advance research");
 			return choices;
 		}
 
 		@Override
 		public Result onSubmit(Integer option) {
+			List<String> campaignNames = new ArrayList<>();
+
+			switch (option) {
+				case GET_AVAILABLE_RESEARCH:
+				case ADVANCE_RESEARCH:
+					transaction(t -> {
+						String query = "match $campaign isa campaign, has name $name; get $name;";
+						System.out.println("Executing Graql Query: " + query);
+						t.execute((GraqlGet) parse(query)).forEach(result -> {
+							campaignNames.add(
+									result.get("name").asAttribute().value().toString()
+							);
+						});
+					}, TransactionMode.READ);
+			}
+
 			switch (option) {
 				case START_NEW_CAMPAIGN:
 					return Result.ok(chooseCampaignName);
+
+				case GET_AVAILABLE_RESEARCH:
+					return Result.ok(chooseCampaignToGetResearchFor(campaignNames));
+
+				case ADVANCE_RESEARCH:
+					return Result.ok(chooseCampaignToAdvanceResearchIn(campaignNames));
+
 				default:
 					return Result.invalid();
 			}
 		}
 	};
 
-	static Question chooseCampaignName = new FreeTextQuestion<String>() {
+	static Question chooseCampaignName = new TextInputQuestion() {
 		@Override
 		public String getDescription() {
 			return "Enter your new campaign name: ";
@@ -156,6 +194,109 @@ public class Queries {
 			return Result.ok();
 		}
 	};
+
+	static Question chooseFromList(List<String> names, String entityType, Function<Integer, Result> onSubmit) {
+		return new MultipleChoiceQuestion() {
+			@Override
+			public Map<Integer, String> getChoices() {
+				return IntStream.range(0, names.size())
+						.boxed()
+						.collect(Collectors.toMap(i -> i + 1, names::get));
+			}
+
+			@Override
+			public String getDescription() {
+				return "Choose a " + entityType + ":";
+			}
+
+			@Override
+			public Result onSubmit(Integer selectedValue) {
+				return onSubmit.apply(selectedValue);
+			}
+		};
+	}
+
+	static Question chooseCampaignToGetResearchFor(List<String> names) {
+		return chooseFromList(names, "campaign", selectedKey -> {
+			String campaignName = names.get(selectedKey - 1);
+			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
+			for (ResearchTask task : researchTasks) {
+				System.out.println(task.name + " [" + task.progressPercent + "% complete]");
+			}
+			return Result.ok();
+		});
+	}
+
+	static Question chooseCampaignToAdvanceResearchIn(List<String> names) {
+		return chooseFromList(names, "campaign", selectedKey -> {
+			String campaignName = names.get(selectedKey - 1);
+			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
+			return Result.ok(choooseResearchToAdvance(campaignName, researchTasks));
+		});
+	}
+
+	static Question choooseResearchToAdvance(String campaignName, List<ResearchTask> researchTasks) {
+		return chooseFromList(researchTasks
+				.stream()
+				.map(rt -> rt.name + " [" + rt.progressPercent + "% complete]")
+				.collect(Collectors.toList()),"research project", selectedKey -> {
+			ResearchTask tech = researchTasks.get(selectedKey - 1);
+			return Result.ok(chooseNewResearchProgress(campaignName, tech));
+		});
+	}
+
+	static Question chooseNewResearchProgress(String campaignName, ResearchTask researchTask) {
+		return new NumericInputQuestion() {
+			@Override
+			public String getDescription() {
+				return "What should be the new progress % for the " + researchTask.name
+						+ " project (currently at " + researchTask.progressPercent + "%)?";
+			}
+
+			@Override
+			public Result onSubmit(Double input) {
+				transaction(t -> {
+					String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+							+ " $research_project isa research-project, has name \"" + researchTask.name + "\";"
+							+ " (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
+							+ " has progress $prog via $p;"
+							+ " delete $p;";
+					System.out.println("Executing Graql Query: " + query);
+					t.execute((GraqlDelete) parse(query));
+
+					query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+							+ " $research_project isa research-project, has name \"" + researchTask.name + "\";"
+							+ " $task(campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task;"
+							+ " insert $task has progress " + input + ";";
+					System.out.println("Executing Graql Query: " + query);
+					t.execute((GraqlInsert) parse(query));
+				}, TransactionMode.WRITE);
+
+				System.out.println("Success");
+				return Result.ok();
+			}
+		};
+	}
+
+	static List<ResearchTask> listAvailableResearchTasks(final String campaignName) {
+		List<ResearchTask> researchTasks = new ArrayList<>();
+		transaction(t -> {
+			String query = "match"
+					+ " $campaign isa campaign, has name \"" + campaignName + "\";"
+					+ " $research-project isa research-project, has name $research_project_name;"
+					+ " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-proceed true, has progress $progress;"
+					+ " get $research_project_name, $progress;";
+			System.out.println("Executing Graql Query: " + query);
+			t.execute((GraqlGet) parse(query)).forEach(result -> {
+				researchTasks.add(new ResearchTask(
+						result.get("research_project_name").asAttribute().value().toString(),
+						(double) result.get("progress").asAttribute().value()
+				));
+			});
+		}, TransactionMode.READ);
+
+		return researchTasks;
+	}
 
 	static void transaction(Consumer<GraknClient.Transaction> queries, final TransactionMode mode) {
 		GraknClient client = new GraknClient("localhost:48555");
