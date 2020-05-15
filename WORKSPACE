@@ -127,18 +127,13 @@ java_grpc_compile()
 ################################
 
 load("@graknlabs_grakn_core//dependencies/graknlabs:dependencies.bzl",
-"graknlabs_common", "graknlabs_console", "graknlabs_benchmark")
+"graknlabs_common", "graknlabs_console")
 graknlabs_common()
 graknlabs_console()
-graknlabs_benchmark()
 
 load("@graknlabs_grakn_core//dependencies/maven:dependencies.bzl",
 graknlabs_grakn_core_maven_dependencies = "maven_dependencies")
 graknlabs_grakn_core_maven_dependencies()
-
-load("@graknlabs_benchmark//dependencies/maven:dependencies.bzl",
-graknlabs_benchmark_maven_dependencies = "maven_dependencies")
-graknlabs_benchmark_maven_dependencies()
 
 load("@graknlabs_build_tools//bazel:dependencies.bzl", "bazel_rules_docker")
 bazel_rules_docker()
@@ -175,6 +170,19 @@ pip_import(
 load("@graknlabs_client_python_pip//:requirements.bzl",
 graknlabs_client_python_pip_install = "pip_install")
 graknlabs_client_python_pip_install()
+
+
+####################################
+# Load Client Java Dependencies    #
+####################################
+
+load("@graknlabs_client_java//dependencies/graknlabs:dependencies.bzl",
+"graknlabs_grabl_tracing")
+graknlabs_grabl_tracing()
+
+load("@graknlabs_grabl_tracing//dependencies/maven:dependencies.bzl",
+graknlabs_grabl_tracing_maven_dependencies = "maven_dependencies")
+graknlabs_grabl_tracing_maven_dependencies()
 
 
 #####################################
