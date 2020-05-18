@@ -27,7 +27,7 @@ public class Queries {
 	public abstract static class TextInputQuestion extends Question<String> {
 	}
 
-	public abstract static class NumericInputQuestion extends Question<Double> {
+	public abstract static class NumericInputQuestion extends Question<Number> {
 	}
 
 	public static class Result {
@@ -121,6 +121,8 @@ public class Queries {
 		private final int START_NEW_CAMPAIGN = 1;
 		private final int GET_AVAILABLE_RESEARCH = 2;
 		private final int ADVANCE_RESEARCH = 3;
+		private final int VIEW_INVENTORY = 4;
+		private final int ACQUIRE_ITEM = 5;
 
 		@Override
 		public String getDescription() {
@@ -132,7 +134,9 @@ public class Queries {
 			final SortedMap<Integer, String> choices = new TreeMap<>();
 			choices.put(START_NEW_CAMPAIGN, "Start a new campaign");
 			choices.put(GET_AVAILABLE_RESEARCH, "Get available research");
-			choices.put(ADVANCE_RESEARCH, "Advance research");
+			choices.put(ADVANCE_RESEARCH, "Research a technology");
+			choices.put(VIEW_INVENTORY, "View inventory");
+			choices.put(ACQUIRE_ITEM, "Acquire an item");
 			return choices;
 		}
 
@@ -143,6 +147,8 @@ public class Queries {
 			switch (option) {
 				case GET_AVAILABLE_RESEARCH:
 				case ADVANCE_RESEARCH:
+				case VIEW_INVENTORY:
+				case ACQUIRE_ITEM:
 					transaction(t -> {
 						String query = "match $campaign isa campaign, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
@@ -163,6 +169,12 @@ public class Queries {
 
 				case ADVANCE_RESEARCH:
 					return Result.ok(chooseCampaignToAdvanceResearchIn(campaignNames));
+
+				case VIEW_INVENTORY:
+					return Result.ok(chooseCampaignToViewInventoryFor(campaignNames));
+
+				case ACQUIRE_ITEM:
+					return Result.ok(chooseCampaignToAcquireItemIn(campaignNames));
 
 				default:
 					return Result.invalid();
@@ -185,7 +197,13 @@ public class Queries {
 
 				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 						+ " $research_project isa research-project;"
-						+ " insert (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task, has progress 0;";
+						+ " insert (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task, has started false;";
+				System.out.println("Executing Graql Query: " + query);
+				t.execute((GraqlInsert) parse(query));
+
+				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+						+ " $item isa item;"
+						+ " insert (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity 0;";
 				System.out.println("Executing Graql Query: " + query);
 				t.execute((GraqlInsert) parse(query));
 			}, TransactionMode.WRITE);
@@ -231,51 +249,36 @@ public class Queries {
 		return chooseFromList(names, "campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
-			return Result.ok(choooseResearchToAdvance(campaignName, researchTasks));
+			return Result.ok(chooseTechToResearch(campaignName, researchTasks));
 		});
 	}
 
-	static Question choooseResearchToAdvance(String campaignName, List<ResearchTask> researchTasks) {
+	static Question chooseTechToResearch(String campaignName, List<ResearchTask> researchTasks) {
 		return chooseFromList(researchTasks
 				.stream()
-				.map(rt -> rt.name + " [" + rt.progressPercent + "% complete]")
-				.collect(Collectors.toList()),"research project", selectedKey -> {
+				.map(rt -> rt.name)
+				.collect(Collectors.toList()),"technology", selectedKey -> {
 			ResearchTask tech = researchTasks.get(selectedKey - 1);
-			return Result.ok(chooseNewResearchProgress(campaignName, tech));
+			transaction(t -> {
+				String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+						+ " $research_project isa research-project, has name \"" + tech.name + "\";"
+						+ " (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
+						+ " has started $started via $s, has progress $progress via $p;"
+						+ " delete $s, $p;";
+				System.out.println("Executing Graql Query: " + query);
+				t.execute((GraqlDelete) parse(query));
+
+				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+						+ " $research_project isa research-project, has name \"" + tech.name + "\";"
+						+ " $task(campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task;"
+						+ " insert $task has started true, has progress 100;";
+				System.out.println("Executing Graql Query: " + query);
+				t.execute((GraqlInsert) parse(query));
+			}, TransactionMode.WRITE);
+
+			System.out.println("Success");
+			return Result.ok();
 		});
-	}
-
-	static Question chooseNewResearchProgress(String campaignName, ResearchTask researchTask) {
-		return new NumericInputQuestion() {
-			@Override
-			public String getDescription() {
-				return "What should be the new progress % for the " + researchTask.name
-						+ " project (currently at " + researchTask.progressPercent + "%)?";
-			}
-
-			@Override
-			public Result onSubmit(Double input) {
-				transaction(t -> {
-					String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
-							+ " $research_project isa research-project, has name \"" + researchTask.name + "\";"
-							+ " (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
-							+ " has progress $prog via $p;"
-							+ " delete $p;";
-					System.out.println("Executing Graql Query: " + query);
-					t.execute((GraqlDelete) parse(query));
-
-					query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
-							+ " $research_project isa research-project, has name \"" + researchTask.name + "\";"
-							+ " $task(campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task;"
-							+ " insert $task has progress " + input + ";";
-					System.out.println("Executing Graql Query: " + query);
-					t.execute((GraqlInsert) parse(query));
-				}, TransactionMode.WRITE);
-
-				System.out.println("Success");
-				return Result.ok();
-			}
-		};
 	}
 
 	static List<ResearchTask> listAvailableResearchTasks(final String campaignName) {
@@ -284,7 +287,7 @@ public class Queries {
 			String query = "match"
 					+ " $campaign isa campaign, has name \"" + campaignName + "\";"
 					+ " $research-project isa research-project, has name $research_project_name;"
-					+ " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-proceed true, has progress $progress;"
+					+ " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-begin true, has progress $progress;"
 					+ " get $research_project_name, $progress;";
 			System.out.println("Executing Graql Query: " + query);
 			t.execute((GraqlGet) parse(query)).forEach(result -> {
@@ -296,6 +299,94 @@ public class Queries {
 		}, TransactionMode.READ);
 
 		return researchTasks;
+	}
+
+	static List<InventoryItem> listInventory(final String campaignName) {
+		List<InventoryItem> inventory = new ArrayList<>();
+		transaction(t -> {
+			String query = "match"
+					+ " $campaign isa campaign, has name \"" + campaignName + "\";"
+					+ " $item isa item, has name $item_name;"
+					+ " (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $quantity;"
+					+ " get $item_name, $quantity;";
+			System.out.println("Executing Graql Query: " + query);
+			t.execute((GraqlGet) parse(query)).forEach(result -> {
+				inventory.add(new InventoryItem(
+						result.get("item_name").asAttribute().value().toString(),
+						((Long) result.get("quantity").asAttribute().value()).intValue()
+				));
+			});
+		}, TransactionMode.READ);
+
+		return inventory;
+	}
+
+	static Question chooseCampaignToViewInventoryFor(List<String> names) {
+		return chooseFromList(names, "campaign", selectedKey -> {
+			String campaignName = names.get(selectedKey - 1);
+			List<InventoryItem> inventory = listInventory(campaignName)
+					.stream()
+					.filter(i -> i.quantity > 0)
+					.collect(Collectors.toList());
+			if (inventory.isEmpty()) {
+				System.out.println(campaignName + "'s inventory is empty.");
+			} else {
+				for (InventoryItem i : inventory) {
+					System.out.println(i.name + " x" + i.quantity);
+				}
+			}
+			return Result.ok();
+		});
+	}
+
+	static Question chooseCampaignToAcquireItemIn(List<String> names) {
+		return chooseFromList(names, "campaign", selectedKey -> {
+			String campaignName = names.get(selectedKey - 1);
+			List<InventoryItem> inventory = listInventory(campaignName);
+			return Result.ok(chooseItemToAcquire(campaignName, inventory));
+		});
+	}
+
+	static Question chooseItemToAcquire(String campaignName, List<InventoryItem> inventory) {
+		return chooseFromList(inventory
+				.stream()
+				.map(i -> i.name + " [" + i.quantity + " owned]")
+				.collect(Collectors.toList()),"item", selectedKey -> {
+			InventoryItem item = inventory.get(selectedKey - 1);
+			return Result.ok(chooseNewItemQuantity(campaignName, item));
+		});
+	}
+
+	static Question chooseNewItemQuantity(String campaignName, InventoryItem item) {
+		return new NumericInputQuestion() {
+			@Override
+			public String getDescription() {
+				return "How many " + item.name + " would you like to have? (you currently have " + item.quantity + ")";
+			}
+
+			@Override
+			public Result onSubmit(Number input) {
+				transaction(t -> {
+					String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+							+ " $item isa item, has name \"" + item.name + "\";"
+							+ " (item-owner: $campaign, owned-item: $item) isa item-ownership,"
+							+ " has quantity $qty via $q;"
+							+ " delete $q;";
+					System.out.println("Executing Graql Query: " + query);
+					t.execute((GraqlDelete) parse(query));
+
+					query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+							+ " $item isa item, has name \"" + item.name + "\";"
+							+ " $ownership(item-owner: $campaign, owned-item: $item) isa item-ownership;"
+							+ " insert $ownership has quantity " + input.longValue() + ";";
+					System.out.println("Executing Graql Query: " + query);
+					t.execute((GraqlInsert) parse(query));
+				}, TransactionMode.WRITE);
+
+				System.out.println("Success");
+				return Result.ok();
+			}
+		};
 	}
 
 	static void transaction(Consumer<GraknClient.Transaction> queries, final TransactionMode mode) {

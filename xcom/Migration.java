@@ -79,7 +79,9 @@ public class Migration {
 		Collection<Input> inputs = new ArrayList<>();
 
 		inputs.add(initialiseTechInput());
+		inputs.add(initialiseItemInput());
 		inputs.add(initialiseResearchProjectTechRequirementInput());
+		inputs.add(initialiseResearchResourceCostInput());
 
 		return inputs;
 	}
@@ -105,6 +107,33 @@ public class Migration {
 				graqlInsertQuery += " $required_tech isa research-project, has name " + techRequirement.at("required_tech") + ";";
 				// insert research project tech requirement
 				graqlInsertQuery += " insert (research-to-begin: $tech, required-tech: $required_tech) isa tech-requirement-to-begin-research;";
+				return graqlInsertQuery;
+			}
+		};
+	}
+
+	/** define template for constructing an item Graql insert query */
+	static Input initialiseItemInput() {
+		return new Input("datasets/xcom/resource") {
+			@Override
+			public String template(Json item) {
+				return "insert $item isa item, has name " + item.at("name") + ";";
+			}
+		};
+	}
+
+	/** define template for constructing a research project resource cost Graql insert query */
+	static Input initialiseResearchResourceCostInput() {
+		return new Input("datasets/xcom/tech_required_resource") {
+			@Override
+			public String template(Json researchCost) {
+				// match tech
+				String graqlInsertQuery = "match $tech isa research-project, has name " + researchCost.at("tech") + ";";
+				// match required tech
+				graqlInsertQuery += " $item isa item, has name " + researchCost.at("required_resource") + ";";
+				// insert research project tech requirement
+				graqlInsertQuery += " insert (research-to-begin: $tech, consumes-resource: $item) isa resource-cost-to-begin-research,"
+					+ " has quantity-consumed " + researchCost.at("required_resource_count").asLong() + ";";
 				return graqlInsertQuery;
 			}
 		};
