@@ -14,7 +14,7 @@ java_library(
 
 java_library(
 	name = "queries-lib",
-	srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java"],
+	srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
 	deps = [
 		"@graknlabs_client_java//:client-java",
 		"@graknlabs_graql//java:graql",
@@ -62,7 +62,7 @@ java_binary(
 java_binary(
 	name = "queries",
 	main_class = "grakn.example.xcom.Queries",
-	srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java"],
+	srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
 	deps = [
 		"@graknlabs_client_java//:client-java",
 		"@graknlabs_graql//java:graql",

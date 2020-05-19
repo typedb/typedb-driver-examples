@@ -1,9 +1,6 @@
 package grakn.example.xcom;
 
 import grakn.client.GraknClient;
-import grakn.client.answer.Answer;
-import grakn.client.answer.Explanation;
-import grakn.client.concept.Rule;
 import graql.lang.query.GraqlDelete;
 import graql.lang.query.GraqlGet;
 import graql.lang.query.GraqlInsert;
@@ -18,49 +15,19 @@ import static graql.lang.Graql.parse;
 
 
 public class Queries {
-	public abstract static class Question<TChoice> {
+	public abstract static class Question<TChoice, TResult> {
 		public abstract String getDescription();
-		public abstract Result onSubmit(TChoice choice);
+		public abstract Result<TResult> onSubmit(TChoice choice);
 	}
 
-	public abstract static class MultipleChoiceQuestion extends Question<Integer> {
+	public abstract static class MultipleChoiceQuestion<TResult> extends Question<Integer, TResult> {
 		public abstract Map<Integer, String> getChoices();
 	}
 
-	public abstract static class TextInputQuestion extends Question<String> {
+	public abstract static class TextInputQuestion<TResult> extends Question<String, TResult> {
 	}
 
-	public abstract static class NumericInputQuestion extends Question<Number> {
-	}
-
-	public static class Result {
-		private Result(boolean valid, Question<?> question) {
-			this.valid = valid;
-			this.question = question;
-		}
-
-		public static Result ok() {
-			return new Result(true, null);
-		}
-
-		public static Result ok(Question<?> question) {
-			return new Result(true, question);
-		}
-
-		public static Result invalid() {
-			return new Result(false, null);
-		}
-
-		public Question<?> getQuestion() {
-			return question;
-		}
-
-		public boolean isValid() {
-			return valid;
-		}
-
-		private final boolean valid;
-		private final Question<?> question;
+	public abstract static class NumericInputQuestion<TResult> extends Question<Number, TResult> {
 	}
 
 	static String keyspaceName = "xcom";
@@ -70,15 +37,15 @@ public class Queries {
 
 		System.out.print("Hello, Commander.");
 
-		final Stack<Question<?>> questions = new Stack<>();
+		final Stack<Question<?, ?>> questions = new Stack<>();
 		questions.push(initialQuestion);
 		while (true) {
-			final Question<?> question = questions.peek();
-			Result result = null;
+			final Question<?, ?> question = questions.peek();
+			Result<?> result;
 			System.out.println();
 			System.out.print(question.getDescription());
             if (question instanceof MultipleChoiceQuestion) {
-            	MultipleChoiceQuestion multipleChoiceQuestion = (MultipleChoiceQuestion) question;
+            	MultipleChoiceQuestion<?> multipleChoiceQuestion = (MultipleChoiceQuestion<?>) question;
             	System.out.println("\n");
 	            for (Map.Entry<Integer, String> option : multipleChoiceQuestion.getChoices().entrySet()) {
 		            System.out.println(option.getKey() + ": " + option.getValue());
@@ -96,13 +63,15 @@ public class Queries {
 		            continue;
 	            }
             } else if (question instanceof TextInputQuestion) {
-            	TextInputQuestion textInputQuestion = (TextInputQuestion) question;
+            	TextInputQuestion<?> textInputQuestion = (TextInputQuestion<?>) question;
                 String input = scanner.next();
                 result = textInputQuestion.onSubmit(input);
             } else if (question instanceof NumericInputQuestion) {
-            	NumericInputQuestion numericInputQuestion = (NumericInputQuestion) question;
+            	NumericInputQuestion<?> numericInputQuestion = (NumericInputQuestion<?>) question;
             	double input = scanner.nextDouble();
             	result = numericInputQuestion.onSubmit(input);
+            } else {
+            	throw new UnsupportedOperationException("question is not a supported question type!");
             }
 
 			if (!result.isValid()) {
@@ -120,7 +89,7 @@ public class Queries {
 		}
 	}
 
-	static Question initialQuestion = new MultipleChoiceQuestion() {
+	static Question<Integer, Object> initialQuestion = new MultipleChoiceQuestion<Object>() {
 		private final int START_NEW_CAMPAIGN = 1;
 		private final int GET_AVAILABLE_RESEARCH = 2;
 		private final int ADVANCE_RESEARCH = 3;
@@ -146,7 +115,7 @@ public class Queries {
 		}
 
 		@Override
-		public Result onSubmit(Integer option) {
+		public Result<Object> onSubmit(Integer option) {
 			List<String> campaignNames = new ArrayList<>();
 
 			switch (option) {
@@ -157,42 +126,38 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $campaign isa campaign, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).forEach(result -> {
-							campaignNames.add(
-									result.get("name").asAttribute().value().toString()
-							);
-						});
+						t.execute((GraqlGet) parse(query)).forEach(result -> campaignNames.add(
+								result.get("name").asAttribute().value().toString()
+						));
 					}, TransactionMode.READ);
 			}
 
 			switch (option) {
 				case START_NEW_CAMPAIGN:
-					return Result.ok(chooseCampaignName);
+					return Result.nextQuestion(chooseCampaignName);
 
 				case GET_AVAILABLE_RESEARCH:
-					return Result.ok(chooseCampaignToGetResearchFor(campaignNames));
+					return Result.nextQuestion(chooseCampaignToGetResearchFor(campaignNames));
 
 				case ADVANCE_RESEARCH:
-					return Result.ok(chooseCampaignToAdvanceResearchIn(campaignNames));
+					return Result.nextQuestion(chooseCampaignToAdvanceResearchIn(campaignNames));
 
 				case VIEW_INVENTORY:
-					return Result.ok(chooseCampaignToViewInventoryFor(campaignNames));
+					return Result.nextQuestion(chooseCampaignToViewInventoryFor(campaignNames));
 
 				case ACQUIRE_ITEM:
-					return Result.ok(chooseCampaignToAcquireItemIn(campaignNames));
+					return Result.nextQuestion(chooseCampaignToAcquireItemIn(campaignNames));
 
 				case COMPUTE_TECH_REQUIREMENTS:
 					List<String> techs = new ArrayList<>();
 					transaction(t -> {
 						String query = "match $tech isa research-project, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).forEach(result -> {
-							techs.add(
-									result.get("name").asAttribute().value().toString()
-							);
-						});
+						t.execute((GraqlGet) parse(query)).forEach(result -> techs.add(
+								result.get("name").asAttribute().value().toString()
+						));
 					}, TransactionMode.READ);
-					return Result.ok(chooseTechToComputeRequirementsFor(techs));
+					return Result.nextQuestion(chooseTechToComputeRequirementsFor(techs));
 
 				default:
 					return Result.invalid();
@@ -200,14 +165,14 @@ public class Queries {
 		}
 	};
 
-	static Question chooseCampaignName = new TextInputQuestion() {
+	static TextInputQuestion<Object> chooseCampaignName = new TextInputQuestion<Object>() {
 		@Override
 		public String getDescription() {
 			return "Enter your new campaign name: ";
 		}
 
 		@Override
-		public Result onSubmit(String campaignName) {
+		public Result<Object> onSubmit(String campaignName) {
 			transaction(t -> {
 				String query = "insert $campaign isa campaign, has name \"" + campaignName + "\";";
 				System.out.println("Executing Graql Query: " + query);
@@ -227,12 +192,12 @@ public class Queries {
 			}, TransactionMode.WRITE);
 
 			System.out.println("Success");
-			return Result.ok();
+			return new Result<>();
 		}
 	};
 
-	static Question chooseFromList(List<String> names, String question, Function<Integer, Result> onSubmit) {
-		return new MultipleChoiceQuestion() {
+	static <TResult> MultipleChoiceQuestion<TResult> chooseFromList(List<String> names, String question, Function<Integer, Result<TResult>> onSubmit) {
+		return new MultipleChoiceQuestion<TResult>() {
 			@Override
 			public Map<Integer, String> getChoices() {
 				return IntStream.range(0, names.size())
@@ -246,32 +211,32 @@ public class Queries {
 			}
 
 			@Override
-			public Result onSubmit(Integer selectedValue) {
+			public Result<TResult> onSubmit(Integer selectedValue) {
 				return onSubmit.apply(selectedValue);
 			}
 		};
 	}
 
-	static Question chooseCampaignToGetResearchFor(List<String> names) {
+	static Question<Integer, List<ResearchTask>> chooseCampaignToGetResearchFor(List<String> names) {
 		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
 			for (ResearchTask task : researchTasks) {
 				System.out.println(task.name + " [" + task.progressPercent + "% complete]");
 			}
-			return Result.ok();
+			return new Result<>(researchTasks);
 		});
 	}
 
-	static Question chooseCampaignToAdvanceResearchIn(List<String> names) {
+	static MultipleChoiceQuestion<Object> chooseCampaignToAdvanceResearchIn(List<String> names) {
 		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
-			return Result.ok(chooseTechToResearch(campaignName, researchTasks));
+			return Result.nextQuestion(chooseTechToResearch(campaignName, researchTasks));
 		});
 	}
 
-	static Question chooseTechToResearch(String campaignName, List<ResearchTask> researchTasks) {
+	static MultipleChoiceQuestion<Object> chooseTechToResearch(String campaignName, List<ResearchTask> researchTasks) {
 		return chooseFromList(researchTasks
 				.stream()
 				.map(rt -> rt.name)
@@ -295,7 +260,7 @@ public class Queries {
 			}, TransactionMode.WRITE);
 
 			System.out.println("Success");
-			return Result.ok();
+			return new Result<>();
 		});
 	}
 
@@ -308,12 +273,10 @@ public class Queries {
 					+ " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-begin true, has progress $progress;"
 					+ " get $research_project_name, $progress;";
 			System.out.println("Executing Graql Query: " + query);
-			t.execute((GraqlGet) parse(query)).forEach(result -> {
-				researchTasks.add(new ResearchTask(
-						result.get("research_project_name").asAttribute().value().toString(),
-						(double) result.get("progress").asAttribute().value()
-				));
-			});
+			t.execute((GraqlGet) parse(query)).forEach(result -> researchTasks.add(new ResearchTask(
+					result.get("research_project_name").asAttribute().value().toString(),
+					(double) result.get("progress").asAttribute().value()
+			)));
 		}, TransactionMode.READ);
 
 		return researchTasks;
@@ -328,18 +291,16 @@ public class Queries {
 					+ " (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $quantity;"
 					+ " get $item_name, $quantity;";
 			System.out.println("Executing Graql Query: " + query);
-			t.execute((GraqlGet) parse(query)).forEach(result -> {
-				inventory.add(new InventoryItem(
-						result.get("item_name").asAttribute().value().toString(),
-						((Long) result.get("quantity").asAttribute().value()).intValue()
-				));
-			});
+			t.execute((GraqlGet) parse(query)).forEach(result -> inventory.add(new InventoryItem(
+					result.get("item_name").asAttribute().value().toString(),
+					((Long) result.get("quantity").asAttribute().value()).intValue()
+			)));
 		}, TransactionMode.READ);
 
 		return inventory;
 	}
 
-	static Question chooseCampaignToViewInventoryFor(List<String> names) {
+	static MultipleChoiceQuestion<List<InventoryItem>> chooseCampaignToViewInventoryFor(List<String> names) {
 		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<InventoryItem> inventory = listInventory(campaignName)
@@ -353,37 +314,37 @@ public class Queries {
 					System.out.println(i.name + " x" + i.quantity);
 				}
 			}
-			return Result.ok();
+			return new Result<>(inventory);
 		});
 	}
 
-	static Question chooseCampaignToAcquireItemIn(List<String> names) {
+	static MultipleChoiceQuestion<Object> chooseCampaignToAcquireItemIn(List<String> names) {
 		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<InventoryItem> inventory = listInventory(campaignName);
-			return Result.ok(chooseItemToAcquire(campaignName, inventory));
+			return Result.nextQuestion(chooseItemToAcquire(campaignName, inventory));
 		});
 	}
 
-	static Question chooseItemToAcquire(String campaignName, List<InventoryItem> inventory) {
+	static MultipleChoiceQuestion<Object> chooseItemToAcquire(String campaignName, List<InventoryItem> inventory) {
 		return chooseFromList(inventory
 				.stream()
 				.map(i -> i.name + " [" + i.quantity + " owned]")
 				.collect(Collectors.toList()),"Choose an item to acquire", selectedKey -> {
 			InventoryItem item = inventory.get(selectedKey - 1);
-			return Result.ok(chooseNewItemQuantity(campaignName, item));
+			return Result.nextQuestion(chooseNewItemQuantity(campaignName, item));
 		});
 	}
 
-	static Question chooseNewItemQuantity(String campaignName, InventoryItem item) {
-		return new NumericInputQuestion() {
+	static NumericInputQuestion<Object> chooseNewItemQuantity(String campaignName, InventoryItem item) {
+		return new NumericInputQuestion<Object>() {
 			@Override
 			public String getDescription() {
 				return "How many " + item.name + " would you like to have? (you currently have " + item.quantity + ")";
 			}
 
 			@Override
-			public Result onSubmit(Number input) {
+			public Result<Object> onSubmit(Number input) {
 				transaction(t -> {
 					String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 							+ " $item isa item, has name \"" + item.name + "\";"
@@ -402,12 +363,12 @@ public class Queries {
 				}, TransactionMode.WRITE);
 
 				System.out.println("Success");
-				return Result.ok();
+				return new Result<>();
 			}
 		};
 	}
 
-	static Question chooseTechToComputeRequirementsFor(List<String> techs) {
+	static MultipleChoiceQuestion<Set<String>> chooseTechToComputeRequirementsFor(List<String> techs) {
 		return chooseFromList(techs,
 				"Which technology would you like to compute the required techs for?", selectedKey -> {
 			String tech = techs.get(selectedKey - 1);
@@ -419,15 +380,13 @@ public class Queries {
 						+ " (research-to-begin: $tech, required-tech: $required-tech) isa tech-requirement-to-begin-research;"
 						+ " get $required_tech_name;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlGet) parse(query)).forEach(result -> {
-					requiredTechs.add(
-							result.get("required_tech_name").asAttribute().value().toString()
-					);
-				});
+				t.execute((GraqlGet) parse(query)).forEach(result -> requiredTechs.add(
+						result.get("required_tech_name").asAttribute().value().toString()
+				));
 			}, TransactionMode.READ);
 			System.out.println(tech + " requires [" + String.join(", ", requiredTechs) + "]");
 
-			return Result.ok();
+			return new Result<>(requiredTechs);
 		});
 	}
 
