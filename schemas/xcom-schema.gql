@@ -237,6 +237,14 @@ when {
 	$task has progress 0;
 };
 
+research-tech-requirements-are-transitive sub rule,
+when {
+	(research-to-begin: $a, required-tech: $b) isa tech-requirement-to-begin-research;
+	(research-to-begin: $b, required-tech: $c) isa tech-requirement-to-begin-research;
+}, then {
+	(research-to-begin: $a, required-tech: $c) isa tech-requirement-to-begin-research;
+};
+
 # Queries (for visualization; remove later)
 
 # Fetch all research projects currently available to work on, and their current progress % in Campaign 1

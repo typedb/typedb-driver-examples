@@ -1,6 +1,9 @@
 package grakn.example.xcom;
 
 import grakn.client.GraknClient;
+import grakn.client.answer.Answer;
+import grakn.client.answer.Explanation;
+import grakn.client.concept.Rule;
 import graql.lang.query.GraqlDelete;
 import graql.lang.query.GraqlGet;
 import graql.lang.query.GraqlInsert;
@@ -123,6 +126,7 @@ public class Queries {
 		private final int ADVANCE_RESEARCH = 3;
 		private final int VIEW_INVENTORY = 4;
 		private final int ACQUIRE_ITEM = 5;
+		private final int COMPUTE_TECH_REQUIREMENTS = 6;
 
 		@Override
 		public String getDescription() {
@@ -137,6 +141,7 @@ public class Queries {
 			choices.put(ADVANCE_RESEARCH, "Research a technology");
 			choices.put(VIEW_INVENTORY, "View inventory");
 			choices.put(ACQUIRE_ITEM, "Acquire an item");
+			choices.put(COMPUTE_TECH_REQUIREMENTS, "Compute tech requirements");
 			return choices;
 		}
 
@@ -176,6 +181,19 @@ public class Queries {
 				case ACQUIRE_ITEM:
 					return Result.ok(chooseCampaignToAcquireItemIn(campaignNames));
 
+				case COMPUTE_TECH_REQUIREMENTS:
+					List<String> techs = new ArrayList<>();
+					transaction(t -> {
+						String query = "match $tech isa research-project, has name $name; get $name;";
+						System.out.println("Executing Graql Query: " + query);
+						t.execute((GraqlGet) parse(query)).forEach(result -> {
+							techs.add(
+									result.get("name").asAttribute().value().toString()
+							);
+						});
+					}, TransactionMode.READ);
+					return Result.ok(chooseTechToComputeRequirementsFor(techs));
+
 				default:
 					return Result.invalid();
 			}
@@ -213,7 +231,7 @@ public class Queries {
 		}
 	};
 
-	static Question chooseFromList(List<String> names, String entityType, Function<Integer, Result> onSubmit) {
+	static Question chooseFromList(List<String> names, String question, Function<Integer, Result> onSubmit) {
 		return new MultipleChoiceQuestion() {
 			@Override
 			public Map<Integer, String> getChoices() {
@@ -224,7 +242,7 @@ public class Queries {
 
 			@Override
 			public String getDescription() {
-				return "Choose a " + entityType + ":";
+				return question;
 			}
 
 			@Override
@@ -235,7 +253,7 @@ public class Queries {
 	}
 
 	static Question chooseCampaignToGetResearchFor(List<String> names) {
-		return chooseFromList(names, "campaign", selectedKey -> {
+		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
 			for (ResearchTask task : researchTasks) {
@@ -246,7 +264,7 @@ public class Queries {
 	}
 
 	static Question chooseCampaignToAdvanceResearchIn(List<String> names) {
-		return chooseFromList(names, "campaign", selectedKey -> {
+		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<ResearchTask> researchTasks = listAvailableResearchTasks(campaignName);
 			return Result.ok(chooseTechToResearch(campaignName, researchTasks));
@@ -257,7 +275,7 @@ public class Queries {
 		return chooseFromList(researchTasks
 				.stream()
 				.map(rt -> rt.name)
-				.collect(Collectors.toList()),"technology", selectedKey -> {
+				.collect(Collectors.toList()),"Choose a technology to research", selectedKey -> {
 			ResearchTask tech = researchTasks.get(selectedKey - 1);
 			transaction(t -> {
 				String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
@@ -322,7 +340,7 @@ public class Queries {
 	}
 
 	static Question chooseCampaignToViewInventoryFor(List<String> names) {
-		return chooseFromList(names, "campaign", selectedKey -> {
+		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<InventoryItem> inventory = listInventory(campaignName)
 					.stream()
@@ -340,7 +358,7 @@ public class Queries {
 	}
 
 	static Question chooseCampaignToAcquireItemIn(List<String> names) {
-		return chooseFromList(names, "campaign", selectedKey -> {
+		return chooseFromList(names, "Choose a campaign", selectedKey -> {
 			String campaignName = names.get(selectedKey - 1);
 			List<InventoryItem> inventory = listInventory(campaignName);
 			return Result.ok(chooseItemToAcquire(campaignName, inventory));
@@ -351,7 +369,7 @@ public class Queries {
 		return chooseFromList(inventory
 				.stream()
 				.map(i -> i.name + " [" + i.quantity + " owned]")
-				.collect(Collectors.toList()),"item", selectedKey -> {
+				.collect(Collectors.toList()),"Choose an item to acquire", selectedKey -> {
 			InventoryItem item = inventory.get(selectedKey - 1);
 			return Result.ok(chooseNewItemQuantity(campaignName, item));
 		});
@@ -389,6 +407,30 @@ public class Queries {
 		};
 	}
 
+	static Question chooseTechToComputeRequirementsFor(List<String> techs) {
+		return chooseFromList(techs,
+				"Which technology would you like to compute the required techs for?", selectedKey -> {
+			String tech = techs.get(selectedKey - 1);
+			Set<String> requiredTechs = new HashSet<>();
+			transaction(t -> {
+				String query = "match"
+						+ " $tech isa research-project, has name \"" + tech + "\";"
+						+ " $required-tech isa research-project, has name $required_tech_name;"
+						+ " (research-to-begin: $tech, required-tech: $required-tech) isa tech-requirement-to-begin-research;"
+						+ " get $required_tech_name;";
+				System.out.println("Executing Graql Query: " + query);
+				t.execute((GraqlGet) parse(query)).forEach(result -> {
+					requiredTechs.add(
+							result.get("required_tech_name").asAttribute().value().toString()
+					);
+				});
+			}, TransactionMode.READ);
+			System.out.println(tech + " requires [" + String.join(", ", requiredTechs) + "]");
+
+			return Result.ok();
+		});
+	}
+
 	static void transaction(Consumer<GraknClient.Transaction> queries, final TransactionMode mode) {
 		GraknClient client = new GraknClient("localhost:48555");
 		GraknClient.Session session = client.session(keyspaceName);
@@ -404,77 +446,5 @@ public class Queries {
 		transaction.close();
 		session.close();
 		client.close();
-	}
-
-	/*// GRAQL QUERY EXAMPLES
-	static List<QueryExample> initialiseQueryExamples() {
-		List<QueryExample> queryExamples = new ArrayList<>();
-
-		queryExamples.add(new QueryExample("Since September 14th, which customers called the person with phone number +86 921 547 9004?") {
-			@Override
-			public <T> T executeQuery(GraknClient.Transaction transaction) {
-				printToLog("Question: ", this.description);
-
-				List<String> queryAsList = Arrays.asList(
-						"match",
-						"  $customer isa person, has phone-number $phone-number;",
-						"  $company isa company, has name \"Telecom\";",
-						"  (customer: $customer, provider: $company) isa contract;",
-						"  $target isa person, has phone-number \"+86 921 547 9004\";",
-						"  (caller: $customer, callee: $target) isa call, has started-at $started-at;",
-						"  $min-date == 2018-09-14T17:18:49; $started-at > $min-date;",
-						"get $phone-number;"
-				);
-
-				printToLog("Query:", String.join("\n", queryAsList));
-				String query = String.join("", queryAsList);
-
-				List<String> result = new ArrayList<>();
-				transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
-					result.add(
-							answer.get("phone-number").asAttribute().value().toString()
-					);
-				});
-
-				printToLog("Result: ", String.join(", ", result));
-
-				return (T) result;
-			}
-		});
-
-		// TO ADD A NEW QUERY EXAMPLE:
-//        queryExamples.add(new QueryExample("question goes here") {
-//            @Override
-//            void executeQuery(Grakn.Transaction tx) {
-//                printToLog("Question: ", this.question);
-//
-//                // queries are written as a list for better readability
-//                List<String> queryAsList = Arrays.asList(
-//                        "each line;",
-//                        "  as an element;",
-//                        "ends with semicolon"
-//                );
-//
-//                // join the query list elements with a new line before printing
-//                printToLog("Query:", String.join("\n", queryAsList));
-//                // join the query list elements to obtain the quer as a string to be executed
-//                String query = String.join("", queryAsList);
-//
-//                List<String> result = new ArrayList<>();
-//                tx.graql().parse(query).execute().forEach(answer -> {
-//                    // retrieve answers
-//                });
-//                printToLog("Result: ", String.join(", ", result));
-//            }
-//        });
-
-		return queryExamples;
-	}*/
-
-	static void printToLog(String title, String content) {
-		System.out.println(title);
-		System.out.println();
-		System.out.println(content);
-		System.out.println();
 	}
 }
