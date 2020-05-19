@@ -103,23 +103,6 @@ item-ownership sub relation,
 	relates owned-item,
 	has quantity;
 
-# Test data (for visualization purposes, move out of this file later)
-
-# insert
-
-# # Static data
-# $sectoid_autopsy isa research-project, has name "Sectoid Autopsy";
-# $alien_biotech isa research-project, has name "Alien Biotech";
-# $sectoid_corpse isa item, has name "Sectoid Corpse";
-# (research-to-begin: $sectoid_autopsy, required-tech: $alien_biotech) isa tech-requirement-to-begin-research;
-# (research-to-begin: $sectoid_autopsy, consumes-resource: $sectoid_corpse) isa resource-cost-to-begin-research, has quantity-consumed 1;
-
-# # Dynamic data
-# $campaign1 isa campaign, has name "Campaign 1";
-# (campaign-with-tasks: $campaign1, research-task: $alien_biotech) isa campaign-research-task, has progress 0;
-# (campaign-with-tasks: $campaign1, research-task: $sectoid_autopsy) isa campaign-research-task, has progress 0;
-# (item-owner: $campaign1, owned-item: $sectoid_corpse) isa item-ownership, has quantity 0;
-
 # Rules
 
 ## campaign task
@@ -244,12 +227,3 @@ when {
 }, then {
 	(research-to-begin: $a, required-tech: $c) isa tech-requirement-to-begin-research;
 };
-
-# Queries (for visualization; remove later)
-
-# Fetch all research projects currently available to work on, and their current progress % in Campaign 1
-# match
-# 	$campaign isa campaign, has name = "Campaign 1";
-# 	$research_project isa research-project;
-# 	($campaign, research-task: $research_project) isa campaign-research-task, has can-proceed true, has progress $progress;
-# get $project, $research_project;
