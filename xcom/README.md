@@ -16,7 +16,7 @@ One use case for this data in-game is: we want to display a list of 'available r
 
 | ![research screen](images/xcom2-research-screen.jpg?raw=true) |
 |:--:|
-| *There are currently 5 research projects available to work on.* |
+| ***There are currently 5 research projects available to work on.*** |
 
 Another potential use-case outside the game might be: a player wants to 'beeline' (i.e: rush) towards a certain critical tech, because they know they need it to build a powerful weapon. In this case, we can ask Grakn: what is the minimal set of techs required in order to unlock the Storm Gun?
 
@@ -24,7 +24,7 @@ Storm Gun requires Beam Weapons, which requires Elerium and Magnetic Weapons; no
 
 | ![tech tree](images/tech-tree-mod.jpg?raw=true) |
 |:--:|
-| *Instead of using Grakn, we could install a mod. But that's just not quite as cool, is it?* |
+| ***Instead of using Grakn, we could install a mod. But that's just not quite as cool, is it?*** |
 
 ### Quickstart
 1. Install the latest version of [Grakn](https://github.com/graknlabs/grakn/releases) that is compatible with the latest version of Client Java (see the [dependency table](http://dev.grakn.ai/docs/client-api/java#dependencies))
