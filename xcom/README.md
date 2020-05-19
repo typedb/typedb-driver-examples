@@ -14,9 +14,13 @@ In XCOM 2, technology must be researched to unlock new weapons and equipment. Fo
 
 One use case for this data in-game is: we want to display a list of 'available research projects' - that is, the projects that are not completed, and for which we have met all of the prerequisites. We can ask Grakn: given the current state of the game (i.e: your current tech level and inventory), which techs are currently available for research?
 
+![research screen](images/research-screen.jpg?raw=true "There are currently 5 research projects available to work on.")
+
 Another potential use-case outside the game might be: a player wants to 'beeline' (i.e: rush) towards a certain critical tech, because they know they need it to build a powerful weapon. In this case, we can ask Grakn: what is the minimal set of techs required in order to unlock the Storm Gun?
 
 Storm Gun requires Beam Weapons, which requires Elerium and Magnetic Weapons; now, what do each of those require... You can certainly find out the answer by browsing the XCOM Wiki, but for a complex example, you may quickly find yourself getting lost in the tree of prerequisite techs. Enter Grakn, which, when the appropriate schema is loaded in, is able to fetch the correct answer in one simple query.
+
+![tech tree](images/tech-tree.jpg?raw=true "Instead of using Grakn, we could install a mod. But that's just not quite as cool, is it?")
 
 ### Quickstart
 1. Install the latest version of [Grakn](https://github.com/graknlabs/grakn/releases) that is compatible with the latest version of Client Java (see the [dependency table](http://dev.grakn.ai/docs/client-api/java#dependencies))
