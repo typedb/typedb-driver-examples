@@ -5,6 +5,8 @@ import graql.lang.query.GraqlDelete;
 import graql.lang.query.GraqlGet;
 import graql.lang.query.GraqlInsert;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,9 +33,29 @@ public class Queries {
 	}
 
 	static String keyspaceName = "xcom";
+	public static List<Result<?>> answers = new ArrayList<>();
+
+	static final int START_NEW_CAMPAIGN = 1;
+	static final int GET_AVAILABLE_RESEARCH = 2;
+	static final int ADVANCE_RESEARCH = 3;
+	static final int VIEW_INVENTORY = 4;
+	static final int ACQUIRE_ITEM = 5;
+	static final int LIST_ALL_TECHS = 6;
+	static final int COMPUTE_TECH_REQUIREMENTS = 7;
+	static final int LIST_ALL_ITEMS = 8;
 
 	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
+		askQuestions(args);
+	}
+
+	public static void askQuestions(String[] args) {
+		Scanner scanner;
+		if (args != null && args.length > 0) {
+			scanner = new Scanner(new ByteArrayInputStream(String.join(System.lineSeparator(),
+					Arrays.asList(args)).getBytes(StandardCharsets.UTF_8)));
+		} else {
+			scanner = new Scanner(System.in);
+		}
 
 		System.out.print("Hello, Commander.");
 
@@ -44,45 +66,48 @@ public class Queries {
 			Result<?> result;
 			System.out.println();
 			System.out.print(question.getDescription());
-            if (question instanceof MultipleChoiceQuestion) {
-            	MultipleChoiceQuestion<?> multipleChoiceQuestion = (MultipleChoiceQuestion<?>) question;
-            	System.out.println("\n");
-	            for (Map.Entry<Integer, String> option : multipleChoiceQuestion.getChoices().entrySet()) {
-		            System.out.println(option.getKey() + ": " + option.getValue());
-	            }
-	            System.out.print("choose a number (enter 0 to exit): ");
-	            try {
-		            int input = scanner.nextInt();
-		            if (input == 0) {
-			            break;
-		            }
-		            result = multipleChoiceQuestion.onSubmit(input);
-	            } catch (InputMismatchException e) {
-		            scanner.nextLine();
-		            System.out.println("\nPlease enter a number!");
-		            continue;
-	            }
-            } else if (question instanceof TextInputQuestion) {
-            	TextInputQuestion<?> textInputQuestion = (TextInputQuestion<?>) question;
-                String input = scanner.next();
-                result = textInputQuestion.onSubmit(input);
-            } else if (question instanceof NumericInputQuestion) {
-            	NumericInputQuestion<?> numericInputQuestion = (NumericInputQuestion<?>) question;
-            	double input = scanner.nextDouble();
-            	result = numericInputQuestion.onSubmit(input);
-            } else {
-            	throw new UnsupportedOperationException("question is not a supported question type!");
-            }
+			if (question instanceof MultipleChoiceQuestion) {
+				MultipleChoiceQuestion<?> multipleChoiceQuestion = (MultipleChoiceQuestion<?>) question;
+				System.out.println("\n");
+				for (Map.Entry<Integer, String> option : multipleChoiceQuestion.getChoices().entrySet()) {
+					System.out.println(option.getKey() + ": " + option.getValue());
+				}
+				System.out.print("choose a number (enter 0 to exit): ");
+				try {
+					int input = scanner.nextInt();
+					if (input == 0) {
+						break;
+					}
+					scanner.nextLine();
+					result = multipleChoiceQuestion.onSubmit(input);
+				} catch (InputMismatchException e) {
+					scanner.nextLine();
+					System.out.println("\nPlease enter a number!");
+					continue;
+				}
+			} else if (question instanceof TextInputQuestion) {
+				TextInputQuestion<?> textInputQuestion = (TextInputQuestion<?>) question;
+				String input = scanner.nextLine();
+				result = textInputQuestion.onSubmit(input);
+			} else if (question instanceof NumericInputQuestion) {
+				NumericInputQuestion<?> numericInputQuestion = (NumericInputQuestion<?>) question;
+				double input = scanner.nextDouble();
+				scanner.nextLine();
+				result = numericInputQuestion.onSubmit(input);
+			} else {
+				throw new UnsupportedOperationException("question is not a supported question type!");
+			}
 
 			if (!result.isValid()) {
-				scanner.nextLine();
 				System.out.println("\nPlease enter a valid value!");
 				continue;
 			}
 			if (result.getQuestion() != null) {
-				scanner.nextLine();
 				questions.push(result.getQuestion());
 				continue;
+			}
+			if (result.getEntity() != null) {
+				answers.add(result);
 			}
 			questions.clear();
 			questions.push(initialQuestion);
@@ -90,13 +115,6 @@ public class Queries {
 	}
 
 	static Question<Integer, Object> initialQuestion = new MultipleChoiceQuestion<Object>() {
-		private final int START_NEW_CAMPAIGN = 1;
-		private final int GET_AVAILABLE_RESEARCH = 2;
-		private final int ADVANCE_RESEARCH = 3;
-		private final int VIEW_INVENTORY = 4;
-		private final int ACQUIRE_ITEM = 5;
-		private final int COMPUTE_TECH_REQUIREMENTS = 6;
-
 		@Override
 		public String getDescription() {
 			return "What would you like to do?";
@@ -110,13 +128,17 @@ public class Queries {
 			choices.put(ADVANCE_RESEARCH, "Research a technology");
 			choices.put(VIEW_INVENTORY, "View inventory");
 			choices.put(ACQUIRE_ITEM, "Acquire an item");
-			choices.put(COMPUTE_TECH_REQUIREMENTS, "Compute tech requirements");
+			choices.put(LIST_ALL_TECHS, "List all techs");
+			choices.put(COMPUTE_TECH_REQUIREMENTS, "Compute requirements for a tech");
+			choices.put(LIST_ALL_ITEMS, "List all items");
 			return choices;
 		}
 
 		@Override
 		public Result<Object> onSubmit(Integer option) {
 			List<String> campaignNames = new ArrayList<>();
+			List<String> techs = new ArrayList<>();
+			List<String> items = new ArrayList<>();
 
 			switch (option) {
 				case GET_AVAILABLE_RESEARCH:
@@ -130,6 +152,28 @@ public class Queries {
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
+					break;
+
+				case LIST_ALL_TECHS:
+				case COMPUTE_TECH_REQUIREMENTS:
+					transaction(t -> {
+						String query = "match $tech isa research-project, has name $name; get $name;";
+						System.out.println("Executing Graql Query: " + query);
+						t.execute((GraqlGet) parse(query)).forEach(result -> techs.add(
+								result.get("name").asAttribute().value().toString()
+						));
+					}, TransactionMode.READ);
+					break;
+
+				case LIST_ALL_ITEMS:
+					transaction(t -> {
+						String query = "match $item isa item, has name $name; get $name;";
+						System.out.println("Executing Graql Query: " + query);
+						t.execute((GraqlGet) parse(query)).forEach(result -> items.add(
+								result.get("name").asAttribute().value().toString()
+						));
+					}, TransactionMode.READ);
+					break;
 			}
 
 			switch (option) {
@@ -148,16 +192,22 @@ public class Queries {
 				case ACQUIRE_ITEM:
 					return Result.nextQuestion(chooseCampaignToAcquireItemIn(campaignNames));
 
+				case LIST_ALL_TECHS:
+					System.out.println("\n");
+					for (int key = 1; key <= techs.size(); key++) {
+						System.out.println(key + ": " + techs.get(key - 1));
+					}
+					return new Result<>(techs);
+
 				case COMPUTE_TECH_REQUIREMENTS:
-					List<String> techs = new ArrayList<>();
-					transaction(t -> {
-						String query = "match $tech isa research-project, has name $name; get $name;";
-						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).forEach(result -> techs.add(
-								result.get("name").asAttribute().value().toString()
-						));
-					}, TransactionMode.READ);
 					return Result.nextQuestion(chooseTechToComputeRequirementsFor(techs));
+
+				case LIST_ALL_ITEMS:
+					System.out.println("\n");
+					for (int key = 1; key <= items.size(); key++) {
+						System.out.println(key + ": " + items.get(key - 1));
+					}
+					return new Result<>(items);
 
 				default:
 					return Result.invalid();
@@ -326,14 +376,37 @@ public class Queries {
 		});
 	}
 
-	static MultipleChoiceQuestion<Object> chooseItemToAcquire(String campaignName, List<InventoryItem> inventory) {
-		return chooseFromList(inventory
-				.stream()
-				.map(i -> i.name + " [" + i.quantity + " owned]")
-				.collect(Collectors.toList()),"Choose an item to acquire", selectedKey -> {
-			InventoryItem item = inventory.get(selectedKey - 1);
-			return Result.nextQuestion(chooseNewItemQuantity(campaignName, item));
-		});
+	static TextInputQuestion<Object> chooseItemToAcquire(String campaignName, List<InventoryItem> inventory) {
+		return new TextInputQuestion<Object>() {
+			@Override
+			public String getDescription() {
+				final StringBuilder sb = new StringBuilder();
+				sb.append("Choose an item to acquire (type item name or key)\n");
+				for (int key = 1; key <= inventory.size(); key++) {
+					InventoryItem i = inventory.get(key - 1);
+					sb.append(key + ": " + i.name + " [" + i.quantity + " owned]\n");
+				}
+				return sb.toString();
+			}
+
+			@Override
+			public Result<Object> onSubmit(String s) {
+				InventoryItem item;
+				try {
+					int selectedKey = Integer.parseInt(s);
+					item = inventory.get(selectedKey - 1);
+				} catch (NumberFormatException ex) {
+					item = inventory.stream()
+							.filter(i -> i.name.equals(s))
+							.findAny()
+							.orElse(null);
+				}
+				if (item == null) {
+					return Result.invalid();
+				}
+				return Result.nextQuestion(chooseNewItemQuantity(campaignName, item));
+			}
+		};
 	}
 
 	static NumericInputQuestion<Object> chooseNewItemQuantity(String campaignName, InventoryItem item) {
