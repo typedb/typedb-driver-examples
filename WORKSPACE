@@ -48,7 +48,7 @@ bazel_rules_docker()
 bazel_rules_nodejs()
 bazel_rules_python()
 
-load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+load("@rules_python//python:pip.bzl", "pip_repositories", "pip3_import")
 pip_repositories()
 
 
@@ -56,7 +56,7 @@ pip_repositories()
 # Load Build Tools Dependencies #
 #################################
 
-pip_import(
+pip3_import(
     name = "graknlabs_build_tools_ci_pip",
     requirements = "@graknlabs_build_tools//ci:requirements.txt",
 )
@@ -64,7 +64,7 @@ load("@graknlabs_build_tools_ci_pip//:requirements.bzl",
 graknlabs_build_tools_ci_pip_install = "pip_install")
 graknlabs_build_tools_ci_pip_install()
 
-pip_import(
+pip3_import(
     name = "graknlabs_bazel_distribution_pip",
     requirements = "@graknlabs_bazel_distribution//pip:requirements.txt",
 )
@@ -98,7 +98,7 @@ install_bazel_dependencies()
 
 # for Python
 
-pip_import(
+pip3_import(
     name = "phone_calls_pip",
     requirements = "//phone_calls/python:requirements.txt"
 )
@@ -167,7 +167,7 @@ graknlabs_graql_maven_dependencies()
 # Load Client Python Dependencies #
 ###################################
 
-pip_import(
+pip3_import(
     name = "graknlabs_client_python_pip",
     requirements = "@graknlabs_client_python//:requirements.txt",
 )
