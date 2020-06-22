@@ -64,7 +64,7 @@ java_test(
         ":queries-lib"
     ],
     classpath_resources = [
-        "@graknlabs_grakn_core//test-integration/resources:logback-test",
+        "@graknlabs_grakn_core//test/resources:logback-test",
     ],
     data = [
         "//schemas:phone-calls-schema.gql"
@@ -82,7 +82,7 @@ java_binary(
         "//dependencies/maven/artifacts/com/univocity:univocity-parsers"
     ],
     classpath_resources = [
-        "@graknlabs_grakn_core//test-integration/resources:logback-test",
+        "@graknlabs_grakn_core//test/resources:logback-test",
     ],
     data = [
         "//datasets:phone-calls-data-csv"
@@ -100,7 +100,7 @@ java_binary(
         "//dependencies/maven/artifacts/com/google/code/gson:gson",
     ],
     classpath_resources = [
-        "@graknlabs_grakn_core//test-integration/resources:logback-test",
+        "@graknlabs_grakn_core//test/resources:logback-test",
     ],
     data = [
         "//datasets:phone-calls-data-json"
@@ -118,7 +118,7 @@ java_binary(
         "//dependencies/maven/artifacts/javax/xml/stream:stax-api"
     ],
     classpath_resources = [
-        "@graknlabs_grakn_core//test-integration/resources:logback-test",
+        "@graknlabs_grakn_core//test/resources:logback-test",
     ],
     data = [
         "//datasets:phone-calls-data-xml"
@@ -134,6 +134,6 @@ java_binary(
         "@graknlabs_graql//java:graql",
     ],
     classpath_resources = [
-        "@graknlabs_grakn_core//test-integration/resources:logback-test",
+        "@graknlabs_grakn_core//test/resources:logback-test",
     ]
 )
