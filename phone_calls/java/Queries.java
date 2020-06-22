@@ -90,7 +90,7 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 List<String> result = new ArrayList<>();
-                transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
+                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
                     result.add(
                             answer.get("phone-number").asAttribute().value().toString()
                     );
@@ -125,7 +125,7 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 List<String> result = new ArrayList<>();
-                transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
+                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
                     result.add(
                             answer.get("phone-number").asAttribute().value().toString()
                     );
@@ -156,7 +156,7 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 Set<String> result = new HashSet<>();
-                transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
+                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
                     result.add(
                             answer.get("phone-number").asAttribute().value().toString()
                     );
@@ -191,7 +191,7 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 Set<String> result = new HashSet<>();
-                transaction.execute((GraqlGet) parse(query)).forEach(answer -> {
+                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
                     result.add(answer.get("phone-number-a").asAttribute().value().toString());
                     result.add(answer.get("phone-number-b").asAttribute().value().toString());
                 });
@@ -221,7 +221,7 @@ public class Queries {
 
                 List<Float> result = new ArrayList<>();
 
-                List<Numeric> firstAnswers = transaction.execute((GraqlGet.Aggregate) parse(firstQuery));
+                List<Numeric> firstAnswers = transaction.execute((GraqlGet.Aggregate) parse(firstQuery)).get();
                 float fisrtResult = 0;
                 if (firstAnswers.size() > 0) {
                     fisrtResult = firstAnswers.get(0).number().floatValue();
@@ -243,7 +243,7 @@ public class Queries {
                 String secondQuery = String.join("", secondQueryAsList);
 
                 float secondResult = 0;
-                List<Numeric> secondAnswers = transaction.execute((GraqlGet.Aggregate) parse(secondQuery));
+                List<Numeric> secondAnswers = transaction.execute((GraqlGet.Aggregate) parse(secondQuery)).get();
                 if (secondAnswers.size() > 0) {
                     secondResult = secondAnswers.get(0).number().floatValue();
                     result.add(secondResult);

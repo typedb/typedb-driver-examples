@@ -1,6 +1,6 @@
 exports_files(["requirements.txt"])
 
-load("@io_bazel_rules_python//python:python.bzl", "py_library", "py_test")
+load("@rules_python//python:python.bzl", "py_library", "py_test")
 
 load("@graknlabs_client_python_pip//:requirements.bzl",
        graknlabs_client_python_requirement = "requirement")

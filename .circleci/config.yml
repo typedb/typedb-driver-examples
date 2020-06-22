@@ -41,7 +41,8 @@ commands:
 
 jobs:
   build:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
       - install-bazel-linux-rbe
@@ -50,7 +51,8 @@ jobs:
           command: bazel build //...
 
   test-phone-calls-java:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
       - install-bazel-linux-rbe
@@ -60,7 +62,8 @@ jobs:
 
 
   test-phone-calls-nodejs:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
       - install-bazel-linux-rbe
@@ -70,7 +73,8 @@ jobs:
       - run: bazel test //phone_calls/nodejs:test --test_output=errors
 
   test-phone-calls-python:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
       - install-bazel-linux-rbe
@@ -79,7 +83,8 @@ jobs:
       - run: bazel test //phone_calls/python:test --test_output=errors
 
   test-tube-network:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
       - install-bazel-linux-rbe
