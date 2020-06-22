@@ -15,19 +15,19 @@
 define
 
 identifier sub attribute,
-	datatype string;
+	value string;
 naptan-id sub attribute,
-	datatype string;
+	value string;
 name sub attribute,
-	datatype string;
+	value string;
 lat sub attribute,
-	datatype double;
+	value double;
 lon sub attribute,
-	datatype double;
+	value double;
 duration sub attribute,
-	datatype double;
+	value double;
 distance sub attribute,
-	datatype double;
+	value double;
 
 station sub entity,
 	has naptan-id,
