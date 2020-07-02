@@ -4,8 +4,8 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/com/univocity:univocity-parsers"
+        "@maven//:org_sharegov_mjson",
+        "@maven//:com_univocity_univocity_parsers"
     ],
     data = [
         "//datasets:phone-calls-data-csv"
@@ -18,8 +18,8 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/com/google/code/gson:gson",
+        "@maven//:org_sharegov_mjson",
+        "@maven//:com_google_code_gson_gson",
     ],
     data = [
         "//datasets:phone-calls-data-json"
@@ -32,8 +32,8 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/javax/xml/stream:stax-api"
+        "@maven//:org_sharegov_mjson",
+        "@maven//:javax_xml_stream_stax_api"
     ],
     data = [
         "//datasets:phone-calls-data-xml"
@@ -78,8 +78,8 @@ java_binary(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/com/univocity:univocity-parsers"
+        "@maven//:org_sharegov_mjson",
+        "@maven//:com_univocity_univocity_parsers"
     ],
     classpath_resources = [
         "@graknlabs_grakn_core//test/resources:logback-test",
@@ -96,8 +96,8 @@ java_binary(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/com/google/code/gson:gson",
+        "@maven//:org_sharegov_mjson",
+        "@maven//:com_google_code_gson_gson",
     ],
     classpath_resources = [
         "@graknlabs_grakn_core//test/resources:logback-test",
@@ -114,8 +114,8 @@ java_binary(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
-        "//dependencies/maven/artifacts/org/sharegov:mjson",
-        "//dependencies/maven/artifacts/javax/xml/stream:stax-api"
+        "@maven//:org_sharegov_mjson",
+        "@maven//:javax_xml_stream_stax_api"
     ],
     classpath_resources = [
         "@graknlabs_grakn_core//test/resources:logback-test",

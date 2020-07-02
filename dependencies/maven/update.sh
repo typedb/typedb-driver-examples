@@ -19,9 +19,9 @@
 # Script for updating Maven dependencies after the dependency list in //dependencies/maven/dependencies.yaml.
 
 [[ $(readlink $0) ]] && path=$(readlink $0) || path=$0
-GRAKN_CORE_HOME=$(cd "$(dirname "${path}")" && pwd -P)/../../
-pushd "$GRAKN_CORE_HOME" > /dev/null
+HOME=$(cd "$(dirname "${path}")" && pwd -P)/../../
+pushd "$HOME" > /dev/null
 
-bazel run //dependencies/tools:bazel-deps -- generate -r $GRAKN_CORE_HOME -s dependencies/maven/dependencies.bzl -d dependencies/maven/dependencies.yaml
+bazel run @graknlabs_dependencies//library/maven:update
 
 popd > /dev/null

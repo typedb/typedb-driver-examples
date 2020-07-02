@@ -199,8 +199,7 @@ graknlabs_client_python_pip_install()
 # Load @graknlabs_examples #
 ############################
 # for Java
-load("//dependencies/maven:dependencies.bzl", "maven_dependencies")
-maven_dependencies()
+load("@graknlabs_examples//dependencies/maven:artifacts.bzl", graknlabs_examples_artifacts = "artifacts")
 
 # for Node.js
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
@@ -228,7 +227,8 @@ phone_calls_pip_install()
 maven(
     graknlabs_graql_artifacts +
     graknlabs_protocol_artifacts +
-    graknlabs_client_java_artifacts
+    graknlabs_client_java_artifacts +
+    graknlabs_examples_artifacts
 )
 
 # ################################
