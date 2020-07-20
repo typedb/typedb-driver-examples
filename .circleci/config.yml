@@ -18,23 +18,25 @@
 
 version: 2.1
 commands:
-  install-bazel-linux-rbe:
+  install-bazel:
     steps:
-      - run: curl -OL https://raw.githubusercontent.com/graknlabs/build-tools/master/ci/install-bazel-linux.sh
-      - run: bash ./install-bazel-linux.sh && rm ./install-bazel-linux.sh
-      - run: curl -OL https://raw.githubusercontent.com/graknlabs/build-tools/master/ci/install-bazel-rbe.sh
-      - run: bash ./install-bazel-rbe.sh && rm ./install-bazel-rbe.sh
+      - run: curl -OL https://raw.githubusercontent.com/graknlabs/dependencies/master/tool/bazelinstall/linux.sh
+      - run: bash ./linux.sh && rm ./linux.sh
+      - run: curl -OL https://raw.githubusercontent.com/graknlabs/dependencies/master/tool/bazelinstall/rbe.sh
+      - run: bash ./rbe.sh && rm ./rbe.sh
 
-  run-bazel-rbe:
+  run-bazel:
     parameters:
       command:
-        type: string
+          type: string
     steps:
-      - run: bazel run @graknlabs_build_tools//ci:run-bazel-rbe -- << parameters.command >>
+      - run:
+          command: bazel run @graknlabs_dependencies//tool/bazelrun:rbe -- << parameters.command >>
+          no_output_timeout: 120m
 
-  run-grakn-server:
+  run-grakn:
     steps:
-      - run-bazel-rbe:
+      - run-bazel:
           command: bazel build @graknlabs_grakn_core//:assemble-linux-targz
       - run: mkdir dist && tar -xvzf bazel-bin/external/graknlabs_grakn_core/grakn-core-all-linux.tar.gz -C ./dist/
       - run: nohup ./dist/grakn-core-all-linux/grakn server start
@@ -45,19 +47,28 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
-      - run-bazel-rbe:
+      - run-bazel:
           command: bazel build //...
+      - run:
+          name: Verify dependencies/maven/artifacts.snapshot
+          command: |
+            dependencies/maven/update.sh
+            git diff --exit-code dependencies/maven/artifacts.snapshot
+      - run:
+          command: bazel run @graknlabs_dependencies//tool/unuseddeps:unused-deps -- list
+          no_output_timeout: 30m
+
 
   test-phone-calls-java:
     machine:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
-      - run-grakn-server
+      - run-grakn
       - run: bazel test //phone_calls/java:test --test_output=errors
 
 
@@ -66,9 +77,9 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
-      - run-grakn-server
+      - run-grakn
       - run: sleep 60
       - run: bazel test //phone_calls/nodejs:test --test_output=errors
 
@@ -77,9 +88,9 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
-      - run-grakn-server
+      - run-grakn
       - run: bazel test //phone_calls/python:test --test_output=errors
 
   test-tube-network:
@@ -87,13 +98,13 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install python3-tk tk-dev  # Required for tkinter
       - run: pyenv install 3.6.3
       - run: pyenv global 3.6.3 2.7.12
-      - run-grakn-server
+      - run-grakn
       - run:
           name: "Run test with a virtual X-server running"
           command: |
