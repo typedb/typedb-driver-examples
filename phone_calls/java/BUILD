@@ -63,9 +63,6 @@ java_test(
         ":xml-migration-lib",
         ":queries-lib"
     ],
-    classpath_resources = [
-        "@graknlabs_common//test//server:logback.xml",
-    ],
     data = [
         "//schemas:phone-calls-schema.gql"
     ]
@@ -80,9 +77,6 @@ java_binary(
         "@graknlabs_graql//java:graql",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
-    ],
-    classpath_resources = [
-        "@graknlabs_common//test//server:logback.xml",
     ],
     data = [
         "//datasets:phone-calls-data-csv"
@@ -99,9 +93,6 @@ java_binary(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
     ],
-    classpath_resources = [
-        "@graknlabs_common//test//server:logback.xml",
-    ],
     data = [
         "//datasets:phone-calls-data-json"
     ]
@@ -117,9 +108,6 @@ java_binary(
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
-    classpath_resources = [
-        "@graknlabs_common//test//server:logback.xml",
-    ],
     data = [
         "//datasets:phone-calls-data-xml"
     ]
@@ -133,7 +121,4 @@ java_binary(
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
     ],
-    classpath_resources = [
-        "@graknlabs_common//test//server:logback.xml",
-    ]
 )

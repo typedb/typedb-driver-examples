@@ -148,10 +148,10 @@ load("//dependencies/graknlabs:repositories.bzl", "graknlabs_client_java")
 graknlabs_client_java()
 load("@graknlabs_client_java//dependencies/maven:artifacts.bzl", graknlabs_client_java_artifacts = "artifacts")
 
-#######################################################
-# Load @graknlabs_common (from @graknlabs_client_java) #
-#######################################################
-load("@graknlabs_client_java//dependencies/graknlabs:dependencies.bzl", "graknlabs_common")
+##########################
+# Load @graknlabs_common #
+##########################
+load("//dependencies/graknlabs:repositories.bzl", "graknlabs_common")
 graknlabs_common()
 
 #######################################################
