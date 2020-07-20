@@ -144,7 +144,7 @@ graknlabs_bazel_distribution_pip_install()
 ###############################
 # Load @graknlabs_client_java #
 ###############################
-load("//dependencies/graknlabs:dependencies.bzl", "graknlabs_client_java")
+load("//dependencies/graknlabs:repositories.bzl", "graknlabs_client_java")
 graknlabs_client_java()
 load("@graknlabs_client_java//dependencies/maven:artifacts.bzl", graknlabs_client_java_artifacts = "artifacts")
 
@@ -177,7 +177,7 @@ graknlabs_grabl_tracing()
 #################################
 # Load @graknlabs_client_python #
 #################################
-load("//dependencies/graknlabs:dependencies.bzl", "graknlabs_client_python")
+load("//dependencies/graknlabs:repositories.bzl", "graknlabs_client_python")
 graknlabs_client_python()
 pip3_import(
     name = "graknlabs_client_python_pip",
