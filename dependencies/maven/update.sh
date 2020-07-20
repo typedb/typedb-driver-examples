@@ -16,8 +16,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Script for updating Maven dependencies after the dependency list in //dependencies/maven/dependencies.yaml.
-
 [[ $(readlink $0) ]] && path=$(readlink $0) || path=$0
 HOME=$(cd "$(dirname "${path}")" && pwd -P)/../../
 pushd "$HOME" > /dev/null
