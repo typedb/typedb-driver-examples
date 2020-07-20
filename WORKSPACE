@@ -148,6 +148,7 @@ graknlabs_bazel_distribution_pip_install()
 ##############################
 load("//dependencies/graknlabs:dependencies.bzl", "graknlabs_grakn_core")
 graknlabs_grakn_core()
+load("@graknlabs_grakn_core//dependencies/maven:artifacts.bzl", graknlabs_grakn_core_artifacts = "artifacts")
 
 #######################################################
 # Load @graknlabs_common (from @graknlabs_grakn_core) #
@@ -232,6 +233,7 @@ phone_calls_pip_install()
 # Load @maven #
 ###############
 maven(
+    graknlabs_grakn_core_artifacts +
     graknlabs_graql_artifacts +
     graknlabs_protocol_artifacts +
     graknlabs_console_artifacts +
