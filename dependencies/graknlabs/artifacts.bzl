@@ -15,4 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-exports_files(["artifacts.bzl"])
+#load("@graknlabs_bazel_distribution//artifact:rules.bzl", "artifact_file")
+load("@graknlabs_dependencies//distribution/artifact:rules.bzl", "artifact_file")
+
+def graknlabs_grakn_core_artifact():
+    artifact_file(
+        name = "graknlabs_grakn_core_artifact",
+        group_name = "graknlabs_grakn_core",
+        artifact_name = "grakn-core-server-linux-{version}.tar.gz",
+        tag = "1.8.1",
+    )
