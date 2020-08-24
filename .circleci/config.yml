@@ -18,19 +18,19 @@
 
 version: 2.1
 commands:
-  install-bazel-linux-rbe:
+  install-bazel:
     steps:
-      - run: curl -OL https://raw.githubusercontent.com/graknlabs/build-tools/master/ci/install-bazel-linux.sh
-      - run: bash ./install-bazel-linux.sh && rm ./install-bazel-linux.sh
-      - run: curl -OL https://raw.githubusercontent.com/graknlabs/build-tools/master/ci/install-bazel-rbe.sh
-      - run: bash ./install-bazel-rbe.sh && rm ./install-bazel-rbe.sh
+      - run: curl -OL https://raw.githubusercontent.com/graknlabs/dependencies/master/tool/bazelinstall/linux.sh
+      - run: bash ./linux.sh && rm ./linux.sh
+      - run: curl -OL https://raw.githubusercontent.com/graknlabs/dependencies/master/tool/bazelinstall/rbe.sh
+      - run: bash ./rbe.sh && rm ./rbe.sh
 
   run-bazel-rbe:
     parameters:
       command:
         type: string
     steps:
-      - run: bazel run @graknlabs_build_tools//ci:run-bazel-rbe -- << parameters.command >>
+      - run: bazel run @graknlabs_dependencies//tool/bazelrun:rbe -- << parameters.command >>
 
   run-grakn-server:
     steps:
@@ -46,7 +46,7 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
       - run-bazel-rbe:
           command: bazel build //...
@@ -56,7 +56,7 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
       - run-grakn-server
       - run: bazel test //phone_calls/java:test --test_output=errors
@@ -67,7 +67,7 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
       - run-grakn-server
       - run: sleep 60
@@ -78,7 +78,7 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
       - run-grakn-server
       - run: bazel test //phone_calls/python:test --test_output=errors
@@ -88,7 +88,7 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/examples
     steps:
-      - install-bazel-linux-rbe
+      - install-bazel
       - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install python3-tk tk-dev  # Required for tkinter
