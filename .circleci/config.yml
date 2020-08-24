@@ -35,7 +35,7 @@ commands:
   run-grakn-server:
     steps:
       - run: bazel build @graknlabs_grakn_core_artifact//file
-      - run: mkdir dist && tar -xvzf bazel-docs/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+      - run: mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
       - run: nohup ./dist/grakn-core-all-linux/grakn server start
       - run: sleep 60
 
