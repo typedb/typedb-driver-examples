@@ -170,21 +170,6 @@ load("@graknlabs_graql//dependencies/maven:artifacts.bzl", graknlabs_graql_artif
 load("//dependencies/graknlabs:repositories.bzl", "graknlabs_common")
 graknlabs_common()
 
-##################################
-## Load @graknlabs_client_nodejs #
-##################################
-#load("//dependencies/graknlabs:repositories.bzl", "graknlabs_client_nodejs")
-#graknlabs_client_nodejs()
-#
-#yarn_install(
-#    name = "npm_client_node",
-#    package_json = "@graknlabs_client_nodejs//:package.json",
-#    yarn_lock = "@graknlabs_client_nodejs//:yarn.lock"
-#)
-#
-#load("@npm_client_node//:install_bazel_dependencies.bzl", install_client_node_bazel_deps = "install_bazel_dependencies")
-#install_client_node_bazel_deps()
-
 #################################
 # Load @graknlabs_client_python #
 #################################
