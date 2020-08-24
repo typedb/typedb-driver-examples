@@ -22,6 +22,6 @@ def graknlabs_grakn_core_artifact():
     artifact_file(
         name = "graknlabs_grakn_core_artifact",
         group_name = "graknlabs_grakn_core",
-        artifact_name = "grakn-core-server-linux-{version}.tar.gz",
+        artifact_name = "grakn-core-all-linux-{version}.tar.gz",
         tag = "1.8.1",
     )
