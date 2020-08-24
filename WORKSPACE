@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-workspace(name = "graknlabs_examples_core")
+workspace(name = "graknlabs_examples")
 
 ################################
 # Load @graknlabs_dependencies #
@@ -97,8 +97,6 @@ graknlabs_dependencies_artifacts = "artifacts")
 #####################################################################
 # Load @graknlabs_bazel_distribution from (@graknlabs_dependencies) #
 #####################################################################
-#load("@graknlabs_dependencies//dependencies/graknlabs:repositories.bzl", "graknlabs_bazel_distribution")
-#graknlabs_bazel_distribution()
 
 load("@graknlabs_dependencies//distribution:deps.bzl", distribution_deps = "deps")
 distribution_deps()
@@ -116,22 +114,6 @@ graknlabs_bazel_distribution_pip_install()
 load("@graknlabs_bazel_distribution//github:dependencies.bzl", "tcnksm_ghr")
 tcnksm_ghr()
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-git_repository(
-    name = "io_bazel_skydoc",
-    remote = "https://github.com/graknlabs/skydoc.git",
-    branch = "experimental-skydoc-allow-dep-on-bazel-tools",
-)
-
-load("@io_bazel_skydoc//:setup.bzl", "skydoc_repositories")
-skydoc_repositories()
-
-load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
-rules_sass_dependencies()
-
-load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
-sass_repositories()
-
 load("@graknlabs_bazel_distribution//common:dependencies.bzl", "bazelbuild_rules_pkg")
 bazelbuild_rules_pkg()
 
@@ -140,21 +122,6 @@ rules_pkg_dependencies()
 
 load("@graknlabs_dependencies//distribution/docker:deps.bzl", docker_deps = "deps")
 docker_deps()
-
-load("@io_bazel_rules_docker//repositories:repositories.bzl",
-bazel_rules_docker_repositories = "repositories")
-bazel_rules_docker_repositories()
-
-load("@io_bazel_rules_docker//repositories:deps.bzl", bazel_rules_docker_container_deps = "deps")
-bazel_rules_docker_container_deps()
-
-load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
-container_pull(
-  name = "openjdk_image",
-  registry = "index.docker.io",
-  repository = "library/openjdk",
-  tag = "8"
-)
 
 #########################
 # Load @graknlabs_graql #
@@ -215,9 +182,9 @@ load("@graknlabs_grabl_tracing//dependencies/maven:artifacts.bzl", graknlabs_gra
 load("//dependencies/graknlabs:artifacts.bzl", "graknlabs_grakn_core_artifact")
 graknlabs_grakn_core_artifact()
 
-#################################
+###########################
 # Load Local Dependencies #
-#################################
+###########################
 
 # For Python
 pip3_import(
@@ -231,7 +198,7 @@ phone_calls_pip_install()
 # For Java
 load("//dependencies/maven:artifacts.bzl", graknlabs_examples_artifacts = "artifacts")
 
-# For Client NodeJS
+# For NodeJS
 yarn_install(
     name = "npm",
     package_json = "//phone_calls/nodejs:package.json",

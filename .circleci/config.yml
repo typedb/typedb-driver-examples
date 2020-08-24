@@ -61,7 +61,6 @@ jobs:
       - run-grakn-server
       - run: bazel test //phone_calls/java:test --test_output=errors
 
-
   test-phone-calls-nodejs:
     machine:
       image: ubuntu-1604:201903-01
@@ -92,8 +91,6 @@ jobs:
       - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install python3-tk tk-dev  # Required for tkinter
-#      - run: pyenv install 3.6.3
-#      - run: pyenv global 3.6.3 2.7.12
       - run-grakn-server
       - run:
           name: "Run test with a virtual X-server running"
