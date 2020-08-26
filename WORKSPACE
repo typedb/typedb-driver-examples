@@ -60,7 +60,6 @@ kt_register_toolchains()
 load("@graknlabs_dependencies//builder/nodejs:deps.bzl", nodejs_deps = "deps")
 nodejs_deps()
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
-node_repositories()
 
 # Load Python
 load("@graknlabs_dependencies//builder/python:deps.bzl", python_deps = "deps")

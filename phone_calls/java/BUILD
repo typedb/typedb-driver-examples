@@ -4,6 +4,7 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -18,6 +19,7 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
     ],
@@ -32,6 +34,7 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
@@ -46,6 +49,7 @@ java_library(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
     ]
 )
 
@@ -58,6 +62,7 @@ java_test(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
         ":csv-migration-lib",
         ":json-migration-lib",
         ":xml-migration-lib",
@@ -75,6 +80,7 @@ java_test(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -89,6 +95,7 @@ java_test(
     srcs = ["JSONMigration.java"],
     deps = [
         "@graknlabs_client_java//:client-java",
+        "@graknlabs_graql//java/query",
         "@graknlabs_graql//java:graql",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
@@ -105,6 +112,7 @@ java_test(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
@@ -120,5 +128,6 @@ java_binary(
     deps = [
         "@graknlabs_client_java//:client-java",
         "@graknlabs_graql//java:graql",
+        "@graknlabs_graql//java/query"
     ],
 )
