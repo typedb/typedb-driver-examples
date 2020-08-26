@@ -50,12 +50,6 @@ load("@graknlabs_dependencies//builder/nodejs:deps.bzl", nodejs_deps = "deps")
 nodejs_deps()
 load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 
-# Load //builder/python
-load("@graknlabs_dependencies//builder/python:deps.bzl", python_deps = "deps")
-python_deps()
-load("@rules_python//python:pip.bzl", "pip_repositories", "pip3_import")
-pip_repositories()
-
 # Load //builder/antlr
 load("@graknlabs_dependencies//builder/antlr:deps.bzl", antlr_deps = "deps")
 antlr_deps()
