@@ -1,6 +1,6 @@
 exports_files(["package.json", "yarn.lock"])
 
-load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 jasmine_node_test(
     name = "test",
