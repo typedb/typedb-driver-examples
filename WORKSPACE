@@ -59,7 +59,7 @@ kt_register_toolchains()
 # Load NodeJS
 load("@graknlabs_dependencies//builder/nodejs:deps.bzl", nodejs_deps = "deps")
 nodejs_deps()
-load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
 node_repositories()
 
 # Load Python
@@ -97,10 +97,8 @@ graknlabs_dependencies_artifacts = "artifacts")
 #####################################################################
 # Load @graknlabs_bazel_distribution from (@graknlabs_dependencies) #
 #####################################################################
-
-load("@graknlabs_dependencies//distribution:deps.bzl", distribution_deps = "deps")
-distribution_deps()
-
+load("@graknlabs_dependencies//dependencies/graknlabs:repositories.bzl", "graknlabs_bazel_distribution")
+graknlabs_bazel_distribution()
 
 pip3_import(
     name = "graknlabs_bazel_distribution_pip",

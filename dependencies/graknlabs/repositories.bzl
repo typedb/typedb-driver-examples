@@ -21,7 +21,7 @@ def graknlabs_dependencies():
     git_repository(
         name = "graknlabs_dependencies",
         remote = "https://github.com/graknlabs/dependencies",
-        commit = "650b270fe125a2eccd70575003feafb136897d51", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_dependencies
+        commit = "e95e6f7b68eaa2e4908624a8cd99219a423cdacf", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_dependencies
     )
 
 def graknlabs_common():
@@ -42,7 +42,7 @@ def graknlabs_client_java():
     git_repository(
         name = "graknlabs_client_java",
         remote = "https://github.com/alexjpwalker/client-java",
-        tag = "918be3a15467f1414a5a94c4e2b667e6fe8b0d4d" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
+        commit = "918be3a15467f1414a5a94c4e2b667e6fe8b0d4d" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
     )
 
 def graknlabs_client_python():
@@ -52,7 +52,6 @@ def graknlabs_client_python():
         commit = "140ca3eda271b12ff6727db070e642ea10c61433" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_python
     )
 
-# TODO update to 2.0 compatible version once client-nodejs is updated itself
 def graknlabs_client_nodejs():
     git_repository(
         name = "graknlabs_client_nodejs",
