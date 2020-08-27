@@ -32,12 +32,11 @@ commands:
     steps:
       - run: bazel run @graknlabs_dependencies//tool/bazelrun:rbe -- << parameters.command >>
 
-  run-grakn-server:
+  run-grakn:
     steps:
-      - run: bazel build @graknlabs_grakn_core_artifact//file
-      - run: mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+      - run-bazel:
+          command: bazel run //:grakn-extractor -- dist/grakn-core-all-linux
       - run: nohup ./dist/grakn-core-all-linux/grakn server start
-      - run: sleep 60
 
 
 jobs:
@@ -48,8 +47,8 @@ jobs:
     steps:
       - install-bazel
       - checkout
-      - run-bazel-rbe:
-          command: bazel build //...
+      # needs to be run off RBE because nodejs cannot be packaged on RBE
+      - run: bazel build //...
 
   test-phone-calls-java:
     machine:
@@ -58,7 +57,7 @@ jobs:
     steps:
       - install-bazel
       - checkout
-      - run-grakn-server
+      - run-grakn
       - run: bazel test //phone_calls/java:test --test_output=errors
 
   test-phone-calls-nodejs:
@@ -68,7 +67,7 @@ jobs:
     steps:
       - install-bazel
       - checkout
-      - run-grakn-server
+      - run-grakn
       - run: sleep 60
       - run: bazel test //phone_calls/nodejs:test --test_output=errors
 
@@ -79,7 +78,7 @@ jobs:
     steps:
       - install-bazel
       - checkout
-      - run-grakn-server
+      - run-grakn
       - run: bazel test //phone_calls/python:test --test_output=errors
 
   test-tube-network:
@@ -91,7 +90,7 @@ jobs:
       - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install python3-tk tk-dev  # Required for tkinter
-      - run-grakn-server
+      - run-grakn
       - run:
           name: "Run test with a virtual X-server running"
           command: |
