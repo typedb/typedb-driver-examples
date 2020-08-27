@@ -25,17 +25,9 @@ commands:
       - run: curl -OL https://raw.githubusercontent.com/graknlabs/dependencies/master/tool/bazelinstall/rbe.sh
       - run: bash ./rbe.sh && rm ./rbe.sh
 
-  run-bazel-rbe:
-    parameters:
-      command:
-        type: string
-    steps:
-      - run: bazel run @graknlabs_dependencies//tool/bazelrun:rbe -- << parameters.command >>
-
   run-grakn:
     steps:
-      - run-bazel:
-          command: bazel run //:grakn-extractor -- dist/grakn-core-all-linux
+      - run: bazel run //:grakn-extractor -- dist/grakn-core-all-linux
       - run: nohup ./dist/grakn-core-all-linux/grakn server start
 
 
@@ -47,7 +39,6 @@ jobs:
     steps:
       - install-bazel
       - checkout
-      # needs to be run off RBE because nodejs cannot be packaged on RBE
       - run: bazel build //...
 
   test-phone-calls-java:
