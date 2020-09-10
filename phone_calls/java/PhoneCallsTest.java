@@ -1,9 +1,10 @@
 package grakn.example.phoneCalls;
 
-import grakn.client.GraknClient;
+import grakn.client.Grakn;
+import grakn.client.rpc.GraknClient;
 import graql.lang.Graql;
 import graql.lang.query.GraqlDefine;
-import graql.lang.query.GraqlGet;
+import graql.lang.query.GraqlMatch;
 import org.junit.*;
 
 import javax.xml.stream.XMLStreamException;
@@ -23,15 +24,15 @@ import static org.junit.Assert.assertEquals;
 
 public class PhoneCallsTest {
 
-    GraknClient client;
-    GraknClient.Session session;
+    Grakn.Client client;
+    Grakn.Session session;
     String keyspaceName = "phone_calls_java";
 
     @Before
     public void loadSchema() {
         client = new GraknClient("localhost:48555");
         session = client.session(keyspaceName);
-        GraknClient.Transaction transaction = session.transaction().write();
+        Grakn.Transaction transaction = session.transaction(Grakn.Transaction.Type.WRITE);
 
         try {
             byte[] encoded = Files.readAllBytes(Paths.get("schemas/phone-calls-schema.gql"));
@@ -70,7 +71,7 @@ public class PhoneCallsTest {
 
         CSVMigration.main(new String[]{ keyspaceName });
 
-        GraknClient.Transaction transaction = session.transaction().read();
+        Grakn.Transaction transaction = session.transaction();
 
         ArrayList<String> firstActualAnswer = queryExamples.get(0).executeQuery(transaction);
         Collections.sort(firstActualAnswer);
@@ -110,18 +111,18 @@ public class PhoneCallsTest {
 
 
     public void assertMigrationResults() {
-        GraknClient.Transaction transaction = session.transaction().read();
+        Grakn.Transaction transaction = session.transaction();
 
-        Number numberOfPeople = transaction.execute((GraqlGet.Aggregate) parse("match $x isa person; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfPeople = transaction.execute((GraqlMatch.Aggregate) parse("match $x isa person; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfPeople, 30);
 
-        Number numberOfCompanies = transaction.execute((GraqlGet.Aggregate) parse("match $x isa company; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfCompanies = transaction.execute((GraqlMatch.Aggregate) parse("match $x isa company; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfCompanies, 1);
 
-        Number numberOfContracts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa contract; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfContracts = transaction.execute((GraqlMatch.Aggregate) parse("match $x isa contract; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfContracts, 10);
 
-        Number numberOfCalls = transaction.execute((GraqlGet.Aggregate) parse("match $x isa call; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfCalls = transaction.execute((GraqlMatch.Aggregate) parse("match $x isa call; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfCalls, 200);
 
         transaction.close();
@@ -129,7 +130,7 @@ public class PhoneCallsTest {
 
     @After
     public void deleteKeyspace() {
-        client.keyspaces().delete(keyspaceName);
+        client.databases().delete(keyspaceName);
         System.out.println("Deleted the " + keyspaceName + " keyspace");
         session.close();
         client.close();

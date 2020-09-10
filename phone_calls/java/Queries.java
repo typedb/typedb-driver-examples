@@ -1,8 +1,9 @@
 package grakn.example.phoneCalls;
 
-import grakn.client.GraknClient;
-import grakn.client.answer.Numeric;
-import graql.lang.query.GraqlGet;
+import grakn.client.Grakn;
+import grakn.client.concept.answer.Numeric;
+import grakn.client.rpc.GraknClient;
+import graql.lang.query.GraqlMatch;
 
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class Queries {
 
         String getQuestion() { return this.question; }
 
-        public abstract <T> T executeQuery(GraknClient.Transaction transaction);
+        public abstract <T> T executeQuery(Grakn.Transaction transaction);
     }
 
     public static void main(String[] args) {
@@ -49,9 +50,9 @@ public class Queries {
     }
 
     static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples, String keyspaceName) {
-        GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session(keyspaceName);
-        GraknClient.Transaction transaction = session.transaction().read();
+        Grakn.Client client = new GraknClient("localhost:48555");
+        Grakn.Session session = client.session(keyspaceName);
+        Grakn.Transaction transaction = session.transaction();
 
         if (qsNumber == 0) {
             queryExamples.forEach(queryExample -> {
@@ -72,7 +73,7 @@ public class Queries {
 
         queryExamples.add(new QueryExample("Since September 14th, which customers called the person with phone number +86 921 547 9004?") {
             @Override
-            public <T> T executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(Grakn.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -90,9 +91,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 List<String> result = new ArrayList<>();
-                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
+                transaction.execute((GraqlMatch) parse(query)).get().forEach(answer -> {
                     result.add(
-                            answer.get("phone-number").asAttribute().value().toString()
+                            answer.get("phone-number").asRemote(transaction).asThing().asAttribute().asString().getValue()
                     );
                 });
 
@@ -104,7 +105,7 @@ public class Queries {
 
         queryExamples.add(new QueryExample("Who are the people who have received a call from a London customer aged over 50 who has previously called someone aged under 20?") {
             @Override
-            public <T> T executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(Grakn.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -125,9 +126,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 List<String> result = new ArrayList<>();
-                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
+                transaction.execute((GraqlMatch) parse(query)).get().forEach(answer -> {
                     result.add(
-                            answer.get("phone-number").asAttribute().value().toString()
+                            answer.get("phone-number").asRemote(transaction).asThing().asAttribute().asString().getValue()
                     );
                 });
 
@@ -139,7 +140,7 @@ public class Queries {
 
         queryExamples.add(new QueryExample("Who are the common contacts of customers with phone numbers +7 171 898 0853 and +370 351 224 5176?") {
             @Override
-            public <T> T executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(Grakn.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -156,9 +157,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 Set<String> result = new HashSet<>();
-                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
+                transaction.execute((GraqlMatch) parse(query)).get().forEach(answer -> {
                     result.add(
-                            answer.get("phone-number").asAttribute().value().toString()
+                            answer.get("phone-number").asRemote(transaction).asThing().asAttribute().asString().getValue()
                     );
                 });
 
@@ -170,7 +171,7 @@ public class Queries {
 
         queryExamples.add(new QueryExample("Who are the customers who 1) have all called each other and 2) have all called person with phone number +48 894 777 5173 at least once?") {
             @Override
-            public <T> T executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(Grakn.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> queryAsList = Arrays.asList(
@@ -191,9 +192,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 Set<String> result = new HashSet<>();
-                transaction.execute((GraqlGet) parse(query)).get().forEach(answer -> {
-                    result.add(answer.get("phone-number-a").asAttribute().value().toString());
-                    result.add(answer.get("phone-number-b").asAttribute().value().toString());
+                transaction.execute((GraqlMatch) parse(query)).get().forEach(answer -> {
+                    result.add(answer.get("phone-number-a").asRemote(transaction).asThing().asAttribute().asString().getValue());
+                    result.add(answer.get("phone-number-b").asRemote(transaction).asThing().asAttribute().asString().getValue());
                 });
 
                 printToLog("Result: ", String.join(", ", result));
@@ -204,7 +205,7 @@ public class Queries {
 
         queryExamples.add(new QueryExample("How does the average call duration among customers aged under 20 compare those aged over 40?") {
             @Override
-            public <T> T executeQuery(GraknClient.Transaction transaction) {
+            public <T> T executeQuery(Grakn.Transaction transaction) {
                 printToLog("Question: ", this.question);
 
                 List<String> firstQueryAsList = Arrays.asList(
@@ -221,7 +222,7 @@ public class Queries {
 
                 List<Float> result = new ArrayList<>();
 
-                List<Numeric> firstAnswers = transaction.execute((GraqlGet.Aggregate) parse(firstQuery)).get();
+                List<Numeric> firstAnswers = transaction.execute((GraqlMatch.Aggregate) parse(firstQuery)).get();
                 float fisrtResult = 0;
                 if (firstAnswers.size() > 0) {
                     fisrtResult = firstAnswers.get(0).number().floatValue();
@@ -243,7 +244,7 @@ public class Queries {
                 String secondQuery = String.join("", secondQueryAsList);
 
                 float secondResult = 0;
-                List<Numeric> secondAnswers = transaction.execute((GraqlGet.Aggregate) parse(secondQuery)).get();
+                List<Numeric> secondAnswers = transaction.execute((GraqlMatch.Aggregate) parse(secondQuery)).get();
                 if (secondAnswers.size() > 0) {
                     secondResult = secondAnswers.get(0).number().floatValue();
                     result.add(secondResult);

@@ -1,6 +1,7 @@
 package grakn.example.phoneCalls;
 
-import grakn.client.GraknClient;
+import grakn.client.Grakn;
+import grakn.client.rpc.GraknClient;
 import graql.lang.query.GraqlInsert;
 import static graql.lang.Graql.parse;
 
@@ -63,8 +64,8 @@ public class CSVMigration {
      * 6. closes the client
      */
     static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws FileNotFoundException {
-        GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session(keyspaceName);
+        Grakn.Client client = new GraknClient("localhost:48555");
+        Grakn.Session session = client.session(keyspaceName);
 
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".csv] into Grakn ...");
@@ -152,10 +153,10 @@ public class CSVMigration {
      * @param session off of which a transaction is created
      * @throws FileNotFoundException
      */
-    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException {
+    static void loadDataIntoGrakn(Input input, Grakn.Session session) throws FileNotFoundException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
-            GraknClient.Transaction transaction = session.transaction().write(); // 2a
+            Grakn.Transaction transaction = session.transaction(Grakn.Transaction.Type.WRITE); // 2a
             String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
             transaction.execute((GraqlInsert) parse(graqlInsertQuery)); // 2c

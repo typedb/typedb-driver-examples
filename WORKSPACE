@@ -158,8 +158,6 @@ yarn_install(
     package_json = "//phone_calls/nodejs:package.json",
     yarn_lock = "//phone_calls/nodejs:yarn.lock"
 )
-load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
-install_bazel_dependencies()
 
 ############################
 # Load @maven dependencies #

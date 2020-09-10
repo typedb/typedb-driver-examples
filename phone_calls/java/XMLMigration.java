@@ -1,7 +1,9 @@
 package grakn.example.phoneCalls;
 
-import grakn.client.GraknClient;
+import grakn.client.Grakn;
 import static graql.lang.Graql.*;
+
+import grakn.client.rpc.GraknClient;
 import graql.lang.query.GraqlInsert;
 
 /**
@@ -58,8 +60,8 @@ public class XMLMigration {
      * 6. closes the client
      */
     static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws FileNotFoundException, XMLStreamException {
-        GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session(keyspaceName);
+        Grakn.Client client = new GraknClient("localhost:48555");
+        Grakn.Session session = client.session(keyspaceName);
 
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".xml] into Grakn ...");
@@ -143,10 +145,10 @@ public class XMLMigration {
      * @throws FileNotFoundException
      * @throws XMLStreamException
      */
-    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException, XMLStreamException {
+    static void loadDataIntoGrakn(Input input, Grakn.Session session) throws FileNotFoundException, XMLStreamException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
-            GraknClient.Transaction transaction = session.transaction().write(); // 2a
+            Grakn.Transaction transaction = session.transaction(Grakn.Transaction.Type.WRITE); // 2a
             String graqlInsertQuery = input.template(item); // 2b
             System.out.println("Executing Graql Query: " + graqlInsertQuery);
             transaction.execute((GraqlInsert) parse(graqlInsertQuery)); // 2c
