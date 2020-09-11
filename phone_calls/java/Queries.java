@@ -51,6 +51,7 @@ public class Queries {
 
     static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples, String keyspaceName) {
         Grakn.Client client = new GraknClient("localhost:48555");
+        client.databases().create(keyspaceName);
         Grakn.Session session = client.session(keyspaceName);
         Grakn.Transaction transaction = session.transaction();
 

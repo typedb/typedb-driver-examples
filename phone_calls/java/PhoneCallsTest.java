@@ -31,6 +31,7 @@ public class PhoneCallsTest {
     @Before
     public void loadSchema() {
         client = new GraknClient("localhost:48555");
+        client.databases().create(keyspaceName);
         session = client.session(keyspaceName);
         Grakn.Transaction transaction = session.transaction(Grakn.Transaction.Type.WRITE);
 

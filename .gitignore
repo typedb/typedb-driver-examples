@@ -15,6 +15,7 @@ logs/
 # Compiled files
 target/
 bin/
+dist/
 
 # NPM
 node_modules/
@@ -25,3 +26,4 @@ __pycache__
 
 # Bazel
 bazel-*
+

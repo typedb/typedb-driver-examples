@@ -65,6 +65,7 @@ public class CSVMigration {
      */
     static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws FileNotFoundException {
         Grakn.Client client = new GraknClient("localhost:48555");
+        client.databases().create(keyspaceName);
         Grakn.Session session = client.session(keyspaceName);
 
         for (Input input : inputs) {

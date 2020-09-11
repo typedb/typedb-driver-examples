@@ -24,19 +24,19 @@ define
     call sub relation,
         relates caller,
         relates callee,
-        has started-at,
-        has duration;
+        owns started-at,
+        owns duration;
 
     company sub entity,
-        plays provider,
-        has name;
+        plays contract:provider,
+        owns name;
 
     person sub entity,
-        plays customer,
-        plays caller,
-        plays callee,
-        has first-name,
-        has last-name,
-        has phone-number,
-        has city,
-        has age;
+        plays contract:customer,
+        plays call:caller,
+        plays call:callee,
+        owns first-name,
+        owns last-name,
+        owns phone-number,
+        owns city,
+        owns age;
