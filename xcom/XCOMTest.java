@@ -161,16 +161,16 @@ public class XCOMTest {
 	public void assertMigrationResults() {
 		final GraknClient.Transaction transaction = session.transaction().read();
 
-		final int totalTechs = transaction.execute((GraqlGet.Aggregate) parse("match $x isa research-project; get $x; count;")).get(0).number().intValue();
+		final int totalTechs = transaction.execute((GraqlGet.Aggregate) parse("match $x isa research-project; get $x; count;")).get().get(0).number().intValue();
 		assertEquals(46, totalTechs);
 
-		final int totalItems = transaction.execute((GraqlGet.Aggregate) parse("match $x isa item; get $x; count;")).get(0).number().intValue();
+		final int totalItems = transaction.execute((GraqlGet.Aggregate) parse("match $x isa item; get $x; count;")).get().get(0).number().intValue();
 		assertEquals(34, totalItems);
 
-		final int totalResearchTechRequirements = transaction.execute((GraqlGet.Aggregate) parse("match $x isa tech-requirement-to-begin-research; get $x; count;")).get(0).number().intValue();
+		final int totalResearchTechRequirements = transaction.execute((GraqlGet.Aggregate) parse("match $x isa tech-requirement-to-begin-research; get $x; count;")).get().get(0).number().intValue();
 		assertEquals(94, totalResearchTechRequirements);
 
-		final int totalResearchResourceCosts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa resource-cost-to-begin-research; get $x; count;")).get(0).number().intValue();
+		final int totalResearchResourceCosts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa resource-cost-to-begin-research; get $x; count;")).get().get(0).number().intValue();
 		assertEquals(44, totalResearchResourceCosts);
 
 		transaction.close();

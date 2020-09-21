@@ -148,7 +148,7 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $campaign isa campaign, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).forEach(result -> campaignNames.add(
+						t.execute((GraqlGet) parse(query)).get().forEach(result -> campaignNames.add(
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
@@ -159,7 +159,7 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $tech isa research-project, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).forEach(result -> techs.add(
+						t.execute((GraqlGet) parse(query)).get().forEach(result -> techs.add(
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
@@ -169,7 +169,7 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $item isa item, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).forEach(result -> items.add(
+						t.execute((GraqlGet) parse(query)).get().forEach(result -> items.add(
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
@@ -323,7 +323,7 @@ public class Queries {
 					+ " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-begin true, has progress $progress;"
 					+ " get $research_project_name, $progress;";
 			System.out.println("Executing Graql Query: " + query);
-			t.execute((GraqlGet) parse(query)).forEach(result -> researchTasks.add(new ResearchTask(
+			t.execute((GraqlGet) parse(query)).get().forEach(result -> researchTasks.add(new ResearchTask(
 					result.get("research_project_name").asAttribute().value().toString(),
 					(double) result.get("progress").asAttribute().value()
 			)));
@@ -341,7 +341,7 @@ public class Queries {
 					+ " (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $quantity;"
 					+ " get $item_name, $quantity;";
 			System.out.println("Executing Graql Query: " + query);
-			t.execute((GraqlGet) parse(query)).forEach(result -> inventory.add(new InventoryItem(
+			t.execute((GraqlGet) parse(query)).get().forEach(result -> inventory.add(new InventoryItem(
 					result.get("item_name").asAttribute().value().toString(),
 					((Long) result.get("quantity").asAttribute().value()).intValue()
 			)));
@@ -453,7 +453,7 @@ public class Queries {
 						+ " (research-to-begin: $tech, required-tech: $required-tech) isa tech-requirement-to-begin-research;"
 						+ " get $required_tech_name;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlGet) parse(query)).forEach(result -> requiredTechs.add(
+				t.execute((GraqlGet) parse(query)).get().forEach(result -> requiredTechs.add(
 						result.get("required_tech_name").asAttribute().value().toString()
 				));
 			}, TransactionMode.READ);
