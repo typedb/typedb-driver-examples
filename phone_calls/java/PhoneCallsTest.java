@@ -112,16 +112,16 @@ public class PhoneCallsTest {
     public void assertMigrationResults() {
         GraknClient.Transaction transaction = session.transaction().read();
 
-        Number numberOfPeople = transaction.execute((GraqlGet.Aggregate) parse("match $x isa person; get $x; count;")).get(0).number().intValue();
+        Number numberOfPeople = transaction.execute((GraqlGet.Aggregate) parse("match $x isa person; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfPeople, 30);
 
-        Number numberOfCompanies = transaction.execute((GraqlGet.Aggregate) parse("match $x isa company; get $x; count;")).get(0).number().intValue();
+        Number numberOfCompanies = transaction.execute((GraqlGet.Aggregate) parse("match $x isa company; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfCompanies, 1);
 
-        Number numberOfContracts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa contract; get $x; count;")).get(0).number().intValue();
+        Number numberOfContracts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa contract; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfContracts, 10);
 
-        Number numberOfCalls = transaction.execute((GraqlGet.Aggregate) parse("match $x isa call; get $x; count;")).get(0).number().intValue();
+        Number numberOfCalls = transaction.execute((GraqlGet.Aggregate) parse("match $x isa call; get $x; count;")).get().get(0).number().intValue();
         assertEquals(numberOfCalls, 200);
 
         transaction.close();

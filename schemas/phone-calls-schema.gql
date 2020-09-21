@@ -1,21 +1,21 @@
 define
 
     name sub attribute,
-      datatype string;
+      value string;
     started-at sub attribute,
-      datatype date;
+      value datetime;
     duration sub attribute,
-      datatype long;
+      value long;
     first-name sub attribute,
-      datatype string;
+      value string;
     last-name sub attribute,
-      datatype string;
+      value string;
     phone-number sub attribute,
-      datatype string;
+      value string;
     city sub attribute,
-      datatype string;
+      value string;
     age sub attribute,
-      datatype long;
+      value long;
 
     contract sub relation,
         relates provider,

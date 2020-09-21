@@ -4,16 +4,16 @@ define
 ## ATTRIBITES ##
 ################
 	name sub attribute,
-		datatype string;
+		value string;
 	full-name sub name;
 	nickname sub name;
 
 	title sub attribute,
-		datatype string;
+		value string;
 
 	event-date sub attribute,
 		abstract,
-		datatype date;
+		value datetime;
 	approved-date sub event-date;
 	birth-date sub event-date;
 	start-date sub event-date;
@@ -21,67 +21,67 @@ define
 	engagement-date sub event-date;
 
 	published-date sub attribute,
-		datatype date;
+		value datetime;
 
 	reference-id sub attribute,
-		datatype string;
+		value string;
 
 	salary sub attribute,
-		datatype long;
+		value long;
 
 	registration-number sub attribute,
-		datatype string;
+		value string;
 
 	identifier sub attribute,
-    		datatype string;
+    		value string;
 
 	graduated sub attribute,
-		datatype boolean;
+		value boolean;
 
 	score sub attribute,
-		datatype double;
+		value double;
 
 	ranking sub attribute,
-		datatype long;
+		value long;
 
 	phone-number sub attribute,
-		datatype string;
+		value string;
 
 	email sub attribute,
-		datatype string;
+		value string;
 
 	gender sub attribute,
-		datatype string;
+		value string;
 
 	engaged sub attribute,
-		datatype boolean;
+		value boolean;
 	separated sub attribute,
-		datatype boolean;
+		value boolean;
 	divorced sub attribute,
-		datatype boolean;
+		value boolean;
 
 	file sub attribute,
-		datatype string;
+		value string;
 
 	caption sub attribute,
-		datatype string;
+		value string;
 
 	language sub attribute,
-		datatype string,
+		value string,
 		plays spoken,
 		plays mutual-language;
 
 	content sub attribute,
-		datatype string,
+		value string,
 		has language;
 
 	emotion sub attribute,
-		datatype string,
+		value string,
 		regex "^(like|love|funny|shocking|sad|angry)$",
 		plays reacted-emotion;
 
 	link sub attribute,
-		datatype string,
+		value string,
 		plays attached;
 
 	person sub entity,

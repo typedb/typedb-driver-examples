@@ -17,37 +17,44 @@
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-def graknlabs_build_tools():
+def graknlabs_dependencies():
     git_repository(
-        name = "graknlabs_build_tools",
-        remote = "https://github.com/graknlabs/build-tools",
-        commit = "6cf8cad67fa232d020869fde84e56984bf36d5e7", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_build_tools
+        name = "graknlabs_dependencies",
+        remote = "https://github.com/graknlabs/dependencies",
+        commit = "de4bc25bfbc7f640ac82cea9c629d51596479134", # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_dependencies
     )
 
-def graknlabs_grakn_core():
+def graknlabs_common():
     git_repository(
-        name = "graknlabs_grakn_core",
-        remote = "https://github.com/graknlabs/grakn",
-        tag = "1.7.1" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_grakn_core
+        name = "graknlabs_common",
+        remote = "https://github.com/graknlabs/common",
+        tag = "0.2.4"
+    )
+
+def graknlabs_graql():
+    git_repository(
+        name = "graknlabs_graql",
+        remote = "https://github.com/graknlabs/graql",
+        tag = "1.0.8"
     )
 
 def graknlabs_client_java():
     git_repository(
         name = "graknlabs_client_java",
         remote = "https://github.com/graknlabs/client-java",
-        tag = "1.7.1" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
+        tag = "1.8.2" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_java
     )
 
 def graknlabs_client_python():
     git_repository(
         name = "graknlabs_client_python",
         remote = "https://github.com/graknlabs/client-python",
-        tag = "1.7.0" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_python
+        tag = "1.8.1" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_python
     )
 
 def graknlabs_client_nodejs():
     git_repository(
         name = "graknlabs_client_nodejs",
         remote = "https://github.com/graknlabs/client-nodejs",
-        tag = "1.7.1" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_nodejs
+        commit = "da230f5684e2c41c6c175010101b3d259593701e" # sync-marker: do not remove this comment, this is used for sync-dependencies by @graknlabs_client_nodejs
     )
