@@ -118,3 +118,4 @@ workflows:
       - test-phone-calls-nodejs
       - test-phone-calls-python
       - test-tube-network
+      - test-xcom
