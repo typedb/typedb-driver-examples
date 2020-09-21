@@ -3,25 +3,25 @@ define
 # Attributes
 
 name sub attribute,
-	datatype string;
+	value string;
 has-required-techs sub attribute,
-	datatype boolean;
+	value boolean;
 has-required-resources sub attribute,
-	datatype boolean;
+	value boolean;
 can-begin sub attribute,
-	datatype boolean;
+	value boolean;
 can-proceed sub attribute,
-	datatype boolean;
+	value boolean;
 started sub attribute,
-	datatype boolean;
+	value boolean;
 progress sub attribute,
-	datatype double;
+	value double;
 completed sub attribute,
-	datatype boolean;
+	value boolean;
 quantity sub attribute,
-	datatype long;
+	value long;
 quantity-consumed sub attribute,
-	datatype long;
+	value long;
 
 # Static entities
 
