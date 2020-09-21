@@ -1,13 +1,20 @@
 package grakn.example.xcom;
 
 import grakn.client.GraknClient;
-import graql.lang.query.GraqlDelete;
-import graql.lang.query.GraqlGet;
-import graql.lang.query.GraqlInsert;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.Stack;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -148,7 +155,7 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $campaign isa campaign, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).get().forEach(result -> campaignNames.add(
+						t.execute(parse(query).asGet()).get().forEach(result -> campaignNames.add(
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
@@ -159,7 +166,7 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $tech isa research-project, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).get().forEach(result -> techs.add(
+						t.execute(parse(query).asGet()).get().forEach(result -> techs.add(
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
@@ -169,7 +176,7 @@ public class Queries {
 					transaction(t -> {
 						String query = "match $item isa item, has name $name; get $name;";
 						System.out.println("Executing Graql Query: " + query);
-						t.execute((GraqlGet) parse(query)).get().forEach(result -> items.add(
+						t.execute(parse(query).asGet()).get().forEach(result -> items.add(
 								result.get("name").asAttribute().value().toString()
 						));
 					}, TransactionMode.READ);
@@ -226,19 +233,19 @@ public class Queries {
 			transaction(t -> {
 				String query = "insert $campaign isa campaign, has name \"" + campaignName + "\";";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlInsert) parse(query));
+				t.execute(parse(query).asInsert());
 
 				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 						+ " $research_project isa research-project;"
 						+ " insert (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task, has started false;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlInsert) parse(query));
+				t.execute(parse(query).asInsert());
 
 				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 						+ " $item isa item;"
 						+ " insert (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity 0;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlInsert) parse(query));
+				t.execute(parse(query).asInsert());
 			}, TransactionMode.WRITE);
 
 			System.out.println("Success");
@@ -295,18 +302,18 @@ public class Queries {
 			transaction(t -> {
 				String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 						+ " $research_project isa research-project, has name \"" + tech.name + "\";"
-						+ " (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
-						+ " has started $started via $s, has progress $progress via $p;"
-						+ " delete $s, $p;";
+						+ " $task (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
+						+ " has started $started, has progress $progress;"
+						+ " delete $task has started $started; $task has progress $progress;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlDelete) parse(query));
+				t.execute(parse(query).asDelete());
 
 				query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 						+ " $research_project isa research-project, has name \"" + tech.name + "\";"
 						+ " $task(campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task;"
 						+ " insert $task has started true, has progress 100;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlInsert) parse(query));
+				t.execute(parse(query).asInsert());
 			}, TransactionMode.WRITE);
 
 			System.out.println("Success");
@@ -323,7 +330,7 @@ public class Queries {
 					+ " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-begin true, has progress $progress;"
 					+ " get $research_project_name, $progress;";
 			System.out.println("Executing Graql Query: " + query);
-			t.execute((GraqlGet) parse(query)).get().forEach(result -> researchTasks.add(new ResearchTask(
+			t.execute(parse(query).asGet()).get().forEach(result -> researchTasks.add(new ResearchTask(
 					result.get("research_project_name").asAttribute().value().toString(),
 					(double) result.get("progress").asAttribute().value()
 			)));
@@ -341,7 +348,7 @@ public class Queries {
 					+ " (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $quantity;"
 					+ " get $item_name, $quantity;";
 			System.out.println("Executing Graql Query: " + query);
-			t.execute((GraqlGet) parse(query)).get().forEach(result -> inventory.add(new InventoryItem(
+			t.execute(parse(query).asGet()).get().forEach(result -> inventory.add(new InventoryItem(
 					result.get("item_name").asAttribute().value().toString(),
 					((Long) result.get("quantity").asAttribute().value()).intValue()
 			)));
@@ -421,18 +428,17 @@ public class Queries {
 				transaction(t -> {
 					String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 							+ " $item isa item, has name \"" + item.name + "\";"
-							+ " (item-owner: $campaign, owned-item: $item) isa item-ownership,"
-							+ " has quantity $qty via $q;"
-							+ " delete $q;";
+							+ " $ownership (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $qty;"
+							+ " delete $ownership has quantity $qty;";
 					System.out.println("Executing Graql Query: " + query);
-					t.execute((GraqlDelete) parse(query));
+					t.execute(parse(query).asDelete());
 
 					query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
 							+ " $item isa item, has name \"" + item.name + "\";"
 							+ " $ownership(item-owner: $campaign, owned-item: $item) isa item-ownership;"
 							+ " insert $ownership has quantity " + input.longValue() + ";";
 					System.out.println("Executing Graql Query: " + query);
-					t.execute((GraqlInsert) parse(query));
+					t.execute(parse(query).asInsert());
 				}, TransactionMode.WRITE);
 
 				System.out.println("Success");
@@ -453,7 +459,7 @@ public class Queries {
 						+ " (research-to-begin: $tech, required-tech: $required-tech) isa tech-requirement-to-begin-research;"
 						+ " get $required_tech_name;";
 				System.out.println("Executing Graql Query: " + query);
-				t.execute((GraqlGet) parse(query)).get().forEach(result -> requiredTechs.add(
+				t.execute(parse(query).asGet()).get().forEach(result -> requiredTechs.add(
 						result.get("required_tech_name").asAttribute().value().toString()
 				));
 			}, TransactionMode.READ);
