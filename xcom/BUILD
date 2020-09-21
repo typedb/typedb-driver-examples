@@ -36,7 +36,9 @@ java_test(
 	data = [
 		"//schemas:xcom-schema.gql"
 	],
-	size = "enormous",
+    resources = ["logback-test.xml"],
+    resource_strip_prefix = "xcom",
+    size = "large",
 )
 
 java_binary(

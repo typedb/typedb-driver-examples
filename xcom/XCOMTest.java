@@ -55,6 +55,7 @@ public class XCOMTest {
 		assertMigrationResults();
 	}
 
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testQueries() throws FileNotFoundException {
