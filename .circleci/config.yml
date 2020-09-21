@@ -102,12 +102,12 @@ jobs:
   test-xcom:
     machine:
       image: ubuntu-1604:201903-01
-      working_directory: ~/examples
-      steps:
-        - install-bazel
-        - checkout
-        - run-grakn-server
-        - run: bazel test //xcom:test --test_output=errors
+    working_directory: ~/examples
+    steps:
+      - install-bazel
+      - checkout
+      - run-grakn-server
+      - run: bazel test //xcom:test --test_output=errors
 
 
 workflows:
