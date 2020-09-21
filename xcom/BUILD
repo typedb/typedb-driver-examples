@@ -35,7 +35,8 @@ java_test(
 	],
 	data = [
 		"//schemas:xcom-schema.gql"
-	]
+	],
+	size = "large",
 )
 
 java_binary(
