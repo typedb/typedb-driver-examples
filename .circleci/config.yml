@@ -99,6 +99,17 @@ jobs:
             bazel test //tube_network:test --test_output=errors --action_env=DISPLAY=":0"
       - run: bazel test //tube_network:test-migration --test_output=errors
 
+  test-xcom:
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: ~/examples
+    steps:
+      - install-bazel
+      - checkout
+      - run-grakn-server
+      - run: bazel test //xcom:test --test_output=errors
+
+
 workflows:
   examples:
     jobs:
@@ -107,3 +118,4 @@ workflows:
       - test-phone-calls-nodejs
       - test-phone-calls-python
       - test-tube-network
+      - test-xcom

@@ -1,0 +1,37 @@
+tech,required_tech
+Resistance Radio,Resistance Communications
+Psionics,Sectoid Autopsy
+Plated Armor,Hybrid Materials
+Magnetic Weapons,Modular Weapons
+Gauss Weapons,Magnetic Weapons
+Elerium,Gauss Weapons
+Elerium,Plated Armor
+Elerium,ADVENT MEC Breakdown
+Powered Armor,Elerium
+Plasma Rifle,Elerium
+Plasma Lance,Plasma Rifle
+Plasma Lance,Archon Autopsy
+Beam Cannon,Plasma Rifle
+Storm Gun,Plasma Rifle
+ADVENT Officer Autopsy,Alien Biotech
+ADVENT MEC Breakdown,ADVENT Officer Autopsy
+ADVENT Turret Breakdown,ADVENT Officer Autopsy
+ADVENT Priest Autopsy,ADVENT Officer Autopsy
+ADVENT Purifier Autopsy,ADVENT Officer Autopsy
+ADVENT Shieldbearer Autopsy,ADVENT Officer Autopsy
+ADVENT Stun Lancer Autopsy,ADVENT Officer Autopsy
+ADVENT Trooper Autopsy,ADVENT Officer Autopsy
+Sectoid Autopsy,Alien Biotech
+Faceless Autopsy,Alien Biotech
+Chryssalid Autopsy,Alien Biotech
+Viper Autopsy,Alien Biotech
+Muton Autopsy,Alien Biotech
+Berserker Autopsy,Alien Biotech
+Archon Autopsy,Alien Biotech
+Spectre Autopsy,Alien Biotech
+Andromedon Autopsy,Alien Biotech
+Sectopod Breakdown,ADVENT Officer Autopsy
+Gatekeeper Autopsy,Alien Biotech
+Viper King Autopsy,Alien Biotech
+Berserker Queen Autopsy,Alien Biotech
+Archon King Autopsy,Alien Biotech

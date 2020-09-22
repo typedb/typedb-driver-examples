@@ -1,4 +1,4 @@
-package grakn.example.phoneCalls;
+package grakn.example.xcom;
 
 import grakn.client.GraknClient;
 import graql.lang.query.GraqlInsert;
@@ -29,7 +29,7 @@ import com.univocity.parsers.csv.CsvParserSettings;
  */
 import mjson.Json;
 
-public class CSVMigration {
+public class Migration {
     /**
      * representation of Input object that links an input file to its own templating function,
      * which is used to map a Json object to a Graql query string
@@ -49,7 +49,7 @@ public class CSVMigration {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String keyspaceName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "phone_calls";
+        String keyspaceName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "xcom";
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs, keyspaceName);
     }
@@ -78,68 +78,69 @@ public class CSVMigration {
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
-        // define template for constructing a company Graql insert query
-        inputs.add(new Input("datasets/phone-calls/companies") {
-            @Override
-            public String template(Json company) {
-                return "insert $company isa company, has name " + company.at("name") + ";";
-            }
-        });
-
-        // define template for constructing a person Graql insert query
-        inputs.add(new Input("datasets/phone-calls/people") {
-            @Override
-            public String template(Json person) {
-                // insert person
-                String graqlInsertQuery = "insert $person isa person, has phone-number " + person.at("phone_number");
-
-                if (! person.at("first_name").isNull()) {
-                    graqlInsertQuery += ", has first-name " + person.at("first_name");
-                    graqlInsertQuery += ", has last-name " + person.at("last_name");
-                    graqlInsertQuery += ", has city " + person.at("city");
-                    graqlInsertQuery += ", has age " + person.at("age").asInteger();
-                }
-
-                graqlInsertQuery += ";";
-                return graqlInsertQuery;
-            }
-        });
-
-        // define template for constructing a contract Graql insert query
-        inputs.add(new Input("datasets/phone-calls/contracts") {
-            @Override
-            public String template(Json contract) {
-                // match company
-                String graqlInsertQuery = "match $company isa company, has name " + contract.at("company_name") + ";";
-                // match person
-                graqlInsertQuery += " $customer isa person, has phone-number " + contract.at("person_id") + ";";
-                // insert contract
-                graqlInsertQuery += " insert (provider: $company, customer: $customer) isa contract;";
-                return graqlInsertQuery;
-            }
-        });
-
-        // define template for constructing a call Graql insert query
-        inputs.add(new Input("datasets/phone-calls/calls") {
-            @Override
-            public String template(Json call) {
-                // match caller
-                String graqlInsertQuery = "match $caller isa person, has phone-number " + call.at("caller_id") + ";";
-                // match callee
-                graqlInsertQuery += " $callee isa person, has phone-number " + call.at("callee_id") + ";";
-                // insert call
-                graqlInsertQuery += " insert $call(caller: $caller, callee: $callee) isa call;" +
-                        " $call has started-at " + call.at("started_at").asString() + ";" +
-                        " $call has duration " + call.at("duration").asInteger() + ";";
-                return graqlInsertQuery;
-            }
-        });
+        inputs.add(initialiseTechInput());
+        inputs.add(initialiseItemInput());
+        inputs.add(initialiseResearchProjectTechRequirementInput());
+        inputs.add(initialiseResearchResourceCostInput());
 
         return inputs;
     }
 
+    /** define template for constructing a research project Graql insert query */
+    static Input initialiseTechInput() {
+        return new Input("datasets/xcom/tech") {
+            @Override
+            public String template(Json researchProject) {
+                return "insert $research_project isa research-project, has name " + researchProject.at("name") + ";";
+            }
+        };
+    }
+
+    /** define template for constructing a research project tech requirement Graql insert query */
+    static Input initialiseResearchProjectTechRequirementInput() {
+        return new Input("datasets/xcom/tech_required_tech") {
+            @Override
+            public String template(Json techRequirement) {
+                // match tech
+                String graqlInsertQuery = "match $tech isa research-project, has name " + techRequirement.at("tech") + ";";
+                // match required tech
+                graqlInsertQuery += " $required_tech isa research-project, has name " + techRequirement.at("required_tech") + ";";
+                // insert research project tech requirement
+                graqlInsertQuery += " insert (research-to-begin: $tech, required-tech: $required_tech) isa tech-requirement-to-begin-research;";
+                return graqlInsertQuery;
+            }
+        };
+    }
+
+    /** define template for constructing an item Graql insert query */
+    static Input initialiseItemInput() {
+        return new Input("datasets/xcom/resource") {
+            @Override
+            public String template(Json item) {
+                return "insert $item isa item, has name " + item.at("name") + ";";
+            }
+        };
+    }
+
+    /** define template for constructing a research project resource cost Graql insert query */
+    static Input initialiseResearchResourceCostInput() {
+        return new Input("datasets/xcom/tech_required_resource") {
+            @Override
+            public String template(Json researchCost) {
+                // match tech
+                String graqlInsertQuery = "match $tech isa research-project, has name " + researchCost.at("tech") + ";";
+                // match required tech
+                graqlInsertQuery += " $item isa item, has name " + researchCost.at("required_resource") + ";";
+                // insert research project tech requirement
+                graqlInsertQuery += " insert (research-to-begin: $tech, consumes-resource: $item) isa resource-cost-to-begin-research,"
+                    + " has quantity-consumed " + researchCost.at("required_resource_count").asLong() + ";";
+                return graqlInsertQuery;
+            }
+        };
+    }
+
     /**
-     * loads the csv data into our Grakn phone_calls keyspace:
+     * loads the csv data into our Grakn xcom keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
      * a. creates a Grakn transaction
