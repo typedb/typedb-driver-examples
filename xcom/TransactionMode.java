@@ -1,7 +1,6 @@
 package grakn.example.xcom;
 
 public enum TransactionMode {
-	READ,
-	WRITE
+    READ,
+    WRITE
 }
-
