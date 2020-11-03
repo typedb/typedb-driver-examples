@@ -1,0 +1,65 @@
+build:
+  correctness:
+    build:
+      machine: graknlabs-ubuntu-20.04
+      type: foreground
+      script: |
+        bazel build //...
+    test-phone-calls-java:
+      machine: graknlabs-ubuntu-20.04
+      type: foreground
+      script: |
+        bazel build @graknlabs_grakn_core_artifact//file
+        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        nohup ./dist/grakn-core-all-linux/grakn server start
+        sleep 60
+        bazel test //phone_calls/java:test --test_output=errors
+    test-phone-calls-nodejs:
+      machine: graknlabs-ubuntu-20.04
+      type: foreground
+      script: |
+        bazel build @graknlabs_grakn_core_artifact//file
+        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        nohup ./dist/grakn-core-all-linux/grakn server start
+        sleep 60
+        bazel test //phone_calls/nodejs:test --test_output=errors
+    test-phone-calls-python:
+      machine: graknlabs-ubuntu-20.04
+      type: foreground
+      script: |
+        pyenv global system
+        bazel build @graknlabs_grakn_core_artifact//file
+        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        nohup ./dist/grakn-core-all-linux/grakn server start
+        sleep 60
+        bazel test //phone_calls/python:test --test_output=errors
+    test-tube-network:
+      machine: graknlabs-ubuntu-20.04
+      type: foreground
+      script: |
+        pyenv global system
+        sudo apt-get update
+        sudo apt-get install python3-tk tk-dev xvfb  # Required for tkinter
+        bazel build @graknlabs_grakn_core_artifact//file
+        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        nohup ./dist/grakn-core-all-linux/grakn server start
+        sleep 60
+        Xvfb :0 -screen 0 1024x768x24 &
+        bazel test //tube_network:test --test_output=errors --action_env=DISPLAY=":0"
+        bazel test //tube_network:test-migration --test_output=errors
+    test-xcom:
+      machine: graknlabs-ubuntu-20.04
+      type: foreground
+      script: |
+        bazel build @graknlabs_grakn_core_artifact//file
+        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        nohup ./dist/grakn-core-all-linux/grakn server start
+        sleep 60
+        bazel test //xcom:test --test_output=errors
+  execution:
+    - build
+    - test-phone-calls-java
+    - test-phone-calls-nodejs
+    - test-phone-calls-python
+    - test-tube-network
+    - test-xcom
