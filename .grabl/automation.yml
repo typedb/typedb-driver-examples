@@ -9,9 +9,7 @@ build:
       machine: graknlabs-ubuntu-20.04
       type: foreground
       script: |
-        bazel fetch @graknlabs_grakn_core_artifact//file
-        ls bazel-examples/external/graknlabs_grakn_core_artifact/file/
-        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //phone_calls/java:test --test_output=errors
@@ -19,9 +17,7 @@ build:
       machine: graknlabs-ubuntu-20.04
       type: foreground
       script: |
-        bazel fetch @graknlabs_grakn_core_artifact//file
-        ls bazel-examples/external/graknlabs_grakn_core_artifact/file/
-        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //phone_calls/nodejs:test --test_output=errors
@@ -30,9 +26,7 @@ build:
       type: foreground
       script: |
         pyenv global system
-        bazel fetch @graknlabs_grakn_core_artifact//file
-        ls bazel-examples/external/graknlabs_grakn_core_artifact/file/
-        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //phone_calls/python:test --test_output=errors
@@ -43,9 +37,7 @@ build:
         pyenv global system
         sudo apt-get update
         sudo apt-get install python3-tk tk-dev xvfb  # Required for tkinter
-        bazel fetch @graknlabs_grakn_core_artifact//file
-        ls bazel-examples/external/graknlabs_grakn_core_artifact/file/
-        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         Xvfb :0 -screen 0 1024x768x24 &
@@ -55,9 +47,7 @@ build:
       machine: graknlabs-ubuntu-20.04
       type: foreground
       script: |
-        bazel fetch @graknlabs_grakn_core_artifact//file
-        ls bazel-examples/external/graknlabs_grakn_core_artifact/file/
-        mkdir dist && tar -xvzf bazel-examples/external/graknlabs_grakn_core_artifact/file/grakn-core-all-linux-*.tar.gz -C ./dist/ && mv ./dist/grakn-core-all-linux-* ./dist/grakn-core-all-linux
+        bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //xcom:test --test_output=errors
