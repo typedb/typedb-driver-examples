@@ -57,7 +57,7 @@ build:
         sleep 60
         bazel test //xcom:test --test_output=errors
   execution:
-     - build
+    - build
     - test-phone-calls-java
     - test-phone-calls-nodejs
     - test-phone-calls-python
