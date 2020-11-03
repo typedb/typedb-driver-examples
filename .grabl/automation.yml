@@ -36,7 +36,7 @@ build:
       script: |
         pyenv global system
         sudo apt-get update
-        sudo apt-get install python3-tk tk-dev xvfb  # Required for tkinter
+        sudo apt-get install -y python3-tk tk-dev xvfb  # Required for tkinter
         bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
