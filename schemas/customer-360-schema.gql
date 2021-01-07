@@ -1,0 +1,321 @@
+define 
+person sub entity, 
+	has email, 
+	has name,
+	has phone,
+	has age,
+	has gender,
+	has title,
+	plays submitted,
+	plays active-person,
+	plays transacting,
+	plays applying, 
+	plays husband, 
+	plays wife,
+	plays employed, 
+	plays product-holder, 
+	plays visiting,
+	plays receiving, 
+	plays reacted-by, 
+	plays replied-by,
+	plays recommended-to,
+	plays negative-recommended-to,
+	plays withdrawing; 
+company sub entity,
+	has name,
+	plays employer;
+bank-branch sub entity,
+	plays located,
+	plays visited-branch,
+	plays located;
+atm sub entity, 
+	plays withdrawing-atm;
+social-post sub entity; 
+product sub entity, 
+	has product-name, 
+	plays recommended-product,
+	plays negative-recommended-product,
+	plays ticketed-product,
+	plays owned-product,
+	plays account-transaction,
+	plays account-transaction,
+	plays searched-product,
+	plays promoted;
+current-account sub product,
+	has account-balance; 
+mortgage sub product; 
+credit-card sub product;
+web-page sub entity,
+	has website-title, 
+	plays promoting-page,
+	plays visited-website; 
+post sub entity, 
+	has post-title, 
+	has text, 
+	plays replied-to, 
+	plays reacted-to,
+	plays promoting-post; 
+comment sub post, 
+	plays reply-content;
+mortgage-application sub entity, 
+	has application-status, 
+	has application-filed, 
+	plays applied;
+data-source sub entity, 
+	has name,
+	plays owned,
+	plays sourcing; 
+bank sub company;
+subsidiary sub bank,
+	plays owner;
+city sub entity, 
+	has name,
+	plays locating; 
+transaction sub entity, 
+	has amount,
+	plays transacted, 
+	plays located; 
+support-ticket sub entity, 
+	has ticket-title,
+	plays ticketing; 
+device sub entity,
+	has device-type, 
+	plays active-device;
+session sub entity,
+	has session-duration, 
+	has timestamp,
+	has session-id,
+	plays visiting,
+	plays active-session,
+	plays active-search-session;
+employment sub relation, 
+	relates employed,
+	relates employer;
+visit sub relation, 
+	relates visiting;
+branch-visit sub relation,
+	relates visited-branch,
+	relates visiting,
+	has visit-date;
+website-visit sub relation,
+	relates visited-website,
+	relates visiting,
+	has visit-date;
+source sub relation, 
+	relates sourced, 
+	relates sourcing; 
+ownership sub relation, 
+	relates owned, 
+	relates owner; 
+application sub relation, 
+	relates applied, 
+	relates applying; 
+product-ownership sub relation, 
+	relates product-holder,
+	relates owned-product;
+promotion sub relation,
+	relates receiving,
+	relates promoted,
+	relates promoting-post,
+	relates promoting-page, 
+	has link-clicks,
+	has promotion-name,
+	has opens;
+website-promotion sub promotion, 
+	relates promoting-page,
+	relates receiving,
+	relates promoted,
+	relates promoting-post;	
+email-promotion sub promotion,
+	relates receiving,
+	relates promoted,
+	relates promoting-post,
+	relates promoting-page, 
+	has link-clicks;
+social-promotion sub promotion,
+	relates promoting-post, 
+	relates promoted,
+	relates receiving,
+	relates promoting-page;
+reply sub relation,
+	relates replied-to,
+	relates reply-content,
+	relates replied-by;
+withdraw sub relation,
+	relates withdrawing-atm,
+	relates withdrawing,
+	has withdraw-amount;
+liking sub relation, 
+	relates reacted-to,
+	relates reacted-by;
+marriage sub relation, 
+	plays sourced,
+	relates husband,
+	relates wife;
+recommendation sub relation, 
+	relates recommended-product,
+	relates recommended-to;
+negative-recommendation sub relation, 
+	relates negative-recommended-product,
+	relates negative-recommended-to;
+device-session sub relation, 
+	relates active-session,
+	relates active-device,
+	relates active-person;
+search sub relation, 
+	relates active-search-session, 
+	relates searched-product;
+support-ticket-submission sub relation, 
+	relates ticketing, 
+	relates ticketed-product,
+	relates submitted;
+debit-transaction sub relation, 
+	relates account-transaction,
+	relates transacting, 
+	relates transacted;
+location sub relation,
+	relates located,
+	relates locating; 
+
+
+
+email sub attribute, value string;
+name sub attribute, value string;
+product-name sub attribute, value string;
+account-balance sub attribute, value double;
+website-title sub attribute, value string;
+post-title sub attribute, value string;
+text sub attribute, value string;
+visit-date sub attribute, value string;
+opens sub attribute, value double;
+link-clicks sub attribute, value double;
+withdraw-amount sub attribute, value double;
+promotion-name sub attribute, value string;
+gender sub attribute, value string;
+phone sub attribute, value string;
+age sub attribute, value string;
+title sub attribute, value string;
+application-status sub attribute, value string;
+application-filed sub attribute, value string;
+amount sub attribute, value string;
+ticket-title sub attribute, value string;
+device-type sub attribute, value string;
+session-duration sub attribute, value string;
+timestamp sub attribute, value string;
+session-id sub attribute, value string;
+
+negative-product-recommendation sub rule, 
+when {
+	$p isa person;
+	$pr isa product;
+	$1 (receiving: $p, promoted: $pr) isa promotion, has opens $o;
+	$2 (receiving: $p, promoted: $pr) isa promotion, has opens $o2;
+	$1 != $2; 
+	$o == 0; 
+	$o2 == 0;
+}, then {
+	(negative-recommended-product: $pr, negative-recommended-to: $p) isa negative-recommendation;
+};
+
+product-recommendation sub rule,
+when {
+	$p isa person;
+	$pr isa product;
+	$w isa web-page;
+	$sess isa session; 
+	$0 (active-session: $sess, active-device: $dev, active-person: $p) isa device-session; 
+	$1 (visiting: $sess, visited-website: $w) isa website-visit;
+	$2 (promoting-page: $w, promoted: $pr) isa website-promotion;
+	$post isa post;
+	$sp (promoting-post: $post, promoted: $pr) isa social-promotion;
+	$com isa comment;
+	$reply (replied-to: $post, replied-by: $p, reply-content: $com) isa reply;
+	$liking (reacted-to: $post, reacted-by: $p) isa liking; 
+}, then {
+	(recommended-product: $pr, recommended-to: $p) isa recommendation;
+};
+
+mortgage-marriage-recommendation sub rule,
+when {
+	$p isa person;
+	$p2 isa person;
+	$2 ($p2, $p) isa marriage; 
+	$pr isa mortgage;
+	$1 (recommended-product: $pr, recommended-to: $p2) isa recommendation;
+}, then {
+	(recommended-product: $pr, recommended-to: $p) isa recommendation;
+};
+
+insert
+
+$p2 isa person, has name "Bob", has email "bob@gmail.com", has gender "male", has age "31", has phone "024929404", has title "Mr"; 
+$c2 isa current-account, has account-balance 2039, has product-name "Current Account Advantage"; 
+(product-holder: $p2, owned-product: $c2) isa product-ownership;
+
+$p isa person, has name "Susan", has email "susan@gmail.com", has gender "female", has age "29", has phone "023224593", has title "Mrs"; 
+$marr (husband: $p2, wife: $p) isa marriage; 
+
+(sourced: $marr, sourcing: $data) isa source; 
+$data isa data-source, has name "Marriages-DB 2012";
+(owned: $data, owner: $subsidiary) isa ownership; 
+$subsidiary isa subsidiary, has name "NextGen Subsidiary"; 
+
+$c isa current-account, has account-balance 9293, has product-name "Current Account Plus"; 
+(product-holder: $p, owned-product: $c) isa product-ownership;
+
+$atm isa atm;
+(withdrawing-atm: $atm, withdrawing: $p) isa withdraw, has withdraw-amount 100;
+
+$cc isa credit-card, has product-name "10k Credit Cards"; 
+(promoted: $cc, receiving: $p) isa email-promotion, has opens 0, has link-clicks 0, has promotion-name "Join our best credit cards!";
+(promoted: $cc, receiving: $p) isa email-promotion, has opens 0, has link-clicks 0, has promotion-name "Promotional offer on credit cards available today!";
+
+$w isa web-page, has website-title "Mortgage Product Overview"; 
+(visiting: $sess, visited-website: $w) isa website-visit;
+(promoting-page: $w, promoted: $m) isa website-promotion;
+
+$m isa mortgage, has product-name "Affordable Housing Mortgage"; 
+(promoted: $m, receiving: $p) isa email-promotion, has opens 3, has link-clicks 6, has promotion-name "Amazing Mortgages!";
+
+$post isa post, has post-title "Is this your dream home?";
+(promoting-post: $post, promoted: $m) isa social-promotion;
+$com isa comment, has text "I love this house!!! I want to buy a house soon!";
+(replied-to: $post, replied-by: $p, reply-content: $com) isa reply;
+(reacted-to: $post, reacted-by: $p) isa liking; 
+
+$city isa city, has name "Liverpool"; 
+$city2 isa city, has name "Manchester"; 
+
+$br isa bank-branch; 
+(located: $br, locating: $city) isa location; 
+$br2 isa bank-branch;
+(located: $br2, locating: $city2) isa location; 
+(visited-branch: $br, visiting: $p2) isa branch-visit, has visit-date "7 Oct 2018"; 
+(visited-branch: $br2, visiting: $p2) isa branch-visit, has visit-date "19 Sept 2019"; 
+(visited-branch: $br, visiting: $p) isa branch-visit, has visit-date "7 Oct 2018"; 
+(visited-branch: $br2, visiting: $p) isa branch-visit, has visit-date "19 Sept 2019"; 
+
+$appli isa mortgage-application, has application-status "Refused", has application-filed "1 Nov 2014"; 
+(applying: $p2, applied: $appli) isa application; 
+
+$sess isa session, has session-duration "2401", has timestamp "1389202121", has session-id "340BF0ED-77B0-45D0-A81EBE2F69DB51C1"; 
+$dev isa device, has device-type "Samsung S10"; 
+(active-session: $sess, active-device: $dev, active-person: $p) isa device-session; 
+(active-search-session: $sess, searched-product: $m) isa search; 
+
+$spt isa support-ticket, has ticket-title "My transaction got declined"; 
+(ticketing: $spt, ticketed-product: $c, submitted: $p) isa support-ticket-submission; 
+
+$tran isa transaction, has amount "94"; 
+$tran1 isa transaction, has amount "13"; 
+$tran2 isa transaction, has amount "932"; 
+(account-transaction: $c, transacting: $p, transacted: $tran) isa debit-transaction; 
+(account-transaction: $c, transacting: $p, transacted: $tran1) isa debit-transaction; 
+(account-transaction: $c, transacting: $p, transacted: $tran2) isa debit-transaction; 
+(located: $tran, locating: $city) isa location; 
+(located: $tran1, locating: $city) isa location; 
+(located: $tran2, locating: $city) isa location; 
+
+
+
+
