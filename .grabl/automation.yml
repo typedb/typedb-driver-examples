@@ -1,39 +1,55 @@
+#
+# Copyright (C) 2021 Vaticle
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
 build:
   correctness:
     build:
-      machine: graknlabs-ubuntu-20.04
-      type: foreground
-      script: |
+      image: vaticle-ubuntu-20.04
+      command: |
         bazel build //...
     test-phone-calls-java:
-      machine: graknlabs-ubuntu-20.04
-      type: foreground
-      script: |
+      image: vaticle-ubuntu-20.04
+      command: |
         bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //phone_calls/java:test --test_output=errors
     test-phone-calls-nodejs:
-      machine: graknlabs-ubuntu-20.04
-      type: foreground
-      script: |
+      image: vaticle-ubuntu-20.04
+      command: |
         bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //phone_calls/nodejs:test --test_output=errors
     test-phone-calls-python:
-      machine: graknlabs-ubuntu-20.04
-      type: foreground
-      script: |
+      image: vaticle-ubuntu-20.04
+      command: |
         pyenv global system
         bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //phone_calls/python:test --test_output=errors
     test-tube-network:
-      machine: graknlabs-ubuntu-20.04
-      type: foreground
-      script: |
+      image: vaticle-ubuntu-20.04
+      command: |
         pyenv global system
         sudo apt-get update
         sudo apt-get install -y python3-tk tk-dev xvfb  # Required for tkinter
@@ -44,17 +60,10 @@ build:
         bazel test //tube_network:test --test_output=errors --action_env=DISPLAY=":0"
         bazel test //tube_network:test-migration --test_output=errors
     test-xcom:
-      machine: graknlabs-ubuntu-20.04
-      type: foreground
-      script: |
+      image: vaticle-ubuntu-20.04
+      command: |
         bazel run //:grakn-extractor -- dist/grakn-core-all-linux
         nohup ./dist/grakn-core-all-linux/grakn server start
         sleep 60
         bazel test //xcom:test --test_output=errors
-  execution:
-    - build
-    - test-phone-calls-java
-    - test-phone-calls-nodejs
-    - test-phone-calls-python
-    - test-tube-network
-    - test-xcom
+
