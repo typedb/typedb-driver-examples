@@ -1,4 +1,4 @@
-# Copyright 2020 Grakn Labs
+# Copyright 2021 Vaticle
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,46 +30,46 @@ distance sub attribute,
 	value double;
 
 station sub entity,
-	has naptan-id,
-	has name,
-	has lat,
-	has lon,
-	plays stop,
-	plays beginning,
-	plays end,
-	plays origin,
-	plays destination,
-	plays contained-station;
+	owns naptan-id,
+	owns name,
+	owns lat,
+	owns lon,
+	plays route:stop,
+	plays tunnel:beginning,
+	plays tunnel:end,
+	plays route:origin,
+	plays route:destination,
+	plays zone:contained-station;
 
 tube-line sub entity,
-	has name,
-	plays route-operator;
+	owns name,
+	plays route:route-operator;
 
 route-section sub entity,
-	has identifier,
-	has duration,
-	plays section,
-	plays service;
+	owns identifier,
+	owns duration,
+	plays route:section,
+	plays tunnel:service;
 
 # Try using this sentence to formulate the structure of a relation:
-# A <relation> has a <role> in the form of a <subject> (<subject> is any concept, which could be an entity, relation, or attribute)
-# For example: a route has a stop in the form of a station
+# A <relation> owns a <role> in the form of a <subject> (<subject> is any concept, which could be an entity, relation, or attribute)
+# For example: a route owns a stop in the form of a station
 
 route sub relation,
-	has identifier,
+	owns identifier,
 	relates section,
 	relates stop,
-	relates origin as stop,
-	relates destination as stop,
+	relates origin,
+	relates destination,
 	relates route-operator;
 
 tunnel sub relation,
-	has identifier,
-	has distance,
+	owns identifier,
+	owns distance,
 	relates beginning,
 	relates end,
 	relates service;
 
 zone sub relation,
-	has name,
+	owns name,
 	relates contained-station;

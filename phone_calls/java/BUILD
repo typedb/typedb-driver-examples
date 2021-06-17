@@ -2,9 +2,10 @@ java_library(
     name = "csv-migration-lib",
     srcs = ["CSVMigration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typedb_client_java//api",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -17,9 +18,10 @@ java_library(
     name = "json-migration-lib",
     srcs = ["JSONMigration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
     ],
@@ -32,9 +34,10 @@ java_library(
     name = "xml-migration-lib",
     srcs = ["XMLMigration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typedb_client_java//api",
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
@@ -47,22 +50,24 @@ java_library(
     name = "queries-lib",
     srcs = ["Queries.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typedb_client_java//api",
     ]
 )
 
 java_test(
     name = "test",
-    test_class = "grakn.example.phoneCalls.PhoneCallsTest",
+    test_class = "com.vaticle.typedb.example.phoneCalls.PhoneCallsTest",
     srcs = [
         "PhoneCallsTest.java"
     ],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//query",
         ":csv-migration-lib",
         ":json-migration-lib",
         ":xml-migration-lib",
@@ -70,17 +75,20 @@ java_test(
     ],
     data = [
         "//schemas:phone-calls-schema.gql"
-    ]
+    ],
+    resources = ["//conf:logback-test.xml"],
+    resource_strip_prefix = "conf",
 )
 
-java_test(
+java_binary(
     name = "csv-migration",
-    main_class = "grakn.example.phoneCalls.CSVMigration",
+    main_class = "com.vaticle.typedb.example.phoneCalls.CSVMigration",
     srcs = ["CSVMigration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -89,14 +97,15 @@ java_test(
     ]
 )
 
-java_test(
+java_binary(
     name = "json-migration",
-    main_class = "grakn.example.phoneCalls.JSONMigration",
+    main_class = "com.vaticle.typedb.example.phoneCalls.JSONMigration",
     srcs = ["JSONMigration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java/query",
-        "@graknlabs_graql//java:graql",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//:typeql-lang",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
     ],
@@ -105,14 +114,15 @@ java_test(
     ]
 )
 
-java_test(
+java_binary(
     name = "xml-migration",
-    main_class = "grakn.example.phoneCalls.XMLMigration",
+    main_class = "com.vaticle.typedb.example.phoneCalls.XMLMigration",
     srcs = ["XMLMigration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typedb_client_java//api",
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
@@ -123,11 +133,12 @@ java_test(
 
 java_binary(
     name = "queries",
-    main_class = "grakn.example.phoneCalls.Queries",
+    main_class = "com.vaticle.typedb.example.phoneCalls.Queries",
     srcs = ["Queries.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
-        "@graknlabs_graql//java/query"
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typedb_client_java//api",
     ],
 )

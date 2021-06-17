@@ -1,4 +1,4 @@
-# Copyright 2020 Grakn Labs
+# Copyright 2021 Vaticle
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 
 
 def print_to_log(title, content):
@@ -23,7 +23,7 @@ def print_to_log(title, content):
 
 
 def find_path(session, from_id, to_id, strategy):
-    with session.transaction().read() as transaction:
+    with session.transaction(TransactionType.READ) as transaction:
         compute_path_query = "compute path from " + from_id + ", to " + to_id
 
         if strategy == "stops":
@@ -47,7 +47,7 @@ def find_path(session, from_id, to_id, strategy):
                 if len(concepts_list) > 0:
                     concept = concepts_list[0]
                     if concept.map().get("sta").type().label() == 'station':
-                        shortest_path_stations.append(concept.map().get("nam").value())
+                        shortest_path_stations.append(concept.map().get("nam").get_value())
 
             print_to_log("Shortest path is: ", shortest_path_stations)
 
@@ -55,22 +55,23 @@ def find_path(session, from_id, to_id, strategy):
 
 
 def get_station_by_name(session, station_name):
-    with session.transaction().read() as transaction:
+    with session.transaction(TransactionType.READ) as transaction:
         print('match $sta isa station; { $sta has name "' + station_name.title() +
               '"; } or { $sta has name "' + station_name.title() +
               ' Underground Station"; }; get;')
-        station_list = list(transaction.query('match $sta isa station; { $sta has name "' + station_name.title() +
+        station_list = list(transaction.query().match('match $sta isa station; { $sta has name "' + station_name.title() +
                                               '"; } or { $sta has name "' + station_name.title() +
-                                              ' Underground Station"; }; get;'))
+                                              ' Underground Station"; };'))
 
         if len(station_list) == 0:
             return None
         else:
-            return station_list[0].map().get("sta").id
+            return station_list[0].map().get("sta")._iid
+
 
 def init(from_station_name, to_station_name, selected_path_strategy):
-    with GraknClient(uri="localhost:48555") as client:
-        with client.session(keyspace="tube_network") as session:
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session("tube_network", SessionType.DATA) as session:
             # Get the departing station
             valid_from_name = False
             while not valid_from_name:

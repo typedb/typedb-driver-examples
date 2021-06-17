@@ -14,7 +14,7 @@ jasmine_node_test(
     deps = [
         "@npm//jasmine",
         "@npm//jasmine-reporters",
-        "@npm//grakn-client",
+        "@npm//typedb-client",
         "@npm//papaparse",
         "@npm//stream-json",
         "@npm//xml-stream"

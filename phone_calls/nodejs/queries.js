@@ -1,4 +1,7 @@
-const GraknClient = require("grakn-client");
+const { TypeDB } = require("typedb-client/TypeDB");
+const { SessionType } = require("typedb-client/api/connection/TypeDBSession");
+const { TransactionType } = require("typedb-client/api/connection/TypeDBTransaction");
+
 const readline = require("readline");
 
 // to add a new query implementation:
@@ -88,19 +91,19 @@ async function executeQuery1(question, transaction) {
 		"  (customer: $customer, provider: $company) isa contract;",
 		'  $target isa person, has phone-number "+86 921 547 9004";',
 		"  (caller: $customer, callee: $target) isa call, has started-at $started-at;",
-		"  $min-date == 2018-09-14T17:18:49; $started-at > $min-date;",
+		"  $min-date 2018-09-14T17:18:49; $started-at > $min-date;",
 		"get $phone-number;"
 	];
 	printToLog("Query:", query.join("\n"));
 	query = query.join("");
 
-	const iterator = await transaction.query(query);
+	const iterator = transaction.query().match(query);
 	const answers = await iterator.collect();
 	const result = await Promise.all(
 		answers.map(answer =>
 			answer.map()
 				  .get("phone-number")
-				  .value()
+				  .getValue()
 		)
 	);
 
@@ -129,13 +132,13 @@ async function executeQuery2(question, transaction) {
 	printToLog("Query:", query.join("\n"));
 	query = query.join("");
 
-	const iterator = await transaction.query(query);
+	const iterator = transaction.query().match(query);
 	const answers = await iterator.collect();
 	const result = await Promise.all(
 		answers.map(answer =>
 			answer.map()
 				  .get("phone-number")
-				  .value()
+				  .getValue()
 		)
 	);
 
@@ -160,13 +163,13 @@ async function executeQuery3(question, transaction) {
 	printToLog("Query:", query.join("\n"));
 	query = query.join("");
 
-	const iterator = await transaction.query(query);
+	const iterator = transaction.query().match(query);
 	const answers = await iterator.collect();
 	const result = await Promise.all(
 		answers.map(answer =>
 			answer.map()
 				  .get("phone-number")
-				  .value()
+				  .getValue()
 		)
 	);
 
@@ -195,13 +198,13 @@ async function executeQuery4(question, transaction) {
 	printToLog("Query:", query.join("\n"));
 	query = query.join("");
 
-	const iterator = await transaction.query(query);
+	const iterator = transaction.query().match(query);
 	const answers = await iterator.collect();
 	const result = await Promise.all(
 		answers.map(answer =>
 			answer.map()
 				  .get("phone-number-a")
-				  .value()
+				  .getValue()
 		)
 	);
 
@@ -227,11 +230,10 @@ async function executeQuery5(question, transaction) {
 	firstQuery = firstQuery.join("");
 
     result = [];
-	const firstIterator = await transaction.query(firstQuery);
-	const firstAnswer = await firstIterator.collect();
+	const firstAnswer = await transaction.query().matchAggregate(firstQuery);
 	let firstResult = 0;
-	if(firstAnswer.length > 0) {
-		firstResult = firstAnswer[0].number();
+	if(firstAnswer.isNumber()) {
+		firstResult = firstAnswer.asNumber()
 	}
 
 	let output =
@@ -252,11 +254,10 @@ async function executeQuery5(question, transaction) {
 	printToLog("Query:", secondQuery.join("\n"));
 	secondQuery = secondQuery.join("");
 
-	const secondIterator = await transaction.query(secondQuery);
-	const secondAnswer = await secondIterator.collect();
+	const secondAnswer = await transaction.query().matchAggregate(secondQuery);
 	let secondResult = 0;
-	if(secondAnswer.length > 0) {
-		secondResult = secondAnswer[0].number();
+	if(secondAnswer.isNumber()) {
+		secondResult = secondAnswer.asNumber()
 	}
 
 	output +=
@@ -327,7 +328,7 @@ function executeBasedOnSelection(rl) {
 	});
 }
 /**
- * 1. create an instance of Grakn, connecting to the server
+ * 1. create an instance of TypeDB, connecting to the server
  * 2. create a session of the instance, connecting to the keyspace phone_calls
  * 3. create a transaction, off the session
  * 4. call the function corresponding to the selected question
@@ -337,11 +338,11 @@ function executeBasedOnSelection(rl) {
  * @param {integer} qsNumber the (question) number selected by the user
  */
 async function processSelection(qsNumber, keyspaceName) {
-	const client = new GraknClient("localhost:48555"); // 1
-	const session = await client.session((keyspace = keyspaceName)); // 2
-	const transaction = await session.transaction().read(); // 3
+	const client = TypeDB.coreClient("localhost:1729"); // 1
+	const session = await client.session(keyspaceName, SessionType.DATA); // 2
+	const transaction = await session.transaction(TransactionType.READ); // 3
 
-	if (qsNumber == 0) {
+	if (qsNumber === 0) {
 		await executeAllQueries(transaction); // 4
 	} else {
 		const question = queryExamples[qsNumber - 1]["question"];

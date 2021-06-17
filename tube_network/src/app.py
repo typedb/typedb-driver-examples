@@ -1,4 +1,4 @@
-# Copyright 2020 Grakn Labs
+# Copyright 2021 Vaticle
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from six.moves import tkinter as tk
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 import datetime
 
 
@@ -60,7 +60,7 @@ def _create_circle(self, x, y, r, **kwargs):
 
 def execute_and_log(query, transaction):
     print("\n" + ";\n".join(query.split(";")).replace("match", "match\n"))
-    response = transaction.query(query)
+    response = transaction.query().match(query)
     print("... query complete.")
     return response
 
@@ -137,12 +137,17 @@ class TubeGui:
 
         # We want to scale the longitude and lonitude to fit the image
         # To do this we need the minimum and maximum of the longitude and latitude,
-        # we can query for this easily in Grakn!
-        with session.transaction().read() as transaction:
-            self.min_lat = list(execute_and_log(self.COMPUTE_MIN_LAT, transaction))[0].number()
-            self.max_lat = list(execute_and_log(self.COMPUTE_MAX_LAT, transaction))[0].number()
-            self.min_lon = list(execute_and_log(self.COMPUTE_MIN_LON, transaction))[0].number()
-            self.max_lon = list(execute_and_log(self.COMPUTE_MAX_LON, transaction))[0].number()
+        # we can query for this easily in TypeDB!
+        with session.transaction(TransactionType.READ) as transaction:
+            # TODO(vmax): enable when compute queries are supported again
+            self.min_lat = 10
+            self.max_lat = 100
+            self.min_lon = 10
+            self.max_lon = 100
+            # self.min_lat = list(execute_and_log(self.COMPUTE_MIN_LAT, transaction))[0].number()
+            # self.max_lat = list(execute_and_log(self.COMPUTE_MAX_LAT, transaction))[0].number()
+            # self.min_lon = list(execute_and_log(self.COMPUTE_MIN_LON, transaction))[0].number()
+            # self.max_lon = list(execute_and_log(self.COMPUTE_MAX_LON, transaction))[0].number()
 
         # aspect ratio as width over height, which is longitude over latitude
         aspect_ratio = (self.max_lon - self.min_lon) / (self.max_lat - self.min_lat)
@@ -151,10 +156,10 @@ class TubeGui:
 
         self._draw_river_thames()
 
-        # We need to associate the id of the station entity in Grakn to the rendered dot on the screen, so that we can
-        # find the Grakn id of a station that is clicked on
+        # We need to associate the id of the station entity in TypeDB to the rendered dot on the screen, so that we can
+        # find the TypeDB id of a station that is clicked on
         self._station_point_ids = dict()
-        # Also store the station coords so that we don't have to query Grakn for them again
+        # Also store the station coords so that we don't have to query TypeDB for them again
         self._station_canvas_coords = dict()
         self._station_centrality_points = dict()
 
@@ -181,7 +186,7 @@ class TubeGui:
         Retrieve the data required for visualising the tube network
         :return: coordinates of all stations and their names
         """
-        with session.transaction().read() as transaction:
+        with session.transaction(TransactionType.READ) as transaction:
             print("\nRetriving coordinates to draw stations and tunnels ...")
             answers_iterator = execute_and_log(
                 'match' +
@@ -196,8 +201,8 @@ class TubeGui:
             coordinates = {}
             for answer in answers_iterator:
                 answer = answer.map()
-                tube_line_name = answer.get("tul-nam").value()
-                tunnel_id = answer.get("tun-id").value()
+                tube_line_name = answer.get("tul-nam").get_value()
+                tunnel_id = answer.get("tun-id").get_value()
 
                 if tunnel_id in list(coordinates.keys()):
                     current_tube_lines = coordinates[tunnel_id]["tube-lines"]
@@ -206,22 +211,22 @@ class TubeGui:
                         updated_tube_lines = sorted(current_tube_lines)
                         coordinates[tunnel_id]["tube-lines"] = updated_tube_lines
                 else:
-                    lon1, lat1 = answer.get('lon1').value(), answer.get('lat1').value()
-                    lon2, lat2 = answer.get('lon2').value(), answer.get('lat2').value()
+                    lon1, lat1 = answer.get('lon1').get_value(), answer.get('lat1').get_value()
+                    lon2, lat2 = answer.get('lon2').get_value(), answer.get('lat2').get_value()
                     coordinates[tunnel_id] = {
                         "tube-lines": [tube_line_name],
                         "from": {
                             "lon": lon1,
                             "lat": lat1,
-                            "station_name": answer.get("sta1-nam").value()[:-len(" Underground Station")],
-                            "station_id": answer.get("sta1").id
+                            "station_name": answer.get("sta1-nam").get_value()[:-len(" Underground Station")],
+                            "station_id": answer.get("sta1")._iid
 
                         },
                         "to": {
                             "lon": lon2,
                             "lat": lat2,
-                            "station_name": answer.get("sta2-nam").value()[:-len(" Underground Station")],
-                            "station_id": answer.get("sta2").id
+                            "station_name": answer.get("sta2-nam").get_value()[:-len(" Underground Station")],
+                            "station_id": answer.get("sta2")._iid
                         }
                     }
 
@@ -230,14 +235,14 @@ class TubeGui:
     @staticmethod
     def find_shortest_path(session, ids):
         query = "compute path from " + ids[0] + ", to " + ids[1] + ", in [station, tunnel];"
-        with session.transaction().read() as transaction:
+        with session.transaction(TransactionType.READ) as transaction:
             shortest_path_concept_list = list(execute_and_log(query, transaction))[0]
 
             # The response contains the different permutations for each path through stations. We are interested only in
             # which stations the path passes through
             shortest_path_ids = []
             for shortest_path_node_id in shortest_path_concept_list.list():
-                concepts_list= list(transaction.query("match $sta id " + shortest_path_node_id + "; $sta has name $nam; get;"))
+                concepts_list = list(transaction.query().match("match $sta id " + shortest_path_node_id + "; $sta has name $nam;"))
                 if len(concepts_list) > 0:
                     concept = concepts_list[0]
                     if concept.map().get("sta").type().label() == 'station':
@@ -252,7 +257,7 @@ class TubeGui:
             "max_score": 0
         }
 
-        with session.transaction().read() as transaction:
+        with session.transaction(TransactionType.READ) as transaction:
             centralities = list(execute_and_log(query, transaction))
             # Find the max centrality value, that way we can scale the visualisation up to a maximum radius
             centrality_details["max_score"] = max([int(centrality.measurement()) for centrality in centralities])
@@ -479,7 +484,7 @@ class TubeGui:
     def display_shortest_path(self, shortest_path_ids):
         """
         Renders the shortest path(s) from station to station
-        :param shortest_path_ids: response from Grakn server
+        :param shortest_path_ids: response from TypeDB server
         """
 
         path_points = []
@@ -606,8 +611,8 @@ class TubeGui:
 
 def init(shouldHalt):
     root = tk.Tk() # Build the Tkinter application
-    with GraknClient(uri="localhost:48555") as client:
-        with client.session(keyspace="tube_network") as session:
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session("tube_network", SessionType.DATA) as session:
             tube_gui = TubeGui(session, root)
             if shouldHalt:
                 root.mainloop()

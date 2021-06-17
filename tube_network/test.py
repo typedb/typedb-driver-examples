@@ -1,19 +1,19 @@
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 import unittest
 
 from tube_network.src import migration, statistics, journey_planner, app
 
 
 class Test(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        with GraknClient(uri="localhost:48555") as client:
-            with client.session(keyspace="tube_network") as session:
+        with TypeDB.core_client("localhost:1729") as client:
+            client.databases().create("tube_network")
+            with client.session("tube_network", SessionType.SCHEMA) as session:
                 with open('schemas/tube-network-schema.gql', 'r') as schema:
                     define_query = schema.read()
-                    with session.transaction().write() as transaction:
-                        transaction.query(define_query)
+                    with session.transaction(TransactionType.WRITE) as transaction:
+                        transaction.query().define(define_query)
                         transaction.commit()
                         print("Loaded the tube_network schema")
         migration.init()
@@ -24,14 +24,16 @@ class Test(unittest.TestCase):
 
         query_examples = statistics.query_examples
 
-        with GraknClient(uri="localhost:48555") as client:
-            with client.session(keyspace="tube_network") as session:
-                with session.transaction().read() as transaction:
+        with TypeDB.core_client("localhost:1729") as client:
+            with client.session("tube_network", SessionType.DATA) as session:
+                with session.transaction(TransactionType.READ) as transaction:
                     self.assertEqual(
                         query_examples[0].get("query_function")("", transaction),
                         271
                     )
 
+                    # TODO(vmax): enable when compute queries are supported again
+                    """
                     self.assertEqual(
                         query_examples[1].get("query_function")("", transaction),
                         1.0
@@ -62,12 +64,14 @@ class Test(unittest.TestCase):
                         query_examples[6].get("query_function")("", transaction),
                         1.0437559149702726
                     )
+                    """
 
+    @unittest.skip('enable when compute queries are supported again')
     def test_journey_planner(self):
         journey_planner.init(from_station_name="Green Park", to_station_name="Holloway Road", selected_path_strategy=1)
 
-        with GraknClient(uri="localhost:48555") as client:
-            with client.session(keyspace="tube_network") as session:
+        with TypeDB.core_client("localhost:1729") as client:
+            with client.session("tube_network", SessionType.DATA) as session:
                 # not containing 'Underground Station'
                 # not Title Case
                 # fewest stops
@@ -95,19 +99,20 @@ class Test(unittest.TestCase):
                     [u'Green Park Underground Station', u'Holloway Road Underground Station']
                 )
 
+    @unittest.skip('enable when compute queries are supported again')
     def test_visualisation_queries(self):
         app.init(False)
 
-        with GraknClient(uri="localhost:48555") as client:
-            with client.session(keyspace="tube_network") as session:
+        with TypeDB.core_client("localhost:1729") as client:
+            with client.session("tube_network", SessionType.DATA) as session:
                 for query in app.TubeGui.ANALYTICAL_QUERIES:
-                    with session.transaction().read() as read_transaction:
+                    with session.transaction(TransactionType.READ) as read_transaction:
                         read_transaction.query(query)
 
     @classmethod
     def tearDownClass(cls):
-        with GraknClient(uri="localhost:48555") as client:
-            client.keyspaces().delete("tube_network")
+        with TypeDB.core_client("localhost:1729") as client:
+            client.databases().get("tube_network").delete()
             print("Deleted the tube_network keyspace")
 
 

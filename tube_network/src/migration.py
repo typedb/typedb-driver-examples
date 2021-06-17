@@ -1,4 +1,4 @@
-# Copyright 2020 Grakn Labs
+# Copyright 2021 Vaticle
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 import json
 import os
 import re
@@ -377,17 +377,17 @@ def construct_queries(entity_queries, relation_queries):
 
 
 def insert(queries):
-    with GraknClient(uri="localhost:48555") as client:
-        with client.session(keyspace="tube_network") as session:
-            transaction = session.transaction().write()
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session("tube_network", SessionType.DATA) as session:
+            transaction = session.transaction(TransactionType.WRITE)
             for i, query in enumerate(queries):
                 print(query)
                 print("- - - - - - - - - - - - - -")
-                transaction.query(query)
+                transaction.query().insert(query)
 
                 if i % 500 == 0:
                     transaction.commit()
-                    transaction = session.transaction().write()
+                    transaction = session.transaction(TransactionType.WRITE)
             transaction.commit()
 
 

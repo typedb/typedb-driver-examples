@@ -1,12 +1,12 @@
-# Grakn Examples
+# TypeDB Examples
 
-[![CircleCI](https://circleci.com/gh/graknlabs/examples/tree/master.svg?style=shield)](https://circleci.com/gh/graknlabs/examples)
+[![Grabl](https://grabl.io/api/status/vaticle/typedb-examples/badge.svg)](https://grabl.io/vaticle/typedb-examples)
 
-This repository includes examples that showcase usage of Grakn Clients in reading from and writing to a Grakn knowledge graph.
+This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB knowledge graph.
 
 ## Explore Client Examples
 
-Grakn officially supports clients for Java, Node.js and Python. Learn more about [Grakn Clients](http://dev.grakn.ai/docs/client-api/overview).
+TypeDB officially supports clients for Java, Node.js and Python. Learn more about [TypeDB Clients](http://docs.vaticle.com/docs/client-api/overview).
 
 ### Client Java Examples
 - [Phone Calls: Migrate and perform expressive queries using Client Java](phone_calls/java/)
@@ -20,7 +20,7 @@ Grakn officially supports clients for Java, Node.js and Python. Learn more about
 
 ## Explore Use Cases
 
-### Migrate data to Grakn:
+### Migrate data to TypeDB:
 
 #### serialised:
 - Java: [CSV](phone_calls/java/CSVMigration.java) | [JSON](phone_calls/java/JSONMigration.java) | [XML](phone_calls/java/XMLMigration.java)
@@ -39,9 +39,9 @@ Grakn officially supports clients for Java, Node.js and Python. Learn more about
 - Python: [statistical](tube_network/src/statistics.py) | [shortest path](tube_network/src/journey_planner.py) | [centrality](tube_network/src/app.py)
     
 ## Explore BioGrakn
-[BioGrakn](https://github.com/graknlabs/biograkn) is a collection of knowledge graphs of biomedical data.
+[BioGrakn](https://github.com/vaticle/biograkn) is a collection of knowledge graphs of biomedical data.
 
-BioGrakn provides an intuitive way to query interconnected and heterogeneous biomedical data in one single place. The schema that models the underlying knowledge graph alongside the descriptive query language, Graql, makes writing complex queries an extremely straightforward and intuitive process. Furthermore, the automated reasoning capability of Grakn, allows BioGrakn to become an intelligent database of biomedical data that infers implicit knowledge based on the explicitly stored data. BioGrakn can understand biological facts, infer based on new findings and enforce research constraints, all at query (run) time.
+BioGrakn provides an intuitive way to query interconnected and heterogeneous biomedical data in one single place. The schema that models the underlying knowledge graph alongside the descriptive query language, TypeQL, makes writing complex queries an extremely straightforward and intuitive process. Furthermore, the automated reasoning capability of TypeDB, allows BioGrakn to become an intelligent database of biomedical data that infers implicit knowledge based on the explicitly stored data. BioGrakn can understand biological facts, infer based on new findings and enforce research constraints, all at query (run) time.
 
 ## Explore Schemas
 - [Phone Calls](schemas/phone-calls-schema.gql)

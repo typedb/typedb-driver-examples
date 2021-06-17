@@ -1,29 +1,41 @@
-package grakn.example.phoneCalls;
+package com.vaticle.typedb.example.phoneCalls;
 
-import grakn.client.GraknClient;
-import static graql.lang.Graql.*;
-import graql.lang.query.GraqlInsert;
+import com.google.gson.stream.JsonReader;
+import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.connection.TypeDBClient;
+import com.vaticle.typedb.client.api.connection.TypeDBSession;
+import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
+import com.vaticle.typeql.lang.TypeQL;
+import mjson.Json;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * reads a JSON encoded value as a stream of tokens,
+ *
  * @see <a href="https://google.github.io/gson/apidocs/com/google/gson/stream/JsonReader.html">JsonReader</a>
+ * <p>
+ * a lean JSON Library for Java,
+ * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
+ * <p>
+ * a lean JSON Library for Java,
+ * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
  */
-import com.google.gson.stream.JsonReader;
-
 /**
  * a lean JSON Library for Java,
  * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
  */
-import mjson.Json;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class JSONMigration {
     /**
      * representation of Input object that links an input file to its own templating function,
-     * which is used to map a Json object to a Graql query string
+     * which is used to map a Json object to a TypeQL query string
      */
     abstract static class Input {
         String path;
@@ -46,20 +58,20 @@ public class JSONMigration {
     }
 
     /**
-     * 1. creates a Grakn instance
+     * 1. creates a TypeDB instance
      * 2. creates a session to the targeted keyspace
      * 3. initialises the list of Inputs, each containing details required to parse the data
-     * 4. loads the csv data to Grakn for each file
+     * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
      * 6. closes the client
      */
     static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws IOException {
-        GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session(keyspaceName);
+        TypeDBClient client = TypeDB.coreClient("localhost:1729");
+        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
 
         for (Input input : inputs) {
-            System.out.println("Loading from [" + input.getDataPath() + ".json] into Grakn ...");
-            loadDataIntoGrakn(input, session);
+            System.out.println("Loading from [" + input.getDataPath() + ".json] into TypeDB ...");
+            loadDataIntoTypeDB(input, session);
         }
 
         session.close();
@@ -69,68 +81,68 @@ public class JSONMigration {
     static Collection<Input> initialiseInputs() {
         Collection<Input> inputs = new ArrayList<>();
 
-        // define template for constructing a company Graql insert query
+        // define template for constructing a company TypeQL insert query
         inputs.add(new Input("datasets/phone-calls/companies") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
-        // define template for constructing a person Graql insert query
+        // define template for constructing a person TypeQL insert query
         inputs.add(new Input("datasets/phone-calls/people") {
             @Override
             public String template(Json person) {
                 // insert person
-                String graqlInsertQuery = "insert $person isa person, has phone-number " + person.at("phone_number");
+                String typeQLInsertQuery = "insert $person isa person, has phone-number " + person.at("phone_number");
 
                 if (person.has("first_name")) {
-                    graqlInsertQuery += ", has first-name " + person.at("first_name");
-                    graqlInsertQuery += ", has last-name " + person.at("last_name");
-                    graqlInsertQuery += ", has city " + person.at("city");
-                    graqlInsertQuery += ", has age " + person.at("age").asInteger();
+                    typeQLInsertQuery += ", has first-name " + person.at("first_name");
+                    typeQLInsertQuery += ", has last-name " + person.at("last_name");
+                    typeQLInsertQuery += ", has city " + person.at("city");
+                    typeQLInsertQuery += ", has age " + person.at("age").asInteger();
                 }
 
-                graqlInsertQuery += ";";
-                return graqlInsertQuery;
+                typeQLInsertQuery += ";";
+                return typeQLInsertQuery;
             }
         });
-        // define template for constructing a contract Graql insert query
+        // define template for constructing a contract TypeQL insert query
         inputs.add(new Input("datasets/phone-calls/contracts") {
             @Override
             public String template(Json contract) {
                 // match company
-                String graqlInsertQuery = "match $company isa company, has name " + contract.at("company_name") + ";";
+                String typeQLInsertQuery = "match $company isa company, has name " + contract.at("company_name") + ";";
                 // match person
-                graqlInsertQuery += " $customer isa person, has phone-number " + contract.at("person_id") + ";";
+                typeQLInsertQuery += " $customer isa person, has phone-number " + contract.at("person_id") + ";";
                 // insert contract
-                graqlInsertQuery += " insert (provider: $company, customer: $customer) isa contract;";
-                return graqlInsertQuery;
+                typeQLInsertQuery += " insert (provider: $company, customer: $customer) isa contract;";
+                return typeQLInsertQuery;
             }
         });
-        // define template for constructing a call Graql insert query
+        // define template for constructing a call TypeQL insert query
         inputs.add(new Input("datasets/phone-calls/calls") {
             @Override
             public String template(Json call) {
                 // match caller
-                String graqlInsertQuery = "match $caller isa person, has phone-number " + call.at("caller_id") + ";";
+                String typeQLInsertQuery = "match $caller isa person, has phone-number " + call.at("caller_id") + ";";
                 // match callee
-                graqlInsertQuery += " $callee isa person, has phone-number " + call.at("callee_id") + ";";
+                typeQLInsertQuery += " $callee isa person, has phone-number " + call.at("callee_id") + ";";
                 // insert call
-                graqlInsertQuery += " insert $call(caller: $caller, callee: $callee) isa call;" +
+                typeQLInsertQuery += " insert $call(caller: $caller, callee: $callee) isa call;" +
                         " $call has started-at " + call.at("started_at").asString() + ";" +
                         " $call has duration " + call.at("duration").asInteger() + ";";
-                return graqlInsertQuery;
+                return typeQLInsertQuery;
             }
         });
         return inputs;
     }
 
     /**
-     * loads the csv data into our Grakn phone_calls keyspace:
+     * loads the csv data into our TypeDB phone_calls keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
-     * a. creates a Grakn transaction
-     * b. constructs the corresponding Graql insert query
+     * a. creates a TypeDB transaction
+     * b. constructs the corresponding TypeQL insert query
      * c. runs the query
      * d. commits the transaction
      * e. closes the transaction
@@ -139,17 +151,17 @@ public class JSONMigration {
      * @param session off of which a transaction is created
      * @throws IOException
      */
-    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws IOException {
+    static void loadDataIntoTypeDB(Input input, TypeDBSession session) throws IOException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
-            GraknClient.Transaction transaction = session.transaction().write(); // 2a
-            String graqlInsertQuery = input.template(item); // 2b
-            System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.execute((GraqlInsert) parse(graqlInsertQuery)); // 2c
+            TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE); // 2a
+            String typeQLInsertQuery = input.template(item); // 2b
+            System.out.println("Executing TypeQL Query: " + typeQLInsertQuery);
+            transaction.query().insert(TypeQL.parseQuery(typeQLInsertQuery).asInsert()); // 2c
             transaction.commit(); // 2d
 
         }
-        System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + ".json] into Grakn.\n");
+        System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + ".json] into TypeDB.\n");
     }
 
     /**

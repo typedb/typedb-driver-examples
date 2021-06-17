@@ -1,27 +1,26 @@
 {
-    "author": "Grakn Labs (community@grakn.ai)",
+    "author": "Vaticle (community@vaticle.com)",
     "dependencies": {
         "@bazel/jasmine": "latest",
         "jasmine": "latest",
-        "grakn-client": "https://repo.grakn.ai/repository/npm-snapshot-group/grakn-client/-/grakn-client-1.8.0.tgz",
+        "typedb-client": "2.1.1",
         "jasmine-reporters": "^2.3.2",
         "papaparse": "^4.6.3",
         "stream-json": "^1.1.4",
         "xml-stream": "^0.4.5"
     },
-    "description": "An example that illustrates how CSV data can be loaded into Grakn using the Node.js Client",
+    "description": "An example that illustrates how CSV data can be loaded into TypeDB using the Node.js Client",
     "keywords": [
-        "Grakn",
-        "Graql",
+        "TypeDB",
+        "TypeQL",
         "csv",
         "json",
         "xml",
-        "migration",
-        "knowledge-graph"
+        "migration"
     ],
     "license": "ISC",
     "main": "index.js",
-    "name": "grakn-nodejs-migration-csv-example",
+    "name": "typedb-nodejs-migration-csv-example",
     "scripts": {
         "migrateCsv": "node -e 'require(\"./migrateCsv\").init(\"../../datasets/phone-calls/\")'",
         "migrateJson": "node -e 'require(\"./migrateJson\").init(\"../../datasets/phone-calls/\")'",

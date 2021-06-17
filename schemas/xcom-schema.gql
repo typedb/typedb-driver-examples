@@ -26,204 +26,194 @@ quantity-consumed sub attribute,
 # Static entities
 
 research-project sub entity,
-	has name,
-	plays research-task,
-	plays required-tech,
-	plays research-to-begin;
+	owns name,
+	plays resource-cost-to-begin-research:research-to-begin,
+	plays campaign-research-task:research-task,
+	plays tech-requirement-to-begin-task:required-tech,
+	plays tech-requirement-to-begin-research:required-tech,
+	plays tech-requirement-to-begin-research:research-to-begin,
+	owns completed;
 
 item sub entity,
-	has name,
-	plays owned-item,
-	plays consumes-resource;
+	owns name,
+	plays item-ownership:owned-item,
+	plays resource-cost:consumes-resource;
 
 # Dynamic entities
 
 campaign sub entity,
-	has name,
-	plays campaign-with-tasks,
-	plays item-owner;
+	owns name,
+	plays campaign-task:campaign-with-tasks,
+	plays item-ownership:item-owner;
 
 # Static relations
 
 requirement sub relation,
-	abstract,
 	relates prerequisite,
 	relates outcome,
-	plays task;
+	plays campaign-task:task;
 
 tech-requirement sub requirement,
-	abstract,
-	relates required-tech as prerequisite,
-	relates outcome;
+	relates required-tech as prerequisite;
 
 tech-requirement-to-begin-task sub tech-requirement,
-	abstract,
-	relates required-tech as prerequisite,
 	relates task-to-begin as outcome;
 
-tech-requirement-to-begin-research sub tech-requirement-to-begin-task,
-	relates required-tech as prerequisite,
+tech-requirement-to-begin-research sub tech-requirement,
 	relates research-to-begin as outcome;
 
 resource-cost sub requirement,
-	abstract,
 	relates consumes-resource as prerequisite,
-	relates outcome,
-	has quantity-consumed;
+	owns quantity-consumed;
 
 resource-cost-to-begin-task sub resource-cost,
-	abstract,
-	relates consumes-resource as prerequisite,
 	relates task-to-begin as outcome;
 
-resource-cost-to-begin-research sub resource-cost-to-begin-task,
-	relates consumes-resource as prerequisite,
+resource-cost-to-begin-research sub resource-cost,
 	relates research-to-begin as outcome;
 
 # Dynamic relations
 
 campaign-task sub relation,
-	abstract,
 	relates campaign-with-tasks,
 	relates task,
-	has has-required-techs,
-	has has-required-resources,
-	has can-begin,
-	has started,
-	has can-proceed,
-	has progress,
-	has completed;
+	owns has-required-techs,
+	owns has-required-resources,
+	owns can-begin,
+	owns started,
+	owns can-proceed,
+	owns progress,
+	owns completed;
 
 campaign-research-task sub campaign-task,
-	relates campaign-with-tasks,
 	relates research-task as task;
 
 item-ownership sub relation,
 	relates item-owner,
 	relates owned-item,
-	has quantity;
+	owns quantity;
 
 # Rules
 
 ## campaign task
-task-is-not-completed-if-progress-is-less-than-100 sub rule,
-when {
-	$task isa campaign-task, has progress < 100;
-}, then {
-	$task has completed false;
-};
+#rule task-is-not-completed-if-progress-is-less-than-100:
+#    when {
+#        $task isa campaign-task, has progress < 100;
+#    } then {
+#        $task has completed false;
+#    };
+#
+#rule task-is-completed-if-progress-is-at-least-100:
+#    when {
+#        $task isa campaign-task, has progress >= 100;
+#    } then {
+#        $task has completed true;
+#    };
+#
+#rule task-can-not-begin-if-it-is-already-started:
+#    when {
+#        $task isa campaign-task, has started true;
+#    } then {
+#        $task has can-begin false;
+#    };
+#
+#rule task-can-not-begin-if-it-lacks-required-tech:
+#    when {
+#        $task isa campaign-task, has has-required-techs false;
+#    } then {
+#        $task has can-begin false;
+#    };
+#
+#rule task-can-not-begin-if-it-lacks-required-resources:
+#    when {
+#        $task isa campaign-task, has has-required-resources false;
+#    } then {
+#        $task has can-begin false;
+#    };
+#
+#rule task-can-begin-if-it-is-not-started-and-all-requirements-are-met:
+#    when {
+#        $task isa campaign-task, has started false, has has-required-techs true, has has-required-resources true;
+#    } then {
+#        $task has can-begin true;
+#    };
+#
+#rule research-does-not-have-required-techs:
+#    when {
+#        $campaign isa campaign;
+#        $campaign_task($campaign, task: $task) isa campaign-task;
+#        (research-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-research;
+#        ($campaign, $prerequisite) isa campaign-task, has completed false;
+#    } then {
+#        $campaign_task has has-required-techs false;
+#    };
+#
+#rule research-has-required-techs:
+#    when {
+#        $campaign isa campaign;
+#        $campaign_task($campaign, task: $task) isa campaign-task;
+#        not {
+#            (research-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-research;
+#            ($campaign, $prerequisite) isa campaign-task, has completed false;
+#        };
+#    } then {
+#        $campaign_task has has-required-techs true;
+#    };
 
-task-is-completed-if-progress-is-at-least-100 sub rule,
-when {
-	$task isa campaign-task, has progress >= 100;
-}, then {
-	$task has completed true;
-};
-
-task-can-not-begin-if-it-is-already-started sub rule,
-when {
-	$task isa campaign-task, has started true;
-}, then {
-	$task has can-begin false;
-};
-
-task-can-not-begin-if-it-lacks-required-tech sub rule,
-when {
-	$task isa campaign-task, has has-required-techs false;
-}, then {
-	$task has can-begin false;
-};
-
-task-can-not-begin-if-it-lacks-required-resources sub rule,
-when {
-	$task isa campaign-task, has has-required-resources false;
-}, then {
-	$task has can-begin false;
-};
-
-task-can-begin-if-it-is-not-started-and-all-requirements-are-met sub rule,
-when {
-	$task isa campaign-task, has started false, has has-required-techs true, has has-required-resources true;
-}, then {
-	$task has can-begin true;
-};
-
-research-does-not-have-required-techs sub rule,
-when {
-	$campaign isa campaign;
-	$campaign_task($campaign, task: $task) isa campaign-task;
-	(research-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-research;
-	($campaign, $prerequisite) isa campaign-task, has completed false;
-}, then {
-	$campaign_task has has-required-techs false;
-};
-
-research-has-required-techs sub rule,
-when {
-	$campaign isa campaign;
-	$campaign_task($campaign, task: $task) isa campaign-task;
-	not {
-		(research-to-begin: $task, required-tech: $prerequisite) isa tech-requirement-to-begin-research;
-		($campaign, $prerequisite) isa campaign-task, has completed false;
-	};
-}, then {
-	$campaign_task has has-required-techs true;
-};
-
-research-does-not-have-required-resources sub rule,
-when {
-	$campaign isa campaign;
-	$campaign_task($campaign, task: $task) isa campaign-task;
-	(research-to-begin: $task, consumes-resource: $resource) isa resource-cost-to-begin-research, has quantity-consumed $quantity_required;
-	($campaign, $resource) isa item-ownership, has quantity < $quantity_required;
-}, then {
-	$campaign_task has has-required-resources false;
-};
-
-research-does-have-required-resources sub rule,
-when {
-	$campaign isa campaign;
-	$campaign_task($campaign, task: $task) isa campaign-task;
-	not {
-		(research-to-begin: $task, consumes-resource: $resource) isa resource-cost-to-begin-research, has quantity-consumed $quantity_required;
-		($campaign, $resource) isa item-ownership, has quantity < $quantity_required;
-	};
-}, then {
-	$campaign_task has has-required-resources true;
-};
-
-task-can-not-proceed-if-it-is-not-started sub rule,
-when {
-	$task isa campaign-task, has started false;
-}, then {
-	$task has can-proceed false;
-};
-
-task-can-not-proceed-if-it-is-completed sub rule,
-when {
-	$task isa campaign-task, has completed true;
-}, then {
-	$task has can-proceed false;
-};
-
-task-can-proceed-if-it-is-started-but-not-completed sub rule,
-when {
-	$task isa campaign-task, has started true, has completed false;
-}, then {
-	$task has can-proceed true;
-};
-
-task-has-no-progress-if-it-has-not-been-started sub rule,
-when {
-	$task isa campaign-task, has started false;
-}, then {
-	$task has progress 0;
-};
-
-research-tech-requirements-are-transitive sub rule,
-when {
-	(research-to-begin: $a, required-tech: $b) isa tech-requirement-to-begin-research;
-	(research-to-begin: $b, required-tech: $c) isa tech-requirement-to-begin-research;
-}, then {
-	(research-to-begin: $a, required-tech: $c) isa tech-requirement-to-begin-research;
-};
+#rule research-does-not-have-required-resources:
+#    when {
+#        $campaign isa campaign;
+#        $campaign_task($campaign, task: $task) isa campaign-task;
+#        (research-to-begin: $task, consumes-resource: $resource) isa resource-cost-to-begin-research, has quantity-consumed $quantity_required;
+#        ($campaign, $resource) isa item-ownership, has quantity < $quantity_required;
+#    } then {
+#        $campaign_task has has-required-resources false;
+#    };
+#
+#rule research-does-have-required-resources:
+#    when {
+#        $campaign isa campaign;
+#        $campaign_task($campaign, task: $task) isa campaign-task;
+#        not {
+#            (research-to-begin: $task, consumes-resource: $resource) isa resource-cost-to-begin-research, has quantity-consumed $quantity_required;
+#            ($campaign, $resource) isa item-ownership, has quantity < $quantity_required;
+#        };
+#    } then {
+#        $campaign_task has has-required-resources true;
+#    };
+#
+#rule task-can-not-proceed-if-it-is-not-started:
+#    when {
+#        $task isa campaign-task, has started false;
+#    } then {
+#        $task has can-proceed false;
+#    };
+#
+#rule task-can-not-proceed-if-it-is-completed:
+#    when {
+#        $task isa campaign-task, has completed true;
+#    } then {
+#        $task has can-proceed false;
+#    };
+#
+#rule task-can-proceed-if-it-is-started-but-not-completed:
+#    when {
+#        $task isa campaign-task, has started true, has completed false;
+#    } then {
+#        $task has can-proceed true;
+#    };
+#
+#rule task-has-no-progress-if-it-has-not-been-started:
+#    when {
+#        $task isa campaign-task, has started false;
+#    } then {
+#        $task has progress 0;
+#    };
+#
+#rule research-tech-requirements-are-transitive:
+#    when {
+#        (research-to-begin: $a, required-tech: $b) isa tech-requirement-to-begin-research;
+#        (research-to-begin: $b, required-tech: $c) isa tech-requirement-to-begin-research;
+#    } then {
+#        (research-to-begin: $a, required-tech: $c) isa tech-requirement-to-begin-research;
+#    };

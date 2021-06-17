@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-bazel run @graknlabs_dependencies//library/maven:update
+bazel run @vaticle_dependencies//library/maven:update

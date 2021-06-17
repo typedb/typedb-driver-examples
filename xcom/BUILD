@@ -2,8 +2,10 @@ java_library(
     name = "migration-lib",
     srcs = ["Migration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typeql_lang_java//:typeql-lang",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -16,38 +18,43 @@ java_library(
     name = "queries-lib",
     srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//:typeql-lang",
     ]
 )
 
 java_test(
     name = "test",
-    test_class = "grakn.example.xcom.XCOMTest",
+    test_class = "com.vaticle.typedb.example.xcom.XCOMTest",
     srcs = [
         "XCOMTest.java"
     ],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//query",
         ":migration-lib",
         ":queries-lib"
     ],
     data = [
         "//schemas:xcom-schema.gql"
     ],
-    resources = ["logback-test.xml"],
-    resource_strip_prefix = "xcom",
+    resources = ["//conf:logback-test.xml"],
+    resource_strip_prefix = "conf",
     size = "large",
 )
 
 java_binary(
     name = "migration",
-    main_class = "grakn.example.xcom.Migration",
+    main_class = "com.vaticle.typedb.example.xcom.Migration",
     srcs = ["Migration.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -58,10 +65,11 @@ java_binary(
 
 java_binary(
     name = "queries",
-    main_class = "grakn.example.xcom.Queries",
+    main_class = "com.vaticle.typedb.example.xcom.Queries",
     srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
     deps = [
-        "@graknlabs_client_java//:client-java",
-        "@graknlabs_graql//java:graql",
+        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_client_java//api",
+        "@vaticle_typeql_lang_java//:typeql-lang",
     ],
 )

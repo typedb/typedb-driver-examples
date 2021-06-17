@@ -1,5 +1,5 @@
 # coding=utf-8
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 '''
   to add a new query implementation:
     1. add the question and function to the approriate list of dictionaries:
@@ -58,16 +58,16 @@ def execute_query_1(question, transaction):
         '  (customer: $customer, provider: $company) isa contract;',
         '  $target isa person, has phone-number "+86 921 547 9004";',
         '  (caller: $customer, callee: $target) isa call, has started-at $started-at;',
-        '  $min-date == 2018-09-14T17:18:49; $started-at > $min-date;',
+        '  $min-date 2018-09-14T17:18:49; $started-at > $min-date;',
         'get $phone-number;'
     ]
 
     print_to_log("Query:", "\n".join(query))
     query = "".join(query)
 
-    iterator = transaction.query(query)
+    iterator = transaction.query().match(query)
     answers = [ans.get("phone-number") for ans in iterator]
-    result = [answer.value() for answer in answers]
+    result = [answer.get_value() for answer in answers]
 
     print_to_log("Result:", result)
 
@@ -97,9 +97,9 @@ def execute_query_2(question, transaction):
     print_to_log("Query:", "\n".join(query))
     query = "".join(query)
 
-    iterator = transaction.query(query)
+    iterator = transaction.query().match(query)
     answers = [ans.get("phone-number") for ans in iterator]
-    result = [answer.value() for answer in answers]
+    result = [answer.get_value() for answer in answers]
 
     print_to_log("Result:", result)
 
@@ -125,9 +125,9 @@ def execute_query_3(question, transaction):
     print_to_log("Query:", "\n".join(query))
     query = "".join(query)
 
-    iterator = transaction.query(query)
+    iterator = transaction.query().match(query)
     answers = [ans.get("phone-number") for ans in iterator]
-    result = [answer.value() for answer in answers]
+    result = [answer.get_value() for answer in answers]
 
     print_to_log("Result:", result)
 
@@ -156,11 +156,11 @@ def execute_query_4(question, transaction):
     print_to_log("Query:", "\n".join(query))
     query = "".join(query)
 
-    iterator = transaction.query(query)
+    iterator = transaction.query().match(query)
     answers = []
     for answer in iterator:
         answers.extend(answer.map().values())
-    result = [answer.value() for answer in answers]
+    result = [answer.get_value() for answer in answers]
 
     print_to_log("Result:", result)
 
@@ -185,10 +185,10 @@ def execute_query_5(question, transaction):
     first_query = "".join(first_query)
 
     result = []
-    first_answer = list(transaction.query(first_query))
+    first_answer = transaction.query().match_aggregate(first_query).get()
     first_result = 0
-    if len(first_answer) > 0:
-        first_result = first_answer[0].number()
+    if not first_answer.is_nan():
+        first_result = first_answer.as_float()
         result.append(first_result)
 
     output = ("Customers aged under 20 have made calls with average duration of " +
@@ -205,11 +205,11 @@ def execute_query_5(question, transaction):
     print_to_log("Query:", "\n".join(second_query))
     second_query = "".join(second_query)
 
-    second_answer = list(transaction.query(second_query))
+    second_answer = transaction.query().match_aggregate(second_query).get()
     second_result = 0
 
-    if len(second_answer) > 0:
-        second_result = second_answer[0].number()
+    if not second_answer.is_nan():
+        second_result = second_answer.as_float()
         result.append(second_result)
 
     output += ("Customers aged over 40 have made calls with average duration of " +
@@ -268,9 +268,9 @@ query_examples = get_query_examples + aggregate_query_examples
 
 def process_selection(qs_number, keyspace_name):
     ## create a transaction to talk to the phone_calls keyspace
-    with GraknClient(uri="localhost:48555") as client:
-        with client.session(keyspace=keyspace_name) as session:
-            with session.transaction().read() as transaction:
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session(keyspace_name, SessionType.DATA) as session:
+            with session.transaction(TransactionType.READ) as transaction:
                 ## execute the query for the selected question
                 if qs_number == 0:
                     execute_query_all(transaction)
@@ -285,7 +285,7 @@ if __name__ == "__main__":
     '''
       The code below:
       - gets user's selection wrt the queries to be executed
-      - creates a Grakn client > session > transaction connected to the phone_calls keyspace
+      - creates a TypeDB client > session > transaction connected to the phone_calls keyspace
       - runs the right function based on the user's selection
       - closes the session
     '''

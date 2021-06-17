@@ -1,6 +1,9 @@
-package grakn.example.xcom;
+package com.vaticle.typedb.example.xcom;
 
-import grakn.client.GraknClient;
+import com.vaticle.typedb.client.api.connection.TypeDBClient;
+import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.connection.TypeDBSession;
+import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static graql.lang.Graql.parse;
+import com.vaticle.typeql.lang.TypeQL;
 
 
 public class Queries {
@@ -154,9 +157,9 @@ public class Queries {
                 case ACQUIRE_ITEM:
                     transaction(t -> {
                         String query = "match $campaign isa campaign, has name $name; get $name;";
-                        System.out.println("Executing Graql Query: " + query);
-                        t.execute(parse(query).asGet()).get().forEach(result -> campaignNames.add(
-                                result.get("name").asAttribute().value().toString()
+                        System.out.println("Executing TypeQL Query: " + query);
+                        t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> campaignNames.add(
+                                result.get("name").asAttribute().asString().getValue()
                         ));
                     }, TransactionMode.READ);
                     break;
@@ -165,9 +168,9 @@ public class Queries {
                 case COMPUTE_TECH_REQUIREMENTS:
                     transaction(t -> {
                         String query = "match $tech isa research-project, has name $name; get $name;";
-                        System.out.println("Executing Graql Query: " + query);
-                        t.execute(parse(query).asGet()).get().forEach(result -> techs.add(
-                                result.get("name").asAttribute().value().toString()
+                        System.out.println("Executing TypeQL Query: " + query);
+                        t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> techs.add(
+                                result.get("name").asAttribute().asString().getValue()
                         ));
                     }, TransactionMode.READ);
                     break;
@@ -175,9 +178,9 @@ public class Queries {
                 case LIST_ALL_ITEMS:
                     transaction(t -> {
                         String query = "match $item isa item, has name $name; get $name;";
-                        System.out.println("Executing Graql Query: " + query);
-                        t.execute(parse(query).asGet()).get().forEach(result -> items.add(
-                                result.get("name").asAttribute().value().toString()
+                        System.out.println("Executing TypeQL Query: " + query);
+                        t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> items.add(
+                                result.get("name").asAttribute().asString().getValue()
                         ));
                     }, TransactionMode.READ);
                     break;
@@ -232,20 +235,20 @@ public class Queries {
         public Result<Object> onSubmit(String campaignName) {
             transaction(t -> {
                 String query = "insert $campaign isa campaign, has name \"" + campaignName + "\";";
-                System.out.println("Executing Graql Query: " + query);
-                t.execute(parse(query).asInsert());
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().insert(TypeQL.parseQuery(query).asInsert());
 
                 query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
                         + " $research_project isa research-project;"
                         + " insert (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task, has started false;";
-                System.out.println("Executing Graql Query: " + query);
-                t.execute(parse(query).asInsert());
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().insert(TypeQL.parseQuery(query).asInsert());
 
                 query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
                         + " $item isa item;"
                         + " insert (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity 0;";
-                System.out.println("Executing Graql Query: " + query);
-                t.execute(parse(query).asInsert());
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().insert(TypeQL.parseQuery(query).asInsert());
             }, TransactionMode.WRITE);
 
             System.out.println("Success");
@@ -305,15 +308,15 @@ public class Queries {
                         + " $task (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
                         + " has started $started, has progress $progress;"
                         + " delete $task has started $started; $task has progress $progress;";
-                System.out.println("Executing Graql Query: " + query);
-                t.execute(parse(query).asDelete());
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().delete(TypeQL.parseQuery(query).asDelete());
 
                 query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
                         + " $research_project isa research-project, has name \"" + tech.name + "\";"
                         + " $task(campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task;"
                         + " insert $task has started true, has progress 100;";
-                System.out.println("Executing Graql Query: " + query);
-                t.execute(parse(query).asInsert());
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().insert(TypeQL.parseQuery(query).asInsert());
             }, TransactionMode.WRITE);
 
             System.out.println("Success");
@@ -329,10 +332,10 @@ public class Queries {
                     + " $research-project isa research-project, has name $research_project_name;"
                     + " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-begin true, has progress $progress;"
                     + " get $research_project_name, $progress;";
-            System.out.println("Executing Graql Query: " + query);
-            t.execute(parse(query).asGet()).get().forEach(result -> researchTasks.add(new ResearchTask(
-                    result.get("research_project_name").asAttribute().value().toString(),
-                    (double) result.get("progress").asAttribute().value()
+            System.out.println("Executing TypeQL Query: " + query);
+            t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> researchTasks.add(new ResearchTask(
+                    result.get("research_project_name").asAttribute().asString().getValue(),
+                    result.get("progress").asAttribute().asDouble().getValue()
             )));
         }, TransactionMode.READ);
 
@@ -347,10 +350,10 @@ public class Queries {
                     + " $item isa item, has name $item_name;"
                     + " (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $quantity;"
                     + " get $item_name, $quantity;";
-            System.out.println("Executing Graql Query: " + query);
-            t.execute(parse(query).asGet()).get().forEach(result -> inventory.add(new InventoryItem(
-                    result.get("item_name").asAttribute().value().toString(),
-                    ((Long) result.get("quantity").asAttribute().value()).intValue()
+            System.out.println("Executing TypeQL Query: " + query);
+            t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> inventory.add(new InventoryItem(
+                    result.get("item_name").asAttribute().asString().getValue(),
+                    result.get("quantity").asAttribute().asLong().getValue()
             )));
         }, TransactionMode.READ);
 
@@ -430,15 +433,15 @@ public class Queries {
                             + " $item isa item, has name \"" + item.name + "\";"
                             + " $ownership (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $qty;"
                             + " delete $ownership has quantity $qty;";
-                    System.out.println("Executing Graql Query: " + query);
-                    t.execute(parse(query).asDelete());
+                    System.out.println("Executing TypeQL Query: " + query);
+                    t.query().delete(TypeQL.parseQuery(query).asDelete());
 
                     query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
                             + " $item isa item, has name \"" + item.name + "\";"
                             + " $ownership(item-owner: $campaign, owned-item: $item) isa item-ownership;"
                             + " insert $ownership has quantity " + input.longValue() + ";";
-                    System.out.println("Executing Graql Query: " + query);
-                    t.execute(parse(query).asInsert());
+                    System.out.println("Executing TypeQL Query: " + query);
+                    t.query().insert(TypeQL.parseQuery(query).asInsert());
                 }, TransactionMode.WRITE);
 
                 System.out.println("Success");
@@ -458,9 +461,9 @@ public class Queries {
                         + " $required-tech isa research-project, has name $required_tech_name;"
                         + " (research-to-begin: $tech, required-tech: $required-tech) isa tech-requirement-to-begin-research;"
                         + " get $required_tech_name;";
-                System.out.println("Executing Graql Query: " + query);
-                t.execute(parse(query).asGet()).get().forEach(result -> requiredTechs.add(
-                        result.get("required_tech_name").asAttribute().value().toString()
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> requiredTechs.add(
+                        result.get("required_tech_name").asAttribute().asString().getValue()
                 ));
             }, TransactionMode.READ);
             System.out.println(tech + " requires [" + String.join(", ", requiredTechs) + "]");
@@ -469,12 +472,12 @@ public class Queries {
         });
     }
 
-    static void transaction(Consumer<GraknClient.Transaction> queries, final TransactionMode mode) {
-        GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session(keyspaceName);
-        GraknClient.Transaction transaction = mode == TransactionMode.WRITE
-                ? session.transaction().write()
-                : session.transaction().read();
+    static void transaction(Consumer<TypeDBTransaction> queries, final TransactionMode mode) {
+        TypeDBClient client = TypeDB.coreClient("localhost:1729");
+        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        TypeDBTransaction transaction = mode == TransactionMode.WRITE
+                ? session.transaction(TypeDBTransaction.Type.WRITE)
+                : session.transaction(TypeDBTransaction.Type.READ);
 
         queries.accept(transaction);
         if (mode == TransactionMode.WRITE) {

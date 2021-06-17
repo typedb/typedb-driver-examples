@@ -1,6 +1,6 @@
-# the Python client for Grakn
-# https://github.com/graknlabs/client-python
-from grakn.client import GraknClient
+# the Python client for TypeDB
+# https://github.com/vaticle/client-python
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 
 # an iterative JSON parser
 # we will use it read data source files.
@@ -11,29 +11,29 @@ import ijson
 def build_phone_call_graph(inputs, data_path, keyspace_name):
     """
       gets the job done:
-      1. creates a Grakn instance
+      1. creates a TypeDB instance
       2. creates a session to the targeted keyspace
       3. for each input:
         - a. constructs the full path to the data file
-        - b. loads csv to Grakn
+        - b. loads csv to TypeDB
       :param input as list of dictionaties: each dictionary contains details required to parse the data
     """
-    with GraknClient(uri="localhost:48555") as client:  # 1
-        with client.session(keyspace=keyspace_name) as session:  # 2
+    with TypeDB.core_client("localhost:1729") as client:  # 1
+        with client.session(keyspace_name, SessionType.DATA) as session:  # 2
             for input in inputs:
                 input["file"] = input["file"].replace(data_path, "")  # for testing purposes
                 input["file"] = data_path + input["file"]  # 3a
-                print("Loading from [" + input["file"] + ".csv] into Grakn ...")
-                load_data_into_grakn(input, session)  # 3b
+                print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
+                load_data_into_typedb(input, session)  # 3b
 
 
-def load_data_into_grakn(input, session):
+def load_data_into_typedb(input, session):
     '''
-      loads the json data into our Grakn phone_calls keyspace:
+      loads the json data into our TypeDB phone_calls keyspace:
       1. gets the data items as a list of dictionaries
       2. for each item dictionary
-        a. creates a Grakn transaction
-        b. constructs the corresponding Graql insert query
+        a. creates a TypeDB transaction
+        b. constructs the corresponding TypeQL insert query
         c. runs the query
         d. commits the transaction
       :param input as dictionary: contains details required to parse the data
@@ -42,14 +42,14 @@ def load_data_into_grakn(input, session):
     items = parse_data_to_dictionaries(input)  # 1
 
     for item in items:  # 2
-        with session.transaction().write() as transaction:  # a
+        with session.transaction(TransactionType.WRITE) as transaction:  # a
             graql_insert_query = input["template"](item)  # b
-            print("Executing Graql Query: " + graql_insert_query)
-            transaction.query(graql_insert_query)  # c
+            print("Executing TypeQL Query: " + graql_insert_query)
+            transaction.query().insert(graql_insert_query)  # c
             transaction.commit()  # d
 
     print("\nInserted " + str(len(items)) +
-          " items from [ " + input["file"] + ".json] into Grakn.\n")
+          " items from [ " + input["file"] + ".json] into TypeDB.\n")
 
 
 def company_template(company):

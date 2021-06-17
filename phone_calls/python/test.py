@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 
 import unittest
 
@@ -13,17 +13,20 @@ import queries
 keyspace_name = "phone_calls_python"
 data_path = "datasets/phone-calls/"
 
-class Test(unittest.TestCase):
 
+class Test(unittest.TestCase):
     def setUp(self):
-        self._client = GraknClient(uri="localhost:48555")
-        self._session = self._client.session(keyspace=keyspace_name)
+        self._client = TypeDB.core_client("localhost:1729")
+        self._client.databases().create(keyspace_name)
+        self._session = self._client.session(keyspace_name, SessionType.SCHEMA)
         with open('schemas/phone-calls-schema.gql', 'r') as schema:
             define_query = schema.read()
-            with self._session.transaction().write() as transaction:
-                transaction.query(define_query)
+            with self._session.transaction(TransactionType.WRITE) as transaction:
+                transaction.query().define(define_query)
                 transaction.commit()
                 print("Loaded the " + keyspace_name + " schema")
+        self._session.close()
+        self._session = self._client.session(keyspace_name, SessionType.DATA)
 
     def test_csv_migration(self):
         migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, keyspace_name)
@@ -42,7 +45,7 @@ class Test(unittest.TestCase):
 
         migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, keyspace_name)
 
-        with self._session.transaction().read() as transaction:
+        with self._session.transaction(TransactionType.READ) as transaction:
             first_actual_answer = queries.query_examples[0].get("query_function")("", transaction)
             first_expected_answer = ["+370 351 224 5176", "+54 398 559 0423", "+62 107 530 7500", "+63 815 962 6097",
                                      "+7 690 597 4443", "+263 498 495 0617", "+81 308 988 7153", "+81 746 154 2598"]
@@ -68,22 +71,22 @@ class Test(unittest.TestCase):
             self.assertCountEqual(fifth_actual_answer, fifth_expected_answer)
 
     def assert_migration_results(self):
-        with self._session.transaction().read() as transaction:
-            number_of_people = next(transaction.query("match $x isa person; get $x; count;")).number()
+        with self._session.transaction(TransactionType.READ) as transaction:
+            number_of_people = transaction.query().match_aggregate("match $x isa person; get $x; count;").get().as_int()
             self.assertEqual(number_of_people, 30)
 
-            number_of_companies = next(transaction.query("match $x isa company; get $x; count;")).number()
+            number_of_companies = transaction.query().match_aggregate("match $x isa company; get $x; count;").get().as_int()
             self.assertEqual(number_of_companies, 1)
 
-            number_of_contracts = next(transaction.query("match $x isa contract; get $x; count;")).number()
+            number_of_contracts = transaction.query().match_aggregate("match $x isa contract; get $x; count;").get().as_int()
             self.assertEqual(number_of_contracts, 10)
 
-            number_of_calls = next(transaction.query("match $x isa call; get $x; count;")).number()
+            number_of_calls = transaction.query().match_aggregate("match $x isa call; get $x; count;").get().as_int()
             self.assertEqual(number_of_calls, 200)
 
     def tearDown(self):
-        self._client.keyspaces().delete(keyspace_name)
         self._session.close()
+        self._client.databases().get(keyspace_name).delete()
         self._client.close()
         print("Deleted the " + keyspace_name + " keyspace")
 

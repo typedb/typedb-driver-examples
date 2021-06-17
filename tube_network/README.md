@@ -2,50 +2,50 @@
 
 Here we demonstrate a way of modelling the London Underground Network using data acquired from the Transport for London (TFL) website.
 
-Most of the code given here is written in Python to give an example of how to use the Grakn Python client.
+Most of the code given here is written in Python to give an example of how to use the TypeDB Python client.
 
 See the _Quickstart_ for how to get going immediately, or read on for more info.
 
 ## Prerequisites
 
-- Grakn that is compatible with the latest version of [Clinet Python](http://dev.grakn.ai/docs/client-api/python#dependencies)
+- TypeDB that is compatible with the latest version of [Clinet Python](http://docs.vaticle.com/docs/client-api/python#dependencies)
 - Python >= 3.6
 
 ## Quickstart
-- Clone this repository: `git clone git@github.com:graknlabs/examples.git`
-- Navigate to the Grakn distribution directory: `cd path-to-grakn-dist-directory` (this step isn't required if Grakn is installed using a package manager such as `brew`)
-- Start the Grakn Server: `./grakn server start`
-- Create the keyspace and load the schema: `./grakn console -k tube_network -f path-to-the-cloned-examples-dir/schemas/tube-network-schema.gql`
-- Install the `grakn` module: `pip install grakn-client`. Learn more about [Client Python](http://dev.grakn.ai/docs/client-api/python).
-- Migrate the dataset: `python3 -m tube_network.src.migration`. Learn more about [migrating data to Grakn by example](http://dev.grakn.ai/docs/examples/phone-calls-migration-python).
+- Clone this repository: `git clone git@github.com:vaticle/examples.git`
+- Navigate to the TypeDB distribution directory: `cd path-to-typedb-dist-directory` (this step isn't required if TypeDB is installed using a package manager such as `brew`)
+- Start the TypeDB Server: `./typedb server start`
+- Create the keyspace and load the schema: `./typedb console -k tube_network -f path-to-the-cloned-examples-dir/schemas/tube-network-schema.gql`
+- Install the `typedb` module: `pip install typedb-client`. Learn more about [Client Python](http://docs.vaticle.com/docs/client-api/python).
+- Migrate the dataset: `python3 -m tube_network.src.migration`. Learn more about [migrating data to TypeDB by example](http://docs.vaticle.com/docs/examples/phone-calls-migration-python).
 - To continue:
-    - Run queries on the London Tube Network using [Graql Console](http://dev.grakn.ai/docs/running-grakn/console) and [Workbase](http://dev.grakn.ai/docs/workbase/overview).
+    - Run queries on the London Tube Network using [TypeQL Console](http://docs.vaticle.com/docs/running-typedb/console) and [Workbase](http://docs.vaticle.com/docs/workbase/overview).
     - or:
-        - Perform statistical queries: `python3 -m tube_network.src.statistics`. Learn more about the [Compute Queries](http://dev.grakn.ai/docs/query/compute-query).
+        - Perform statistical queries: `python3 -m tube_network.src.statistics`. Learn more about the [Compute Queries](http://docs.vaticle.com/docs/query/compute-query).
         - Try the journey planner: `python3 -m tube_network.src.journey_planner`
         - Interact with the journey planner interface: `python3 -m tube_network.src.app`
 
 ## Download Data
 
-The data necessary to build a Grakn of the Tube Network is already included in this repository, the code to acquire it can be found in [`src/download_data.py`](src/download_data.py).
+The data necessary to build a TypeDB of the Tube Network is already included in this repository, the code to acquire it can be found in [`src/download_data.py`](src/download_data.py).
 
 ## Import Data
 
-We can import this data into the Grakn keyspace we have just created. The name of the keyspace is set in `settings.py`, so you can change it there if you need to. You don't have to implement settings in this way in your own application.
-Check Grakn is up and running: `./grakn server status`
-To import, run the [`src/migration.py`](src/migration.py), either in your IDE, or from the grakn_examples directory as follows:
+We can import this data into the TypeDB keyspace we have just created. The name of the keyspace is set in `settings.py`, so you can change it there if you need to. You don't have to implement settings in this way in your own application.
+Check TypeDB is up and running: `./typedb server status`
+To import, run the [`src/migration.py`](src/migration.py), either in your IDE, or from the `typedb-examples` directory as follows:
 
 ```bash
 python3 -m tube_network.src.migration
 ```
 
 The content of [`src/migration.py`](src/migration.py) is a python script that:
-1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing Graql relation/entity insert queries.
-2. the constructed Graql insert queries, after basic uniqueness validation, get stored as items of arrays within a dictionary.
-3. the dictionary containing all the Graql queries is flattened to prepare the data in two chunks, one chunk of entities and one chunk of relations, for a series of concurrent insertions.
-4. lastly, a set of processes initiate the set of transactions that perform the Graql insert queries on the `tube_network` keyspace.
+1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing TypeQL relation/entity insert queries.
+2. the constructed TypeQL insert queries, after basic uniqueness validation, get stored as items of arrays within a dictionary.
+3. the dictionary containing all the TypeQL queries is flattened to prepare the data in two chunks, one chunk of entities and one chunk of relations, for a series of concurrent insertions.
+4. lastly, a set of processes initiate the set of transactions that perform the TypeQL insert queries on the `tube_network` keyspace.
 
-Once complete, you have stored the tube network data in Grakn!
+Once complete, you have stored the tube network data in TypeDB!
 Now you're ready to start playing with the data.
 
 
@@ -65,14 +65,14 @@ get $sta1-nam, $sta2-nam, $tul-nam, $dur; limit 30;
 
 ## Retrieve Statistical Information
 
-To gain an overall understanding of the available statistical queries in Grakn, try the [`src/statistics.py`](src/statistics.py).
+To gain an overall understanding of the available statistical queries in TypeDB, try the [`src/statistics.py`](src/statistics.py).
 As soon as you run `python3 -m tube_network.src.statistics`, the terminal enters the interactive mode, where you'll be able to select a question of your choice and observe how the answer is obtained.
 
 ![statistics](images/statistics.png)
 
 ## Try the Journey Planner
 
-To try the out-of-the-box `compute path` query of Grakn, you can run the [`src/journey_planner.py`](src/journey_planner.py).
+To try the out-of-the-box `compute path` query of TypeDB, you can run the [`src/journey_planner.py`](src/journey_planner.py).
 
 ```bash
 python3 -m tube_network.src.journey_planner
@@ -82,7 +82,7 @@ Enter the departing and destination stations, as well as the shortest path strat
 
 ## Visualise and interact with the Tube Network
 
-[app.py](src/app.py) is a demo application to show the analytics capabilities built into Grakn.
+[app.py](src/app.py) is a demo application to show the analytics capabilities built into TypeDB.
 
 ```bash
 python3 -m tube_network.src.app

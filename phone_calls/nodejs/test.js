@@ -1,5 +1,7 @@
 const fs = require("fs");
-const GraknClient = require("grakn-client");
+const { TypeDB } = require("typedb-client/TypeDB");
+const { SessionType } = require("typedb-client/api/connection/TypeDBSession");
+const { TransactionType } = require("typedb-client/api/connection/TypeDBTransaction");
 const reporters = require("jasmine-reporters");
 
 const csvMigration = require("./migrateCsv");
@@ -18,16 +20,24 @@ const dataPath = "datasets/phone-calls/"
 const keyspaceName = "phone_calls_nodejs"
 
 beforeEach(async function() {
-    client = new GraknClient("localhost:48555");
-    session = await client.session(keyspaceName);
-    const transaction = await session.transaction().write();
+    client = TypeDB.coreClient("localhost:1729");
+    if (!await (client.databases().contains(keyspaceName))) {
+        await client.databases().create(keyspaceName);
+    } else {
+        await (await client.databases().get(keyspaceName)).delete();
+        await client.databases().create(keyspaceName);
+    }
+    session = await client.session(keyspaceName, SessionType.SCHEMA);
+    const transaction = await session.transaction(TransactionType.WRITE);
     const defineQuery = fs.readFileSync("schemas/phone-calls-schema.gql", "utf8");
-    await transaction.query(defineQuery);
+    await transaction.query().define(defineQuery);
     await transaction.commit();
+    await session.close()
+    session = await client.session(keyspaceName, SessionType.DATA);
     console.log("Loaded the phone_calls_nodejs schema");
 });
 
-describe("Migration of data into Grakn", function() {
+describe("Migration of data into TypeDB", function() {
     it("tests migrateCsv.js", async function() {
         await csvMigration.init(dataPath, keyspaceName);
         await assertMigrationResults();
@@ -50,7 +60,7 @@ describe("Queries on phone_calls_nodejs keyspace", function() {
 
         await csvMigration.init(dataPath, keyspaceName);
 
-        transaction = await session.transaction().read()
+        transaction = await session.transaction(TransactionType.READ)
 
         const firstActualAnswer = await queries.queryExamples[0].queryFunction("", transaction);
         firstActualAnswer.sort();
@@ -92,26 +102,22 @@ describe("Queries on phone_calls_nodejs keyspace", function() {
 });
 
 async function assertMigrationResults() {
-    transaction = await session.transaction().read();
+    transaction = await session.transaction(TransactionType.READ);
 
-    let numberOfPeople = await transaction.query("match $x isa person; get $x; count;");
-    numberOfPeople = await numberOfPeople.next();
-    numberOfPeople = numberOfPeople.number();
+    let numberOfPeople = await transaction.query().matchAggregate("match $x isa person; get $x; count;");
+    numberOfPeople = await numberOfPeople.asNumber();
     expect(numberOfPeople).toEqual(30);
 
-    let numberOfCompanies = await transaction.query("match $x isa company; get $x; count;");
-    numberOfCompanies = await numberOfCompanies.next();
-    numberOfCompanies = numberOfCompanies.number();
+    let numberOfCompanies = await transaction.query().matchAggregate("match $x isa company; get $x; count;");
+    numberOfCompanies = await numberOfCompanies.asNumber();
     expect(numberOfCompanies).toEqual(1);
 
-    let numberOfContracts = await transaction.query("match $x isa contract; get $x; count;");
-    numberOfContracts = await numberOfContracts.next();
-    numberOfContracts = numberOfContracts.number();
+    let numberOfContracts = await transaction.query().matchAggregate("match $x isa contract; get $x; count;");
+    numberOfContracts = await numberOfContracts.asNumber();
     expect(numberOfContracts).toEqual(10);
 
-    let numberOfCalls = await transaction.query("match $x isa call; get $x; count;");
-    numberOfCalls = await numberOfCalls.next();
-    numberOfCalls = numberOfCalls.number();
+    let numberOfCalls = await transaction.query().matchAggregate("match $x isa call; get $x; count;");
+    numberOfCalls = await numberOfCalls.asNumber();
     expect(numberOfCalls).toEqual(200);
 
     await transaction.close();
@@ -119,8 +125,8 @@ async function assertMigrationResults() {
 
 
 afterEach(async function() {
-    await client.keyspaces().delete(keyspaceName);
-    console.log("Deleted the phone_calls_nodejs keyspace");
     await session.close();
+    await (await client.databases().get(keyspaceName)).delete();
+    console.log("Deleted the phone_calls_nodejs keyspace");
     client.close();
 });

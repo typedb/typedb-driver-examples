@@ -1,10 +1,14 @@
-package grakn.example.phoneCalls;
+package com.vaticle.typedb.example.phoneCalls;
 
-import grakn.client.GraknClient;
-import graql.lang.Graql;
-import graql.lang.query.GraqlDefine;
-import graql.lang.query.GraqlGet;
-import org.junit.*;
+import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.answer.Numeric;
+import com.vaticle.typedb.client.api.connection.TypeDBClient;
+import com.vaticle.typedb.client.api.connection.TypeDBSession;
+import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
+import com.vaticle.typeql.lang.TypeQL;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.FileNotFoundException;
@@ -17,31 +21,34 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static graql.lang.Graql.parse;
 import static org.junit.Assert.assertEquals;
 
 
 public class PhoneCallsTest {
 
-    GraknClient client;
-    GraknClient.Session session;
+    TypeDBClient client;
+    TypeDBSession session;
     String keyspaceName = "phone_calls_java";
 
     @Before
     public void loadSchema() {
-        client = new GraknClient("localhost:48555");
-        session = client.session(keyspaceName);
-        GraknClient.Transaction transaction = session.transaction().write();
+        client = TypeDB.coreClient("localhost:1729");
+        client.databases().create(keyspaceName);
+        session = client.session(keyspaceName, TypeDBSession.Type.SCHEMA);
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE);
 
         try {
             byte[] encoded = Files.readAllBytes(Paths.get("schemas/phone-calls-schema.gql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
-            transaction.execute((GraqlDefine) Graql.parse(query));
+            transaction.query().define(TypeQL.parseQuery(query).asDefine());
             transaction.commit();
             System.out.println("Loaded the " + keyspaceName + " schema");
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            session.close();
         }
+        session = client.session(keyspaceName, TypeDBSession.Type.DATA);
     }
 
     @Test
@@ -70,7 +77,7 @@ public class PhoneCallsTest {
 
         CSVMigration.main(new String[]{ keyspaceName });
 
-        GraknClient.Transaction transaction = session.transaction().read();
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
         ArrayList<String> firstActualAnswer = queryExamples.get(0).executeQuery(transaction);
         Collections.sort(firstActualAnswer);
@@ -101,27 +108,29 @@ public class PhoneCallsTest {
         Collections.sort(forthExpectedAnswer);
         assertEquals(forthActualAnswer, forthExpectedAnswer);
 
-        ArrayList<Float> fifthActualAnswer = queryExamples.get(4).executeQuery(transaction);
+        ArrayList<Numeric> fifthActualAnswer = queryExamples.get(4).executeQuery(transaction);
         ArrayList<Float> fifthExpectedAnswer = new ArrayList<>(Arrays.asList((float) 1242.7715, (float) 1699.4309));
-        assertEquals(fifthActualAnswer, fifthExpectedAnswer);
+        assertEquals(fifthActualAnswer.size(), fifthExpectedAnswer.size());
+        for (int i = 0; i < fifthActualAnswer.size(); i++) {
+            assertEquals(fifthActualAnswer.get(i).asDouble(), fifthExpectedAnswer.get(i), 0.0001);
+        }
 
         transaction.close();
     }
 
-
     public void assertMigrationResults() {
-        GraknClient.Transaction transaction = session.transaction().read();
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
-        Number numberOfPeople = transaction.execute((GraqlGet.Aggregate) parse("match $x isa person; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfPeople = transaction.query().match(TypeQL.parseQuery("match $x isa person; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(numberOfPeople, 30);
 
-        Number numberOfCompanies = transaction.execute((GraqlGet.Aggregate) parse("match $x isa company; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfCompanies = transaction.query().match(TypeQL.parseQuery("match $x isa company; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(numberOfCompanies, 1);
 
-        Number numberOfContracts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa contract; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfContracts = transaction.query().match(TypeQL.parseQuery("match $x isa contract; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(numberOfContracts, 10);
 
-        Number numberOfCalls = transaction.execute((GraqlGet.Aggregate) parse("match $x isa call; get $x; count;")).get().get(0).number().intValue();
+        Number numberOfCalls = transaction.query().match(TypeQL.parseQuery("match $x isa call; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(numberOfCalls, 200);
 
         transaction.close();
@@ -129,9 +138,8 @@ public class PhoneCallsTest {
 
     @After
     public void deleteKeyspace() {
-        client.keyspaces().delete(keyspaceName);
         System.out.println("Deleted the " + keyspaceName + " keyspace");
-        session.close();
+        client.databases().get(keyspaceName).delete();
         client.close();
     }
 }

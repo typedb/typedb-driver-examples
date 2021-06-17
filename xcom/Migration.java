@@ -1,8 +1,11 @@
-package grakn.example.xcom;
+package com.vaticle.typedb.example.xcom;
 
-import grakn.client.GraknClient;
-import graql.lang.query.GraqlInsert;
-import static graql.lang.Graql.parse;
+import com.vaticle.typedb.client.api.connection.TypeDBClient;
+import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.connection.TypeDBSession;
+import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
+import com.vaticle.typeql.lang.query.TypeQLInsert;
+import com.vaticle.typeql.lang.TypeQL;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +35,7 @@ import mjson.Json;
 public class Migration {
     /**
      * representation of Input object that links an input file to its own templating function,
-     * which is used to map a Json object to a Graql query string
+     * which is used to map a Json object to a TypeQL query string
      */
     abstract static class Input {
         String path;
@@ -55,20 +58,20 @@ public class Migration {
     }
 
     /**
-     * 1. creates a Grakn instance
+     * 1. creates a TypeDB instance
      * 2. creates a session to the targeted keyspace
      * 3. initialises the list of Inputs, each containing details required to parse the data
-     * 4. loads the csv data to Grakn for each file
+     * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
      * 6. closes the client
      */
     static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws FileNotFoundException {
-        GraknClient client = new GraknClient("localhost:48555");
-        GraknClient.Session session = client.session(keyspaceName);
+        TypeDBClient client = TypeDB.coreClient("localhost:1729");
+        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
 
         for (Input input : inputs) {
-            System.out.println("Loading from [" + input.getDataPath() + ".csv] into Grakn ...");
-            loadDataIntoGrakn(input, session);
+            System.out.println("Loading from [" + input.getDataPath() + ".csv] into TypeDB ...");
+            loadDataIntoTypeDB(input, session);
         }
 
         session.close();
@@ -86,7 +89,7 @@ public class Migration {
         return inputs;
     }
 
-    /** define template for constructing a research project Graql insert query */
+    /** define template for constructing a research project TypeQL insert query */
     static Input initialiseTechInput() {
         return new Input("datasets/xcom/tech") {
             @Override
@@ -96,23 +99,23 @@ public class Migration {
         };
     }
 
-    /** define template for constructing a research project tech requirement Graql insert query */
+    /** define template for constructing a research project tech requirement TypeQL insert query */
     static Input initialiseResearchProjectTechRequirementInput() {
         return new Input("datasets/xcom/tech_required_tech") {
             @Override
             public String template(Json techRequirement) {
                 // match tech
-                String graqlInsertQuery = "match $tech isa research-project, has name " + techRequirement.at("tech") + ";";
+                String typeQLInsertQuery = "match $tech isa research-project, has name " + techRequirement.at("tech") + ";";
                 // match required tech
-                graqlInsertQuery += " $required_tech isa research-project, has name " + techRequirement.at("required_tech") + ";";
+                typeQLInsertQuery += " $required_tech isa research-project, has name " + techRequirement.at("required_tech") + ";";
                 // insert research project tech requirement
-                graqlInsertQuery += " insert (research-to-begin: $tech, required-tech: $required_tech) isa tech-requirement-to-begin-research;";
-                return graqlInsertQuery;
+                typeQLInsertQuery += " insert (research-to-begin: $tech, required-tech: $required_tech) isa tech-requirement-to-begin-research;";
+                return typeQLInsertQuery;
             }
         };
     }
 
-    /** define template for constructing an item Graql insert query */
+    /** define template for constructing an item TypeQL insert query */
     static Input initialiseItemInput() {
         return new Input("datasets/xcom/resource") {
             @Override
@@ -122,29 +125,29 @@ public class Migration {
         };
     }
 
-    /** define template for constructing a research project resource cost Graql insert query */
+    /** define template for constructing a research project resource cost TypeQL insert query */
     static Input initialiseResearchResourceCostInput() {
         return new Input("datasets/xcom/tech_required_resource") {
             @Override
             public String template(Json researchCost) {
                 // match tech
-                String graqlInsertQuery = "match $tech isa research-project, has name " + researchCost.at("tech") + ";";
+                String typeQLInsertQuery = "match $tech isa research-project, has name " + researchCost.at("tech") + ";";
                 // match required tech
-                graqlInsertQuery += " $item isa item, has name " + researchCost.at("required_resource") + ";";
+                typeQLInsertQuery += " $item isa item, has name " + researchCost.at("required_resource") + ";";
                 // insert research project tech requirement
-                graqlInsertQuery += " insert (research-to-begin: $tech, consumes-resource: $item) isa resource-cost-to-begin-research,"
+                typeQLInsertQuery += " insert (research-to-begin: $tech, consumes-resource: $item) isa resource-cost-to-begin-research,"
                     + " has quantity-consumed " + researchCost.at("required_resource_count").asLong() + ";";
-                return graqlInsertQuery;
+                return typeQLInsertQuery;
             }
         };
     }
 
     /**
-     * loads the csv data into our Grakn xcom keyspace:
+     * loads the csv data into our TypeDB xcom keyspace:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
-     * a. creates a Grakn transaction
-     * b. constructs the corresponding Graql insert query
+     * a. creates a TypeDB transaction
+     * b. constructs the corresponding TypeQL insert query
      * c. runs the query
      * d. commits the transaction
      * e. closes the transaction
@@ -153,16 +156,16 @@ public class Migration {
      * @param session off of which a transaction is created
      * @throws FileNotFoundException
      */
-    static void loadDataIntoGrakn(Input input, GraknClient.Session session) throws FileNotFoundException {
+    static void loadDataIntoTypeDB(Input input, TypeDBSession session) throws FileNotFoundException {
         ArrayList<Json> items = parseDataToJson(input); // 1
         for (Json item : items) {
-            GraknClient.Transaction transaction = session.transaction().write(); // 2a
-            String graqlInsertQuery = input.template(item); // 2b
-            System.out.println("Executing Graql Query: " + graqlInsertQuery);
-            transaction.execute((GraqlInsert) parse(graqlInsertQuery)); // 2c
+            TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE); // 2a
+            String typeQLInsertQuery = input.template(item); // 2b
+            System.out.println("Executing TypeQL Query: " + typeQLInsertQuery);
+            transaction.query().insert(TypeQL.parseQuery(typeQLInsertQuery).asInsert()); // 2c
             transaction.commit(); // 2d
         }
-        System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + ".csv] into Grakn.\n");
+        System.out.println("\nInserted " + items.size() + " items from [ " + input.getDataPath() + ".csv] into TypeDB.\n");
     }
 
     /**

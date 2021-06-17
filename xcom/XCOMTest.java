@@ -1,9 +1,12 @@
-package grakn.example.xcom;
+package com.vaticle.typedb.example.xcom;
 
-import grakn.client.GraknClient;
-import graql.lang.Graql;
-import graql.lang.query.GraqlDefine;
-import graql.lang.query.GraqlGet;
+import com.vaticle.typedb.client.api.connection.TypeDBClient;
+import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.connection.TypeDBSession;
+import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
+import com.vaticle.typeql.lang.TypeQL;
+import com.vaticle.typeql.lang.query.TypeQLDefine;
+import com.vaticle.typeql.lang.query.TypeQLMatch;
 import org.junit.*;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,38 +17,42 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static graql.lang.Graql.parse;
+import com.vaticle.typeql.lang.TypeQL;
 import static org.junit.Assert.*;
 
 
 public class XCOMTest {
 
-    GraknClient client;
-    GraknClient.Session session;
+    TypeDBClient client;
+    TypeDBSession session;
     String keyspaceName = "xcom_test";
 
     @Before
     public void loadSchema() {
-        client = new GraknClient("localhost:48555");
-        session = client.session(keyspaceName);
-        GraknClient.Transaction transaction = session.transaction().write();
+        client = TypeDB.coreClient("localhost:1729");
+        client.databases().create(keyspaceName);
+        session = client.session(keyspaceName, TypeDBSession.Type.SCHEMA);
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE);
 
         try {
             byte[] encoded = Files.readAllBytes(Paths.get("schemas/xcom-schema.gql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
-            transaction.execute((GraqlDefine) Graql.parse(query));
+            transaction.query().define(TypeQL.parseQuery(query).asDefine());
             transaction.commit();
             System.out.println("Loaded the " + keyspaceName + " schema");
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            session.close();
         }
+        session = client.session(keyspaceName, TypeDBSession.Type.DATA);
     }
 
     @After
     public void deleteKeyspace() {
-        client.keyspaces().delete(keyspaceName);
-        System.out.println("Deleted the " + keyspaceName + " keyspace");
         session.close();
+        client.databases().get(keyspaceName).delete();
+        System.out.println("Deleted the " + keyspaceName + " keyspace");
         client.close();
     }
 
@@ -160,18 +167,18 @@ public class XCOMTest {
     }
 
     public void assertMigrationResults() {
-        final GraknClient.Transaction transaction = session.transaction().read();
+        final TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
-        final int totalTechs = transaction.execute((GraqlGet.Aggregate) parse("match $x isa research-project; get $x; count;")).get().get(0).number().intValue();
+        final int totalTechs = transaction.query().match(TypeQL.parseQuery("match $x isa research-project; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(46, totalTechs);
 
-        final int totalItems = transaction.execute((GraqlGet.Aggregate) parse("match $x isa item; get $x; count;")).get().get(0).number().intValue();
+        final int totalItems = transaction.query().match(TypeQL.parseQuery("match $x isa item; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(34, totalItems);
 
-        final int totalResearchTechRequirements = transaction.execute((GraqlGet.Aggregate) parse("match $x isa tech-requirement-to-begin-research; get $x; count;")).get().get(0).number().intValue();
-        assertEquals(94, totalResearchTechRequirements);
+        final int totalResearchTechRequirements = transaction.query().match(TypeQL.parseQuery("match $x isa tech-requirement-to-begin-research; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
+        assertEquals(36, totalResearchTechRequirements);
 
-        final int totalResearchResourceCosts = transaction.execute((GraqlGet.Aggregate) parse("match $x isa resource-cost-to-begin-research; get $x; count;")).get().get(0).number().intValue();
+        final int totalResearchResourceCosts = transaction.query().match(TypeQL.parseQuery("match $x isa resource-cost-to-begin-research; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
         assertEquals(44, totalResearchResourceCosts);
 
         transaction.close();

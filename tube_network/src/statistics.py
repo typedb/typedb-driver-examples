@@ -1,4 +1,4 @@
-# Copyright 2020 Grakn Labs
+# Copyright 2021 Vaticle
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from grakn.client import GraknClient
+from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 
 def print_to_log(title, content):
   print(title)
@@ -25,12 +25,12 @@ def print_to_log(title, content):
 def query_station_count(question, transaction):
     print_to_log("Question: ", question)
 
-    query = 'compute count in station;'
+    query = 'match $x isa station; count;'
 
     print_to_log("Query:", query)
 
-    answer = list(transaction.query(query))[0]
-    number_of_stations = answer.number()
+    answer = transaction.query().match_aggregate(query)
+    number_of_stations = answer.get().as_int()
 
     print("Number of stations: " + str(number_of_stations))
 
@@ -75,7 +75,7 @@ def query_northernmost_station(question, transaction):
     query = "".join(query)
 
     answers = [ans.get("nam") for ans in transaction.query(query)]
-    result = [answer.value() for answer in answers]
+    result = [answer.get_value() for answer in answers]
 
     print_to_log("Northmost stations with " + str(lat) + " are: ", result)
 
@@ -115,19 +115,19 @@ def query_longest_trip(question, transaction):
     for answer in answers:
         answer = answer.map()
         print_to_log("Longest trip is found in: ", "Tunnel from " +
-                     answer.get("sta1-nam").value() +
-                     " to " + answer.get("sta2-nam").value() +
-                     ", via " + answer.get("tul-nam").value() +
+                     answer.get("sta1-nam").get_value() +
+                     " to " + answer.get("sta2-nam").get_value() +
+                     ", via " + answer.get("tul-nam").get_value() +
                      ", on the route going from " +
-                     answer.get("ori-nam").value() +
-                     " to " + answer.get("des-nam").value())
+                     answer.get("ori-nam").get_value() +
+                     " to " + answer.get("des-nam").get_value())
 
         result.append([
-            answer.get("sta1-nam").value(),
-            answer.get("sta2-nam").value(),
-            answer.get("tul-nam").value(),
-            answer.get("ori-nam").value(),
-            answer.get("des-nam").value()
+            answer.get("sta1-nam").get_value(),
+            answer.get("sta2-nam").get_value(),
+            answer.get("tul-nam").get_value(),
+            answer.get("ori-nam").get_value(),
+            answer.get("des-nam").get_value()
         ])
 
     return [max_duration, result]
@@ -193,37 +193,38 @@ query_examples = [
         "question": "How many stations do exist?",
         "query_function": query_station_count
     },
-    {
-        "question": "How long is the shortest trip between two stations?",
-        "query_function": query_shortest_trip
-    },
-    {
-        "question": "Which is the northernmost station in London?",
-        "query_function": query_northernmost_station
-    },
-    {
-        "question": "How long is the longest trip between two stations?",
-        "query_function": query_longest_trip
-    },
-    {
-        "question": "What's the average duration of all trips?",
-        "query_function": query_avg_duration
-    },
-    {
-        "question": "What's the median duration among all trips?",
-        "query_function": query_median_duration
-    },
-    {
-        "question": "What's the standard deviation of trip durations?",
-        "query_function": query_std_duration
-    }
+    # TODO(vmax): enable when compute queries are supported again
+    # {
+    #     "question": "How long is the shortest trip between two stations?",
+    #     "query_function": query_shortest_trip
+    # },
+    # {
+    #     "question": "Which is the northernmost station in London?",
+    #     "query_function": query_northernmost_station
+    # },
+    # {
+    #     "question": "How long is the longest trip between two stations?",
+    #     "query_function": query_longest_trip
+    # },
+    # {
+    #     "question": "What's the average duration of all trips?",
+    #     "query_function": query_avg_duration
+    # },
+    # {
+    #     "question": "What's the median duration among all trips?",
+    #     "query_function": query_median_duration
+    # },
+    # {
+    #     "question": "What's the standard deviation of trip durations?",
+    #     "query_function": query_std_duration
+    # }
 ]
 
 def init(qs_number):
     # create a transaction to talk to the keyspace
-    with GraknClient(uri="localhost:48555") as client:
-        with client.session(keyspace="tube_network") as session:
-            with session.transaction().read() as transaction:
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session("tube_network", SessionType.DATA) as session:
+            with session.transaction(TransactionType.READ) as transaction:
                 # execute the query for the selected question
                 if qs_number == 0:
                     execute_query_all(transaction)
@@ -237,7 +238,7 @@ if __name__ == "__main__":
     """
         The code below:
         - gets user's selection wrt the queries to be executed
-        - creates a Grakn client > session > transaction connected to the keyspace
+        - creates a TypeDB client > session > transaction connected to the keyspace
         - runs the right function based on the user's selection
         - closes the session and transaction
     """

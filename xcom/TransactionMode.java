@@ -1,4 +1,4 @@
-package grakn.example.xcom;
+package com.vaticle.typedb.example.xcom;
 
 public enum TransactionMode {
     READ,

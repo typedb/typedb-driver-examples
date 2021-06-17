@@ -1,4 +1,4 @@
-package grakn.example.xcom;
+package com.vaticle.typedb.example.xcom;
 
 public class ResearchTask {
     public ResearchTask(String name, double progressPercent) {

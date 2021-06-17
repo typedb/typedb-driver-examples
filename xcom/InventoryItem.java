@@ -1,11 +1,11 @@
-package grakn.example.xcom;
+package com.vaticle.typedb.example.xcom;
 
 public class InventoryItem {
-    public InventoryItem(String name, int quantity) {
+    public InventoryItem(String name, long quantity) {
         this.name = name;
         this.quantity = quantity;
     }
 
     public String name;
-    public int quantity;
+    public long quantity;
 }
