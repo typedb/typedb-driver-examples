@@ -10,6 +10,7 @@ TypeDB officially supports clients for Java, Node.js and Python. Learn more abou
 
 ### Client Java Examples
 - [Phone Calls: Migrate and perform expressive queries using Client Java](phone_calls/java/)
+- [XCOM Project: Migrate and perform logical queries on tree-structured game data using Client Java](xcom/)
 
 ### Client Node.js Examples
 - [Phone Calls: Migrate and perform expressive queries using Client Node.js](phone_calls/nodejs/)
