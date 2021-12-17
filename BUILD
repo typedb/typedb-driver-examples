@@ -26,7 +26,7 @@ filegroup(
         "@vaticle_dependencies//tool/checkstyle:test-coverage",
         "@vaticle_dependencies//tool/sonarcloud:code-analysis",
         # "@vaticle_dependencies//tool/release:approval",
-        "@vaticle_dependencies//tool/release:create-notes",
+        "@vaticle_dependencies//tool/release/createnotes:bin",
         # "@vaticle_dependencies//tool/sync:dependencies",
     ],
 )
