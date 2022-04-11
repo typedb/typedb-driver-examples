@@ -1,15 +1,20 @@
 package com.vaticle.typedb.example.phoneCalls;
 
-import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typedb.client.api.answer.Numeric;
+import com.vaticle.typeql.lang.TypeQL;
 import com.vaticle.typeql.lang.query.TypeQLMatch;
 
-import java.util.*;
-
-import com.vaticle.typeql.lang.TypeQL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
 
 
 public class

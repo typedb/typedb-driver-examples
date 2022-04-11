@@ -1,5 +1,5 @@
 # coding=utf-8
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
+from typedb.client import TypeDB, SessionType, TransactionType
 '''
   to add a new query implementation:
     1. add the question and function to the approriate list of dictionaries:

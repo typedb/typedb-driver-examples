@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
-
 import unittest
+from typedb.client import TypeDB, SessionType, TransactionType
 
 import migrate_csv
 import migrate_json
 import migrate_xml
 import queries
-
 
 keyspace_name = "phone_calls_python"
 data_path = "datasets/phone-calls/"

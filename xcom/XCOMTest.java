@@ -1,23 +1,20 @@
 package com.vaticle.typedb.example.xcom;
 
-import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
-import com.vaticle.typeql.lang.query.TypeQLDefine;
-import com.vaticle.typeql.lang.query.TypeQLMatch;
 import org.junit.*;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
-import com.vaticle.typeql.lang.TypeQL;
 import static org.junit.Assert.*;
 
 

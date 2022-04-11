@@ -1,10 +1,13 @@
 package com.vaticle.typedb.example.xcom;
 
-import com.vaticle.typedb.client.api.TypeDBClient;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
+import mjson.Json;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,24 +15,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
-
-
-/**
- * a collection of fast and reliable Java-based parsers for CSV, TSV and Fixed Width files
- *
- * @see <a href="https://www.univocity.com/pages/univocity_parsers_documentation">univocity</a>
- * <p>
- * a lean JSON Library for Java,
- * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
- */
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-
-/**
- * a lean JSON Library for Java,
- * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
- */
-import mjson.Json;
 
 public class Migration {
     /**

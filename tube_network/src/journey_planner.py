@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
+from typedb.client import TypeDB, SessionType, TransactionType
 
 
 def print_to_log(title, content):

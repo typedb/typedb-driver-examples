@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+import ssl as ssl
 from collections import namedtuple
 from urllib.request import urlopen
-import ssl as ssl
-import json
+
 
 def url_data_to_file(url, write_filename):
     '''

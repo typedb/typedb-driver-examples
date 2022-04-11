@@ -1,5 +1,5 @@
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 import unittest
+from typedb.client import TypeDB, SessionType, TransactionType
 
 from tube_network.src import migration, statistics, journey_planner, app
 
