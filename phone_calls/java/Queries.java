@@ -17,8 +17,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 
-public class
-Queries {
+public class Queries {
     public abstract static class QueryExample {
         String question;
 
