@@ -20,35 +20,35 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 def vaticle_dependencies():
     git_repository(
         name = "vaticle_dependencies",
-        remote = "https://github.com/lolski/dependencies",
-        commit = "573fc693d11144db5fa54d579eddfd7140b61be2", # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_dependencies
+        remote = "https://github.com/vaticle/dependencies",
+        commit = "465e60776ca3055ce85d90e94624d37db3f7e790", # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_dependencies
     )
 
 def vaticle_typedb_common():
     git_repository(
         name = "vaticle_typedb_common",
-        remote = "https://github.com/lolski/typedb-common",
-        commit = "5153edae6f35443d7b140fef3ed57de91211b32a"
+        remote = "https://github.com/vaticle/typedb-common",
+        commit = "d11cee9745e4559450ef4ccb140d4e9781587932" # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_typedb_common
     )
 
 def vaticle_typeql_lang_java():
     git_repository(
         name = "vaticle_typeql_lang_java",
-        remote = "https://github.com/lolski/typeql-lang-java",
-        commit = "c93b777011f367dbf526c7d2c126ef33330e3250"
+        remote = "https://github.com/vaticle/typeql-lang-java",
+        commit = "a46d4e6266d87cc20a6f8e45c36bdf97207aa65b", # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_typeql_lang_java
     )
 
 def vaticle_typedb_client_java():
     git_repository(
         name = "vaticle_typedb_client_java",
-        remote = "https://github.com/lolski/client-java",
-        commit = "d739ec4417d26075cc02a8ef0cc2d62a73262b71",  # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_typedb_client_java
+        remote = "https://github.com/vaticle/client-java",
+        commit = "743c130a60414e78133f42c08e4d546bc73bc471",  # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_typedb_client_java
     )
 
 def vaticle_typedb_client_python():
     git_repository(
         name = "vaticle_typedb_client_python",
-        remote = "https://github.com/lolski/typedb-client-python",
-        commit = "5d471a8bdeac290f2beae56112a60abb7e431a50" # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_typedb_client_python
+        remote = "https://github.com/vaticle/typedb-client-python",
+        commit = "b42231f4f516e1fe10099206a601d986a046d860" # sync-marker: do not remove this comment, this is used for sync-dependencies by @vaticle_typedb_client_python
     )
 
