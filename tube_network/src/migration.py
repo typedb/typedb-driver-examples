@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
+import datetime
 import json
+import multiprocessing
 import os
 import re
 from math import cos, asin, sqrt
-import multiprocessing
-import datetime
+from typedb.client import TypeDB, SessionType, TransactionType
+
 
 def entity_template(data):
     query = "insert $x isa " + data["type"]

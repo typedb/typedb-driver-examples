@@ -1,27 +1,20 @@
 package com.vaticle.typedb.example.phoneCalls;
 
-import com.vaticle.typedb.client.api.connection.TypeDBClient;
 import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.connection.TypeDBSession;
-import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
+import com.vaticle.typedb.client.api.TypeDBClient;
+import com.vaticle.typedb.client.api.TypeDBSession;
+import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
-
-/**
- * a lean JSON Library for Java,
- * @see <a href="https://bolerio.github.io/mjson/">mjson</a>
- */
 import mjson.Json;
 
-/**
- * provides an easy and intuitive means of parsing and generating XML documents
- * @see <a href="https://docs.oracle.com/cd/E13222_01/wls/docs90/xml/stax.html">StAX</a>
- */
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 

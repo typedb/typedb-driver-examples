@@ -1,9 +1,10 @@
 package com.vaticle.typedb.example.xcom;
 
-import com.vaticle.typedb.client.api.connection.TypeDBClient;
 import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.connection.TypeDBSession;
-import com.vaticle.typedb.client.api.connection.TypeDBTransaction;
+import com.vaticle.typedb.client.api.TypeDBClient;
+import com.vaticle.typedb.client.api.TypeDBSession;
+import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typeql.lang.TypeQL;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -22,8 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.vaticle.typeql.lang.TypeQL;
 
 
 public class Queries {

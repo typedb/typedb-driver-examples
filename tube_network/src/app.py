@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from six.moves import tkinter as tk
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
 import datetime
+from six.moves import tkinter as tk
+from typedb.client import TypeDB, SessionType, TransactionType
 
 
 def transform_to_range(val, old_min, old_max, new_min, new_max):

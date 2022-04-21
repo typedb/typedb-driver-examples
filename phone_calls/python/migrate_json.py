@@ -1,11 +1,10 @@
 # the Python client for TypeDB
 # https://github.com/vaticle/client-python
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
-
 # an iterative JSON parser
 # we will use it read data source files.
 # https://pypi.org/project/ijson/
 import ijson
+from typedb.client import TypeDB, SessionType, TransactionType
 
 
 def build_phone_call_graph(inputs, data_path, keyspace_name):

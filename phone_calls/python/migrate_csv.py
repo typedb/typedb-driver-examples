@@ -1,11 +1,10 @@
 # the Python client for TypeDB
 # https://github.com/vaticle/client-python
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
-
 # Python's built in module for dealing with .csv files.
 # we will use it read data source files.
 # https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
 import csv
+from typedb.client import TypeDB, SessionType, TransactionType
 
 
 def build_phone_call_graph(inputs, data_path, keyspace_name):

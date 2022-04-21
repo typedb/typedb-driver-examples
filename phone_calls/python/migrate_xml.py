@@ -1,11 +1,10 @@
 # the Python client for TypeDB
 # https://github.com/vaticle/client-python
-from typedb.client import TypeDB, TypeDBClient, SessionType, TransactionType
-
 # Python's built in module for dealing with .xml files.
 # we will use it read data source files.
 # https://medium.com/r/?url=https%3A%2F%2Fdocs.python.org%2F2%2Flibrary%2Fxml.etree.elementtree.html
 import xml.etree.cElementTree as et
+from typedb.client import TypeDB, SessionType, TransactionType
 
 
 def build_phone_call_graph(inputs, data_path, keyspace_name):
