@@ -21,24 +21,24 @@
 
 build:
   correctness:
-    build:
-      image: vaticle-ubuntu-21.04
-      command: |
-        bazel build //...
-    test-phone-calls-java:
-      image: vaticle-ubuntu-21.04
-      command: |
-        bazel run //:typedb-extractor -- dist/typedb-all-linux
-        sudo systemd-run ./dist/typedb-all-linux/typedb server
-        sleep 60
-        bazel test //phone_calls/java:test --test_output=errors
-    test-phone-calls-nodejs:
-      image: vaticle-ubuntu-21.04
-      command: |
-        bazel run //:typedb-extractor -- dist/typedb-all-linux
-        sudo systemd-run ./dist/typedb-all-linux/typedb server
-        sleep 60
-        bazel test //phone_calls/nodejs:test --test_output=errors
+#    build:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel build //...
+#    test-phone-calls-java:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //phone_calls/java:test --test_output=errors
+#    test-phone-calls-nodejs:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //phone_calls/nodejs:test --test_output=errors
     test-phone-calls-python:
       image: vaticle-ubuntu-21.04
       command: |
@@ -47,23 +47,23 @@ build:
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
         bazel test //phone_calls/python:test --test_output=errors
-    test-tube-network:
-      image: vaticle-ubuntu-21.04
-      command: |
-        pyenv global system
-        sudo apt-get update
-        sudo apt-get install -y python3-tk tk-dev xvfb  # Required for tkinter
-        bazel run //:typedb-extractor -- dist/typedb-all-linux
-        sudo systemd-run ./dist/typedb-all-linux/typedb server
-        sleep 60
-        sudo systemd-run Xvfb :0 -screen 0 1024x768x24
-        bazel test //tube_network:test --test_output=errors --action_env=DISPLAY=":0"
-        bazel test //tube_network:test-migration --test_output=errors
-    test-xcom:
-      image: vaticle-ubuntu-21.04
-      command: |
-        bazel run //:typedb-extractor -- dist/typedb-all-linux
-        sudo systemd-run ./dist/typedb-all-linux/typedb server
-        sleep 60
-        bazel test //xcom:test --test_output=errors
+#    test-tube-network:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        pyenv global system
+#        sudo apt-get update
+#        sudo apt-get install -y python3-tk tk-dev xvfb  # Required for tkinter
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        sudo systemd-run Xvfb :0 -screen 0 1024x768x24
+#        bazel test //tube_network:test --test_output=errors --action_env=DISPLAY=":0"
+#        bazel test //tube_network:test-migration --test_output=errors
+#    test-xcom:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //xcom:test --test_output=errors
 
