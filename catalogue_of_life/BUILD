@@ -27,10 +27,6 @@ java_test(
         "@vaticle_typedb_client_java//:client-java",
         "@vaticle_typedb_client_java//api",
         "@vaticle_typeql_lang_java//:typeql-lang",
-        "@vaticle_typeql_lang_java//query"
     ],
     data = glob(["test/data/*.tsv"]),
-    resources = ["//conf:logback-test.xml"],
-    resource_strip_prefix = "conf",
-    size = "large",
 )

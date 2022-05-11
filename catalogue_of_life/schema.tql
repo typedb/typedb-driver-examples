@@ -118,10 +118,12 @@ reference
 region sub entity;
 
 marine-region-id sub attribute, value long;
-marine-region sub region, owns marine-region-id;
+marine-region sub region,
+    owns marine-region-id;
 
 catalogue-of-life-region-description sub attribute, value string;
-catalogue-of-life-region sub region, owns catalogue-of-life-region-description;
+catalogue-of-life-region sub region,
+    owns catalogue-of-life-region-description;
 
 native-status sub attribute, value string;
 

@@ -9,7 +9,12 @@ import com.univocity.parsers.tsv.TsvWriterSettings;
 import loader.TypeDBLoader;
 import picocli.CommandLine;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -23,10 +28,10 @@ import java.util.zip.ZipInputStream;
 
 public class Loader {
     public static void main(String[] args) throws IOException {
-        Optional<Options> maybeOptions = parseCLIOptions(args);
+        Optional<CLIOptions> maybeOptions = parseCLIOptions(args);
         if (maybeOptions.isEmpty()) return;
 
-        Options options = maybeOptions.get();
+        CLIOptions options = maybeOptions.get();
 
         Path workingDirectory = Path.of(options.workingDirectory());
         Path zipFile = fetchZip(workingDirectory, options);
@@ -38,8 +43,8 @@ public class Loader {
         loadData(dataDirectory, options);
     }
 
-    public static Optional<Options> parseCLIOptions(String[] args) {
-        CommandLine commandLine = new CommandLine(new Options());
+    public static Optional<CLIOptions> parseCLIOptions(String[] args) {
+        CommandLine commandLine = new CommandLine(new CLIOptions());
         try {
             CommandLine.ParseResult parseResult = commandLine.parseArgs(args);
             if (commandLine.isUsageHelpRequested()) {
@@ -60,7 +65,7 @@ public class Loader {
         }
     }
 
-    public static Path fetchZip(Path workingDirectory, Options options) throws MalformedURLException {
+    public static Path fetchZip(Path workingDirectory, CLIOptions options) throws MalformedURLException {
         URL url = new URL("https://api.checklistbank.org/dataset/9817/export.zip?format=ColDP");
 
         Path zipFile = workingDirectory.resolve("coldp.zip");
@@ -92,7 +97,7 @@ public class Loader {
     }
 
     public static void prepareData(Path dataDirectory) throws IOException {
-        TsvParser distributionsParser = beginParsingFile(dataDirectory.resolve("Distribution.tsv"));
+        TsvParser distributionsParser = createTsvParser(dataDirectory.resolve("Distribution.tsv"));
         TsvWriter marineRegionsWriter = createTsvWriter(dataDirectory.resolve("MarineDistribution.tsv"));
         TsvWriter describedRegionsWriter = createTsvWriter(dataDirectory.resolve("DescribedDistribution.tsv"));
 
@@ -113,7 +118,7 @@ public class Loader {
         describedRegionsWriter.close();
     }
 
-    private static TsvParser beginParsingFile(Path tsvFile) throws IOException {
+    private static TsvParser createTsvParser(Path tsvFile) throws IOException {
         TsvParserSettings settings = new TsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         settings.setMaxCharsPerColumn(1_000_000);
@@ -146,12 +151,11 @@ public class Loader {
         return true;
     }
 
-    public static void loadData(Path dataDirectory, Options options) throws IOException {
+    public static void loadData(Path dataDirectory, CLIOptions options) throws IOException {
         extractSchema(dataDirectory);
 
-
         LoadOptions loadOptions = new LoadOptions();
-        loadOptions.dataConfigFilePath = createTypeDBLoaderConfig(dataDirectory).toString();
+        loadOptions.dataConfigFilePath = populateLoaderConfigTemplate(dataDirectory).toString();
         loadOptions.databaseName = "catalogue-of-life";
         loadOptions.typedbURI = options.typedbURI();
         loadOptions.cleanMigration = true;
@@ -167,7 +171,7 @@ public class Loader {
         Files.copy(schema, dataDirectory.resolve("schema.tql"), StandardCopyOption.REPLACE_EXISTING);
     }
 
-    public static Path createTypeDBLoaderConfig(Path dataDirectory) throws IOException {
+    public static Path populateLoaderConfigTemplate(Path dataDirectory) throws IOException {
         Path config = dataDirectory.resolve("loader-config.json");
 
         try (FileWriter configWriter = new FileWriter(config.toFile())) {
@@ -186,11 +190,11 @@ public class Loader {
     }
 
     @CommandLine.Command(name = "loader", mixinStandardHelpOptions = true)
-    public static class Options {
+    public static class CLIOptions {
         @CommandLine.Option(
                 names = {"--working-directory", "--dir"},
                 defaultValue = ".",
-                description = "directory in which to store data (default: current)"
+                description = "directory in which to download and extract data to (default: current)"
         )
         private String workingDirectory;
 

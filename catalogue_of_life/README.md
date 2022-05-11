@@ -3,8 +3,8 @@
 [Catalogue of Life](https://www.catalogueoflife.org/) is a database of over 4.5 million currently known taxa in biology,
 compiled from over a hundred different sources. 
 
-In this example we use [TypeDB-Loader](https://github.com/typedb-osi/typedb-loader) to load this dataset into TypeDB
-and leverage its inference capabilities.
+In this example we use [TypeDB-Loader](https://github.com/typedb-osi/typedb-loader) to load this dataset into TypeDB,
+which enables us to leverage the rule-based inference capabilities of TypeDB and TypeQL.
 
 ## Prerequisites
 
