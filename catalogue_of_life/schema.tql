@@ -45,14 +45,20 @@ taxon sub entity,
     owns temporal-range-end,
     owns environment,
     owns web-link,
-    owns remarks;
+    owns remarks,
+    plays parenthood:parent,
+    plays parenthood:child,
+    plays naming:named,
+    plays source:sourced,
+    plays species-distribution:located,
+    plays ancestry:ancestor,
+    plays ancestry:descendant,
+    plays common-taxon:ancestor,
+    plays common-taxon:descendant;
 
 parenthood sub relation,
     relates parent,
     relates child;
-taxon
-    plays parenthood:parent,
-    plays parenthood:child;
 
 name sub attribute, value string;
 transliteration sub attribute, value string;
@@ -63,15 +69,12 @@ vernacular-name sub entity,
     owns name,
     owns transliteration,
     owns language,
-    owns country;
+    owns country,
+    plays naming:name;
 
 naming sub relation,
     relates named,
     relates name;
-taxon
-    plays naming:named;
-vernacular-name
-    plays naming:name;
 
 #################################################
 
@@ -101,21 +104,19 @@ reference sub entity,
     owns issue,
     owns page,
     owns doi,
-    owns web-link;
+    owns web-link,
+    plays source:source;
 
 source sub relation,
     relates sourced,
     relates source;
-taxon
-    plays source:sourced;
-reference
-    plays source:source;
 
 #################################################
 
 # Distribution
 
-region sub entity;
+region sub entity,
+    plays species-distribution:location;
 
 marine-region-id sub attribute, value long;
 marine-region sub region,
@@ -132,11 +133,6 @@ species-distribution sub relation,
     relates located,
     owns native-status;
 
-region
-    plays species-distribution:location;
-taxon
-    plays species-distribution:located;
-
 #################################################
 
 # Rules
@@ -144,9 +140,6 @@ taxon
 ancestry sub relation,
     relates ancestor,
     relates descendant;
-taxon
-    plays ancestry:ancestor,
-    plays ancestry:descendant;
 
 rule direct-child-is-descendant:
 when {
@@ -166,9 +159,6 @@ when {
 common-taxon sub relation,
     relates ancestor,
     relates descendant;
-taxon
-    plays common-taxon:ancestor,
-    plays common-taxon:descendant;
 
 rule infer-common-taxon:
 when {
