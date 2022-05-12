@@ -10,8 +10,9 @@ which enables us to leverage the rule-based inference capabilities of TypeDB and
 
 * System requirements: at least 16 GB of _free_ RAM
 * [Bazel](https://bazel.build/install) v5.1.1
-* The latest version of [TypeDB](https://github.com/vaticle/typedb/releases) that is compatible with the latest version
-  of the TypeDB Java client (see [here](https://docs.vaticle.com/docs/client-api/java#version-compatibility))
+* The latest version of [TypeDB](https://github.com/vaticle/typedb/releases)
+  and [TypeDB Java client](https://docs.vaticle.com/docs/client-api/java) that is compatible with the latest version of
+  TypeDB-Loader (see [compatibility table here](https://github.com/typedb-osi/typedb-loader#compatibility-table))
 * An Internet connection
 
 ## Quickstart
