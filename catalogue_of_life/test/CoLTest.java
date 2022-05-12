@@ -19,9 +19,10 @@ import static org.junit.Assert.assertTrue;
 
 
 public class CoLTest {
+    private static final String DATABASE_NAME = "catalogue-of-life";
+
     private static TypeDBClient client;
     private static TypeDBSession session;
-    private static final String databaseName = "catalogue-of-life";
 
     @BeforeClass
     public static void loadTestData() throws IOException {
@@ -30,7 +31,7 @@ public class CoLTest {
         Loader.loadData(dataDirectory, Loader.parseCLIOptions(new String[]{}).get());
 
         client = TypeDB.coreClient("localhost:1729");
-        session = client.session(databaseName, TypeDBSession.Type.DATA);
+        session = client.session(DATABASE_NAME, TypeDBSession.Type.DATA);
     }
 
     @AfterClass
