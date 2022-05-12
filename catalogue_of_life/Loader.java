@@ -28,10 +28,10 @@ import java.util.zip.ZipInputStream;
 
 public class Loader {
     public static void main(String[] args) throws IOException {
-        Optional<CLIOptions> maybeOptions = parseCLIOptions(args);
-        if (maybeOptions.isEmpty()) return;
+        Optional<CLIOptions> parsedOptions = parseCLIOptions(args);
+        if (parsedOptions.isEmpty()) return;
 
-        CLIOptions options = maybeOptions.get();
+        CLIOptions options = parsedOptions.get();
 
         Path workingDirectory = Path.of(options.workingDirectory());
         Path zipFile = fetchZip(workingDirectory, options);
