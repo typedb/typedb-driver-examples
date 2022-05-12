@@ -175,3 +175,17 @@ maven(
 
 load("@vaticle_bazel_distribution//common:rules.bzl", "workspace_refs")
 workspace_refs(name = "vaticle_typedb_examples_workspace_refs")
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+maven_install(
+    name = "typedb-loader",
+    artifacts = ["com.vaticle.typedb-osi:typedb-loader:1.2.0"],
+    repositories = [
+        "https://jitpack.io",
+        "https://repo.vaticle.com/repository/maven/",
+        "https://repo.vaticle.com/repository/osi-maven/",
+        "https://repo1.maven.org/maven2",
+    ],
+    strict_visibility = True,
+    version_conflict_policy = "pinned"
+)

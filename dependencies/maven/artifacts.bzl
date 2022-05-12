@@ -18,12 +18,13 @@
 #
 
 artifacts = [
+    "com.google.code.gson:gson",
+    "com.univocity:univocity-parsers",
+    "commons-io:commons-io",
+    "info.picocli:picocli",
     "io.cucumber:cucumber-java",
     "io.cucumber:cucumber-junit",
-    "commons-io:commons-io",
-    "com.univocity:univocity-parsers",
-    "org.sharegov:mjson",
-    "com.google.code.gson:gson",
     "javax.xml.stream:stax-api",
     "junit:junit",
+    "org.sharegov:mjson",
 ]

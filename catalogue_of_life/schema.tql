@@ -1,0 +1,174 @@
+define
+
+# Common attributes
+web-link sub attribute, value string;
+
+# Taxa
+
+taxon-id sub attribute, value string;
+
+taxon-status sub attribute,
+    value string,
+    regex "^(accepted|provisionally accepted|misapplied|synonym|ambiguous synonym)$";
+
+scientific-name sub attribute, value string;
+taxon-authorship sub attribute, value string;
+
+taxon-rank sub attribute, value string;
+taxon-notho sub attribute,
+    value string,
+    regex "^(|generic|specific|infraspecific)";
+nomenclatural-code sub attribute,
+    value string,
+    regex "^(|bacterial|botanical|virus|zoological)$";
+
+is-extinct sub attribute, value boolean;
+temporal-range-start sub attribute, value string;  # e.g. Pleistocene, UpperJurassic
+temporal-range-end sub attribute, value string;    # ditto
+
+environment sub attribute,
+    value string,
+    regex "^(|brackish|freshwater|marine|terrestrial)$";
+
+remarks sub attribute, value string;
+
+taxon sub entity,
+    owns taxon-id,
+    owns taxon-status,
+    owns scientific-name,
+    owns taxon-authorship,
+    owns taxon-rank,
+    owns taxon-notho,
+    owns nomenclatural-code,
+    owns is-extinct,
+    owns temporal-range-start,
+    owns temporal-range-end,
+    owns environment,
+    owns web-link,
+    owns remarks,
+    plays parenthood:parent,
+    plays parenthood:child,
+    plays naming:named,
+    plays source:sourced,
+    plays species-distribution:located,
+    plays ancestry:ancestor,
+    plays ancestry:descendant,
+    plays common-taxon:ancestor,
+    plays common-taxon:descendant;
+
+parenthood sub relation,
+    relates parent,
+    relates child;
+
+name sub attribute, value string;
+transliteration sub attribute, value string;
+language sub attribute, value string;
+country sub attribute, value string;
+vernacular-name sub entity,
+    owns taxon-id,
+    owns name,
+    owns transliteration,
+    owns language,
+    owns country,
+    plays naming:name;
+
+naming sub relation,
+    relates named,
+    relates name;
+
+#################################################
+
+# References
+
+reference-id sub attribute, value string;
+source-id sub attribute, value string;
+citation sub attribute, value string;
+author sub attribute, value string;
+title sub attribute, value string;
+container-title sub attribute, value string;
+issued sub attribute, value string;
+volume sub attribute, value string;
+issue sub attribute, value string;
+page sub attribute, value string;
+doi sub attribute, value string;
+
+reference sub entity,
+    owns reference-id,
+    owns source-id,
+    owns citation,
+    owns author,
+    owns title,
+    owns container-title,
+    owns issued,
+    owns volume,
+    owns issue,
+    owns page,
+    owns doi,
+    owns web-link,
+    plays source:source;
+
+source sub relation,
+    relates sourced,
+    relates source;
+
+#################################################
+
+# Distribution
+
+region sub entity,
+    plays species-distribution:location;
+
+marine-region-id sub attribute, value long;
+marine-region sub region,
+    owns marine-region-id;
+
+catalogue-of-life-region-description sub attribute, value string;
+catalogue-of-life-region sub region,
+    owns catalogue-of-life-region-description;
+
+native-status sub attribute, value string;
+
+species-distribution sub relation,
+    relates location,
+    relates located,
+    owns native-status;
+
+#################################################
+
+# Rules
+
+ancestry sub relation,
+    relates ancestor,
+    relates descendant;
+
+rule direct-child-is-descendant:
+when {
+    (parent: $p, child: $c) isa parenthood;
+} then {
+    (ancestor: $p, descendant: $c) isa ancestry;
+};
+
+rule child-of-descendant-is-descendant:
+when {
+    (ancestor: $a, descendant: $p) isa ancestry;
+    (parent: $p, child: $c) isa parenthood;
+} then {
+    (ancestor: $a, descendant: $c) isa ancestry;
+};
+
+common-taxon sub relation,
+    relates ancestor,
+    relates descendant;
+
+rule infer-common-taxon:
+when {
+    (ancestor: $a, descendant: $x) isa ancestry;
+    (ancestor: $a, descendant: $y) isa ancestry;
+    not {
+        (parent: $a, child: $c) isa parenthood;
+        (ancestor: $c, descendant: $x) isa ancestry;
+        (ancestor: $c, descendant: $y) isa ancestry;
+    };
+} then {
+    (ancestor: $a, descendant: $x, descendant: $y) isa common-taxon;
+};
