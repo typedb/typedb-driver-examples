@@ -25,6 +25,13 @@ build:
       image: vaticle-ubuntu-21.04
       command: |
         bazel build //...
+    test-catalogue-of-life:
+     image: vaticle-ubuntu-21.04
+     command: |
+       bazel run //:typedb-extractor -- dist/typedb-all-linux
+       sudo systemd-run ./dist/typedb-all-linux/typedb server
+       sleep 60
+       bazel test //catalogue_of_life:tests --test_output=errors
     test-phone-calls-java:
       image: vaticle-ubuntu-21.04
       command: |
@@ -66,4 +73,3 @@ build:
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
         bazel test //xcom:test --test_output=errors
-
