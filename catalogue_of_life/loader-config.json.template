@@ -266,6 +266,10 @@
                 {
                   "attribute": "language",
                   "column": "col:language"
+                },
+                {
+                  "attribute": "country",
+                  "column": "col:country"
                 }
               ]
             }
