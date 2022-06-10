@@ -193,3 +193,5 @@ maven_install(
 # Load JetBrains Compose for Kotlin.
 load("@vaticle_dependencies//builder/compose:deps.bzl", compose_deps = "deps")
 compose_deps()
+
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_library")
