@@ -189,3 +189,7 @@ maven_install(
     strict_visibility = True,
     version_conflict_policy = "pinned"
 )
+
+# Load JetBrains Compose for Kotlin.
+load("@vaticle_dependencies//builder/compose:deps.bzl", compose_deps = "deps")
+compose_deps()

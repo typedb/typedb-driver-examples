@@ -1,0 +1,2 @@
+match
+    $x isa airport, has airport_icao "KJFK";

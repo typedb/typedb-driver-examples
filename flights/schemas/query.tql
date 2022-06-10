@@ -1,0 +1,4 @@
+match
+$route (origin: $o, destination: $d) isa route;
+$d has airport_icao "KIAD";
+get $route;

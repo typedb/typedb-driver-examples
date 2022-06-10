@@ -73,3 +73,10 @@ build:
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
         bazel test //xcom:test --test_output=errors
+    test-flights:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //flights:test --test_output=errors
