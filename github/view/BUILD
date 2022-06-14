@@ -18,13 +18,16 @@
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
 
-package(default_visibility = ["//github:__pkg__"])
+package(default_visibility = ["//visibility:public"])
 
 kt_jvm_library(
     name = "view",
     srcs = glob(["*.kt"]),
     kotlin_compiler_plugin = "@org_jetbrains_compose_compiler//file",
+    tags = ["maven_coordinates=com.vaticle.typedb:typedb-studio-view:{pom_version}"],
     deps = [
+        "//github/state",
+
         # External Maven Dependencies
         "@maven//:org_jetbrains_compose_foundation_foundation_desktop",
         "@maven//:org_jetbrains_compose_foundation_foundation_layout_desktop",
@@ -35,7 +38,6 @@ kt_jvm_library(
         "@maven//:org_jetbrains_compose_ui_ui_text_desktop",
         "@maven//:org_jetbrains_compose_ui_ui_unit_desktop",
     ],
-    tags = ["maven_coordinates=com.vaticle.typedb:typedb-studio-view:{pom_version}"],
 )
 
 checkstyle_test(

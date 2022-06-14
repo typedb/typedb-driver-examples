@@ -15,25 +15,25 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import github.state.RepoFile.Companion as RepoFile
 
 class Migrator {
 
     private val DB_NAME = "github"
     private val DB_URI = "localhost:1729"
-    private val SCHEMA_PATH_STRING = "schemas/github-schema.tql"
+    private val SCHEMA_PATH_STRING = "/Users/jameswilliams/Projects/typedb-examples/github/schemas/github-schema.tql"
 
     fun run(data_path: String) {
-        val migrator = Migrator()
-        migrator.clearDatabase()
-        migrator.connectAndWriteSchema(SCHEMA_PATH_STRING)
-        migrator.connectAndMigrate(initialiseInputs(data_path))
+        this.clearDatabase()
+        this.connectAndWriteSchema(SCHEMA_PATH_STRING)
+        this.connectAndMigrate(initialiseInputs(data_path))
     }
 
     private fun clearDatabase() {
         val client = TypeDB.coreClient(DB_URI)
-        client.databases().get(DB_NAME).delete()
-        println("Deleted $DB_NAME.")
+        if (client.databases().contains("github")) {
+            client.databases().get("github").delete()
+            println("Deleted $DB_NAME.")
+        }
         client.close()
     }
 
@@ -57,7 +57,7 @@ class Migrator {
         client.close()
     }
 
-    private fun connectAndMigrate(insertables: Collection<Migratable>) {
+    private fun connectAndMigrate(insertables: Collection<RepoFile>) {
         val client = TypeDB.coreClient(DB_URI)
         val session = client.session(DB_NAME, TypeDBSession.Type.DATA)
 
@@ -67,25 +67,26 @@ class Migrator {
         client.close()
     }
 
-    private fun initialiseInputs(data_path: String) : Collection<Migratable> {
-        val inputs = ArrayList<Migratable>()
+    private fun initialiseInputs(data_path: String) : Collection<RepoFile> {
+        val inputs = ArrayList<RepoFile>()
         inputs.add(pathToRepository(data_path))
         return inputs
     }
 
-    private fun loadDataIntoTypeDB(insertables: Collection<Migratable>, session: TypeDBSession) {
+    private fun loadDataIntoTypeDB(repoFiles: Collection<RepoFile>, session: TypeDBSession) {
         val transaction = session.transaction(TypeDBTransaction.Type.WRITE)
-        for (insert in insertables) {
-            val insertQuery = insert.toInsertString()
-            println("Executing query: $insertQuery")
-            transaction.query().insert(parseQuery(insertQuery) as TypeQLInsert)
+        for (repo in repoFiles) {
+            for (insertString in repo.createTransaction()) {
+                println("Executing query: $insertString")
+                transaction.query().insert(parseQuery(insertString) as TypeQLInsert)
+            }
         }
         transaction.commit()
     }
 
-    private fun pathToRepository(data_path: String) : Migratable {
+    private fun pathToRepository(data_path: String) : RepoFile {
         // Awful!
-        return RepoFile.fromJson(getJson(data_path)) as Migratable
+        return RepoFile.fromJson(getJson(data_path))
     }
 
     @Throws(FileNotFoundException::class)

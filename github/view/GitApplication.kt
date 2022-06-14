@@ -35,10 +35,9 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import github.state.Downloader
 
 object GitApplication {
-
-    var count by mutableStateOf(0)
     var repo by mutableStateOf("")
 
 //    private var error: Throwable? by mutableStateOf(null)
@@ -52,8 +51,8 @@ object GitApplication {
         ) {
             Column(modifier = Modifier.offset(x = 100.dp, y = 100.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 TextField(value = repo, onValueChange = {repo = it})
-                Button(onClick = {count++}) {
-                    Text("Test Button $count")
+                Button(onClick = { Downloader().explore(repo) }) {
+                    Text("Explore Repo")
                 }
             }
         }

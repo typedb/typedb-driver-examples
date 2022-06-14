@@ -1,12 +1,12 @@
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
 
-package(default_visibility = ["//github:__pkg__"])
+package(default_visibility = ["//github/view:__subpackages__"])
 
 kt_jvm_library(
-    name = "view",
+    name = "state",
     srcs = glob(["*.kt"]),
-    kotlin_compiler_plugin = "@org_jetbrains_compose_compiler//file",
+    #    kotlin_compiler_plugin = "@org_jetbrains_compose_compiler//file",
     tags = ["maven_coordinates=com.vaticle.typedb:typedb-studio-view:{pom_version}"],
     deps = [
         # External Maven Dependencies

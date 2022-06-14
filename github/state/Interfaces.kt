@@ -18,4 +18,9 @@ interface FromJson<T> {
     fun fromJson(j: JsonObject): T
 }
 
-abstract class Migratable : Insertable, ToJson, FromJson<Migratable>
+
+/**
+ * https://kotlinlang.org/docs/object-declarations.html#companion-objects
+ * Chose to stick with this way of working, this is recommended as per above kotlin docs.
+ */
+abstract class Migratable: Insertable, ToJson, FromJson<Migratable>
