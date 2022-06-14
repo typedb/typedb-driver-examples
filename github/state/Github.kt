@@ -6,10 +6,13 @@ import com.eclipsesource.json.JsonArray
 // All the maps in this file should probably be reduce.
 
 /**
- * This is our local representation of a repository with less information than GitHub gives us.
+ * This is our local representation of a repository with less information than GitHub gives us for simplification.
  */
 class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits: Collection<Commit>,
                val files: Collection<File>) : ToJson {
+
+    // TypeQL parser doesn't like us having multiple insert blocks in the same query string.
+    // It might be worth moving the query string logic into here.
     fun createTransaction(): ArrayList<String> {
 
         var insertStrings = ArrayList<String>()
@@ -26,7 +29,12 @@ class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits:
 
         for (commit in commits) {
             insertStrings.add(commit.toInsertString(repoInfo.name))
+            for (commitFile in commit.toCommitFiles()) {
+                insertStrings.add(commitFile.toInsertString())
+            }
         }
+
+
 
         return insertStrings
     }
@@ -74,20 +82,30 @@ class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits:
     }
 }
 
+class CommitFile(val file: String, val commit_hash: String) {
+    fun toInsertString(): String {
+        return "match \$file isa file, has file_name \"$file\"; " +
+            "\$commit isa commit, has commit_hash \"$commit_hash\";" +
+            "insert \$commit_file(commit: \$commit, file: \$file) isa commit_file;"
+    }
+}
+
 class Commit(val author: String, val hash: String, val date: String, val files: ArrayList<File>) : ToJson {
     fun toInsertString(repoName: String): String {
-//        val commitFileRelations = ArrayList<String>()
-//        for (file in files) {
-//            commitFileRelations.add("match \$file isa file, has file_name \"$file\"; " +
-//                    "\$commit isa commit, has commit_hash \"$hash\";" +
-//                    "insert \$commit_file(commit: \$commit, file: \$file) isa commit_file;")
-//        }
         return "match \$author isa user, has user_name \"$author\";" +
                 "\$repo isa repo, has repo_name \"$repoName\"; " +
                 "insert \$commit isa commit, has commit_hash \"$hash\"" +
                 ", has commit_date \"$date\"; " +
                 "\$commit_author(commit: \$commit, author: \$author) isa commit_author; " +
                 "\$commit_repo(commit: \$commit, repo: \$repo) isa commit_repo; "
+    }
+
+    fun toCommitFiles(): ArrayList<CommitFile> {
+        val result = ArrayList<CommitFile>()
+        for (file in files) {
+            result.add(CommitFile(file.name, hash))
+        }
+        return result
     }
 
     override fun toJson(): JsonObject {
