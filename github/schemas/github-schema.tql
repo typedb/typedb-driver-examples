@@ -10,6 +10,8 @@ define
         value string;
     commit_message sub attribute,
         value string;
+    commit_date sub attribute,
+        value string;
     
     user_name sub attribute,
         value string;
@@ -45,6 +47,7 @@ define
         plays commit_file:commit,
         plays commit_dir:commit,
         owns commit_hash,
+        owns commit_date,
         owns commit_message;
 
     user sub entity,

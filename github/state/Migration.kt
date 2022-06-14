@@ -7,23 +7,27 @@ import com.vaticle.typeql.lang.TypeQL.parseQuery
 import com.vaticle.typeql.lang.query.TypeQLDefine
 import com.vaticle.typeql.lang.query.TypeQLInsert
 import com.eclipsesource.json.Json
+import com.eclipsesource.json.JsonObject
 
 import java.io.*
+import java.io.File
+//import java.io.BufferedReader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
+import github.state.RepoFile.Companion as RepoFile
 
-class Migration {
+class Migrator {
 
     private val DB_NAME = "github"
     private val DB_URI = "localhost:1729"
     private val SCHEMA_PATH_STRING = "schemas/github-schema.tql"
 
     fun run(data_path: String) {
-        val fm = GithubMigration()
-        fm.clearDatabase()
-        fm.connectAndWriteSchema(SCHEMA_PATH_STRING)
-        fm.connectAndMigrate(getJson(data_path))
+        val migrator = Migrator()
+        migrator.clearDatabase()
+        migrator.connectAndWriteSchema(SCHEMA_PATH_STRING)
+        migrator.connectAndMigrate(initialiseInputs(data_path))
     }
 
     private fun clearDatabase() {
@@ -53,43 +57,39 @@ class Migration {
         client.close()
     }
 
-    private fun connectAndMigrate(inputs: Collection<Insertable>) {
+    private fun connectAndMigrate(insertables: Collection<Migratable>) {
         val client = TypeDB.coreClient(DB_URI)
         val session = client.session(DB_NAME, TypeDBSession.Type.DATA)
 
-        for (input in inputs) {
-            loadDataIntoTypeDB(input, session)
-        }
+        loadDataIntoTypeDB(insertables, session)
 
         session.close()
         client.close()
     }
 
-    private fun initialiseInputs() : Collection<Insertable> {
-        val inputs = ArrayList<Insertable>()
-
+    private fun initialiseInputs(data_path: String) : Collection<Migratable> {
+        val inputs = ArrayList<Migratable>()
+        inputs.add(pathToRepository(data_path))
         return inputs
     }
 
-    private fun loadDataIntoTypeDB(input: Insertable, session: TypeDBSession) {
-        val items = parseDataToJson(input)
+    private fun loadDataIntoTypeDB(insertables: Collection<Migratable>, session: TypeDBSession) {
         val transaction = session.transaction(TypeDBTransaction.Type.WRITE)
-        for (item in items) {
-            val insertQuery = input.template(item)
+        for (insert in insertables) {
+            val insertQuery = insert.toInsertString()
             println("Executing query: $insertQuery")
             transaction.query().insert(parseQuery(insertQuery) as TypeQLInsert)
         }
         transaction.commit()
     }
 
-    private fun pathToInsertables(data_path: String) : ArrayList<Insertable> {
-        val insertables = ArrayList<Insertable>()
-        var json = getJson(data_path)
-        json.get()
+    private fun pathToRepository(data_path: String) : Migratable {
+        // Awful!
+        return RepoFile.fromJson(getJson(data_path)) as Migratable
     }
 
     @Throws(FileNotFoundException::class)
-    fun getJson(relativePath: String): Json {
-        return Json.parse(relativePath.readText()).asObject()
+    fun getJson(relativePath: String): JsonObject {
+        return Json.parse(File(relativePath).bufferedReader()).asObject()
     }
 }
