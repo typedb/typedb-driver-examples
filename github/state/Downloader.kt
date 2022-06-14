@@ -19,27 +19,27 @@ class Downloader {
         } else {
             val gh = GitHub.connect()
             println("Connected to GitHub.")
-            try {
-                val repo = buildRepo(gh.getRepository(repo_path))
-                println("Fetched repository.")
-                val repoName = repo.repoInfo.name
-                val fileBuffer = java.io.File("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json").bufferedWriter()
-                repo.toJson().writeTo(fileBuffer)
-                fileBuffer.flush()
-                println("Written repository to disk at datasets/$repoName.json")
-                Migrator().run("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json")
-            } catch (e: Exception) {
-                throw IOError(Throwable(e.toString()))
-            }
+            val repo = buildRepo(gh.getRepository(repo_path))
+            println("Fetched repository.")
+            val repoName = repo.repoInfo.name
+            val fileBuffer = java.io.File("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json").bufferedWriter()
+            repo.toJson().writeTo(fileBuffer)
+            fileBuffer.flush()
+            println("Written repository to disk at datasets/$repoName.json")
+            Migrator().run("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json")
+//            } catch (e: Exception) {
+//                throw IOError(Throwable(e.toString()))
+//            }
         }
     }
 
     private fun buildRepo(repo: GHRepository): RepoFile {
-        val repoInfo = RepoInfo(repo.id, repo.name, repo.description.orEmpty())
+        val repoInfo = RepoInfo(repo.id, repo.name, repo.description.orEmpty(), repo.ownerName)
         val commits = ArrayList<Commit>()
         val fileSet = HashSet<File>()
         val userSet = HashSet<User>()
-        val commitIter = repo.listCommits()
+        userSet.add(User(repo.ownerName))
+        val commitIter = repo.listCommits().take(15)
         for (commit in commitIter) {
             userSet.add(User(commit.author.login.orEmpty()))
 

@@ -24,25 +24,25 @@ define
         relates repo;
     
     repo_creator sub relation,
-        relates repository,
+        relates repo,
         relates owner;
 
     commit_author sub relation,
         relates author,
         relates commit;
-    
+
     commit_file sub relation,
         relates file,
         relates commit;
 
-    repo_commit sub relation,
+    commit_repo sub relation,
         relates commit,
         relates repo;
 
     repo sub entity,
-        plays repo_creator:repository,
+        plays commit_repo:repo,
+        plays repo_creator:repo,
         plays repo_file:repo,
-        plays repo_commit:repo,
         owns repo_id,
         owns repo_name,
         owns repo_description;
@@ -50,10 +50,9 @@ define
     commit sub entity,
         plays commit_author:commit,
         plays commit_file:commit,
-        plays repo_commit:commit,
+        plays commit_repo:commit,
         owns commit_hash,
-        owns commit_date,
-        owns commit_message;
+        owns commit_date;
 
     user sub entity,
         plays commit_author:author,

@@ -11,17 +11,21 @@ import com.eclipsesource.json.JsonArray
 class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits: Collection<Commit>,
                val files: Collection<File>) : ToJson {
     fun createTransaction(): ArrayList<String> {
+
         var insertStrings = ArrayList<String>()
-        for (file in files) {
-            insertStrings.add(file.toInsertString())
-        }
+
         for (user in users) {
             insertStrings.add(user.toInsertString())
         }
+
         insertStrings.add(repoInfo.toInsertString())
 
+        for (file in files) {
+            insertStrings.add(file.toInsertString(repoInfo.name))
+        }
+
         for (commit in commits) {
-            insertStrings.add(commit.toInsertString())
+            insertStrings.add(commit.toInsertString(repoInfo.name))
         }
 
         return insertStrings
@@ -70,10 +74,20 @@ class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits:
     }
 }
 
-class Commit(val author: String, val hash: String, val date: String, val files: ArrayList<File>) : Insertable, ToJson {
-    override fun toInsertString(): String {
-        return "insert \$commit isa commit, has commit_hash \"$hash\"" +
-                ", has commit_date \"$date\"; "
+class Commit(val author: String, val hash: String, val date: String, val files: ArrayList<File>) : ToJson {
+    fun toInsertString(repoName: String): String {
+//        val commitFileRelations = ArrayList<String>()
+//        for (file in files) {
+//            commitFileRelations.add("match \$file isa file, has file_name \"$file\"; " +
+//                    "\$commit isa commit, has commit_hash \"$hash\";" +
+//                    "insert \$commit_file(commit: \$commit, file: \$file) isa commit_file;")
+//        }
+        return "match \$author isa user, has user_name \"$author\";" +
+                "\$repo isa repo, has repo_name \"$repoName\"; " +
+                "insert \$commit isa commit, has commit_hash \"$hash\"" +
+                ", has commit_date \"$date\"; " +
+                "\$commit_author(commit: \$commit, author: \$author) isa commit_author; " +
+                "\$commit_repo(commit: \$commit, repo: \$repo) isa commit_repo; "
     }
 
     override fun toJson(): JsonObject {
@@ -101,11 +115,13 @@ class Commit(val author: String, val hash: String, val date: String, val files: 
     }
 }
 
-class RepoInfo(val id: Long, val name: String, val desc: String) : Insertable, ToJson {
-    override fun toInsertString(): String {
-        return "insert \$repo isa repo, has repo_id $id" +
+class RepoInfo(val id: Long, val name: String, val desc: String, val authorName: String) : ToJson {
+    fun toInsertString(): String {
+        return "match \$user isa user, has user_name \"$authorName\"; " +
+                "insert \$repo isa repo, has repo_id $id" +
                 ", has repo_name \"$name\"" +
-                ", has repo_description \"$desc\"; "
+                ", has repo_description \"$desc\"; " +
+                "\$repo_creator(repo: \$repo, owner: \$user) isa repo_creator; "
     }
 
     override fun toJson(): JsonObject {
@@ -114,20 +130,24 @@ class RepoInfo(val id: Long, val name: String, val desc: String) : Insertable, T
         jo.add("id", id)
         jo.add("name", name)
         jo.add("description", desc)
+        jo.add("author", authorName)
 
         return jo
     }
 
     companion object: FromJson<RepoInfo> {
         override fun fromJson(j: JsonObject): RepoInfo {
-            return RepoInfo(j.get("id").asLong(), j.get("name").asString(), j.get("description").asString())
+            return RepoInfo(j.get("id").asLong(),
+                j.get("name").asString(),
+                j.get("description").asString(),
+                j.get("author").asString())
         }
     }
 }
 
-class User(val name: String) : Insertable, ToJson {
-    override fun toInsertString(): String {
-        return "insert \$user isa user, has user_name \"$name\"; "
+class User(val name: String) : ToJson {
+    fun toInsertString(): String {
+        return "insert \$user isa user, has user_name \"$name\";"
     }
 
     override fun toJson(): JsonObject {
@@ -154,9 +174,11 @@ class User(val name: String) : Insertable, ToJson {
     }
 }
 
-class File(val name: String) : Insertable, ToJson {
-    override fun toInsertString(): String {
-        return "insert \$file isa file, has file_name \"$name\"; "
+class File(val name: String) : ToJson {
+    fun toInsertString(repoName: String): String {
+        return "match \$repo isa repo, has repo_name \"$repoName\"; " +
+                "insert \$file isa file, has file_name \"$name\"; " +
+                "\$repo_file(repo: \$repo, file: \$file) isa repo_file; "
     }
 
     override fun toJson(): JsonObject {
