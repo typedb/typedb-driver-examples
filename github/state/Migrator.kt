@@ -1,5 +1,8 @@
 package github.state
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.vaticle.typedb.client.TypeDB
 import com.vaticle.typedb.client.api.TypeDBSession
 import com.vaticle.typedb.client.api.TypeDBTransaction
@@ -17,15 +20,27 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 class Migrator {
+    enum class State {
+        NOT_STARTED,
+        CONNECTING,
+        WRITING_SCHEMA,
+        MIGRATING,
+        COMPLETED,
+    }
 
     private val DB_NAME = "github"
     private val DB_URI = "localhost:1729"
     private val SCHEMA_PATH_STRING = "/Users/jameswilliams/Projects/typedb-examples/github/schemas/github-schema.tql"
+    var state by mutableStateOf(State.NOT_STARTED)
 
-    fun run(dataPath: String) {
+    fun migrate(dataPath: String) {
+        this.state = State.CONNECTING
         this.clearDatabase()
+        this.state = State.WRITING_SCHEMA
         this.connectAndWriteSchema(SCHEMA_PATH_STRING)
+        this.state = State.MIGRATING
         this.connectAndMigrate(initialiseInputs(dataPath))
+        this.state = State.COMPLETED
     }
 
     private fun clearDatabase() {

@@ -25,12 +25,12 @@ class Explorer {
             "match \$file isa file, has file_name \"$fileName\";" +
             "\$commit_file(file: \$file, commit: \$commit) isa commit_file;" +
             "\$commit_author(commit: \$commit, author: \$author) isa commit_author;" +
-            "\$author has user_name \$x;"
-            "get \$x;"
+            "\$author has user_name \$user_name;" +
+            "get \$user_name;"
         var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
         this.transaction.query().match(query.asMatch()).forEach { result ->
             results.add(
-                result.get("user_name").asAttribute().toString()
+                result.get("user_name").asAttribute().value.toString()
             )
         }
         return results
@@ -39,15 +39,15 @@ class Explorer {
     fun filesEditedByUser(userName: String): ArrayList<String> {
         val results = ArrayList<String>()
         val queryString =
-            "match \$user isa user, has user_name \"$userName;\"" +
+            "match \$user isa user, has user_name \"$userName\";" +
             "\$commit_author(commit: \$commit, author: \$user) isa commit_author;" +
             "\$commit_file(file: \$file, commit: \$commit) isa commit_file;" +
-            "\$file has file_name \$x;" +
-            "get \$x;"
+            "\$file has file_name \$file_name;" +
+            "get \$file_name;"
         var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
         this.transaction.query().match(query.asMatch()).forEach { result ->
             results.add(
-                result.get("file_name").asAttribute().toString()
+                result.get("file_name").asAttribute().value.toString()
             )
         }
         return results
@@ -59,29 +59,12 @@ class Explorer {
             "match \$repo isa repo, has repo_name \"$repoName\";" +
             "\$commit_repo(commit: \$commit, repo: \$repo) isa commit_repo;" +
             "\$commit_author(commit: \$commit, author: \$author) isa commit_author;" +
-            "\$author has user_name \$x;" +
-            "get \$x;"
+            "\$author has user_name \$user_name;" +
+            "get \$user_name;"
         var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
         this.transaction.query().match(query.asMatch()).forEach { result ->
             results.add(
-                result.get("user_name").asAttribute().toString()
-            )
-        }
-        return results
-    }
-
-    fun reposWorkedOnByUser(userName: String): ArrayList<String> {
-        val results = ArrayList<String>()
-        val queryString =
-            "match \$user isa user, has user_name \"$userName\";" +
-            "\$commit_author(commit: \$commit, author: \$user) isa commit_author;" +
-            "\$commit_repo(commit: \$commit, repo: \$repo) isa commit_repo;" +
-            "\$repo has repo_name \$x;" +
-            "get \$x;"
-        var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        this.transaction.query().match(query.asMatch()).forEach { result ->
-            results.add(
-                result.get("repo_name").asAttribute().toString()
+                result.get("user_name").asAttribute().value.toString()
             )
         }
         return results
@@ -94,19 +77,18 @@ class Explorer {
             "\$commit_file(commit: \$commit, file: \$file) isa commit_file;" +
             "\$commit_file2(commit: \$commit2, file: \$file) isa commit_file;" +
             "\$commit_author(commit: \$commit2, author: \$author) isa commit_author;" +
-            "\$author has user_name \$x;" +
-            "get \$x;"
+            "\$author has user_name \$user_name;" +
+            "get \$user_name;"
         var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
         this.transaction.query().match(query.asMatch()).forEach { result ->
             results.add(
-                result.get("user_name").asAttribute().toString()
+                result.get("user_name").asAttribute().value.toString()
             )
         }
         return results
     }
 
-    fun fileEditCount(fileName: String): Int {
-        val results = ArrayList<Int>()
+    fun fileEditCount(fileName: String): String {
         val queryString =
             "match \$file isa file, has file_name \"$fileName\";" +
             "\$commit_file(commit: \$commit, file: \$file) isa commit_file;" +
@@ -114,11 +96,6 @@ class Explorer {
             "not {\$commit_file is \$commit_file2;};" +
             "get \$commit_file; count;"
         var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        this.transaction.query().match(query.asMatch()).forEach { result ->
-            results.add(
-                result.get("").asEntity().toString().toInt()
-            )
-        }
-        return results[0]
+        return this.transaction.query().match(query.asMatchAggregate()).get().toString()
     }
 }

@@ -82,6 +82,9 @@ as follows:
 
 ## Queries
 
+All of these queries are available through [github.state.Explorer](github/state/Explorer.kt) and the compose-jb
+application.
+
 ### Which users collaborated on a given file?
 ```tql
 match $file isa file, has file_name "FILE_NAME_HERE";
