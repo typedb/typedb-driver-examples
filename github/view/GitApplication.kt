@@ -31,29 +31,50 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import github.state.Downloader
 
 object GitApplication {
-    var repo by mutableStateOf("")
+    var repoTextFieldValue by mutableStateOf("")
+    var repoCurrentlyLoaded by mutableStateOf("")
+    var repoStatusValue by mutableStateOf("No repo loaded.")
+//    var queryFieldValue by mutableStateOf("")
 
 //    private var error: Throwable? by mutableStateOf(null)
 
+//    @Composable
+//    private fun QueryWindow(function: () -> Unit) {
+//        var isOpen by remember {mutableStateOf(true)}
+//        Window(
+//            title = "Query",
+//            state = rememberWindowState(),
+//            onCloseRequest = {isOpen = false},
+//        ) {
+//            Column(modifier = Modifier.offset(x = 100.dp, y = 100.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+//                TextField(value = queryFieldValue, onValueChange = {queryFieldValue = it})
+//            }
+//
+//        }
+//    }
     @Composable
     private fun MainWindow(exitApplicationFn: () -> Unit) {
         Window(
             title = "Git Application",
-            state = rememberWindowState(WindowPlacement.Maximized),
+            state = rememberWindowState(),
             onCloseRequest = {exitApplicationFn()},
         ) {
             Column(modifier = Modifier.offset(x = 100.dp, y = 100.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                TextField(value = repo, onValueChange = {repo = it})
-                Button(onClick = { Downloader().explore(repo) }) {
+                TextField(value = repoTextFieldValue, onValueChange = {repoTextFieldValue = it})
+                Button(onClick = {
+                    Downloader().explore(repoTextFieldValue)
+                    repoCurrentlyLoaded = repoTextFieldValue
+                    repoStatusValue = "Repo loaded: $repoCurrentlyLoaded"}
+                    ) {
                     Text("Explore Repo")
                 }
+                Text(repoStatusValue)
             }
         }
     }

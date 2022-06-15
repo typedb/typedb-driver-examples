@@ -61,5 +61,6 @@ define
 
     file sub entity,
         plays repo_file:file,
+        plays commit_file:file,
         owns file_name;
     

@@ -2,34 +2,39 @@ package github.state
 
 import org.kohsuke.github.*
 import java.io.IOError
+import java.nio.file.Paths
 
 class Downloader {
+    // Need to choose a sane multi-platform place for these to go, can't go in bazel's temporary execution environment.
+    val folderPath = "/Users/jameswilliams/Projects/typedb-examples/github/datasets"
     /**
      * repo_path is a string like "vaticle/typedb-examples"
      * We only support GitHub repository paths.
      */
     fun explore(repo_path: String) {
-        if (repo_path.split("/").size != 2) {
-            throw IOError(Throwable("Repos should be formatted <repo_owner>/<repo_name>. Remove any other details."))
+        while (repo_path.split("/").size != 2 || repo_path.split("/")[0].isEmpty()
+                || repo_path.split("/")[1].isEmpty()) {
+            throw IOError(Throwable("Repos should be formatted <repo_owner>/<repo_name>."))
         }
         val repoName = repo_path.split("/")[1]
 
-        if (java.io.File("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json").exists()) {
-            Migrator().run("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json")
+        val currentRelativePath = Paths.get("")
+        val s: String = currentRelativePath.toAbsolutePath().toString()
+        println("Current absolute path is: $s")
+
+        if (java.io.File("$folderPath/$repoName.json").exists()) {
+            Migrator().run("$folderPath/$repoName.json")
         } else {
             val gh = GitHub.connect()
             println("Connected to GitHub.")
             val repo = buildRepo(gh.getRepository(repo_path))
             println("Fetched repository.")
             val repoName = repo.repoInfo.name
-            val fileBuffer = java.io.File("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json").bufferedWriter()
+            val fileBuffer = java.io.File("$folderPath/$repoName.json").bufferedWriter()
             repo.toJson().writeTo(fileBuffer)
             fileBuffer.flush()
             println("Written repository to disk at datasets/$repoName.json")
-            Migrator().run("/Users/jameswilliams/Projects/typedb-examples/github/datasets/$repoName.json")
-//            } catch (e: Exception) {
-//                throw IOError(Throwable(e.toString()))
-//            }
+            Migrator().run("$folderPath/$repoName.json")
         }
     }
 
@@ -39,7 +44,7 @@ class Downloader {
         val fileSet = HashSet<File>()
         val userSet = HashSet<User>()
         userSet.add(User(repo.ownerName))
-        val commitIter = repo.listCommits().take(15)
+        val commitIter = repo.listCommits().take(25)
         for (commit in commitIter) {
             userSet.add(User(commit.author.login.orEmpty()))
 

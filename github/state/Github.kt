@@ -34,8 +34,6 @@ class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits:
             }
         }
 
-
-
         return insertStrings
     }
 
@@ -82,10 +80,10 @@ class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits:
     }
 }
 
-class CommitFile(val file: String, val commit_hash: String) {
+class CommitFile(val file: String, val commitHash: String) {
     fun toInsertString(): String {
         return "match \$file isa file, has file_name \"$file\"; " +
-            "\$commit isa commit, has commit_hash \"$commit_hash\";" +
+            "\$commit isa commit, has commit_hash \"$commitHash\";" +
             "insert \$commit_file(commit: \$commit, file: \$file) isa commit_file;"
     }
 }

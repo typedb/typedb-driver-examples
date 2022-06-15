@@ -22,10 +22,10 @@ class Migrator {
     private val DB_URI = "localhost:1729"
     private val SCHEMA_PATH_STRING = "/Users/jameswilliams/Projects/typedb-examples/github/schemas/github-schema.tql"
 
-    fun run(data_path: String) {
+    fun run(dataPath: String) {
         this.clearDatabase()
         this.connectAndWriteSchema(SCHEMA_PATH_STRING)
-        this.connectAndMigrate(initialiseInputs(data_path))
+        this.connectAndMigrate(initialiseInputs(dataPath))
     }
 
     private fun clearDatabase() {
@@ -57,11 +57,11 @@ class Migrator {
         client.close()
     }
 
-    private fun connectAndMigrate(insertables: Collection<RepoFile>) {
+    private fun connectAndMigrate(repoFiles: Collection<RepoFile>) {
         val client = TypeDB.coreClient(DB_URI)
         val session = client.session(DB_NAME, TypeDBSession.Type.DATA)
 
-        loadDataIntoTypeDB(insertables, session)
+        loadDataIntoTypeDB(repoFiles, session)
 
         session.close()
         client.close()
@@ -69,7 +69,7 @@ class Migrator {
 
     private fun initialiseInputs(data_path: String) : Collection<RepoFile> {
         val inputs = ArrayList<RepoFile>()
-        inputs.add(pathToRepository(data_path))
+        inputs.add(pathToRepoFile(data_path))
         return inputs
     }
 
@@ -84,8 +84,7 @@ class Migrator {
         transaction.commit()
     }
 
-    private fun pathToRepository(data_path: String) : RepoFile {
-        // Awful!
+    private fun pathToRepoFile(data_path: String) : RepoFile {
         return RepoFile.fromJson(getJson(data_path))
     }
 
