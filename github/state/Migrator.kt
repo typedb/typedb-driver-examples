@@ -93,8 +93,7 @@ class Migrator {
     }
 
     companion object {
-        private val folderPath = Paths.get("").toAbsolutePath().toString()
-        private var SCHEMA_PATH_STRING = "$folderPath/github/schemas/github-schema.tql"
+        private var SCHEMA_PATH_STRING = "github/schemas/github-schema.tql"
         private const val DB_KEYSPACE = "github"
         private const val DB_URI = "localhost:1729"
     }

@@ -32,21 +32,21 @@ class Downloader {
         }
 
         val repoInput = repoPath.split("/")[1]
-        if (!java.io.File("$folderPath/${repoInput}.json").exists()) {
+        if (!java.io.File("$DATASETS_PATH/${repoInput}.json").exists()) {
             val gh = GitHub.connect()
 
             this.state = State.GITHUB_DOWNLOADING
             val repo = buildRepo(gh.getRepository(repoPath))
 
             this.state = State.WRITING_TO_FILE
-            val fileBuffer = java.io.File("$folderPath/$repoInput.json").bufferedWriter()
+            val fileBuffer = java.io.File("$DATASETS_PATH/$repoInput.json").bufferedWriter()
             repo.toJson().writeTo(fileBuffer)
             fileBuffer.flush()
 
             this.state = State.COMPLETED
         }
 
-        return "$folderPath/$repoInput.json"
+        return "$DATASETS_PATH/$repoInput.json"
     }
 
     /**
@@ -82,7 +82,6 @@ class Downloader {
 
     companion object {
         private const val COMMITS_TO_DOWNLOAD = 25
-        private const val PROJECT_DIR_NAME = "github"
-        private val folderPath = Paths.get("").toAbsolutePath().toString() + "/$PROJECT_DIR_NAME"
+        private const val DATASETS_PATH = "github/datasets"
     }
 }
