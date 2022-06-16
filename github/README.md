@@ -28,7 +28,7 @@ You can also use [TypeDB Studio](https://github.com/vaticle/typedb-studio/releas
 For this short example, we create and import a stripped down version of a repository. An abbreviated example of the 
 data model is shown below.
 ```json
-{{
+{
   "repo": {
     "id": 63110867,
     "name": "typedb",
