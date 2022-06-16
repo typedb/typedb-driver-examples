@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import org.kohsuke.github.*
 import java.io.IOError
-import java.nio.file.Paths
 
 class Downloader {
     enum class State {
@@ -14,7 +13,7 @@ class Downloader {
         WRITING_TO_FILE,
         COMPLETED,
     }
-    // Need to choose a sane multi-platform place for these to go, can't go in bazel's temporary execution environment.
+
     var githubCommitsProgress by mutableStateOf(0)
     var githubCommitsTotal by mutableStateOf(0)
     var state by mutableStateOf(State.NOT_STARTED)
