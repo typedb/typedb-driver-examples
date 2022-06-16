@@ -1,6 +1,7 @@
 # GitHub TypeDB Example
 
-![Screenshot of TypeDB Studio](screenshots/studio.png)
+![Screenshot of the example GitApp interface.](screenshots/interface.png)
+![Screenshot of TypeDB Studio using a GitHub dataset.](screenshots/studio.png)
 
 ## What is this?
 GitHub is the site you're on right now! It has an [API](https://docs.github.com/en/rest) which you can use to get data
@@ -15,7 +16,7 @@ elegantly with TypeQL.
 3. Clone this repository and enter it with `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
 4. Install [Bazel](https://docs.bazel.build/versions/master/install.html)
 5. Run `bazel build //...`.
-6. Run the compose-jb application with `bazel build //github:github-bin-<YOUR_OS_NAME>`
+6. Run the compose-jb application with `bazel build //github:github-bin-<YOUR_OS>`
 
 Now you can use the application to explore any GitHub repository. If you don't want to set up GitHub access tokens, 
 explore an example repository by entering `vaticle/typedb` into the prompt.
@@ -24,8 +25,8 @@ You can also use [TypeDB Studio](https://github.com/vaticle/typedb-studio/releas
 `localhost:1729` and open the `github` database in TypeDB studio. See the example queries below for ideas.
 
 ## Model
-For this short example, we create and import a stripped down version of a repository. An example of the data model is 
-as follows:
+For this short example, we create and import a stripped down version of a repository. An abbreviated example of the 
+data model is shown below.
 ```json
 {{
   "repo": {
@@ -87,10 +88,9 @@ application.
 
 ### Which users collaborated on a given file?
 ```tql
-match $file isa file, has file_name "FILE_NAME_HERE";
-$commit_file(file: $file, commit: $commit) isa commit_file;
-$commit_author(commit: $commit, author: $author) isa commit_author;
-$author has user_name $x;
+match $file isa file, has file-name "FILE_NAME_HERE";
+$file-collaborator(file: $file, collaborator: $c) isa file-collaborator;
+$c has user-name $x;
 get $x;
 ```
 ### Which files had a given user edit them across all commits?
