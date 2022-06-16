@@ -1,66 +1,82 @@
 define
-    repo_id sub attribute,
+    repo-id sub attribute,
         value long;
-    repo_name sub attribute,
+    repo-name sub attribute,
         value string;
-    repo_description sub attribute,
-        value string;
-    
-    commit_hash sub attribute,
-        value string;
-    commit_message sub attribute,
-        value string;
-    commit_date sub attribute,
+    repo-description sub attribute,
         value string;
     
-    user_name sub attribute,
+    commit-hash sub attribute,
+        value string;
+    commit-message sub attribute,
+        value string;
+    commit-date sub attribute,
+        value string;
+    
+    user-name sub attribute,
         value string;
 
-    file_name sub attribute,
+    file-name sub attribute,
         value string;
 
-    repo_file sub relation,
+    repo-file sub relation,
         relates file,
         relates repo;
     
-    repo_creator sub relation,
+    repo-creator sub relation,
         relates repo,
         relates owner;
 
-    commit_author sub relation,
+    commit-author sub relation,
         relates author,
         relates commit;
 
-    commit_file sub relation,
+    commit-file sub relation,
         relates file,
         relates commit;
 
-    commit_repo sub relation,
+    commit-repo sub relation,
         relates commit,
         relates repo;
 
+    file-collaborator sub relation,
+        relates file,
+        relates collaborator;
+
     repo sub entity,
-        plays commit_repo:repo,
-        plays repo_creator:repo,
-        plays repo_file:repo,
-        owns repo_id,
-        owns repo_name,
-        owns repo_description;
+        plays commit-repo:repo,
+        plays repo-creator:repo,
+        plays repo-file:repo,
+        owns repo-id,
+        owns repo-name,
+        owns repo-description;
     
     commit sub entity,
-        plays commit_author:commit,
-        plays commit_file:commit,
-        plays commit_repo:commit,
-        owns commit_hash,
-        owns commit_date;
+        plays commit-author:commit,
+        plays commit-file:commit,
+        plays commit-repo:commit,
+        owns commit-hash,
+        owns commit-date;
 
     user sub entity,
-        plays commit_author:author,
-        plays repo_creator:owner,
-        owns user_name;
+        plays commit-author:author,
+        plays repo-creator:owner,
+        plays file-collaborator:collaborator,
+        owns user-name;
 
     file sub entity,
-        plays repo_file:file,
-        plays commit_file:file,
-        owns file_name;
-    
+        plays repo-file:file,
+        plays commit-file:file,
+        plays file-collaborator:file,
+        owns file-name;
+
+    rule file-collaborator-rule:
+        when
+    	{
+            (file: $f, commit: $c) isa commit-file;
+            (commit: $c, author: $a) isa commit-author;
+        }
+    	then
+    	{
+            (file: $f, collaborator: $a) isa file-collaborator;
+    	};

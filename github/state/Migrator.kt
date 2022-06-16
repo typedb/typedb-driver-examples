@@ -27,9 +27,6 @@ class Migrator {
         COMPLETED,
     }
 
-    private val DB_KEYSPACE = "github"
-    private val DB_URI = "localhost:1729"
-    private val SCHEMA_PATH_STRING = "/Users/jameswilliams/Projects/typedb-examples/github/schemas/github-schema.tql"
     var state by mutableStateOf(State.NOT_STARTED)
 
     fun migrate(dataPath: String) {
@@ -93,5 +90,12 @@ class Migrator {
     @Throws(FileNotFoundException::class)
     fun getJson(relativePath: String): JsonObject {
         return Json.parse(File(relativePath).bufferedReader()).asObject()
+    }
+
+    companion object {
+        private val folderPath = Paths.get("").toAbsolutePath().toString()
+        private var SCHEMA_PATH_STRING = "$folderPath/github/schemas/github-schema.tql"
+        private const val DB_KEYSPACE = "github"
+        private const val DB_URI = "localhost:1729"
     }
 }

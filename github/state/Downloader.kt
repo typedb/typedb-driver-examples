@@ -15,7 +15,6 @@ class Downloader {
         COMPLETED,
     }
     // Need to choose a sane multi-platform place for these to go, can't go in bazel's temporary execution environment.
-    val folderPath = Paths.get("").toAbsolutePath().toString()
     var githubCommitsProgress by mutableStateOf(0)
     var githubCommitsTotal by mutableStateOf(0)
     var state by mutableStateOf(State.NOT_STARTED)
@@ -82,6 +81,8 @@ class Downloader {
     }
 
     companion object {
-        const val COMMITS_TO_DOWNLOAD = 25
+        private const val COMMITS_TO_DOWNLOAD = 25
+        private const val PROJECT_DIR_NAME = "github"
+        private val folderPath = Paths.get("").toAbsolutePath().toString() + "/$PROJECT_DIR_NAME"
     }
 }

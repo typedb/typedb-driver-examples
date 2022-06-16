@@ -1,3 +1,5 @@
-exports_files(
-    glob(["*.tql"]),
+filegroup(
+    name = "github-data-schemas",
+    srcs = glob(["*.tql"]),
+    visibility = ["//visibility:public"],
 )
