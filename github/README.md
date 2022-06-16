@@ -1,7 +1,6 @@
 # GitHub TypeDB Example
 
 ![Screenshot of the example GitApp interface.](screenshots/interface.png)
-![Screenshot of TypeDB Studio using a GitHub dataset.](screenshots/studio.png)
 
 ## What is this?
 GitHub is the site you're on right now! It has an [API](https://docs.github.com/en/rest) which you can use to get data
