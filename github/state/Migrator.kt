@@ -14,7 +14,6 @@ import com.eclipsesource.json.JsonObject
 
 import java.io.*
 import java.io.File
-//import java.io.BufferedReader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -28,7 +27,7 @@ class Migrator {
         COMPLETED,
     }
 
-    private val DB_NAME = "github"
+    private val DB_KEYSPACE = "github"
     private val DB_URI = "localhost:1729"
     private val SCHEMA_PATH_STRING = "/Users/jameswilliams/Projects/typedb-examples/github/schemas/github-schema.tql"
     var state by mutableStateOf(State.NOT_STARTED)
@@ -39,23 +38,21 @@ class Migrator {
         this.state = State.WRITING_SCHEMA
         this.connectAndWriteSchema(SCHEMA_PATH_STRING)
         this.state = State.MIGRATING
-        this.connectAndMigrate(initialiseInputs(dataPath))
+        this.connectAndMigrate(pathToRepoFile(dataPath))
         this.state = State.COMPLETED
     }
 
     private fun clearDatabase() {
         val client = TypeDB.coreClient(DB_URI)
-        if (client.databases().contains("github")) {
-            client.databases().get("github").delete()
-            println("Deleted $DB_NAME.")
+        if (client.databases().contains(DB_KEYSPACE)) {
+            client.databases().get(DB_KEYSPACE).delete()
         }
-        client.close()
+        client.databases().create(DB_KEYSPACE)
     }
 
     private fun connectAndWriteSchema(path: String) {
         val client = TypeDB.coreClient(DB_URI)
-        client.databases().create(DB_NAME)
-        val session = client.session(DB_NAME, TypeDBSession.Type.SCHEMA)
+        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.SCHEMA)
         val transaction = session.transaction(TypeDBTransaction.Type.WRITE)
 
         try {
@@ -66,35 +63,25 @@ class Migrator {
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
-            println("Wrote $path to $DB_NAME.")
             session.close()
         }
         client.close()
     }
 
-    private fun connectAndMigrate(repoFiles: Collection<RepoFile>) {
+    private fun connectAndMigrate(repoFile: RepoFile) {
         val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_NAME, TypeDBSession.Type.DATA)
+        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA)
 
-        loadDataIntoTypeDB(repoFiles, session)
+        loadDataIntoTypeDB(repoFile, session)
 
         session.close()
         client.close()
     }
 
-    private fun initialiseInputs(data_path: String) : Collection<RepoFile> {
-        val inputs = ArrayList<RepoFile>()
-        inputs.add(pathToRepoFile(data_path))
-        return inputs
-    }
-
-    private fun loadDataIntoTypeDB(repoFiles: Collection<RepoFile>, session: TypeDBSession) {
+    private fun loadDataIntoTypeDB(repoFile: RepoFile, session: TypeDBSession) {
         val transaction = session.transaction(TypeDBTransaction.Type.WRITE)
-        for (repo in repoFiles) {
-            for (insertString in repo.createTransaction()) {
-                println("Executing query: $insertString")
-                transaction.query().insert(parseQuery(insertString) as TypeQLInsert)
-            }
+        for (insertString in repoFile.createInsertStrings()) {
+            transaction.query().insert(parseQuery(insertString) as TypeQLInsert)
         }
         transaction.commit()
     }

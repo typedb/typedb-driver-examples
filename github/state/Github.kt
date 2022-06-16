@@ -13,7 +13,7 @@ class RepoFile(val repoInfo: RepoInfo, val users: Collection<User>, val commits:
 
     // TypeQL parser doesn't like us having multiple insert blocks in the same query string.
     // It might be worth moving the query string logic into here.
-    fun createTransaction(): ArrayList<String> {
+    fun createInsertStrings(): ArrayList<String> {
 
         var insertStrings = ArrayList<String>()
 

@@ -15,51 +15,54 @@ class Downloader {
         COMPLETED,
     }
     // Need to choose a sane multi-platform place for these to go, can't go in bazel's temporary execution environment.
-    val folderPath = "/Users/jameswilliams/Projects/typedb-examples/github/datasets"
+    val folderPath = Paths.get("").toAbsolutePath().toString()
     var githubCommitsProgress by mutableStateOf(0)
     var githubCommitsTotal by mutableStateOf(0)
     var state by mutableStateOf(State.NOT_STARTED)
+
     /**
-     * repo_path is a string like "vaticle/typedb-examples"
-     * We only support GitHub repository paths.
+     * repo_path is a string like "vaticle/typedb-examples". This class only supports downloading from GitHub.
      */
-    fun download(repo_path: String): String {
-        while (repo_path.split("/").size != 2 || repo_path.split("/")[0].isEmpty()
-                || repo_path.split("/")[1].isEmpty()) {
+    fun download(input: String): String {
+        // Did what the user enter match the shape of what we're expecting? That is, two non-empty strings separated by
+        // a slash.
+        var repoPath = input.lowercase()
+        while (repoPath.split("/").size != 2 || repoPath.split("/")[0].isEmpty()
+                || repoPath.split("/")[1].isEmpty()) {
             throw IOError(Throwable("Repos should be formatted <repo_owner>/<repo_name>."))
         }
-        val repoInput = repo_path.split("/")[1]
 
-        val currentRelativePath = Paths.get("")
-        val s: String = currentRelativePath.toAbsolutePath().toString()
-        println("Current absolute path is: $s")
-
-        if (!java.io.File("$folderPath/$repoInput.json").exists()) {
-            this.state = State.GITHUB_DOWNLOADING
+        val repoInput = repoPath.split("/")[1]
+        if (!java.io.File("$folderPath/${repoInput}.json").exists()) {
             val gh = GitHub.connect()
-            println("Connected to GitHub.")
-            val repo = buildRepo(gh.getRepository(repo_path))
-            println("Fetched repository.")
-            val repoName = repo.repoInfo.name
+
+            this.state = State.GITHUB_DOWNLOADING
+            val repo = buildRepo(gh.getRepository(repoPath))
+
             this.state = State.WRITING_TO_FILE
-            val fileBuffer = java.io.File("$folderPath/$repoName.json").bufferedWriter()
+            val fileBuffer = java.io.File("$folderPath/$repoInput.json").bufferedWriter()
             repo.toJson().writeTo(fileBuffer)
             fileBuffer.flush()
-            println("Written repository to disk at $folderPath/$repoName.json")
+
             this.state = State.COMPLETED
         }
+
         return "$folderPath/$repoInput.json"
     }
 
+    /**
+     * Turns a GitHub repository object into our RepoFile representation.
+     */
     private fun buildRepo(repo: GHRepository): RepoFile {
         val repoInfo = RepoInfo(repo.id, repo.name, repo.description.orEmpty(), repo.ownerName)
         val commits = ArrayList<Commit>()
         val fileSet = HashSet<File>()
         val userSet = HashSet<User>()
         userSet.add(User(repo.ownerName))
+
         githubCommitsTotal = repo.size.coerceAtMost(COMMITS_TO_DOWNLOAD)
-        val commitIter = repo.listCommits().take(COMMITS_TO_DOWNLOAD)
-        for (commit in commitIter) {
+        val pagedCommits = repo.listCommits().take(githubCommitsTotal)
+        for (commit in pagedCommits) {
             userSet.add(User(commit.author.login.orEmpty()))
 
             val commitFiles = commit.files
@@ -70,12 +73,11 @@ class Downloader {
                 commitFileList.add(file)
                 fileSet.add(file)
             }
-            println("Got new commit.")
-            githubCommitsProgress++
+
             commits.add(Commit(commit.author.login, commit.shA1, commit.commitDate.toString(), commitFileList))
+            githubCommitsProgress++
         }
-        val fileList = ArrayList<File>()
-        fileList.addAll(fileSet)
+
         return RepoFile(repoInfo, userSet, commits, fileSet)
     }
 
