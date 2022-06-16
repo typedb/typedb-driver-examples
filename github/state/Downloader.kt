@@ -35,7 +35,7 @@ class Downloader {
             val gh = GitHub.connect()
 
             this.state = State.GITHUB_DOWNLOADING
-            val repo = buildRepo(gh.getRepository(repoPath))
+            val repo = toRepoFile(gh.getRepository(repoPath))
 
             this.state = State.WRITING_TO_FILE
             val fileBuffer = java.io.File("$DATASETS_PATH/$repoInput.json").bufferedWriter()
@@ -51,7 +51,7 @@ class Downloader {
     /**
      * Turns a GitHub repository object into our RepoFile representation.
      */
-    private fun buildRepo(repo: GHRepository): RepoFile {
+    private fun toRepoFile(repo: GHRepository): RepoFile {
         val repoInfo = RepoInfo(repo.id, repo.name, repo.description.orEmpty(), repo.ownerName)
         val commits = ArrayList<Commit>()
         val fileSet = HashSet<File>()

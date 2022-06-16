@@ -14,111 +14,126 @@ import com.vaticle.typeql.lang.query.TypeQLQuery
  *      - The schema and data are loaded in under 'github'.
  */
 class Explorer {
-    fun usersCollaboratedOnFile(fileName: String): ArrayList<String> {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA, TypeDBOptions.core().infer(true))
-        val transaction = session.transaction(TypeDBTransaction.Type.READ)
-        val results = ArrayList<String>()
-        val queryString =
-            "match \$file isa file, has file-name \"$fileName\";" +
-            "\$file-collaborator(file: \$file, collaborator: \$c) isa file-collaborator;" +
-            "\$c has user-name \$user-name;"
-        var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        transaction.query().match(query.asMatch()).forEach { result ->
-            results.add(
-                result.get("user-name").asAttribute().value.toString()
-            )
+    private fun useTransaction(sessionType: TypeDBSession.Type, transactionType: TypeDBTransaction.Type,
+                               sessionOptions: TypeDBOptions, fn: (TypeDBTransaction) -> Unit) {
+        TypeDB.coreClient(DB_URI).use { client ->
+            client.session(DB_NAME, sessionType, sessionOptions).use { session ->
+                session.transaction(transactionType).use { fn(it) }
+            }
         }
-        transaction.close()
-        results.sort()
+    }
+
+    fun usersCollaboratedOnFile(fileName: String): ArrayList<String> {
+        val sessionType = TypeDBSession.Type.DATA
+        val transactionType = TypeDBTransaction.Type.READ
+        val sessionOptions = TypeDBOptions.core().infer(true)
+        val results = ArrayList<String>()
+        useTransaction(sessionType, transactionType, sessionOptions) { transaction ->
+            val queryString =
+                "match \$file isa file, has file-name \"$fileName\";" +
+                        "\$file-collaborator(file: \$file, collaborator: \$c) isa file-collaborator;" +
+                        "\$c has user-name \$user-name;"
+            var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
+            transaction.query().match(query.asMatch()).forEach { result ->
+                results.add(
+                    result.get("user-name").asAttribute().value.toString()
+                )
+            }
+            results.sort()
+        }
         return results
     }
 
     fun filesEditedByUser(userName: String): ArrayList<String> {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA)
-        val transaction = session.transaction(TypeDBTransaction.Type.READ)
+        val sessionType = TypeDBSession.Type.DATA
+        val transactionType = TypeDBTransaction.Type.READ
+        val sessionOptions = TypeDBOptions.core()
         val results = ArrayList<String>()
-        val queryString =
-            "match \$user isa user, has user-name \"$userName\";" +
-            "\$commit-author(commit: \$commit, author: \$user) isa commit-author;" +
-            "\$commit-file(file: \$file, commit: \$commit) isa commit-file;" +
-            "\$file has file-name \$file-name;" +
-            "get \$file-name;"
-        var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        transaction.query().match(query.asMatch()).forEach { result ->
-            results.add(
-                result.get("file-name").asAttribute().value.toString()
-            )
+        useTransaction(sessionType, transactionType, sessionOptions) { transaction ->
+            val queryString =
+                "match \$user isa user, has user-name \"$userName\";" +
+                        "\$commit-author(commit: \$commit, author: \$user) isa commit-author;" +
+                        "\$commit-file(file: \$file, commit: \$commit) isa commit-file;" +
+                        "\$file has file-name \$file-name;" +
+                        "get \$file-name;"
+            var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
+            transaction.query().match(query.asMatch()).forEach { result ->
+                results.add(
+                    result.get("file-name").asAttribute().value.toString()
+                )
+            }
+            results.sort()
         }
-        transaction.close()
-        results.sort()
         return results
     }
 
     fun usersWorkedOnRepo(repoName: String): ArrayList<String> {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA)
-        val transaction = session.transaction(TypeDBTransaction.Type.READ)
+        val sessionType = TypeDBSession.Type.DATA
+        val transactionType = TypeDBTransaction.Type.READ
+        val sessionOptions = TypeDBOptions.core()
         val results = ArrayList<String>()
-        val queryString =
-            "match \$repo isa repo, has repo-name \"$repoName\";" +
-            "\$commit-repo(commit: \$commit, repo: \$repo) isa commit-repo;" +
-            "\$commit-author(commit: \$commit, author: \$author) isa commit-author;" +
-            "\$author has user-name \$user-name;" +
-            "get \$user-name;"
-        var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        transaction.query().match(query.asMatch()).forEach { result ->
-            results.add(
-                result.get("user-name").asAttribute().value.toString()
-            )
+        useTransaction(sessionType, transactionType, sessionOptions) { transaction ->
+            val queryString =
+                "match \$repo isa repo, has repo-name \"$repoName\";" +
+                        "\$commit-repo(commit: \$commit, repo: \$repo) isa commit-repo;" +
+                        "\$commit-author(commit: \$commit, author: \$author) isa commit-author;" +
+                        "\$author has user-name \$user-name;" +
+                        "get \$user-name;"
+            var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
+            transaction.query().match(query.asMatch()).forEach { result ->
+                results.add(
+                    result.get("user-name").asAttribute().value.toString()
+                )
+            }
+            results.sort()
         }
-        transaction.close()
-        results.sort()
         return results
     }
 
     fun commitFilesAlsoWorkedOnByUsers(commitHash: String): ArrayList<String> {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA)
-        val transaction = session.transaction(TypeDBTransaction.Type.READ)
+        val sessionType = TypeDBSession.Type.DATA
+        val transactionType = TypeDBTransaction.Type.READ
+        val sessionOptions = TypeDBOptions.core()
         val results = ArrayList<String>()
-        val queryString =
-            "match \$commit isa commit, has commit-hash \"$commitHash\";" +
-            "\$commit-file(commit: \$commit, file: \$file) isa commit-file;" +
-            "\$commit-file2(commit: \$commit2, file: \$file) isa commit-file;" +
-            "\$commit-author(commit: \$commit2, author: \$author) isa commit-author;" +
-            "\$author has user-name \$user-name;" +
-            "get \$user-name;"
-        var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        transaction.query().match(query.asMatch()).forEach { result ->
-            results.add(
-                result.get("user-name").asAttribute().value.toString()
-            )
+        useTransaction(sessionType, transactionType, sessionOptions) { transaction ->
+            val queryString =
+                "match \$commit isa commit, has commit-hash \"$commitHash\";" +
+                        "\$commit-file(commit: \$commit, file: \$file) isa commit-file;" +
+                        "\$commit-file2(commit: \$commit2, file: \$file) isa commit-file;" +
+                        "\$commit-author(commit: \$commit2, author: \$author) isa commit-author;" +
+                        "\$author has user-name \$user-name;" +
+                        "get \$user-name;"
+            var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
+            transaction.query().match(query.asMatch()).forEach { result ->
+                results.add(
+                    result.get("user-name").asAttribute().value.toString()
+                )
+            }
+            results.sort()
         }
-        transaction.close()
-        results.sort()
         return results
     }
 
     fun fileEditCount(fileName: String): String {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA)
-        val transaction = session.transaction(TypeDBTransaction.Type.READ)
-        val queryString =
-            "match \$file isa file, has file-name \"$fileName\";" +
-            "\$commit-file(commit: \$commit, file: \$file) isa commit-file;" +
-            "\$commit-file2(commit: \$commit2, file: \$file) isa commit-file;" +
-            "not {\$commit-file is \$commit-file2;};" +
-            "get \$commit-file; count;"
-        var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
-        val result = transaction.query().match(query.asMatchAggregate()).get().toString()
-        transaction.close()
+        val sessionType = TypeDBSession.Type.DATA
+        val transactionType = TypeDBTransaction.Type.READ
+        val sessionOptions = TypeDBOptions.core()
+        var result = ""
+        useTransaction(sessionType, transactionType, sessionOptions) { transaction ->
+            val queryString =
+                "match \$file isa file, has file-name \"$fileName\";" +
+                        "\$commit-file(commit: \$commit, file: \$file) isa commit-file;" +
+                        "\$commit-file2(commit: \$commit2, file: \$file) isa commit-file;" +
+                        "not {\$commit-file is \$commit-file2;};" +
+                        "get \$commit-file; count;"
+            var query = TypeQL.parseQuery<TypeQLQuery>(queryString)
+            result = transaction.query().match(query.asMatchAggregate()).get().toString()
+        }
         return result
     }
 
     companion object {
         private const val DB_URI = "localhost:1729"
-        private const val DB_KEYSPACE = "github"
+        private const val DB_NAME = "github"
     }
 }

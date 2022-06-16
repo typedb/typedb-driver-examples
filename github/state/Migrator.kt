@@ -12,8 +12,9 @@ import com.vaticle.typeql.lang.query.TypeQLInsert
 import com.eclipsesource.json.Json
 import com.eclipsesource.json.JsonObject
 
-import java.io.*
 import java.io.File
+import java.io.IOException
+import java.io.FileNotFoundException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -41,15 +42,15 @@ class Migrator {
 
     private fun clearDatabase() {
         val client = TypeDB.coreClient(DB_URI)
-        if (client.databases().contains(DB_KEYSPACE)) {
-            client.databases().get(DB_KEYSPACE).delete()
+        if (client.databases().contains(DB_NAME)) {
+            client.databases().get(DB_NAME).delete()
         }
-        client.databases().create(DB_KEYSPACE)
+        client.databases().create(DB_NAME)
     }
 
     private fun connectAndWriteSchema(path: String) {
         val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.SCHEMA)
+        val session = client.session(DB_NAME, TypeDBSession.Type.SCHEMA)
         val transaction = session.transaction(TypeDBTransaction.Type.WRITE)
 
         try {
@@ -67,7 +68,7 @@ class Migrator {
 
     private fun connectAndMigrate(repoFile: RepoFile) {
         val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_KEYSPACE, TypeDBSession.Type.DATA)
+        val session = client.session(DB_NAME, TypeDBSession.Type.DATA)
 
         loadDataIntoTypeDB(repoFile, session)
 
@@ -94,7 +95,7 @@ class Migrator {
 
     companion object {
         private var SCHEMA_PATH_STRING = "github/schemas/github-schema.tql"
-        private const val DB_KEYSPACE = "github"
+        private const val DB_NAME = "github"
         private const val DB_URI = "localhost:1729"
     }
 }
