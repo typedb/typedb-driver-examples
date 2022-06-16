@@ -34,7 +34,6 @@ artifacts = [
     "org.jetbrains.compose.ui:ui-graphics-desktop",
     "org.jetbrains.compose.ui:ui-text-desktop",
     "org.jetbrains.compose.ui:ui-unit-desktop",
-    #    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
     "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm",
     "org.jetbrains.skiko:skiko-awt-runtime-linux-x64",
     "org.jetbrains.skiko:skiko-awt-runtime-macos-x64",
