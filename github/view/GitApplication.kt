@@ -58,6 +58,9 @@ object GitApplication {
     var commitFilesAlsoWorkedFieldValue by mutableStateOf("")
     var filesEditCountFieldValue by mutableStateOf("")
 
+    var smallTextFieldModifier = Modifier.height(50.dp).width(200.dp)
+    var smallButtonModifier = Modifier.height(50.dp).width(100.dp)
+
 //    private var error: Throwable? by mutableStateOf(null)
 
     @Composable
@@ -71,7 +74,7 @@ object GitApplication {
             Row(modifier = Modifier.padding(20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                 Column(modifier = Modifier.fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center) {
-                    TextField(value = repoTextFieldValue, onValueChange = {
+                    TextField(value = repoTextFieldValue, singleLine = true, onValueChange = {
                         repoTextFieldValue = it
                         exploreButtonTextValue = "Explore $it"
                     })
@@ -90,77 +93,94 @@ object GitApplication {
                     horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            TextField(value = userCollaboratedFieldValue, onValueChange = {
-                                userCollaboratedFieldValue = it
-                            })
-                            Button(onClick = {
-                                coroutineScope.launch {
-                                    val result = GlobalState.explorer.usersCollaboratedOnFile(userCollaboratedFieldValue)
-                                    outputTextFieldValue = result.joinToString(separator = "\n")
-                                }
-                            }) {
-                                Text("Explore")
-                            }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text("Which users worked on this file?")
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            TextField(value = filesEditedFieldValue, onValueChange = {
-                                filesEditedFieldValue = it
-                            })
-                            Button(onClick = {
-                                coroutineScope.launch {
-                                    val result = GlobalState.explorer.filesEditedByUser(filesEditedFieldValue)
-                                    outputTextFieldValue = result.joinToString(separator = "\n")
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                                TextField(modifier = smallTextFieldModifier, value = userCollaboratedFieldValue,
+                                    singleLine = true, onValueChange = {
+                                        userCollaboratedFieldValue = it
+                                    })
+                                Button(modifier = smallButtonModifier, onClick = {
+                                    coroutineScope.launch {
+                                        val result = GlobalState.explorer.usersCollaboratedOnFile(userCollaboratedFieldValue)
+                                        outputTextFieldValue = result.joinToString(separator = "\n")
+                                    }
+                                }) {
+                                    Text("Query")
                                 }
-                            }) {
-                                Text("Explore")
                             }
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text("Which files did this user change?")
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            TextField(value = usersWorkedRepoFieldValue, onValueChange = {
-                                usersWorkedRepoFieldValue = it
-                            })
-                            Button(onClick = {
-                                coroutineScope.launch {
-                                    val result = GlobalState.explorer.usersWorkedOnRepo(usersWorkedRepoFieldValue)
-                                    outputTextFieldValue = result.joinToString(separator = "\n")
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                                TextField(modifier = smallTextFieldModifier, value = filesEditedFieldValue,
+                                    singleLine = true, onValueChange = {
+                                        filesEditedFieldValue = it
+                                    })
+                                Button(modifier = smallButtonModifier, onClick = {
+                                    coroutineScope.launch {
+                                        val result = GlobalState.explorer.filesEditedByUser(filesEditedFieldValue)
+                                        outputTextFieldValue = result.joinToString(separator = "\n")
+                                    }
+                                }) {
+                                    Text("Query")
                                 }
-                            }) {
-                                Text("Explore")
                             }
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text("Who worked on this repo?")
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                                TextField(modifier = smallTextFieldModifier, value = usersWorkedRepoFieldValue,
+                                    singleLine = true, onValueChange = {
+                                        usersWorkedRepoFieldValue = it
+                                    })
+                                Button(modifier = smallButtonModifier, onClick = {
+                                    coroutineScope.launch {
+                                        val result = GlobalState.explorer.usersWorkedOnRepo(usersWorkedRepoFieldValue)
+                                        outputTextFieldValue = result.joinToString(separator = "\n")
+                                    }
+                                }) {
+                                    Text("Query")
+                                }
+                            }
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            TextField(value = commitFilesAlsoWorkedFieldValue, onValueChange = {
-                                commitFilesAlsoWorkedFieldValue = it
-                            })
-                            Button(onClick = {
-                                coroutineScope.launch {
-                                    val result = GlobalState.explorer.commitFilesAlsoWorkedOnByUsers(commitFilesAlsoWorkedFieldValue)
-                                    outputTextFieldValue = result.joinToString(separator = "\n")
-                                }
-                            }) {
-                                Text("Explore")
-                            }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text("Who also worked on the files in this commit?")
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            TextField(value = filesEditCountFieldValue, onValueChange = {
-                                filesEditCountFieldValue = it
-                            })
-                            Button(onClick = {
-                                coroutineScope.launch {
-                                    val result = GlobalState.explorer.fileEditCount(filesEditCountFieldValue)
-                                    outputTextFieldValue = result.toString()
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                                TextField(modifier = smallTextFieldModifier, value = commitFilesAlsoWorkedFieldValue,
+                                    singleLine = true, onValueChange = {
+                                        commitFilesAlsoWorkedFieldValue = it
+                                    })
+                                Button(modifier = smallButtonModifier, onClick = {
+                                    coroutineScope.launch {
+                                        val result = GlobalState.explorer.commitFilesAlsoWorkedOnByUsers(
+                                            commitFilesAlsoWorkedFieldValue
+                                        )
+                                        outputTextFieldValue = result.joinToString(separator = "\n")
+                                    }
+                                }) {
+                                    Text("Query")
                                 }
-                            }) {
-                                Text("Explore")
                             }
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text("How many times has this file been edited?")
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                                TextField(modifier = smallTextFieldModifier, value = filesEditCountFieldValue,
+                                    singleLine = true, onValueChange = {
+                                        filesEditCountFieldValue = it
+                                    })
+                                Button(modifier = smallButtonModifier, onClick = {
+                                    coroutineScope.launch {
+                                        val result = GlobalState.explorer.fileEditCount(filesEditCountFieldValue)
+                                        outputTextFieldValue = result.toString()
+                                    }
+                                }) {
+                                    Text("Query")
+                                }
+                            }
                         }
                     }
                     OutlinedTextField(outputTextFieldValue, { }, readOnly = true, modifier = Modifier.fillMaxSize(),
