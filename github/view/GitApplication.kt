@@ -18,7 +18,6 @@
 
 package github.view
 
-//import androidx.compose.foundation.layout.
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -75,9 +74,9 @@ object GitApplication {
     }
 
     @Composable
-    private fun mainWindow(exitApplicationFn: () -> Unit) {
+    private fun MainWindow(exitApplicationFn: () -> Unit) {
         Window(
-            title = "Git Application",
+            title = "GitHub Data Explorer",
             state = rememberWindowState(placement = WindowPlacement.Maximized),
             onCloseRequest = {exitApplicationFn()},
 
@@ -142,7 +141,7 @@ object GitApplication {
     }
 
     @Composable
-    private fun queryFieldAndButton(description: String, explorerFn: (String) -> ArrayList<String>) {
+    private fun QueryFieldAndButton(description: String, explorerFn: (String) -> ArrayList<String>) {
         var textFieldValue by remember {mutableStateOf("")}
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(description)

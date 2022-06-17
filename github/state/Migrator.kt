@@ -84,7 +84,7 @@ class Migrator {
         transaction.commit()
     }
 
-    private fun pathToRepoFile(data_path: String) : RepoFile {
+    private fun pathToRepoFile(dataPath: String) : RepoFile {
         return RepoFile.fromJson(getJson(data_path))
     }
 
