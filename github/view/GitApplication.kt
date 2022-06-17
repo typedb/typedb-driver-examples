@@ -61,11 +61,6 @@ object GitApplication {
     private var repoTextFieldValue by mutableStateOf("vaticle/typedb")
     private var exploreButtonTextValue by mutableStateOf("Explore $repoTextFieldValue")
     private var outputTextFieldValue by mutableStateOf("")
-    private var userCollaboratedFieldValue by mutableStateOf("")
-    private var filesEditedFieldValue by mutableStateOf("")
-    private var usersWorkedRepoFieldValue by mutableStateOf("")
-    private var commitFilesAlsoWorkedFieldValue by mutableStateOf("")
-    private var filesEditCountFieldValue by mutableStateOf("")
 
     private var smallTextFieldModifier = Modifier.height(50.dp).width(200.dp)
     private var smallButtonModifier = Modifier.height(50.dp).width(100.dp)
