@@ -36,6 +36,7 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,22 +58,29 @@ import kotlinx.coroutines.launch
 object GitApplication {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    var repoTextFieldValue by mutableStateOf("vaticle/typedb")
-    var exploreButtonTextValue by mutableStateOf("Explore $repoTextFieldValue")
-    var outputTextFieldValue by mutableStateOf("")
-    var userCollaboratedFieldValue by mutableStateOf("")
-    var filesEditedFieldValue by mutableStateOf("")
-    var usersWorkedRepoFieldValue by mutableStateOf("")
-    var commitFilesAlsoWorkedFieldValue by mutableStateOf("")
-    var filesEditCountFieldValue by mutableStateOf("")
+    private var repoTextFieldValue by mutableStateOf("vaticle/typedb")
+    private var exploreButtonTextValue by mutableStateOf("Explore $repoTextFieldValue")
+    private var outputTextFieldValue by mutableStateOf("")
+    private var userCollaboratedFieldValue by mutableStateOf("")
+    private var filesEditedFieldValue by mutableStateOf("")
+    private var usersWorkedRepoFieldValue by mutableStateOf("")
+    private var commitFilesAlsoWorkedFieldValue by mutableStateOf("")
+    private var filesEditCountFieldValue by mutableStateOf("")
 
-    var smallTextFieldModifier = Modifier.height(50.dp).width(200.dp)
-    var smallButtonModifier = Modifier.height(50.dp).width(100.dp)
+    private var smallTextFieldModifier = Modifier.height(50.dp).width(200.dp)
+    private var smallButtonModifier = Modifier.height(50.dp).width(100.dp)
 
-//    private var error: Throwable? by mutableStateOf(null)
+    @JvmStatic
+    fun main(args: Array<String>) {
+        application(exitProcessOnExit = false) {
+            MaterialTheme {
+                mainWindow(::exitApplication)
+            }
+        }
+    }
 
     @Composable
-    private fun MainWindow(exitApplicationFn: () -> Unit) {
+    private fun mainWindow(exitApplicationFn: () -> Unit) {
         Window(
             title = "Git Application",
             state = rememberWindowState(placement = WindowPlacement.Maximized),
@@ -101,94 +109,34 @@ object GitApplication {
                     horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("Which users worked on this file?")
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                TextField(modifier = smallTextFieldModifier, value = userCollaboratedFieldValue,
-                                    singleLine = true, onValueChange = {
-                                        userCollaboratedFieldValue = it
-                                    })
-                                Button(modifier = smallButtonModifier, onClick = {
-                                    coroutineScope.launch {
-                                        val result = GlobalState.explorer.usersCollaboratedOnFile(userCollaboratedFieldValue)
-                                        outputTextFieldValue = result.joinToString(separator = "\n")
-                                    }
-                                }) {
-                                    Text("Query")
-                                }
-                            }
+                        queryFieldAndButton("Which users worked on this file?") { input ->
+                            GlobalState.explorer.usersCollaboratedOnFile(
+                                input
+                            )
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("Which files did this user change?")
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                TextField(modifier = smallTextFieldModifier, value = filesEditedFieldValue,
-                                    singleLine = true, onValueChange = {
-                                        filesEditedFieldValue = it
-                                    })
-                                Button(modifier = smallButtonModifier, onClick = {
-                                    coroutineScope.launch {
-                                        val result = GlobalState.explorer.filesEditedByUser(filesEditedFieldValue)
-                                        outputTextFieldValue = result.joinToString(separator = "\n")
-                                    }
-                                }) {
-                                    Text("Query")
-                                }
-                            }
+
+                        queryFieldAndButton("Which files did this user change?") { input ->
+                            GlobalState.explorer.filesEditedByUser(
+                                input
+                            )
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("Who worked on this repo?")
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                TextField(modifier = smallTextFieldModifier, value = usersWorkedRepoFieldValue,
-                                    singleLine = true, onValueChange = {
-                                        usersWorkedRepoFieldValue = it
-                                    })
-                                Button(modifier = smallButtonModifier, onClick = {
-                                    coroutineScope.launch {
-                                        val result = GlobalState.explorer.usersWorkedOnRepo(usersWorkedRepoFieldValue)
-                                        outputTextFieldValue = result.joinToString(separator = "\n")
-                                    }
-                                }) {
-                                    Text("Query")
-                                }
-                            }
+
+                        queryFieldAndButton("Who worked on this repo?") { input ->
+                            GlobalState.explorer.usersWorkedOnRepo(
+                                input
+                            )
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("Who also worked on the files in this commit?")
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                TextField(modifier = smallTextFieldModifier, value = commitFilesAlsoWorkedFieldValue,
-                                    singleLine = true, onValueChange = {
-                                        commitFilesAlsoWorkedFieldValue = it
-                                    })
-                                Button(modifier = smallButtonModifier, onClick = {
-                                    coroutineScope.launch {
-                                        val result = GlobalState.explorer.commitFilesAlsoWorkedOnByUsers(
-                                            commitFilesAlsoWorkedFieldValue
-                                        )
-                                        outputTextFieldValue = result.joinToString(separator = "\n")
-                                    }
-                                }) {
-                                    Text("Query")
-                                }
-                            }
+                        queryFieldAndButton("Who also worked on the files in this commit?") { input ->
+                            GlobalState.explorer.commitFilesAlsoWorkedOnByUsers(
+                                input
+                            )
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("How many times has this file been edited?")
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                                TextField(modifier = smallTextFieldModifier, value = filesEditCountFieldValue,
-                                    singleLine = true, onValueChange = {
-                                        filesEditCountFieldValue = it
-                                    })
-                                Button(modifier = smallButtonModifier, onClick = {
-                                    coroutineScope.launch {
-                                        val result = GlobalState.explorer.fileEditCount(filesEditCountFieldValue)
-                                        outputTextFieldValue = result.toString()
-                                    }
-                                }) {
-                                    Text("Query")
-                                }
-                            }
+                        queryFieldAndButton("How many times has this file been edited?") { input ->
+                            GlobalState.explorer.fileEditCount(
+                                input
+                            )
                         }
                     }
                     OutlinedTextField(outputTextFieldValue, { }, readOnly = true, modifier = Modifier.fillMaxSize(),
@@ -198,19 +146,33 @@ object GitApplication {
         }
     }
 
-    @JvmStatic
-    fun main(args: Array<String>) {
-        application(exitProcessOnExit = false) {
-            MaterialTheme {
-                MainWindow(::exitApplication)
+    @Composable
+    private fun queryFieldAndButton(description: String, explorerFn: (String) -> ArrayList<String>) {
+        var textFieldValue by remember {mutableStateOf("")}
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(description)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                TextField(modifier = smallTextFieldModifier, value = textFieldValue,
+                    singleLine = true, onValueChange = {
+                        textFieldValue = it
+                    })
+                Button(modifier = smallButtonModifier, onClick = {
+                    coroutineScope.launch {
+                        val result = explorerFn(textFieldValue)
+                        outputTextFieldValue = result.joinToString(separator = "\n")
+                    }
+                }) {
+                    Text("Query")
+                }
             }
         }
     }
 
+
     /**
      * This determines the value of the label underneath the repository text field.
      */
-    fun repoStatusValue(): String {
+    private fun repoStatusValue(): String {
         // Downloading and migrating a repo is a complicated progress, so we have two global variables that help us
         // determine what point we're at. This limits us to only one download/migration at any one time, but this is
         // acceptable in a simple app.

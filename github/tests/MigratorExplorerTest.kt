@@ -59,9 +59,11 @@ class MigratorExplorerTest {
     @Test
     fun testFileEditCount() {
         val automationFileEditCount = Explorer().fileEditCount(".grabl/automation.yml")
-        assertEquals(automationFileEditCount, 2.toString())
+        assertEquals(automationFileEditCount.size, 1)
+        assertTrue(automationFileEditCount.contains("2"))
         val repositoriesFileEditCount = Explorer().fileEditCount("dependencies/vaticle/repositories.bzl")
-        assertEquals(repositoriesFileEditCount, 9.toString())
+        assertEquals(repositoriesFileEditCount.size, 1)
+        assertTrue(repositoriesFileEditCount.contains("9"))
     }
 
     companion object {
