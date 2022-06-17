@@ -68,7 +68,7 @@ object GitApplication {
     fun main(args: Array<String>) {
         application(exitProcessOnExit = false) {
             MaterialTheme {
-                mainWindow(::exitApplication)
+                MainWindow(::exitApplication)
             }
         }
     }
@@ -82,60 +82,9 @@ object GitApplication {
 
         ) {
             Row(modifier = Modifier.padding(20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                Column(modifier = Modifier.fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center) {
-                    TextField(value = repoTextFieldValue, singleLine = true, onValueChange = {
-                        repoTextFieldValue = it
-                        exploreButtonTextValue = "Explore $it"
-                    })
-                    Button(onClick = {
-                        coroutineScope.launch {
-                            val path = GlobalState.downloader.download(repoTextFieldValue)
-                            GlobalState.migrator.migrate(path)
-                        }
-                    }) {
-                        Text(exploreButtonTextValue)
-                    }
-                    Text(repoStatusValue())
-                }
+                DownloadArea()
                 Divider(color = Color.Black, modifier = Modifier.fillMaxHeight().width(1.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        queryFieldAndButton("Which users worked on this file?") { input ->
-                            GlobalState.explorer.usersCollaboratedOnFile(
-                                input
-                            )
-                        }
-
-                        queryFieldAndButton("Which files did this user change?") { input ->
-                            GlobalState.explorer.filesEditedByUser(
-                                input
-                            )
-                        }
-
-                        queryFieldAndButton("Who worked on this repo?") { input ->
-                            GlobalState.explorer.usersWorkedOnRepo(
-                                input
-                            )
-                        }
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        queryFieldAndButton("Who also worked on the files in this commit?") { input ->
-                            GlobalState.explorer.commitFilesAlsoWorkedOnByUsers(
-                                input
-                            )
-                        }
-                        queryFieldAndButton("How many times has this file been edited?") { input ->
-                            GlobalState.explorer.fileEditCount(
-                                input
-                            )
-                        }
-                    }
-                    OutlinedTextField(outputTextFieldValue, { }, readOnly = true, modifier = Modifier.fillMaxSize(),
-                        textStyle = TextStyle(fontFamily = FontFamily.Monospace))
-                }
+                QueryArea()
             }
         }
     }
@@ -160,6 +109,78 @@ object GitApplication {
                 }
             }
         }
+    }
+
+    @Composable
+    private fun DownloadArea() {
+        Column(modifier = Modifier.fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            TextField(value = repoTextFieldValue, singleLine = true, onValueChange = {
+                repoTextFieldValue = it
+                exploreButtonTextValue = "Explore $it"
+            })
+            Button(onClick = {
+                coroutineScope.launch {
+                    val path = GlobalState.downloader.download(repoTextFieldValue)
+                    GlobalState.migrator.migrate(path)
+                }
+            }) {
+                Text(exploreButtonTextValue)
+            }
+            Text(repoStatusValue())
+        }
+    }
+
+    @Composable
+    private fun QueryArea() {
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+
+            QuerySelectorArea()
+
+            QueryOutputArea()
+        }
+    }
+
+    @Composable
+    private fun QuerySelectorArea() {
+        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            QueryFieldAndButton("Which users worked on this file?") { input ->
+                GlobalState.explorer.usersCollaboratedOnFile(
+                    input
+                )
+            }
+
+            QueryFieldAndButton("Which files did this user change?") { input ->
+                GlobalState.explorer.filesEditedByUser(
+                    input
+                )
+            }
+
+            QueryFieldAndButton("Who worked on this repo?") { input ->
+                GlobalState.explorer.usersWorkedOnRepo(
+                    input
+                )
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            QueryFieldAndButton("Who also worked on the files in this commit?") { input ->
+                GlobalState.explorer.commitFilesAlsoWorkedOnByUsers(
+                    input
+                )
+            }
+            QueryFieldAndButton("How many times has this file been edited?") { input ->
+                GlobalState.explorer.fileEditCount(
+                    input
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun QueryOutputArea() {
+        OutlinedTextField(outputTextFieldValue, { }, readOnly = true, modifier = Modifier.fillMaxSize(),
+            textStyle = TextStyle(fontFamily = FontFamily.Monospace))
     }
 
 

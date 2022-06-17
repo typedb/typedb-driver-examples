@@ -85,7 +85,7 @@ class Migrator {
     }
 
     private fun pathToRepoFile(dataPath: String) : RepoFile {
-        return RepoFile.fromJson(getJson(data_path))
+        return RepoFile.fromJson(getJson(dataPath))
     }
 
     @Throws(FileNotFoundException::class)

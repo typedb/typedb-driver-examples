@@ -3,7 +3,8 @@ package github.state
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import org.kohsuke.github.*
+import org.kohsuke.github.GitHub
+import org.kohsuke.github.GHRepository
 import java.io.IOError
 
 class Downloader {
