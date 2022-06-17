@@ -5,6 +5,7 @@ package(default_visibility = ["//github:__pkg__"])
 
 kt_jvm_test(
     name = "test-migrator-explorer",
+    size = "large",
     srcs = glob(["*.kt"]),
     data = [
         "//github/datasets:github-data-json",
