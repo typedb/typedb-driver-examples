@@ -52,22 +52,22 @@ public class JSONMigration {
     }
 
     public static void main(String[] args) throws IOException {
-        String keyspaceName = (args[0] != null) ? args[0] : "phone_calls";
+        String databaseName = (args[0] != null) ? args[0] : "phone_calls";
         Collection<Input> inputs = initialiseInputs();
-        connectAndMigrate(inputs, keyspaceName);
+        connectAndMigrate(inputs, databaseName);
     }
 
     /**
      * 1. creates a TypeDB instance
-     * 2. creates a session to the targeted keyspace
+     * 2. creates a session to the targeted database
      * 3. initialises the list of Inputs, each containing details required to parse the data
      * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
      * 6. closes the client
      */
-    static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws IOException {
+    static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws IOException {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
 
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".json] into TypeDB ...");
@@ -138,7 +138,7 @@ public class JSONMigration {
     }
 
     /**
-     * loads the csv data into our TypeDB phone_calls keyspace:
+     * loads the csv data into our TypeDB phone_calls database:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
      * a. creates a TypeDB transaction

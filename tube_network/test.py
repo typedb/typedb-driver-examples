@@ -113,7 +113,7 @@ class Test(unittest.TestCase):
     def tearDownClass(cls):
         with TypeDB.core_client("localhost:1729") as client:
             client.databases().get("tube_network").delete()
-            print("Deleted the tube_network keyspace")
+            print("Deleted the tube_network database")
 
 
 if __name__ == '__main__':

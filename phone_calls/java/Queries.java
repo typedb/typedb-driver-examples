@@ -56,9 +56,9 @@ public class Queries {
         processSelection(qsNumber, queryExamples, "phone_calls");
     }
 
-    static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples, String keyspaceName) {
+    static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples, String databaseName) {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
         if (qsNumber == 0) {

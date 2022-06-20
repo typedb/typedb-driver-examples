@@ -329,7 +329,7 @@ function executeBasedOnSelection(rl) {
 }
 /**
  * 1. create an instance of TypeDB, connecting to the server
- * 2. create a session of the instance, connecting to the keyspace phone_calls
+ * 2. create a session of the instance, connecting to the database phone_calls
  * 3. create a transaction, off the session
  * 4. call the function corresponding to the selected question
  * 5. close the transaction
@@ -337,9 +337,9 @@ function executeBasedOnSelection(rl) {
  * 7. closes the client
  * @param {integer} qsNumber the (question) number selected by the user
  */
-async function processSelection(qsNumber, keyspaceName) {
+async function processSelection(qsNumber, databaseName) {
 	const client = TypeDB.coreClient("localhost:1729"); // 1
-	const session = await client.session(keyspaceName, SessionType.DATA); // 2
+	const session = await client.session(databaseName, SessionType.DATA); // 2
 	const transaction = await session.transaction(TransactionType.READ); // 3
 
 	if (qsNumber === 0) {

@@ -22,16 +22,16 @@ const inputs = [
 /**
  * gets the job done:
  * 1. creates an instance of TypeDB Client
- * 2. creates a session to the targeted keyspace
+ * 2. creates a session to the targeted database
  * 3. for each input:
  *      - a. constructs the full path to the data file
  *      - b. loads csv to TypeDB
  * 4. closes the session
  * 5. closes the client
  */
-async function buildPhoneCallGraph(dataPath, keyspaceName = "phone_calls") {
+async function buildPhoneCallGraph(dataPath, databaseName = "phone_calls") {
 	const client = TypeDB.coreClient("localhost:1729"); // 1
-	const session = await client.session(keyspaceName, SessionType.DATA); // 2
+	const session = await client.session(databaseName, SessionType.DATA); // 2
 
 	for (input of inputs) {
 	    console.log(input.file);
@@ -46,7 +46,7 @@ async function buildPhoneCallGraph(dataPath, keyspaceName = "phone_calls") {
 }
 
 /**
- * loads the csv data into our TypeDB phone_calls keyspace
+ * loads the csv data into our TypeDB phone_calls database
  * @param {object} input contains details required to parse the data
  * @param {object} session a TypeDB session, off of which a transaction will be created
  */

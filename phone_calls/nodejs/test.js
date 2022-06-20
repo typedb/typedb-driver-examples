@@ -17,48 +17,48 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 let client;
 let session;
 const dataPath = "datasets/phone-calls/"
-const keyspaceName = "phone_calls_nodejs"
+const databaseName = "phone_calls_nodejs"
 
 beforeEach(async function() {
     client = TypeDB.coreClient("localhost:1729");
-    if (!await (client.databases().contains(keyspaceName))) {
-        await client.databases().create(keyspaceName);
+    if (!await (client.databases().contains(databaseName))) {
+        await client.databases().create(databaseName);
     } else {
-        await (await client.databases().get(keyspaceName)).delete();
-        await client.databases().create(keyspaceName);
+        await (await client.databases().get(databaseName)).delete();
+        await client.databases().create(databaseName);
     }
-    session = await client.session(keyspaceName, SessionType.SCHEMA);
+    session = await client.session(databaseName, SessionType.SCHEMA);
     const transaction = await session.transaction(TransactionType.WRITE);
     const defineQuery = fs.readFileSync("schemas/phone-calls-schema.gql", "utf8");
     await transaction.query().define(defineQuery);
     await transaction.commit();
     await session.close()
-    session = await client.session(keyspaceName, SessionType.DATA);
+    session = await client.session(databaseName, SessionType.DATA);
     console.log("Loaded the phone_calls_nodejs schema");
 });
 
 describe("Migration of data into TypeDB", function() {
     it("tests migrateCsv.js", async function() {
-        await csvMigration.init(dataPath, keyspaceName);
+        await csvMigration.init(dataPath, databaseName);
         await assertMigrationResults();
     });
 
     it("tests migrateJson.js", async function() {
-        await jsonMigration.init(dataPath, keyspaceName);
+        await jsonMigration.init(dataPath, databaseName);
         await assertMigrationResults();
     });
 
     it("tests migrateXml.js", async function() {
-        await xmlMigration.init(dataPath, keyspaceName);
+        await xmlMigration.init(dataPath, databaseName);
         await assertMigrationResults(dataPath);
     });
 });
 
-describe("Queries on phone_calls_nodejs keyspace", function() {
+describe("Queries on phone_calls_nodejs database", function() {
     it("tests queries.js", async function() {
-        queries.processSelection(0, keyspaceName);
+        queries.processSelection(0, databaseName);
 
-        await csvMigration.init(dataPath, keyspaceName);
+        await csvMigration.init(dataPath, databaseName);
 
         transaction = await session.transaction(TransactionType.READ)
 
@@ -126,7 +126,7 @@ async function assertMigrationResults() {
 
 afterEach(async function() {
     await session.close();
-    await (await client.databases().get(keyspaceName)).delete();
-    console.log("Deleted the phone_calls_nodejs keyspace");
+    await (await client.databases().get(databaseName)).delete();
+    console.log("Deleted the phone_calls_nodejs database");
     client.close();
 });

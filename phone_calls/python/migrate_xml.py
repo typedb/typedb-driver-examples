@@ -7,18 +7,18 @@ import xml.etree.cElementTree as et
 from typedb.client import TypeDB, SessionType, TransactionType
 
 
-def build_phone_call_graph(inputs, data_path, keyspace_name):
+def build_phone_call_graph(inputs, data_path, database_name):
     """
       gets the job done:
       1. creates a TypeDB instance
-      2. creates a session to the targeted keyspace
+      2. creates a session to the targeted database
       3. for each input:
         - a. constructs the full path to the data file
         - b. loads csv to TypeDB
-      :param input as list of dictionaties: each dictionary contains details required to parse the data
+      :param input as list of dictionaries: each dictionary contains details required to parse the data
     """
     with TypeDB.core_client("localhost:1729") as client:  # 1
-        with client.session(keyspace_name, SessionType.DATA) as session:  # 2
+        with client.session(database_name, SessionType.DATA) as session:  # 2
             for input in inputs:
                 input["file"] = input["file"].replace(data_path, "")  # for testing purposes
                 input["file"] = data_path + input["file"]  # 3a
@@ -28,7 +28,7 @@ def build_phone_call_graph(inputs, data_path, keyspace_name):
 
 def load_data_into_typedb(input, session):
     '''
-      loads the xml data into our TypeDB phone_calls keyspace:
+      loads the xml data into our TypeDB phone_calls database:
       1. gets the data items as a list of dictionaries
       2. for each item dictionary
         a. creates a TypeDB transaction
@@ -151,4 +151,4 @@ Inputs = [
 ]
 
 if __name__ == "__main__":
-    build_phone_call_graph(inputs=Inputs, data_path="../../datasets/phone-calls/", keyspace_name = "phone_calls")
+    build_phone_call_graph(inputs=Inputs, data_path="../../datasets/phone-calls/", database_name = "phone_calls")

@@ -8,40 +8,40 @@ import migrate_json
 import migrate_xml
 import queries
 
-keyspace_name = "phone_calls_python"
+database_name = "phone_calls_python"
 data_path = "datasets/phone-calls/"
 
 
 class Test(unittest.TestCase):
     def setUp(self):
         self._client = TypeDB.core_client("localhost:1729")
-        self._client.databases().create(keyspace_name)
-        self._session = self._client.session(keyspace_name, SessionType.SCHEMA)
+        self._client.databases().create(database_name)
+        self._session = self._client.session(database_name, SessionType.SCHEMA)
         with open('schemas/phone-calls-schema.gql', 'r') as schema:
             define_query = schema.read()
             with self._session.transaction(TransactionType.WRITE) as transaction:
                 transaction.query().define(define_query)
                 transaction.commit()
-                print("Loaded the " + keyspace_name + " schema")
+                print("Loaded the " + database_name + " schema")
         self._session.close()
-        self._session = self._client.session(keyspace_name, SessionType.DATA)
+        self._session = self._client.session(database_name, SessionType.DATA)
 
     def test_csv_migration(self):
-        migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, keyspace_name)
+        migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, database_name)
         self.assert_migration_results()
 
     def test_json_migration(self):
-        migrate_json.build_phone_call_graph(migrate_json.Inputs, data_path, keyspace_name)
+        migrate_json.build_phone_call_graph(migrate_json.Inputs, data_path, database_name)
         self.assert_migration_results()
 
     def test_xml_migration(self):
-        migrate_xml.build_phone_call_graph(migrate_xml.Inputs, data_path, keyspace_name)
+        migrate_xml.build_phone_call_graph(migrate_xml.Inputs, data_path, database_name)
         self.assert_migration_results()
 
     def test_queries(self):
-        queries.process_selection(0, keyspace_name)
+        queries.process_selection(0, database_name)
 
-        migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, keyspace_name)
+        migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, database_name)
 
         with self._session.transaction(TransactionType.READ) as transaction:
             first_actual_answer = queries.query_examples[0].get("query_function")("", transaction)
@@ -84,9 +84,9 @@ class Test(unittest.TestCase):
 
     def tearDown(self):
         self._session.close()
-        self._client.databases().get(keyspace_name).delete()
+        self._client.databases().get(database_name).delete()
         self._client.close()
-        print("Deleted the " + keyspace_name + " keyspace")
+        print("Deleted the " + database_name + " database")
 
 
 if __name__ == '__main__':

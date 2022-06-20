@@ -41,7 +41,7 @@ public class Queries {
     public abstract static class NumericInputQuestion<TResult> extends Question<Number, TResult> {
     }
 
-    static String keyspaceName = "xcom";
+    static String databaseName = "xcom";
     public static List<Result<?>> answers = new ArrayList<>();
 
     static final int START_NEW_CAMPAIGN = 1;
@@ -473,7 +473,7 @@ public class Queries {
 
     static void transaction(Consumer<TypeDBTransaction> queries, final TransactionMode mode) {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
         TypeDBTransaction transaction = mode == TransactionMode.WRITE
                 ? session.transaction(TypeDBTransaction.Type.WRITE)
                 : session.transaction(TypeDBTransaction.Type.READ);
