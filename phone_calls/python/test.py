@@ -9,7 +9,7 @@ import migrate_xml
 import queries
 
 database_name = "phone_calls_python"
-data_path = "datasets/phone-calls/"
+data_path = "phone_calls/data/"
 
 
 class Test(unittest.TestCase):
@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
         self._client = TypeDB.core_client("localhost:1729")
         self._client.databases().create(database_name)
         self._session = self._client.session(database_name, SessionType.SCHEMA)
-        with open('schemas/phone-calls-schema.gql', 'r') as schema:
+        with open('phone_calls/schema.tql', 'r') as schema:
             define_query = schema.read()
             with self._session.transaction(TransactionType.WRITE) as transaction:
                 transaction.query().define(define_query)

@@ -21,9 +21,9 @@ jasmine_node_test(
 
     ],
     data = [
-        "//schemas:phone-calls-schema.gql",
-        "//datasets:phone-calls-data-csv",
-        "//datasets:phone-calls-data-json",
-        "//datasets:phone-calls-data-xml"
+        "//phone_calls:schema.tql",
+        "//phone_calls:data-csv",
+        "//phone_calls:data-json",
+        "//phone_calls:data-xml",
     ]
 )

@@ -69,14 +69,14 @@ public class XMLMigration {
         Collection<Input> inputs = new ArrayList<>();
 
         // define template for constructing a company TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/companies", "company") {
+        inputs.add(new Input("phone_calls/data/companies", "company") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
         // define template for constructing a person TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/people", "person") {
+        inputs.add(new Input("phone_calls/data/people", "person") {
             @Override
             public String template(Json person) {
                 // insert person
@@ -94,7 +94,7 @@ public class XMLMigration {
             }
         });
         // define template for constructing a contract TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/contracts", "contract") {
+        inputs.add(new Input("phone_calls/data/contracts", "contract") {
             @Override
             public String template(Json contract) {
                 // match company
@@ -107,7 +107,7 @@ public class XMLMigration {
             }
         });
         // define template for constructing a call TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/calls", "call") {
+        inputs.add(new Input("phone_calls/data/calls", "call") {
             @Override
             public String template(Json call) {
                 // match caller

@@ -16,7 +16,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
 let client;
 let session;
-const dataPath = "datasets/phone-calls/"
+const dataPath = "phone_calls/data/"
 const databaseName = "phone_calls_nodejs"
 
 beforeEach(async function() {
@@ -29,7 +29,7 @@ beforeEach(async function() {
     }
     session = await client.session(databaseName, SessionType.SCHEMA);
     const transaction = await session.transaction(TransactionType.WRITE);
-    const defineQuery = fs.readFileSync("schemas/phone-calls-schema.gql", "utf8");
+    const defineQuery = fs.readFileSync("phone_calls/schema.tql", "utf8");
     await transaction.query().define(defineQuery);
     await transaction.commit();
     await session.close()

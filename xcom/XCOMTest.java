@@ -32,7 +32,7 @@ public class XCOMTest {
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE);
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("schemas/xcom-schema.gql"));
+            byte[] encoded = Files.readAllBytes(Paths.get("xcom/schema.tql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
             transaction.query().define(TypeQL.parseQuery(query).asDefine());
             transaction.commit();

@@ -9,9 +9,7 @@ java_library(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
-    data = [
-        "//datasets:xcom-data"
-    ]
+    data = glob(["data/*.csv"]),
 )
 
 java_library(
@@ -39,7 +37,7 @@ java_test(
         ":queries-lib"
     ],
     data = [
-        "//schemas:xcom-schema.gql"
+        "schema.tql"
     ],
     resources = ["//conf:logback-test.xml"],
     resource_strip_prefix = "conf",
@@ -58,9 +56,7 @@ java_binary(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
-    data = [
-        "//datasets:xcom-data"
-    ]
+    data = glob(["data/*.csv"]),
 )
 
 java_binary(

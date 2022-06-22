@@ -82,14 +82,14 @@ public class JSONMigration {
         Collection<Input> inputs = new ArrayList<>();
 
         // define template for constructing a company TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/companies") {
+        inputs.add(new Input("phone_calls/data/companies") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
         // define template for constructing a person TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/people") {
+        inputs.add(new Input("phone_calls/data/people") {
             @Override
             public String template(Json person) {
                 // insert person
@@ -107,7 +107,7 @@ public class JSONMigration {
             }
         });
         // define template for constructing a contract TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/contracts") {
+        inputs.add(new Input("phone_calls/data/contracts") {
             @Override
             public String template(Json contract) {
                 // match company
@@ -120,7 +120,7 @@ public class JSONMigration {
             }
         });
         // define template for constructing a call TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/calls") {
+        inputs.add(new Input("phone_calls/data/calls") {
             @Override
             public String template(Json call) {
                 // match caller

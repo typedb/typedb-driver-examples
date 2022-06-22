@@ -113,13 +113,13 @@ if __name__ == "__main__":
 
     # Iterate over all of the above tube lines to retrieve the routes on that line
     for line in lines:
-        dl_route_from_api(line, "datasets/tube-network/routes/")
+        dl_route_from_api(line, "tube_network/data/routes/")
 
     # Read the routes just downloaded, and look up the timetable information the origin station of each route. The only
     # way to retrieve a timetable is by specifying an origin.
-    all_route_info = get_route_info(lines, "datasets/tube-network/routes/")
+    all_route_info = get_route_info(lines, "tube_network/data/routes/")
     for ri in all_route_info:
-        dl_timetable_from_api(ri.line, ri.origin, ri.direction, "datasets/tube-network/timetables/")
+        dl_timetable_from_api(ri.line, ri.origin, ri.direction, "tube_network/data/timetables/")
 
 
 

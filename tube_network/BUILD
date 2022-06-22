@@ -11,10 +11,7 @@ py_library(
     deps = [
         "@vaticle_typedb_client_python//:client_python"
     ],
-    data = [
-        "//datasets:tube-network-data-routes",
-        "//datasets:tube-network-data-timetables"
-    ]
+    data = glob(["data/*/*.json"]),
 )
 
 py_library(
@@ -57,7 +54,7 @@ py_test(
         "@vaticle_typedb_client_python//:client_python",
     ],
     data = [
-        "//schemas:tube-network-schema.gql"
+        "schema.tql"
     ]
 )
 
@@ -72,7 +69,7 @@ py_test(
         "@vaticle_typedb_client_python//:client_python",
     ],
     data = [
-        "//schemas:tube-network-schema.gql"
+        "schema.tql"
     ]
 )
 

@@ -151,4 +151,4 @@ Inputs = [
 ]
 
 if __name__ == "__main__":
-    build_phone_call_graph(inputs=Inputs, data_path="../../datasets/phone-calls/", database_name = "phone_calls")
+    build_phone_call_graph(inputs=Inputs, data_path="../data/", database_name ="phone_calls")

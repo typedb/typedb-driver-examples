@@ -104,10 +104,10 @@ def get_distance_between_stations(data, from_station_id, to_station_id):
     return 12742 * asin(sqrt(a))
 
 def construct_queries(entity_queries, relation_queries):
-    timetable_files = os.listdir("datasets/tube-network/timetables/")
+    timetable_files = os.listdir("tube_network/data/timetables/")
 
     for timetable_file in timetable_files:
-        with open("datasets/tube-network/timetables/" + timetable_file) as template_file:
+        with open("tube_network/data/timetables/" + timetable_file) as template_file:
             data = json.load(template_file)
 
             unique_append(entity_queries, "tube-line",

@@ -75,7 +75,7 @@ public class Migration {
 
     /** define template for constructing a research project TypeQL insert query */
     static Input initialiseTechInput() {
-        return new Input("datasets/xcom/tech") {
+        return new Input("xcom/data/tech") {
             @Override
             public String template(Json researchProject) {
                 return "insert $research_project isa research-project, has name " + researchProject.at("name") + ";";
@@ -85,7 +85,7 @@ public class Migration {
 
     /** define template for constructing a research project tech requirement TypeQL insert query */
     static Input initialiseResearchProjectTechRequirementInput() {
-        return new Input("datasets/xcom/tech_required_tech") {
+        return new Input("xcom/data/tech_required_tech") {
             @Override
             public String template(Json techRequirement) {
                 // match tech
@@ -101,7 +101,7 @@ public class Migration {
 
     /** define template for constructing an item TypeQL insert query */
     static Input initialiseItemInput() {
-        return new Input("datasets/xcom/resource") {
+        return new Input("xcom/data/resource") {
             @Override
             public String template(Json item) {
                 return "insert $item isa item, has name " + item.at("name") + ";";
@@ -111,7 +111,7 @@ public class Migration {
 
     /** define template for constructing a research project resource cost TypeQL insert query */
     static Input initialiseResearchResourceCostInput() {
-        return new Input("datasets/xcom/tech_required_resource") {
+        return new Input("xcom/data/tech_required_resource") {
             @Override
             public String template(Json researchCost) {
                 // match tech
