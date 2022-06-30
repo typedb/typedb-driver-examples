@@ -39,22 +39,22 @@ public class XMLMigration {
     }
 
     public static void main(String[] args) throws FileNotFoundException, XMLStreamException {
-        String keyspaceName = (args[0] != null) ? args[0] : "phone_calls";
+        String databaseName = (args[0] != null) ? args[0] : "phone_calls";
         Collection<Input> inputs = initialiseInputs();
-        connectAndMigrate(inputs, keyspaceName);
+        connectAndMigrate(inputs, databaseName);
     }
 
     /**
      * 1. creates a TypeDB instance
-     * 2. creates a session to the targeted keyspace
+     * 2. creates a session to the targeted database
      * 3. initialises the list of Inputs, each containing details required to parse the data
      * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
      * 6. closes the client
      */
-    static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws FileNotFoundException, XMLStreamException {
+    static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws FileNotFoundException, XMLStreamException {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
 
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".xml] into TypeDB ...");
@@ -69,14 +69,14 @@ public class XMLMigration {
         Collection<Input> inputs = new ArrayList<>();
 
         // define template for constructing a company TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/companies", "company") {
+        inputs.add(new Input("phone_calls/data/companies", "company") {
             @Override
             public String template(Json company) {
                 return "insert $company isa company, has name " + company.at("name") + ";";
             }
         });
         // define template for constructing a person TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/people", "person") {
+        inputs.add(new Input("phone_calls/data/people", "person") {
             @Override
             public String template(Json person) {
                 // insert person
@@ -94,7 +94,7 @@ public class XMLMigration {
             }
         });
         // define template for constructing a contract TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/contracts", "contract") {
+        inputs.add(new Input("phone_calls/data/contracts", "contract") {
             @Override
             public String template(Json contract) {
                 // match company
@@ -107,7 +107,7 @@ public class XMLMigration {
             }
         });
         // define template for constructing a call TypeQL insert query
-        inputs.add(new Input("datasets/phone-calls/calls", "call") {
+        inputs.add(new Input("phone_calls/data/calls", "call") {
             @Override
             public String template(Json call) {
                 // match caller
@@ -125,7 +125,7 @@ public class XMLMigration {
     }
 
     /**
-     * loads the xml data into the TypeDB phone_calls keyspace:
+     * loads the xml data into the TypeDB phone_calls database:
      * 1. gets the data items as a list of json objects
      * 2. for each json object:
      *   a. creates a TypeDB transaction

@@ -10,7 +10,7 @@ class Test(unittest.TestCase):
         with TypeDB.core_client("localhost:1729") as client:
             client.databases().create("tube_network")
             with client.session("tube_network", SessionType.SCHEMA) as session:
-                with open('schemas/tube-network-schema.gql', 'r') as schema:
+                with open('tube_network/schema.tql', 'r') as schema:
                     define_query = schema.read()
                     with session.transaction(TransactionType.WRITE) as transaction:
                         transaction.query().define(define_query)
@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
     def tearDown(self):
         with TypeDB.core_client("localhost:1729") as client:
             client.databases().get("tube_network").delete()
-        print("Deleted the tube_network keyspace")
+        print("Deleted the tube_network database")
 
 
 if __name__ == '__main__':

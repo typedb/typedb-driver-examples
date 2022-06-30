@@ -36,22 +36,22 @@ public class Migration {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String keyspaceName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "xcom";
+        String databaseName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "xcom";
         Collection<Input> inputs = initialiseInputs();
-        connectAndMigrate(inputs, keyspaceName);
+        connectAndMigrate(inputs, databaseName);
     }
 
     /**
      * 1. creates a TypeDB instance
-     * 2. creates a session to the targeted keyspace
+     * 2. creates a session to the targeted database
      * 3. initialises the list of Inputs, each containing details required to parse the data
      * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
      * 6. closes the client
      */
-    static void connectAndMigrate(Collection<Input> inputs, String keyspaceName) throws FileNotFoundException {
+    static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws FileNotFoundException {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
 
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".csv] into TypeDB ...");
@@ -75,7 +75,7 @@ public class Migration {
 
     /** define template for constructing a research project TypeQL insert query */
     static Input initialiseTechInput() {
-        return new Input("datasets/xcom/tech") {
+        return new Input("xcom/data/tech") {
             @Override
             public String template(Json researchProject) {
                 return "insert $research_project isa research-project, has name " + researchProject.at("name") + ";";
@@ -85,7 +85,7 @@ public class Migration {
 
     /** define template for constructing a research project tech requirement TypeQL insert query */
     static Input initialiseResearchProjectTechRequirementInput() {
-        return new Input("datasets/xcom/tech_required_tech") {
+        return new Input("xcom/data/tech_required_tech") {
             @Override
             public String template(Json techRequirement) {
                 // match tech
@@ -101,7 +101,7 @@ public class Migration {
 
     /** define template for constructing an item TypeQL insert query */
     static Input initialiseItemInput() {
-        return new Input("datasets/xcom/resource") {
+        return new Input("xcom/data/resource") {
             @Override
             public String template(Json item) {
                 return "insert $item isa item, has name " + item.at("name") + ";";
@@ -111,7 +111,7 @@ public class Migration {
 
     /** define template for constructing a research project resource cost TypeQL insert query */
     static Input initialiseResearchResourceCostInput() {
-        return new Input("datasets/xcom/tech_required_resource") {
+        return new Input("xcom/data/tech_required_resource") {
             @Override
             public String template(Json researchCost) {
                 // match tech
@@ -127,7 +127,7 @@ public class Migration {
     }
 
     /**
-     * loads the csv data into our TypeDB xcom keyspace:
+     * loads the csv data into our TypeDB xcom database:
      * 1. gets the data items as a list of json objects
      * 2. for each json object
      * a. creates a TypeDB transaction

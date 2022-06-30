@@ -266,10 +266,10 @@ aggregate_query_examples = [
 
 query_examples = get_query_examples + aggregate_query_examples
 
-def process_selection(qs_number, keyspace_name):
-    ## create a transaction to talk to the phone_calls keyspace
+def process_selection(qs_number, database_name):
+    ## create a transaction to talk to the phone_calls database
     with TypeDB.core_client("localhost:1729") as client:
-        with client.session(keyspace_name, SessionType.DATA) as session:
+        with client.session(database_name, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 ## execute the query for the selected question
                 if qs_number == 0:
@@ -285,7 +285,7 @@ if __name__ == "__main__":
     '''
       The code below:
       - gets user's selection wrt the queries to be executed
-      - creates a TypeDB client > session > transaction connected to the phone_calls keyspace
+      - creates a TypeDB client > session > transaction connected to the phone_calls database
       - runs the right function based on the user's selection
       - closes the session
     '''

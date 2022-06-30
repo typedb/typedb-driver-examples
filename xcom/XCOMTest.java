@@ -22,40 +22,40 @@ public class XCOMTest {
 
     TypeDBClient client;
     TypeDBSession session;
-    String keyspaceName = "xcom_test";
+    String databaseName = "xcom_test";
 
     @Before
     public void loadSchema() {
         client = TypeDB.coreClient("localhost:1729");
-        client.databases().create(keyspaceName);
-        session = client.session(keyspaceName, TypeDBSession.Type.SCHEMA);
+        client.databases().create(databaseName);
+        session = client.session(databaseName, TypeDBSession.Type.SCHEMA);
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE);
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("schemas/xcom-schema.gql"));
+            byte[] encoded = Files.readAllBytes(Paths.get("xcom/schema.tql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
             transaction.query().define(TypeQL.parseQuery(query).asDefine());
             transaction.commit();
-            System.out.println("Loaded the " + keyspaceName + " schema");
+            System.out.println("Loaded the " + databaseName + " schema");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             session.close();
         }
-        session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        session = client.session(databaseName, TypeDBSession.Type.DATA);
     }
 
     @After
-    public void deleteKeyspace() {
+    public void deleteDatabase() {
         session.close();
-        client.databases().get(keyspaceName).delete();
-        System.out.println("Deleted the " + keyspaceName + " keyspace");
+        client.databases().get(databaseName).delete();
+        System.out.println("Deleted the " + databaseName + " database");
         client.close();
     }
 
     @Test
     public void testMigration() throws FileNotFoundException {
-        Migration.main(new String[] { keyspaceName });
+        Migration.main(new String[] {databaseName});
         assertMigrationResults();
     }
 
@@ -63,8 +63,8 @@ public class XCOMTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testQueries() throws FileNotFoundException {
-        Migration.main(new String[]{ keyspaceName });
-        Queries.keyspaceName = keyspaceName;
+        Migration.main(new String[]{databaseName});
+        Queries.databaseName = databaseName;
 
         // Start a new campaign, named Gatecrasher
         Queries.askQuestions(new String[] { String.valueOf(Queries.START_NEW_CAMPAIGN), "Gatecrasher", "0" });

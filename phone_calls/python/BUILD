@@ -15,7 +15,7 @@ py_library(
         "@vaticle_typedb_client_python//:client_python"
     ],
     data = [
-        "//datasets:phone-calls-data-csv"
+        "//phone_calls:data-csv"
     ]
 )
 
@@ -27,7 +27,7 @@ py_library(
         phone_calls_requirement("ijson")
     ],
     data = [
-        "//datasets:phone-calls-data-json"
+        "//phone_calls:data-json"
     ]
 )
 
@@ -38,7 +38,7 @@ py_library(
         "@vaticle_typedb_client_python//:client_python"
     ],
     data = [
-        "//datasets:phone-calls-data-xml"
+        "//phone_calls:data-xml"
     ]
 )
 
@@ -66,6 +66,6 @@ py_test(
         phone_calls_requirement("ijson"),
     ],
     data = [
-        "//schemas:phone-calls-schema.gql"
+        "//phone_calls:schema.tql"
     ]
 )

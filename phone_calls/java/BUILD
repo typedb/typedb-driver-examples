@@ -10,7 +10,7 @@ java_library(
         "@maven//:com_univocity_univocity_parsers"
     ],
     data = [
-        "//datasets:phone-calls-data-csv"
+        "//phone_calls:data-csv",
     ]
 )
 
@@ -26,7 +26,7 @@ java_library(
         "@maven//:com_google_code_gson_gson",
     ],
     data = [
-        "//datasets:phone-calls-data-json"
+        "//phone_calls:data-json",
     ]
 )
 
@@ -42,7 +42,7 @@ java_library(
         "@maven//:javax_xml_stream_stax_api"
     ],
     data = [
-        "//datasets:phone-calls-data-xml"
+        "//phone_calls:data-xml",
     ]
 )
 
@@ -74,7 +74,7 @@ java_test(
         ":queries-lib"
     ],
     data = [
-        "//schemas:phone-calls-schema.gql"
+        "//phone_calls:schema.tql",
     ],
     resources = ["//conf:logback-test.xml"],
     resource_strip_prefix = "conf",
@@ -93,7 +93,7 @@ java_binary(
         "@maven//:com_univocity_univocity_parsers"
     ],
     data = [
-        "//datasets:phone-calls-data-csv"
+        "//phone_calls:data-csv",
     ]
 )
 
@@ -110,7 +110,7 @@ java_binary(
         "@maven//:com_google_code_gson_gson",
     ],
     data = [
-        "//datasets:phone-calls-data-json"
+        "//phone_calls:data-json",
     ]
 )
 
@@ -127,7 +127,7 @@ java_binary(
         "@maven//:javax_xml_stream_stax_api"
     ],
     data = [
-        "//datasets:phone-calls-data-xml"
+        "//phone_calls:data-xml",
     ]
 )
 

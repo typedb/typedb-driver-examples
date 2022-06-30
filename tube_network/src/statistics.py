@@ -221,7 +221,7 @@ query_examples = [
 ]
 
 def init(qs_number):
-    # create a transaction to talk to the keyspace
+    # create a transaction to talk to the database
     with TypeDB.core_client("localhost:1729") as client:
         with client.session("tube_network", SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     """
         The code below:
         - gets user's selection wrt the queries to be executed
-        - creates a TypeDB client > session > transaction connected to the keyspace
+        - creates a TypeDB client > session > transaction connected to the database
         - runs the right function based on the user's selection
         - closes the session and transaction
     """

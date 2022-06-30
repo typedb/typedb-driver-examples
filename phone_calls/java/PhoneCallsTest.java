@@ -28,44 +28,44 @@ public class PhoneCallsTest {
 
     TypeDBClient client;
     TypeDBSession session;
-    String keyspaceName = "phone_calls_java";
+    String databaseName = "phone_calls_java";
 
     @Before
     public void loadSchema() {
         client = TypeDB.coreClient("localhost:1729");
-        client.databases().create(keyspaceName);
-        session = client.session(keyspaceName, TypeDBSession.Type.SCHEMA);
+        client.databases().create(databaseName);
+        session = client.session(databaseName, TypeDBSession.Type.SCHEMA);
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE);
 
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get("schemas/phone-calls-schema.gql"));
+            byte[] encoded = Files.readAllBytes(Paths.get("phone_calls/schema.tql"));
             String query = new String(encoded, StandardCharsets.UTF_8);
             transaction.query().define(TypeQL.parseQuery(query).asDefine());
             transaction.commit();
-            System.out.println("Loaded the " + keyspaceName + " schema");
+            System.out.println("Loaded the " + databaseName + " schema");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             session.close();
         }
-        session = client.session(keyspaceName, TypeDBSession.Type.DATA);
+        session = client.session(databaseName, TypeDBSession.Type.DATA);
     }
 
     @Test
     public void testCSVMigration() throws FileNotFoundException {
-        CSVMigration.main(new String[] { keyspaceName });
+        CSVMigration.main(new String[] {databaseName});
         assertMigrationResults();
     }
 
     @Test
     public void testJSONMigration() throws IOException {
-        JSONMigration.main(new String[]{ keyspaceName });
+        JSONMigration.main(new String[]{databaseName});
         assertMigrationResults();
     }
 
     @Test
     public void testXMLMigration() throws FileNotFoundException, XMLStreamException {
-        XMLMigration.main(new String[]{ keyspaceName });
+        XMLMigration.main(new String[]{databaseName});
         assertMigrationResults();
     }
 
@@ -73,9 +73,9 @@ public class PhoneCallsTest {
     public void testQueries() throws FileNotFoundException {
         List<Queries.QueryExample> queryExamples = Queries.getTestSubjects();
 
-        Queries.processSelection(0, queryExamples, keyspaceName);
+        Queries.processSelection(0, queryExamples, databaseName);
 
-        CSVMigration.main(new String[]{ keyspaceName });
+        CSVMigration.main(new String[]{databaseName});
 
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
@@ -137,9 +137,9 @@ public class PhoneCallsTest {
     }
 
     @After
-    public void deleteKeyspace() {
-        System.out.println("Deleted the " + keyspaceName + " keyspace");
-        client.databases().get(keyspaceName).delete();
+    public void deleteDatabase() {
+        System.out.println("Deleted the " + databaseName + " database");
+        client.databases().get(databaseName).delete();
         client.close();
     }
 }

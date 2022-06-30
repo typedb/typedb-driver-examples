@@ -15,7 +15,7 @@ See the _Quickstart_ for how to get going immediately, or read on for more info.
 - Clone this repository: `git clone git@github.com:vaticle/examples.git`
 - Navigate to the TypeDB distribution directory: `cd path-to-typedb-dist-directory` (this step isn't required if TypeDB is installed using a package manager such as `brew`)
 - Start the TypeDB Server: `./typedb server start`
-- Create the keyspace and load the schema: `./typedb console -k tube_network -f path-to-the-cloned-examples-dir/schemas/tube-network-schema.gql`
+- Create the database and load the schema: `./typedb console -k tube_network -f path-to-the-cloned-examples-dir/schemas/tube-network-schema.gql`
 - Install the `typedb` module: `pip install typedb-client`. Learn more about [Client Python](http://docs.vaticle.com/docs/client-api/python).
 - Migrate the dataset: `python3 -m tube_network.src.migration`. Learn more about [migrating data to TypeDB by example](http://docs.vaticle.com/docs/examples/phone-calls-migration-python).
 - To continue:
@@ -31,7 +31,7 @@ The data necessary to build a TypeDB of the Tube Network is already included in 
 
 ## Import Data
 
-We can import this data into the TypeDB keyspace we have just created. The name of the keyspace is set in `settings.py`, so you can change it there if you need to. You don't have to implement settings in this way in your own application.
+We can import this data into the TypeDB database we have just created. The name of the database is set in `settings.py`, so you can change it there if you need to. You don't have to implement settings in this way in your own application.
 Check TypeDB is up and running: `./typedb server status`
 To import, run the [`src/migration.py`](src/migration.py), either in your IDE, or from the `typedb-examples` directory as follows:
 
@@ -43,7 +43,7 @@ The content of [`src/migration.py`](src/migration.py) is a python script that:
 1. as it goes through the TFL's `.json` files, constructs dictionaries with a pre-defined structure that get passed on to the template functions for constructing TypeQL relation/entity insert queries.
 2. the constructed TypeQL insert queries, after basic uniqueness validation, get stored as items of arrays within a dictionary.
 3. the dictionary containing all the TypeQL queries is flattened to prepare the data in two chunks, one chunk of entities and one chunk of relations, for a series of concurrent insertions.
-4. lastly, a set of processes initiate the set of transactions that perform the TypeQL insert queries on the `tube_network` keyspace.
+4. lastly, a set of processes initiate the set of transactions that perform the TypeQL insert queries on the `tube_network` database.
 
 Once complete, you have stored the tube network data in TypeDB!
 Now you're ready to start playing with the data.
