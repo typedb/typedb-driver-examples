@@ -9,31 +9,19 @@ which enables us to leverage the rule-based inference capabilities of TypeDB and
 ## Prerequisites
 
 * System requirements: at least 16 GB of _free_ RAM
-* [Bazel](https://bazel.build/install) v5.1.1
-* The latest version of [TypeDB](https://github.com/vaticle/typedb/releases)
+* Install [Bazel](https://bazel.build/install) v5.1.1
+* Install the latest version of [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run)
   and [TypeDB Java client](https://docs.vaticle.com/docs/client-api/java) that is compatible with the latest version of
   TypeDB-Loader (see [compatibility table here](https://github.com/typedb-osi/typedb-loader#compatibility-table))
 * An Internet connection
 
 ## Quickstart
 
-* Clone this repository.
-* Build the catalogue-of-life binaries:
-```bash
-$ bazel build //catalogue_of_life/...
-```
-* [Start](https://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server) the TypeDB server:
-```bash
-$ typedb server
-```
-* Fetch the data and load it into TypeDB:
-```bash
-$ bazel-bin/catalogue_of_life/loader
-```
-* Start the console client and explore the data:
-```bash
-$ typedb console --server=localhost:1729
-```
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
+2. Build the catalogue-of-life binaries: `bazel build //catalogue_of_life/...`
+3. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
+4. Fetch the data and load it into TypeDB: `bazel-bin/catalogue_of_life/loader`
+5. Start the console client and explore the data: `typedb console --server=localhost:1729`
 
 ### Example queries
 

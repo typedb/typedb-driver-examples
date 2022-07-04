@@ -27,12 +27,12 @@ Storm Gun requires Beam Weapons, which requires Elerium and Magnetic Weapons; no
 | ***Instead of using TypeDB, we could install a mod. But that's just not quite as cool, is it?*** |
 
 ### Quickstart
+
 1. Install the latest version of [TypeDB](https://github.com/vaticle/typedb/releases) that is compatible with the latest version of Client Java (see the [dependency table](http://docs.vaticle.com/docs/client-api/java#dependencies))
 2. Clone this repository
 3. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
 4. Via terminal while inside the TypeDB distribution, run: `./typedb console -k xcom -f path-to-the-cloned-repo/schemas/xcom-schema.gql`
 5. Install [Bazel](https://docs.bazel.build/versions/master/install.html). (you may also declare dependencies and run using Maven. See [TypeDB Client Java documentation](http://docs.vaticle.com/docs/client-api/java).)
 6. To install all the dependencies, run `bazel build //...`.
-7. To migrate the dataset into TypeDB, run:
-- `bazel run //xcom:migration`
+7. To migrate the dataset into TypeDB, run: `bazel run //xcom:migration`.
 8. To initiate the interactive query runner, run `bazel run //xcom:queries`.
