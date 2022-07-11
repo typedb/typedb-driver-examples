@@ -1,4 +1,4 @@
-# Catalogue of Life example
+# Catalogue of Life TypeDB example
 
 [Catalogue of Life](https://www.catalogueoflife.org/) is a database of over 4.5 million currently known taxa in biology,
 compiled from over a hundred different sources. 
@@ -8,7 +8,7 @@ which enables us to leverage the rule-based inference capabilities of TypeDB and
 
 ## Prerequisites
 
-* System requirements: at least 16 GB of _free_ RAM
+* System requirements: at least 16 GB of _free_ RAM (this is due to the size of the dataset)
 * Install [Bazel](https://bazel.build/install) v5.1.1
 * Install the latest version of [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run)
   and [TypeDB Java client](https://docs.vaticle.com/docs/client-api/java) that is compatible with the latest version of
@@ -18,8 +18,8 @@ which enables us to leverage the rule-based inference capabilities of TypeDB and
 ## Quickstart
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
-2. Build the catalogue-of-life binaries: `bazel build //catalogue_of_life/...`
-3. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
+2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
+3. Build the project: `bazel build //catalogue_of_life/...`
 4. Fetch the data and load it into TypeDB: `bazel-bin/catalogue_of_life/loader`
 5. Start the console client and explore the data: `typedb console --server=localhost:1729`
 
