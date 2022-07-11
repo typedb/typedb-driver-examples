@@ -16,7 +16,6 @@ TypeDB officially supports clients for Java, Node.js and Python. Learn more abou
 - [Phone Calls: Migrate and perform expressive queries using Client Node.js](phone_calls/nodejs/)
 
 ### Client Python Examples
-- [Tube Network: Migrate and perform analytical queries on the London tube network](tube_network/)
 - [Phone Calls: Migrate and perform expressive queries using Client Python](phone_calls/python/)
 
 ## Explore Use Cases
@@ -28,23 +27,18 @@ TypeDB officially supports clients for Java, Node.js and Python. Learn more abou
 - Node.js: [CSV](phone_calls/nodejs/migrateCsv.js) | [JSON](phone_calls/nodejs/migrateJson.js) | [XML](phone_calls/nodejs/migrateXml.js)
 - Python: [CSV](phone_calls/python/migrate_csv.py) | [JSON](phone_calls/python/migrate_json.py) | [XML](phone_calls/python/migrate_xml.py)
 
-#### concurrent:
-- Python: [JSON](tube_network/src/migration.py)
-
 ### Perform expressive queries:
 - [Java](phone_calls/java/Queries.java)
 - [Node.js](phone_calls/nodejs/queries.js)
 - [Python](phone_calls/python/queries.py)
-
-### Perform statistical and analytical queries:
-- Python: [statistical](tube_network/src/statistics.py) | [shortest path](tube_network/src/journey_planner.py) | [centrality](tube_network/src/app.py)
     
-## Explore BioGrakn
-[BioGrakn](https://github.com/vaticle/biograkn) is a collection of knowledge graphs of biomedical data.
+## Explore TypeDB Bio
+[BioGrakn](https://github.com/vaticle/typedb-bio) is a collection of knowledge graphs of biomedical data.
 
-BioGrakn provides an intuitive way to query interconnected and heterogeneous biomedical data in one single place. The schema that models the underlying knowledge graph alongside the descriptive query language, TypeQL, makes writing complex queries an extremely straightforward and intuitive process. Furthermore, the automated reasoning capability of TypeDB, allows BioGrakn to become an intelligent database of biomedical data that infers implicit knowledge based on the explicitly stored data. BioGrakn can understand biological facts, infer based on new findings and enforce research constraints, all at query (run) time.
+TypeDB Bio provides an intuitive way to query interconnected and heterogeneous biomedical data in one single place. The schema that models the underlying knowledge graph alongside the descriptive query language, TypeQL, makes writing complex queries an extremely straightforward and intuitive process. Furthermore, the automated reasoning capability of TypeDB, allows TypeDB Bio to become an intelligent database of biomedical data that infers implicit knowledge based on the explicitly stored data. TypeDB Bio can understand biological facts, infer based on new findings and enforce research constraints, all at query (run) time.
 
 ## Explore Schemas
-- [Phone Calls](schemas/phone-calls-schema.gql)
-- [Tube Network](schemas/tube-network-schema.gql)
-- [Social Network](schemas/social-network-schema.gql)
+- [Catalogue of Life](catalogue_of_life/schema.tql)
+- [GitHub](github/schemas)
+- [Phone Calls](phone_calls/schema.tql)
+- [XCOM](xcom/schema.tql)
