@@ -6,8 +6,8 @@ The Phone Calls Python example showcases:
 
 ## Prerequisites
 
-* Install [Python and pip package manager](https://www.python.org/) (we recommend Python 3.10.5 to ensure compatibility)
-* Install the latest version of [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) that is compatible with the latest version of Client Node.js (see the [dependency table](http://docs.vaticle.com/docs/client-api/java#dependencies))
+* [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) 2.11.1
+* [Python and pip package manager](https://www.python.org/) (recommended version: Python 3.10.5)
 
 ## Quickstart
 

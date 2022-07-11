@@ -6,8 +6,8 @@ The Phone Calls Java example showcases:
 
 ## Prerequisites
 
-* Install [Bazel](https://bazel.build/install) v5.1.1 (alternatively, you may instead declare dependencies manually and run using Maven. See [TypeDB Client Java documentation](http://docs.vaticle.com/docs/client-api/java) for details.)
-* Install the latest version of [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) that is compatible with the latest version of Client Node.js (see the [dependency table](http://docs.vaticle.com/docs/client-api/java#dependencies))
+* [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.11.1
+* [Bazel](https://bazel.build/install) v5.1.1 (alternatively, declare dependencies manually and run using Maven. See [TypeDB Client Java documentation](http://docs.vaticle.com/docs/client-api/java) for details.)
 
 ## Quickstart
 

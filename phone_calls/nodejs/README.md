@@ -6,8 +6,8 @@ The Phone Calls Node.js example showcases:
 
 ## Prerequisites
 
-* Install [Node.js and npm package manager](https://nodejs.org/) (we recommend v16.16.0 LTS to ensure compatibility)
-* Install the latest version of [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) that is compatible with the latest version of Client Node.js (see the [dependency table](http://docs.vaticle.com/docs/client-api/java#dependencies))
+* [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.11.1
+* [Node.js and npm package manager](https://nodejs.org/) (recommended version: v16.16.0 LTS)
 
 ## Quickstart
 

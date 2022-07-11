@@ -10,8 +10,8 @@ elegantly with TypeQL.
 
 ## Prerequisites
 
-* Install [Bazel](https://bazel.build/install) v5.1.1
-* Install the latest version of [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run)
+* [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.11.1
+* [Bazel](https://bazel.build/install) v5.1.1
 
 ## Quickstart
 
