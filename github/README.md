@@ -2,20 +2,23 @@
 
 ![Screenshot of the example GitApp interface.](screenshots/interface.png)
 
-## What is this?
 GitHub is the site you're on right now! It has an [API](https://docs.github.com/en/rest) which you can use to get data
 about almost anything GitHub. 
 
 This is a rich source of interconnected data that we can store in TypeDB and query
 elegantly with TypeQL.
 
-## How to get started.
-1. Download your OS-appropriate version of [TypeDB](https://github.com/vaticle/typedb/releases).
-2. Run the server with `./typedb server`
-3. Clone this repository and enter it with `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
-4. Install [Bazel](https://docs.bazel.build/versions/master/install.html)
-5. Run `bazel build //...`.
-6. Run the compose-jb application with `bazel build //github:github-bin-<YOUR_OS>`
+## Prerequisites
+
+* [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.11.1
+* [Bazel](https://bazel.build/install) v5.1.1
+
+## Quickstart
+
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
+2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
+3. Build the project: `bazel build //github/...`
+4. Run the application: `bazel run //github:github-bin-{YOUR_OS}` where `YOUR_OS` is `windows`, `mac` or `linux`.
 
 Now you can use the application to explore any GitHub repository. If you don't want to set up GitHub access tokens, 
 explore an example repository by entering `vaticle/typedb` into the prompt.
