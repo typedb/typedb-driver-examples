@@ -21,13 +21,13 @@
 
 package com.vaticle.typedb.example.catalogueOfLife;
 
-import cli.LoadOptions;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
-import loader.TypeDBLoader;
+import com.vaticle.typedb.osi.loader.cli.LoadOptions;
+import com.vaticle.typedb.osi.loader.loader.TypeDBLoader;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
