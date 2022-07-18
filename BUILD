@@ -48,3 +48,18 @@ filegroup(
         "@vaticle_dependencies//tool/sonarcloud:code-analysis",
     ],
 )
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob([".grabl/*"]) + [".bazelrc", ".gitignore", "BUILD", "WORKSPACE"],
+    license_type = "apache-header",
+    size = "small",
+)
+
+checkstyle_test(
+    name = "checkstyle-license",
+    include = ["LICENSE"],
+    license_type = "apache-fulltext",
+    size = "small",
+)

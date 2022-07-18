@@ -60,3 +60,12 @@ java_binary(
         "@maven//:org_jetbrains_skiko_skiko_awt_runtime_linux_x64",
     ],
 )
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*", ".grabl/*"]),
+    exclude = ["screenshots/interface.png", "README.md"],
+    license_type = "apache-header",
+    size = "small",
+)

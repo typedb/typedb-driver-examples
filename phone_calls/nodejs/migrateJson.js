@@ -42,10 +42,10 @@ const { streamArray } = require("stream-json/streamers/StreamArray");
 const { chain } = require("stream-chain");
 
 const inputs = [
-	{ file: "companies", template: companyTemplate },
-	{ file: "people", template: personTemplate },
-	{ file: "contracts", template: contractTemplate },
-	{ file: "calls", template: callTemplate }
+    { file: "companies", template: companyTemplate },
+    { file: "people", template: personTemplate },
+    { file: "contracts", template: contractTemplate },
+    { file: "calls", template: callTemplate }
 ];
 
 /**
@@ -59,18 +59,18 @@ const inputs = [
  * 5. closes the client
  */
 async function buildPhoneCallGraph(dataPath, database = "phone_calls") {
-	const client = TypeDB.coreClient("localhost:1729"); // 1
-	const session = await client.session(database, SessionType.DATA); // 2
+    const client = TypeDB.coreClient("localhost:1729"); // 1
+    const session = await client.session(database, SessionType.DATA); // 2
 
-	for (input of inputs) {
-	    input.file = input.file.replace(dataPath, "") // for testing purposes
-	    input.file = dataPath + input.file // 3a
-		console.log("Loading from [" + input.file + ".json] into TypeDB ...");
-		await loadDataIntoTypeDB(input, session); // 3b
-	}
+    for (input of inputs) {
+        input.file = input.file.replace(dataPath, "") // for testing purposes
+        input.file = dataPath + input.file // 3a
+        console.log("Loading from [" + input.file + ".json] into TypeDB ...");
+        await loadDataIntoTypeDB(input, session); // 3b
+    }
 
-	await session.close(); // 4
-	client.close(); // 5
+    await session.close(); // 4
+    client.close(); // 5
 }
 
 /**
@@ -79,63 +79,63 @@ async function buildPhoneCallGraph(dataPath, database = "phone_calls") {
  * @param {object} session a TypeDB session, off of which a transaction will be created
  */
 async function loadDataIntoTypeDB(input, session) {
-	const items = await parseDataToObjects(input);
+    const items = await parseDataToObjects(input);
 
-	for (item of items) {
-		const transaction = await session.transaction(TransactionType.WRITE);
+    for (item of items) {
+        const transaction = await session.transaction(TransactionType.WRITE);
 
-		const typeQLInsertQuery = input.template(item);
-		console.log("Executing TypeQL Query: " + typeQLInsertQuery);
-		await transaction.query().insert(typeQLInsertQuery);
-		await transaction.commit();
-	}
+        const typeQLInsertQuery = input.template(item);
+        console.log("Executing TypeQL Query: " + typeQLInsertQuery);
+        await transaction.query().insert(typeQLInsertQuery);
+        await transaction.commit();
+    }
 
-	console.log(
-		`\nInserted ${items.length} items from [${input.file}.json] into TypeDB.\n`
-	);
+    console.log(
+        `\nInserted ${items.length} items from [${input.file}.json] into TypeDB.\n`
+    );
 }
 
 function companyTemplate(company) {
-	return `insert $company isa company, has name "${company.name}";`;
+    return `insert $company isa company, has name "${company.name}";`;
 }
 
 function personTemplate(person) {
-	const { first_name, last_name, phone_number, city, age } = person;
-	// insert person
-	let typeQLInsertQuery = `insert $person isa person, has phone-number "${phone_number}"`;
+    const { first_name, last_name, phone_number, city, age } = person;
+    // insert person
+    let typeQLInsertQuery = `insert $person isa person, has phone-number "${phone_number}"`;
 
-	if (typeof first_name !== "undefined") {
-		typeQLInsertQuery += `, has first-name "${first_name}"`;
-		typeQLInsertQuery += `, has last-name "${last_name}"`;
-		typeQLInsertQuery += `, has city "${city}"`;
-		typeQLInsertQuery += `, has age ${age}`;
-	}
+    if (typeof first_name !== "undefined") {
+        typeQLInsertQuery += `, has first-name "${first_name}"`;
+        typeQLInsertQuery += `, has last-name "${last_name}"`;
+        typeQLInsertQuery += `, has city "${city}"`;
+        typeQLInsertQuery += `, has age ${age}`;
+    }
 
-	typeQLInsertQuery += ";";
-	return typeQLInsertQuery;
+    typeQLInsertQuery += ";";
+    return typeQLInsertQuery;
 }
 
 function contractTemplate(contract) {
-	const { company_name, person_id } = contract;
-	// match company
-	let typeQLInsertQuery = `match $company isa company, has name "${company_name}"; `;
-	// match person
-	typeQLInsertQuery += `$customer isa person, has phone-number "${person_id}"; `;
-	// insert contract
-	typeQLInsertQuery +=
-		"insert (provider: $company, customer: $customer) isa contract;";
-	return typeQLInsertQuery;
+    const { company_name, person_id } = contract;
+    // match company
+    let typeQLInsertQuery = `match $company isa company, has name "${company_name}"; `;
+    // match person
+    typeQLInsertQuery += `$customer isa person, has phone-number "${person_id}"; `;
+    // insert contract
+    typeQLInsertQuery +=
+        "insert (provider: $company, customer: $customer) isa contract;";
+    return typeQLInsertQuery;
 }
 
 function callTemplate(call) {
-	const { caller_id, callee_id, started_at, duration } = call;
-	// match caller
-	let typeQLInsertQuery = `match $caller isa person, has phone-number "${caller_id}"; `;
-	// match callee
-	typeQLInsertQuery += `$callee isa person, has phone-number "${callee_id}"; `;
-	// insert call
-	typeQLInsertQuery += `insert $call(caller: $caller, callee: $callee) isa call; $call has started-at ${started_at}; $call has duration ${duration};`;
-	return typeQLInsertQuery;
+    const { caller_id, callee_id, started_at, duration } = call;
+    // match caller
+    let typeQLInsertQuery = `match $caller isa person, has phone-number "${caller_id}"; `;
+    // match callee
+    typeQLInsertQuery += `$callee isa person, has phone-number "${callee_id}"; `;
+    // insert call
+    typeQLInsertQuery += `insert $call(caller: $caller, callee: $callee) isa call; $call has started-at ${started_at}; $call has duration ${duration};`;
+    return typeQLInsertQuery;
 }
 
 /**
@@ -145,23 +145,23 @@ function callTemplate(call) {
  * @returns items that is, a list of objects each representing a data item
  */
 function parseDataToObjects(input) {
-	const items = [];
-	return new Promise(function (resolve, reject) {
-		const pipeline = chain([
-			fs.createReadStream(input.file + ".json"), // 1
-			parser(),
-			streamArray()
-		]);
+    const items = [];
+    return new Promise(function (resolve, reject) {
+        const pipeline = chain([
+            fs.createReadStream(input.file + ".json"), // 1
+            parser(),
+            streamArray()
+        ]);
 
-		// 2
-		pipeline.on("data", function (result) {
-			items.push(result.value);
-		});
+        // 2
+        pipeline.on("data", function (result) {
+            items.push(result.value);
+        });
 
-		pipeline.on("end", function () {
-			resolve(items);
-		});
-	});
+        pipeline.on("end", function () {
+            resolve(items);
+        });
+    });
 }
 
 module.exports.init = buildPhoneCallGraph;

@@ -40,3 +40,12 @@ filegroup(
     srcs = glob(["data/*.xml"]),
     visibility = ["//visibility:public"]
 )
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    exclude = glob(["data/*"]),
+    license_type = "apache-header",
+    size = "small",
+)

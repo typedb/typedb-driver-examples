@@ -90,3 +90,12 @@ py_test(
         "//phone_calls:schema.tql"
     ]
 )
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    exclude = glob(["*.txt", "*.md"]),
+    license_type = "apache-header",
+    size = "small",
+)

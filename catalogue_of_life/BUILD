@@ -47,7 +47,16 @@ java_test(
         "@typedb-loader//:com_vaticle_typedb_osi_typedb_loader",
         "@vaticle_typedb_client_java//:client-java",
         "@vaticle_typedb_client_java//api",
-        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql//java:typeql-lang",
     ],
     data = glob(["test/data/*.tsv"]),
+)
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["**/*.java", "**/*.tql", "BUILD"]),
+    exclude = glob(["test/data/*"]) + ["loader-config.json.template"],
+    license_type = "apache-header",
+    size = "small",
 )

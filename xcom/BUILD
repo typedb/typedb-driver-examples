@@ -25,8 +25,8 @@ java_library(
     deps = [
         "@vaticle_typedb_client_java//:client-java",
         "@vaticle_typedb_client_java//api",
-        "@vaticle_typeql_lang_java//query",
-        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql//java/query",
+        "@vaticle_typeql//java:typeql-lang",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -39,7 +39,7 @@ java_library(
     deps = [
         "@vaticle_typedb_client_java//:client-java",
         "@vaticle_typedb_client_java//api",
-        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql//java:typeql-lang",
     ]
 )
 
@@ -51,9 +51,9 @@ java_test(
     ],
     deps = [
         "@vaticle_typedb_client_java//:client-java",
-        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typedb_client_java//api",
-        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typeql//java/query",
         ":migration-lib",
         ":queries-lib"
     ],
@@ -71,9 +71,9 @@ java_binary(
     srcs = ["Migration.java"],
     deps = [
         "@vaticle_typedb_client_java//:client-java",
-        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typedb_client_java//api",
-        "@vaticle_typeql_lang_java//query",
+        "@vaticle_typeql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -87,6 +87,15 @@ java_binary(
     deps = [
         "@vaticle_typedb_client_java//:client-java",
         "@vaticle_typedb_client_java//api",
-        "@vaticle_typeql_lang_java//:typeql-lang",
+        "@vaticle_typeql//java:typeql-lang",
     ],
+)
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    exclude = glob(["data/*", "images/*", "*.md"]),
+    license_type = "apache-header",
+    size = "small",
 )
