@@ -88,6 +88,9 @@ public class CoLTest {
         long totalSources = transaction.query().match(TypeQL.match(var("x").isa("source")).count()).get().asLong();
         assertTrue(totalSources > 0);
 
+        long totalNamings = transaction.query().match(TypeQL.match(var("x").isa("naming")).count()).get().asLong();
+        assertTrue(totalNamings > 0);
+
         transaction.close();
     }
 
