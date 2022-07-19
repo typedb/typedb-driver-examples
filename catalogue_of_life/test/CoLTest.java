@@ -23,6 +23,7 @@ package com.vaticle.typedb.example.catalogueOfLife.test;
 
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
+import com.vaticle.typedb.client.api.TypeDBOptions;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typedb.example.catalogueOfLife.Loader;
@@ -33,6 +34,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import static com.vaticle.typeql.lang.TypeQL.var;
 import static org.junit.Assert.assertEquals;
@@ -86,6 +88,20 @@ public class CoLTest {
         long totalSources = transaction.query().match(TypeQL.match(var("x").isa("source")).count()).get().asLong();
         assertTrue(totalSources > 0);
 
+        transaction.close();
+    }
+
+    @Test
+    public void testQueries() {
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ, TypeDBOptions.core().infer(true));
+        ArrayList<String> commonAncestors = new ArrayList<>();
+        transaction.query().match(
+                "match $x isa taxon; ($x, $x-name) isa naming; $x-name has name \"Simien fox\"; "
+                        + "$y isa taxon; ($y, $y-name) isa naming; $y-name has name \"Wolf\"; "
+                        + "(ancestor: $a, $x, $y) isa common-taxon; $a has scientific-name $sn; get $sn;"
+        ).forEach(result -> commonAncestors.add(result.get("sn").asAttribute().asString().getValue()));
+        assertTrue(commonAncestors.size() >= 1);  // FIXME exactly one with negation in rule
+        assertTrue(commonAncestors.contains("Canis"));
         transaction.close();
     }
 }

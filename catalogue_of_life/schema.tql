@@ -185,11 +185,11 @@ rule infer-common-taxon:
 when {
     (ancestor: $a, descendant: $x) isa ancestry;
     (ancestor: $a, descendant: $y) isa ancestry;
-    not {
-        (parent: $a, child: $c) isa parenthood;
-        (ancestor: $c, descendant: $x) isa ancestry;
-        (ancestor: $c, descendant: $y) isa ancestry;
-    };
+#    not {
+#        (parent: $a, child: $c) isa parenthood;
+#        (ancestor: $c, descendant: $x) isa ancestry;
+#        (ancestor: $c, descendant: $y) isa ancestry;
+#    };
 } then {
     (ancestor: $a, descendant: $x, descendant: $y) isa common-taxon;
 };
