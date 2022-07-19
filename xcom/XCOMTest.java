@@ -51,45 +51,25 @@ public class XCOMTest {
     String databaseName = "xcom_test";
 
     @Before
-    public void loadSchema() {
+    public void migrateDatabase() throws IOException {
+        Migration.main(new String[]{databaseName});
         client = TypeDB.coreClient("localhost:1729");
-        client.databases().create(databaseName);
-        session = client.session(databaseName, TypeDBSession.Type.SCHEMA);
-        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.WRITE);
-
-        try {
-            byte[] encoded = Files.readAllBytes(Paths.get("xcom/schema.tql"));
-            String query = new String(encoded, StandardCharsets.UTF_8);
-            transaction.query().define(TypeQL.parseQuery(query).asDefine());
-            transaction.commit();
-            System.out.println("Loaded the " + databaseName + " schema");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
         session = client.session(databaseName, TypeDBSession.Type.DATA);
     }
 
     @After
     public void deleteDatabase() {
         session.close();
-        client.databases().get(databaseName).delete();
-        System.out.println("Deleted the " + databaseName + " database");
         client.close();
     }
 
     @Test
-    public void testMigration() throws FileNotFoundException {
-        Migration.main(new String[] {databaseName});
+    public void testMigration() {
         assertMigrationResults();
     }
 
-    @Ignore
-    @SuppressWarnings("unchecked")
     @Test
-    public void testQueries() throws FileNotFoundException {
-        Migration.main(new String[]{databaseName});
+    public void testQueries() {
         Queries.databaseName = databaseName;
 
         // Start a new campaign, named Gatecrasher
@@ -104,7 +84,7 @@ public class XCOMTest {
         // Check that we have exactly 5 research projects available
         assertEquals(5, researchTasks.size());
         ResearchTask alienBiotech = null;
-        int alienBiotechKey = 0;
+        int alienBiotechKey = -1;
         for (int key = 1; key <= researchTasks.size(); key++) {
             ResearchTask rt = researchTasks.get(key - 1);
             if (rt.name.equals("Alien Biotech")) {
@@ -114,7 +94,7 @@ public class XCOMTest {
         }
         // Check that Alien Biotech is available to research
         assertNotNull(alienBiotech);
-        assertNotEquals(0, alienBiotechKey);
+        assertNotEquals(-1, alienBiotechKey);
 
         // View Gatecrasher's inventory
         Queries.askQuestions(new String[] { String.valueOf(Queries.VIEW_INVENTORY), gatecrasher, "0" });
