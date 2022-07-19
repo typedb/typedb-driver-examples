@@ -30,7 +30,7 @@ java_library(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
-    data = glob(["data/*.csv"]),
+    data = glob(["data/*.csv"]) + ["schema.tql"],
 )
 
 java_library(
@@ -79,7 +79,7 @@ java_binary(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
-    data = glob(["data/*.csv"]),
+    data = glob(["data/*.csv"]) + ["schema.tql"],
 )
 
 java_binary(
