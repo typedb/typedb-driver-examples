@@ -18,9 +18,8 @@ which enables us to leverage the rule-based inference capabilities of TypeDB and
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
-3. Build the project: `bazel build //catalogue_of_life/...`
-4. Fetch the data and load it into TypeDB: `bazel-bin/catalogue_of_life/loader`
-5. Start the console client and explore the data: `typedb console --server=localhost:1729`
+3. Fetch the data and load it into TypeDB: `bazel run //catalogue_of_life:loader`
+4. Start the console client and explore the data: `typedb console --server=localhost:1729`
 
 ### Example queries
 
