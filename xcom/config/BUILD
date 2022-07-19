@@ -1,4 +1,4 @@
-<!--
+#
 # Copyright (C) 2022 Vaticle
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -17,16 +17,19 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
--->
+#
 
-<configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 
-    <root level="ERROR">
-        <appender-ref ref="STDOUT"/>
-    </root>
-</configuration>
+package(default_visibility = ["//xcom:__pkg__"])
+
+filegroup(
+    name = "logback-xml",
+    srcs = ["logback.xml"],
+)
+
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    license_type = "apache-header",
+)
