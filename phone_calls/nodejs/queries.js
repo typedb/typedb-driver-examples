@@ -250,7 +250,6 @@ async function executeQuery5(question, transaction) {
     printToLog("Query:", firstQuery.join("\n"));
     firstQuery = firstQuery.join("");
 
-    result = [];
     const firstAnswer = await transaction.query().matchAggregate(firstQuery);
     let firstResult = 0;
     if(firstAnswer.isNumber()) {
@@ -261,8 +260,6 @@ async function executeQuery5(question, transaction) {
         "Customers aged under 20 have made calls with average duration of " +
         Math.round(firstResult) +
         " seconds.\n";
-
-    result.push(firstResult);
 
     secondQuery = [
         'match ' +
@@ -286,11 +283,9 @@ async function executeQuery5(question, transaction) {
         Math.round(secondResult) +
         " seconds.\n";
 
-    result.push(secondResult);
-
     printToLog("Result:", output);
 
-    return result;
+    return [firstResult, secondResult];
 }
 
 //
