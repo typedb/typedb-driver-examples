@@ -38,6 +38,7 @@ interface to explore some sample queries.
 ### XCOM Project
 
 [The XCOM 2 example](xcom) showcases migration of tree-structured game data and logical inference capabilities of TypeDB.
+See [the schema](xcom/schema.tql) for the examples of reasoner rules inferring attributes.
 
 ## Explore TypeDB Loader Examples
 
