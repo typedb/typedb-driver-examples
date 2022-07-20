@@ -118,6 +118,27 @@ public class Loader {
     }
 
     public static void prepareData(Path dataDirectory) throws IOException {
+        giveNamesUniqueID(dataDirectory);
+        separateTaxonDistributions(dataDirectory);
+    }
+
+    private static void giveNamesUniqueID(Path dataDirectory) throws IOException {
+        TsvParser parser = createTsvParser(dataDirectory.resolve("VernacularName.tsv"));
+        TsvWriter writer = createTsvWriter(dataDirectory.resolve("VernacularNameWithID.tsv"));
+
+        Record record;
+        Map<String, String> recordValues = new HashMap<>();
+        long i = 0;
+        while ((record = parser.parseNextRecord()) != null) {
+            record.fillFieldMap(recordValues);
+            recordValues.put("col:nameID", String.valueOf(i++));
+            writer.writeRow(recordValues);
+        }
+
+        writer.close();
+    }
+
+    private static void separateTaxonDistributions(Path dataDirectory) throws IOException {
         TsvParser distributionsParser = createTsvParser(dataDirectory.resolve("Distribution.tsv"));
         TsvWriter marineRegionsWriter = createTsvWriter(dataDirectory.resolve("MarineDistribution.tsv"));
         TsvWriter describedRegionsWriter = createTsvWriter(dataDirectory.resolve("DescribedDistribution.tsv"));

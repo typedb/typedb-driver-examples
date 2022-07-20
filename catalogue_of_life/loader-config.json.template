@@ -71,14 +71,14 @@
     },
     "vernacular-name": {
       "data": [
-        "${data-directory}/VernacularName.tsv"
+        "${data-directory}/VernacularNameWithID.tsv"
       ],
       "insert": {
         "entity": "vernacular-name",
         "ownerships": [
           {
-            "attribute": "taxon-id",
-            "column": "col:taxonID"
+            "attribute": "name-id",
+            "column": "col:nameID"
           },
           {
             "attribute": "name",
@@ -227,7 +227,7 @@
     },
     "naming": {
       "data": [
-        "${data-directory}/VernacularName.tsv"
+        "${data-directory}/VernacularNameWithID.tsv"
       ],
       "insert": {
         "relation": "naming",
@@ -252,20 +252,8 @@
               "type": "vernacular-name",
               "ownerships": [
                 {
-                  "attribute": "taxon-id",
-                  "column": "col:taxonID"
-                },
-                {
-                  "attribute": "name",
-                  "column": "col:name"
-                },
-                {
-                  "attribute": "transliteration",
-                  "column": "col:transliteration"
-                },
-                {
-                  "attribute": "language",
-                  "column": "col:language"
+                  "attribute": "name-id",
+                  "column": "col:nameID"
                 }
               ]
             }

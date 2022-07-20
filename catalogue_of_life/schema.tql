@@ -81,12 +81,13 @@ parenthood sub relation,
     relates parent,
     relates child;
 
+name-id sub attribute, value long;
 name sub attribute, value string;
 transliteration sub attribute, value string;
 language sub attribute, value string;
 country sub attribute, value string;
 vernacular-name sub entity,
-    owns taxon-id,
+    owns name-id,
     owns name,
     owns transliteration,
     owns language,
