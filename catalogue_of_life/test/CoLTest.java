@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import static com.vaticle.typeql.lang.TypeQL.var;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -100,6 +101,20 @@ public class CoLTest {
     @Test
     public void testQueries() {
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ, TypeDBOptions.core().infer(true));
+        ArrayList<String> subspecies = new ArrayList<>();
+        transaction.query().match(
+                "match $a isa taxon; $a has scientific-name \"Gelliodes\"; "
+                        + "(ancestor: $a, $x) isa common-taxon; "
+                        + "$x has taxon-rank \"variety\", has scientific-name $sn; get $sn; sort $sn asc;"
+        ).forEach(result -> subspecies.add(result.get("sn").asAttribute().asString().getValue()));
+        String[] expectedSubspecies = {
+                "Gelliodes carnosa var. laxa",
+                "Gelliodes fayalensis var. minor",
+                "Gelliodes petrosioides var. fibrosa",
+                "Gellius varius var. fibrosus",
+        };
+        assertArrayEquals(expectedSubspecies, subspecies.toArray());
+
         ArrayList<String> commonAncestors = new ArrayList<>();
         transaction.query().match(
                 "match $x isa taxon; ($x, $x-name) isa naming; $x-name has name \"Simien fox\"; "
