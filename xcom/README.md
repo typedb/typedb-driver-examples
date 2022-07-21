@@ -55,15 +55,6 @@ is able to fetch the correct answer in one simple query.
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
-3. Go to the directory where you have your `typedb-all` distribution unarchived, and run: `./typedb console` (or `typedb console`, if TypeDB was installed via a package manager)
-4. Load the XCOM schema:
-```shell
-> database create xcom
-> transaction xcom schema write
-xcom::schema::write> source {path-to-the-cloned-repo}/xcom/schema.tql
-xcom::schema::write*> commit
-> exit
-```
-5. Build the example: `bazel build //xcom/...`.
-6. Migrate the dataset into TypeDB: `bazel run //xcom:migration`.
-7. Launch the interactive query runner: `bazel run //xcom:queries`.
+3. Build the example: `bazel build //xcom/...`.
+4. Migrate the dataset into TypeDB: `bazel run //xcom:migration`.
+5. Launch the interactive query runner: `bazel run //xcom:queries`.
