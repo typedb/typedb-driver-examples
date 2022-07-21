@@ -238,7 +238,7 @@ async function executeQuery4(question, transaction) {
 async function executeQuery5(question, transaction) {
     printToLog("Question: ", question);
 
-    firstQuery = [
+    const firstQuery = [
         'match',
         '  $customer isa person, has age < 20;',
         '  $company isa company, has name "Telecom";',
@@ -248,10 +248,9 @@ async function executeQuery5(question, transaction) {
     ];
 
     printToLog("Query:", firstQuery.join("\n"));
-    firstQuery = firstQuery.join("");
 
-    result = [];
-    const firstAnswer = await transaction.query().matchAggregate(firstQuery);
+    let result = [];
+    const firstAnswer = await transaction.query().matchAggregate(firstQuery.join(""));
     let firstResult = 0;
     if(firstAnswer.isNumber()) {
         firstResult = firstAnswer.asNumber()
@@ -264,7 +263,7 @@ async function executeQuery5(question, transaction) {
 
     result.push(firstResult);
 
-    secondQuery = [
+    const secondQuery = [
         'match ' +
         '  $customer isa person, has age > 40;',
         '  $company isa company, has name "Telecom";',
@@ -273,9 +272,8 @@ async function executeQuery5(question, transaction) {
         'get $duration; mean $duration;'
     ];
     printToLog("Query:", secondQuery.join("\n"));
-    secondQuery = secondQuery.join("");
 
-    const secondAnswer = await transaction.query().matchAggregate(secondQuery);
+    const secondAnswer = await transaction.query().matchAggregate(secondQuery.join(""));
     let secondResult = 0;
     if(secondAnswer.isNumber()) {
         secondResult = secondAnswer.asNumber()

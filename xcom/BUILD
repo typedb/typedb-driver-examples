@@ -30,7 +30,7 @@ java_library(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
-    data = glob(["data/*.csv"]),
+    data = glob(["data/*.csv"]) + ["schema.tql"],
 )
 
 java_library(
@@ -45,6 +45,7 @@ java_library(
 
 java_test(
     name = "test",
+    classpath_resources = ["//xcom/config:logback-xml"],
     test_class = "com.vaticle.typedb.example.xcom.XCOMTest",
     srcs = [
         "XCOMTest.java"
@@ -67,6 +68,7 @@ java_test(
 
 java_binary(
     name = "migration",
+    classpath_resources = ["//xcom/config:logback-xml"],
     main_class = "com.vaticle.typedb.example.xcom.Migration",
     srcs = ["Migration.java"],
     deps = [
@@ -77,11 +79,12 @@ java_binary(
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
-    data = glob(["data/*.csv"]),
+    data = glob(["data/*.csv"]) + ["schema.tql"],
 )
 
 java_binary(
     name = "queries",
+    classpath_resources = ["//xcom/config:logback-xml"],
     main_class = "com.vaticle.typedb.example.xcom.Queries",
     srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
     deps = [

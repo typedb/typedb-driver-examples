@@ -81,12 +81,13 @@ parenthood sub relation,
     relates parent,
     relates child;
 
+name-id sub attribute, value long;
 name sub attribute, value string;
 transliteration sub attribute, value string;
 language sub attribute, value string;
 country sub attribute, value string;
 vernacular-name sub entity,
-    owns taxon-id,
+    owns name-id,
     owns name,
     owns transliteration,
     owns language,
@@ -185,11 +186,11 @@ rule infer-common-taxon:
 when {
     (ancestor: $a, descendant: $x) isa ancestry;
     (ancestor: $a, descendant: $y) isa ancestry;
-    not {
-        (parent: $a, child: $c) isa parenthood;
-        (ancestor: $c, descendant: $x) isa ancestry;
-        (ancestor: $c, descendant: $y) isa ancestry;
-    };
+#    not {
+#        (parent: $a, child: $c) isa parenthood;
+#        (ancestor: $c, descendant: $x) isa ancestry;
+#        (ancestor: $c, descendant: $y) isa ancestry;
+#    };
 } then {
     (ancestor: $a, descendant: $x, descendant: $y) isa common-taxon;
 };

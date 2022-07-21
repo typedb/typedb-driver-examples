@@ -32,8 +32,11 @@ import mjson.Json;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -56,7 +59,7 @@ public class Migration {
         abstract String template(Json data);
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         String databaseName = (args != null && args.length > 0 && args[0] != null) ? args[0] : "xcom";
         Collection<Input> inputs = initialiseInputs();
         connectAndMigrate(inputs, databaseName);
@@ -70,16 +73,28 @@ public class Migration {
      * 5. closes the session
      * 6. closes the client
      */
-    static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws FileNotFoundException {
+    static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws IOException {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
 
+        if (client.databases().contains(databaseName)) client.databases().get(databaseName).delete();
+        client.databases().create(databaseName);
+
+        TypeDBSession schemaSession = client.session(databaseName, TypeDBSession.Type.SCHEMA);
+        TypeDBTransaction schemaTransaction = schemaSession.transaction(TypeDBTransaction.Type.WRITE);
+        Writer queryBuffer = new StringWriter();
+        getReader("xcom/schema.tql").transferTo(queryBuffer);
+        schemaTransaction.query().define(queryBuffer.toString());
+        schemaTransaction.commit();
+        System.out.println("\nCreated the database.\n");
+        schemaSession.close();
+
+        TypeDBSession dataSession = client.session(databaseName, TypeDBSession.Type.DATA);
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".csv] into TypeDB ...");
-            loadDataIntoTypeDB(input, session);
+            loadDataIntoTypeDB(input, dataSession);
         }
 
-        session.close();
+        dataSession.close();
         client.close();
     }
 

@@ -180,7 +180,7 @@ workspace_refs(name = "vaticle_typedb_examples_workspace_refs")
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     name = "typedb-loader",
-    artifacts = ["com.vaticle.typedb-osi:typedb-loader:1.2.0"],
+    artifacts = ["com.vaticle.typedb-osi:typedb-loader:1.4.0"],
     repositories = [
         "https://jitpack.io",
         "https://repo.vaticle.com/repository/maven/",

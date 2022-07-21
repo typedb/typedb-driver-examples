@@ -94,9 +94,9 @@ public class PhoneCallsTest {
     public void testQueries() throws FileNotFoundException {
         List<Queries.QueryExample> queryExamples = Queries.getTestSubjects();
 
-        Queries.processSelection(0, queryExamples, databaseName);
-
         CSVMigration.main(new String[]{databaseName});
+
+        Queries.processSelection(0, queryExamples, databaseName);
 
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 

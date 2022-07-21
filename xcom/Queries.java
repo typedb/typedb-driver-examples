@@ -23,6 +23,7 @@ package com.vaticle.typedb.example.xcom;
 
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
+import com.vaticle.typedb.client.api.TypeDBOptions;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
@@ -31,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -44,7 +46,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 
 public class Queries {
     public abstract static class Question<TChoice, TResult> {
@@ -176,7 +177,7 @@ public class Queries {
                 case VIEW_INVENTORY:
                 case ACQUIRE_ITEM:
                     transaction(t -> {
-                        String query = "match $campaign isa campaign, has name $name; get $name;";
+                        String query = "match $campaign isa campaign, has name $name; get $name; sort $name asc;";
                         System.out.println("Executing TypeQL Query: " + query);
                         t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> campaignNames.add(
                                 result.get("name").asAttribute().asString().getValue()
@@ -187,7 +188,7 @@ public class Queries {
                 case LIST_ALL_TECHS:
                 case COMPUTE_TECH_REQUIREMENTS:
                     transaction(t -> {
-                        String query = "match $tech isa research-project, has name $name; get $name;";
+                        String query = "match $tech isa research-project, has name $name; get $name; sort $name asc;";
                         System.out.println("Executing TypeQL Query: " + query);
                         t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> techs.add(
                                 result.get("name").asAttribute().asString().getValue()
@@ -197,7 +198,7 @@ public class Queries {
 
                 case LIST_ALL_ITEMS:
                     transaction(t -> {
-                        String query = "match $item isa item, has name $name; get $name;";
+                        String query = "match $item isa item, has name $name; get $name; sort $name asc;";
                         System.out.println("Executing TypeQL Query: " + query);
                         t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> items.add(
                                 result.get("name").asAttribute().asString().getValue()
@@ -326,8 +327,14 @@ public class Queries {
                 String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
                         + " $research_project isa research-project, has name \"" + tech.name + "\";"
                         + " $task (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
-                        + " has started $started, has progress $progress;"
-                        + " delete $task has started $started; $task has progress $progress;";
+                        + " has started $started; delete $task has $started;";
+                System.out.println("Executing TypeQL Query: " + query);
+                t.query().delete(TypeQL.parseQuery(query).asDelete());
+
+                query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
+                        + " $research_project isa research-project, has name \"" + tech.name + "\";"
+                        + " $task (campaign-with-tasks: $campaign, research-task: $research_project) isa campaign-research-task,"
+                        + " has progress $progress; delete $task has $progress;";
                 System.out.println("Executing TypeQL Query: " + query);
                 t.query().delete(TypeQL.parseQuery(query).asDelete());
 
@@ -359,6 +366,7 @@ public class Queries {
             )));
         }, TransactionMode.READ);
 
+        researchTasks.sort(Comparator.comparing(rt -> rt.name));
         return researchTasks;
     }
 
@@ -377,6 +385,7 @@ public class Queries {
             )));
         }, TransactionMode.READ);
 
+        inventory.sort(Comparator.comparing(item -> item.name));
         return inventory;
     }
 
@@ -452,7 +461,7 @@ public class Queries {
                     String query = "match $campaign isa campaign, has name \"" + campaignName + "\";"
                             + " $item isa item, has name \"" + item.name + "\";"
                             + " $ownership (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $qty;"
-                            + " delete $ownership has quantity $qty;";
+                            + " delete $ownership has $qty;";
                     System.out.println("Executing TypeQL Query: " + query);
                     t.query().delete(TypeQL.parseQuery(query).asDelete());
 
@@ -495,9 +504,10 @@ public class Queries {
     static void transaction(Consumer<TypeDBTransaction> queries, final TransactionMode mode) {
         TypeDBClient client = TypeDB.coreClient("localhost:1729");
         TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
+        TypeDBOptions options = TypeDBOptions.core().infer(true);
         TypeDBTransaction transaction = mode == TransactionMode.WRITE
-                ? session.transaction(TypeDBTransaction.Type.WRITE)
-                : session.transaction(TypeDBTransaction.Type.READ);
+                ? session.transaction(TypeDBTransaction.Type.WRITE, options)
+                : session.transaction(TypeDBTransaction.Type.READ, options);
 
         queries.accept(transaction);
         if (mode == TransactionMode.WRITE) {

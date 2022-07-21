@@ -59,9 +59,9 @@ class Test(unittest.TestCase):
         self.assert_migration_results()
 
     def test_queries(self):
-        queries.process_selection(0, database_name)
-
         migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, database_name)
+
+        queries.process_selection(0, database_name)
 
         with self._session.transaction(TransactionType.READ) as transaction:
             first_actual_answer = queries.query_examples[0].get("query_function")("", transaction)

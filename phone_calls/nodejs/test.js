@@ -77,9 +77,9 @@ describe("Migration of data into TypeDB", function() {
 
 describe("Queries on phone_calls_nodejs database", function() {
     it("tests queries.js", async function() {
-        queries.processSelection(0, databaseName);
-
         await csvMigration.init(dataPath, databaseName);
+
+        queries.processSelection(0, databaseName);
 
         transaction = await session.transaction(TransactionType.READ)
 
