@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021 Vaticle
+# Copyright (C) 2022 Vaticle
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -25,6 +25,8 @@ build:
       image: vaticle-ubuntu-21.04
       command: |
         bazel build //...
+        bazel run @vaticle_dependencies//tool/checkstyle:test-coverage
+        bazel test $(bazel query 'kind(checkstyle_test, //...)') --test_output=errors
     test-catalogue-of-life:
      image: vaticle-ubuntu-21.04
      command: |

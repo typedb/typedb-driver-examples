@@ -1,97 +1,118 @@
+#
+# Copyright (C) 2022 Vaticle
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
 define
 
 # Attributes
 
 name sub attribute,
-	value string;
+    value string;
 has-required-techs sub attribute,
-	value boolean;
+    value boolean;
 has-required-resources sub attribute,
-	value boolean;
+    value boolean;
 can-begin sub attribute,
-	value boolean;
+    value boolean;
 can-proceed sub attribute,
-	value boolean;
+    value boolean;
 started sub attribute,
-	value boolean;
+    value boolean;
 progress sub attribute,
-	value double;
+    value double;
 completed sub attribute,
-	value boolean;
+    value boolean;
 quantity sub attribute,
-	value long;
+    value long;
 quantity-consumed sub attribute,
-	value long;
+    value long;
 
 # Static entities
 
 research-project sub entity,
-	owns name,
-	plays resource-cost-to-begin-research:research-to-begin,
-	plays campaign-research-task:research-task,
-	plays tech-requirement-to-begin-task:required-tech,
-	plays tech-requirement-to-begin-research:required-tech,
-	plays tech-requirement-to-begin-research:research-to-begin,
-	owns completed;
+    owns name,
+    plays resource-cost-to-begin-research:research-to-begin,
+    plays campaign-research-task:research-task,
+    plays tech-requirement-to-begin-task:required-tech,
+    plays tech-requirement-to-begin-research:required-tech,
+    plays tech-requirement-to-begin-research:research-to-begin,
+    owns completed;
 
 item sub entity,
-	owns name,
-	plays item-ownership:owned-item,
-	plays resource-cost:consumes-resource;
+    owns name,
+    plays item-ownership:owned-item,
+    plays resource-cost:consumes-resource;
 
 # Dynamic entities
 
 campaign sub entity,
-	owns name,
-	plays campaign-task:campaign-with-tasks,
-	plays item-ownership:item-owner;
+    owns name,
+    plays campaign-task:campaign-with-tasks,
+    plays item-ownership:item-owner;
 
 # Static relations
 
 requirement sub relation,
-	relates prerequisite,
-	relates outcome,
-	plays campaign-task:task;
+    relates prerequisite,
+    relates outcome,
+    plays campaign-task:task;
 
 tech-requirement sub requirement,
-	relates required-tech as prerequisite;
+    relates required-tech as prerequisite;
 
 tech-requirement-to-begin-task sub tech-requirement,
-	relates task-to-begin as outcome;
+    relates task-to-begin as outcome;
 
 tech-requirement-to-begin-research sub tech-requirement,
-	relates research-to-begin as outcome;
+    relates research-to-begin as outcome;
 
 resource-cost sub requirement,
-	relates consumes-resource as prerequisite,
-	owns quantity-consumed;
+    relates consumes-resource as prerequisite,
+    owns quantity-consumed;
 
 resource-cost-to-begin-task sub resource-cost,
-	relates task-to-begin as outcome;
+    relates task-to-begin as outcome;
 
 resource-cost-to-begin-research sub resource-cost,
-	relates research-to-begin as outcome;
+    relates research-to-begin as outcome;
 
 # Dynamic relations
 
 campaign-task sub relation,
-	relates campaign-with-tasks,
-	relates task,
-	owns has-required-techs,
-	owns has-required-resources,
-	owns can-begin,
-	owns started,
-	owns can-proceed,
-	owns progress,
-	owns completed;
+    relates campaign-with-tasks,
+    relates task,
+    owns has-required-techs,
+    owns has-required-resources,
+    owns can-begin,
+    owns started,
+    owns can-proceed,
+    owns progress,
+    owns completed;
 
 campaign-research-task sub campaign-task,
-	relates research-task as task;
+    relates research-task as task;
 
 item-ownership sub relation,
-	relates item-owner,
-	relates owned-item,
-	owns quantity;
+    relates item-owner,
+    relates owned-item,
+    owns quantity;
 
 # Rules
 
