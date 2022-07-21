@@ -41,6 +41,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -145,14 +146,20 @@ public class Loader {
 
         Record record;
         Map<String, String> recordValues = new HashMap<>();
+        Map<String, ArrayList<String>> seen = new HashMap<>();
         while ((record = distributionsParser.parseNextRecord()) != null) {
-            String gazetteer = record.getString("col:gazetteer");
-            if (gazetteer.equals("text") || gazetteer.equals("iso")) {
-                record.fillFieldMap(recordValues);
-                describedRegionsWriter.writeRow(recordValues);
-            } else if (gazetteer.equals("mrgid") && isValidMarineRegionID(record.getString("col:areaID"))) {
-                record.fillFieldMap(recordValues);
-                marineRegionsWriter.writeRow(recordValues);
+            String taxonID = record.getString("col:taxonID");
+            String areaID = record.getString("col:areaID");
+            if (!seen.containsKey(taxonID) || !seen.get(taxonID).contains(areaID)) {
+                String gazetteer = record.getString("col:gazetteer");
+                if (gazetteer.equals("text") || gazetteer.equals("iso")) {
+                    record.fillFieldMap(recordValues);
+                    describedRegionsWriter.writeRow(recordValues);
+                } else if (gazetteer.equals("mrgid") && isValidMarineRegionID(record.getString("col:areaID"))) {
+                    seen.computeIfAbsent(taxonID, key -> new ArrayList<>()).add(areaID);
+                    record.fillFieldMap(recordValues);
+                    marineRegionsWriter.writeRow(recordValues);
+                }
             }
         }
 
