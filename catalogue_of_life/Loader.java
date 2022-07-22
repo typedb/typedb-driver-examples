@@ -41,8 +41,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
@@ -141,30 +141,48 @@ public class Loader {
 
     private static void separateTaxonDistributions(Path dataDirectory) throws IOException {
         TsvParser distributionsParser = createTsvParser(dataDirectory.resolve("Distribution.tsv"));
-        TsvWriter marineRegionsWriter = createTsvWriter(dataDirectory.resolve("MarineDistribution.tsv"));
-        TsvWriter describedRegionsWriter = createTsvWriter(dataDirectory.resolve("DescribedDistribution.tsv"));
+        TsvWriter marineRegionsWriter = createTsvWriter(dataDirectory.resolve("MarineRegions.tsv"));
+        TsvWriter describedRegionsWriter = createTsvWriter(dataDirectory.resolve("DescribedRegions.tsv"));
+        TsvWriter marineDistributionsWriter = createTsvWriter(dataDirectory.resolve("MarineDistribution.tsv"));
+        TsvWriter describedDistributionsWriter = createTsvWriter(dataDirectory.resolve("DescribedDistribution.tsv"));
 
         Record record;
         Map<String, String> recordValues = new HashMap<>();
-        Map<String, ArrayList<String>> seen = new HashMap<>();
+        Map<String, HashSet<String>> seen = new HashMap<>();
         while ((record = distributionsParser.parseNextRecord()) != null) {
-            String taxonID = record.getString("col:taxonID");
-            String areaID = record.getString("col:areaID");
-            if (!seen.containsKey(taxonID) || !seen.get(taxonID).contains(areaID)) {
-                String gazetteer = record.getString("col:gazetteer");
-                if (gazetteer.equals("text") || gazetteer.equals("iso")) {
-                    record.fillFieldMap(recordValues);
-                    describedRegionsWriter.writeRow(recordValues);
-                } else if (gazetteer.equals("mrgid") && isValidMarineRegionID(record.getString("col:areaID"))) {
-                    seen.computeIfAbsent(taxonID, key -> new ArrayList<>()).add(areaID);
-                    record.fillFieldMap(recordValues);
-                    marineRegionsWriter.writeRow(recordValues);
-                }
+            String gazetteer = record.getString("col:gazetteer");
+
+            TsvWriter distributionsWriter;
+            TsvWriter regionsWriter;
+            String areaID;
+            if (gazetteer.equals("text") || gazetteer.equals("iso")) {
+                distributionsWriter = describedDistributionsWriter;
+                regionsWriter = describedRegionsWriter;
+                areaID = record.getString("col:area");
+            } else if (gazetteer.equals("mrgid") && isValidMarineRegionID(record.getString("col:areaID"))) {
+                distributionsWriter = marineDistributionsWriter;
+                regionsWriter = marineRegionsWriter;
+                areaID = record.getString("col:areaID");
+            } else continue;
+
+            record.fillFieldMap(recordValues);
+            String taxonID = recordValues.get("col:taxonID");
+            if (!seen.containsKey(areaID)) {
+                recordValues.remove("col:taxonID");
+                regionsWriter.writeRow(recordValues);
+                recordValues.put("col:taxonID", taxonID);
+                seen.computeIfAbsent(areaID, key -> new HashSet<>());
+            }
+            if (!seen.get(areaID).contains(taxonID)) {
+                distributionsWriter.writeRow(recordValues);
+                seen.get(areaID).add(taxonID);
             }
         }
 
         marineRegionsWriter.close();
         describedRegionsWriter.close();
+        marineDistributionsWriter.close();
+        describedDistributionsWriter.close();
     }
 
     private static TsvParser createTsvParser(Path tsvFile) throws IOException {

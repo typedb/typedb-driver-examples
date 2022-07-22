@@ -161,7 +161,7 @@
     },
     "marine-region": {
       "data": [
-        "${data-directory}/MarineDistribution.tsv"
+        "${data-directory}/MarineRegions.tsv"
       ],
       "insert": {
         "entity": "marine-region",
@@ -175,7 +175,7 @@
     },
     "catalogue-of-life-region": {
       "data": [
-        "${data-directory}/DescribedDistribution.tsv"
+        "${data-directory}/DescribedRegions.tsv"
       ],
       "insert": {
         "entity": "catalogue-of-life-region",
