@@ -5,10 +5,13 @@
 This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB knowledge graph.
 
 ## Explore Schemas
-- [Catalogue of Life](catalogue_of_life/schema.tql)
-- [GitHub](github/schemas/github-schema.tql)
-- [Phone Calls](phone_calls/schema.tql)
-- [XCOM](xcom/schema.tql)
+- [Catalogue of Life](catalogue_of_life/schema.tql) — a database containing the information about the taxonomy of life
+on Earth, showcasing automated loading of data using [TypeDB-Loader.](https://github.com/typedb-osi/typedb-loader)
+- [GitHub](github/schemas/github-schema.tql) — load data from a live repository on GitHub or from a Vaticle GitHub snapshot, and get results via a custom GUI interface that
+uses the Java client to fetch the requested data.
+- [Phone Calls](phone_calls/schema.tql) — a database of customers of a fictional telecom company and calls they make.
+- [XCOM 2](xcom/schema.tql) — a database of interdependent research tasks in the game XCOM 2, featuring automatic inference of available
+research based on completed tasks and available items.
 
 ## Explore Client Examples
 
