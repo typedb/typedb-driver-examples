@@ -78,19 +78,16 @@ public class CoLTest {
         assertEquals(36, totalReferences);
 
         long totalRegions = transaction.query().match(TypeQL.match(var("x").isa("region")).count()).get().asLong();
-        assertEquals(85 + 14, totalRegions);
+        assertEquals(43 + 6, totalRegions);
 
         long totalMarineRegions = transaction.query().match(TypeQL.match(var("x").isa("marine-region")).count()).get().asLong();
-        assertEquals(85, totalMarineRegions);
+        assertEquals(43, totalMarineRegions);
 
         long totalDescribedRegions = transaction.query().match(TypeQL.match(var("x").isa("catalogue-of-life-region")).count()).get().asLong();
-        assertEquals(14, totalDescribedRegions);
+        assertEquals(6, totalDescribedRegions);
 
         long totalParenthoods = transaction.query().match(TypeQL.match(var("x").isa("parenthood")).count()).get().asLong();
         assertEquals(147, totalParenthoods);
-
-        long totalSources = transaction.query().match(TypeQL.match(var("x").isa("source")).count()).get().asLong();
-        assertEquals(149, totalSources);
 
         long totalNamings = transaction.query().match(TypeQL.match(var("x").isa("naming")).count()).get().asLong();
         assertEquals(21, totalNamings);
