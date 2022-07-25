@@ -94,6 +94,10 @@ build:
         EOM
 
         sudo mv typedb.service /etc/systemd/system/
+
+        bazel run //:typedb-extractor-linux -- dist/typedb-all-linux
+        cd ./dist/typedb-all-linux/
+
         sudo systemctl daemon-reload
         sudo systemctl start typedb
         export GRABL_EXPORT_PERFORMANCE_TYPEDB_CORE_URI="${HOSTNAME}:1729"
