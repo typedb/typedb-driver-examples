@@ -49,13 +49,6 @@ filegroup(
     ],
 )
 
-load("@vaticle_bazel_distribution//artifact:rules.bzl", "artifact_extractor")
-
-artifact_extractor(
-    name = "typedb-extractor-linux",
-    artifact = "@vaticle_typedb_artifact_linux//file",
-)
-
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",

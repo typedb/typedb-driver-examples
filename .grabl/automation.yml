@@ -95,7 +95,7 @@ build:
 
         sudo mv typedb.service /etc/systemd/system/
 
-        bazel run //:typedb-extractor-linux -- dist/typedb-all-linux
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
         cd ./dist/typedb-all-linux/
 
         sudo systemctl daemon-reload
@@ -104,10 +104,59 @@ build:
       monitor: |
         sleep 10s
         tail -f -n +1 /home/grabl/$GRABL_REPO/dist/typedb-all-linux/server/logs/typedb.log
-    test-performance-typedb-core-benchmark:
+    benchmark-catalogue-of-life-loader:
       machine: 16-core-32-gb
       image: vaticle-ubuntu-21.04
       dependencies: [test-performance-typedb-core-server]
       timeout: "30m"
       command: |
         bazel run //biology/catalogue_of_life:loader -- --typedb $GRABL_EXPORT_PERFORMANCE_TYPEDB_CORE_URI
+#    benchmark-gitapp:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //software/github/tests:test-migrator-explorer --test_output=errors
+    benchmark-phone-calls-java-csv-migration:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel run //telecom/phone_calls/java:csv-migration
+    benchmark-phone-calls-java-json-migration:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel run //telecom/phone_calls/java:json-migration
+    benchmark-phone-calls-java-xml-migration:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel run //telecom/phone_calls/java:xml-migration
+#    benchmark-phone-calls-nodejs:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //telecom/phone_calls/nodejs:test --test_output=errors
+#    benchmark-phone-calls-python:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel run //telecom/phone_calls/python:migrate_csv
+    benchmark-xcom:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel run //gaming/xcom:migration 
