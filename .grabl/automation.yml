@@ -33,28 +33,28 @@ build:
        bazel run //:typedb-extractor -- dist/typedb-all-linux
        sudo systemd-run ./dist/typedb-all-linux/typedb server
        sleep 60
-       bazel test //catalogue_of_life:tests --test_output=errors
+       bazel test //biology/catalogue_of_life:tests --test_output=errors
     test-gitapp:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //github/tests:test-migrator-explorer --test_output=errors
+        bazel test //software/github/tests:test-migrator-explorer --test_output=errors
     test-phone-calls-java:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //phone_calls/java:test --test_output=errors
+        bazel test //telecom/phone_calls/java:test --test_output=errors
     test-phone-calls-nodejs:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //phone_calls/nodejs:test --test_output=errors
+        bazel test //telecom/phone_calls/nodejs:test --test_output=errors
     test-phone-calls-python:
       image: vaticle-ubuntu-21.04
       command: |
@@ -62,11 +62,11 @@ build:
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //phone_calls/python:test --test_output=errors
+        bazel test //telecom/phone_calls/python:test --test_output=errors
     test-xcom:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //xcom:test --test_output=errors
+        bazel test //gaming/xcom:test --test_output=errors

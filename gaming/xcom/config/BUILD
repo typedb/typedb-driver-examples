@@ -19,32 +19,17 @@
 # under the License.
 #
 
-# Misc
-.DS_Store
-logs/
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 
-# IDE files
-.idea/
-.ijwb/
-*.iml
-.vscode
-.settings
-.project
-.classpath
-.factorypath
+package(default_visibility = ["//gaming/xcom:__pkg__"])
 
-# Compiled files
-target/
-bin/
+filegroup(
+    name = "logback-xml",
+    srcs = ["logback.xml"],
+)
 
-# NPM
-node_modules/
-
-# Python
-__pycache__
-
-# Bazel
-bazel-*
-
-# Distribution
-dist/
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    license_type = "apache-header",
+)

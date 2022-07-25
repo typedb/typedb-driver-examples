@@ -142,7 +142,7 @@ pip_install(
 # Load python example dependencies
 pip_install(
     name = "phone_calls_pip",
-    requirements = "//phone_calls/python:requirements.txt"
+    requirements = "//telecom/phone_calls/python:requirements.txt"
 )
 
 # Load java example dependencies
@@ -151,8 +151,8 @@ load("//dependencies/maven:artifacts.bzl", vaticle_typedb_examples_maven_artifac
 # Load nodejs example dependencies
 yarn_install(
     name = "npm",
-    package_json = "//phone_calls/nodejs:package.json",
-    yarn_lock = "//phone_calls/nodejs:yarn.lock"
+    package_json = "//telecom/phone_calls/nodejs:package.json",
+    yarn_lock = "//telecom/phone_calls/nodejs:yarn.lock"
 )
 
 ############################
