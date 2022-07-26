@@ -141,41 +141,21 @@ public class Loader {
 
     private static void separateTaxonDistributions(Path dataDirectory) throws IOException {
         TsvParser distributionsParser = createTsvParser(dataDirectory.resolve("Distribution.tsv"));
+
         TsvWriter marineRegionsWriter = createTsvWriter(dataDirectory.resolve("MarineRegions.tsv"));
-        TsvWriter describedRegionsWriter = createTsvWriter(dataDirectory.resolve("DescribedRegions.tsv"));
         TsvWriter marineDistributionsWriter = createTsvWriter(dataDirectory.resolve("MarineDistribution.tsv"));
+
+        TsvWriter describedRegionsWriter = createTsvWriter(dataDirectory.resolve("DescribedRegions.tsv"));
         TsvWriter describedDistributionsWriter = createTsvWriter(dataDirectory.resolve("DescribedDistribution.tsv"));
 
         Record record;
-        Map<String, String> recordValues = new HashMap<>();
         Map<String, HashSet<String>> seen = new HashMap<>();
         while ((record = distributionsParser.parseNextRecord()) != null) {
             String gazetteer = record.getString("col:gazetteer");
-
-            TsvWriter distributionsWriter;
-            TsvWriter regionsWriter;
-            String areaID;
             if (gazetteer.equals("text") || gazetteer.equals("iso")) {
-                distributionsWriter = describedDistributionsWriter;
-                regionsWriter = describedRegionsWriter;
-                areaID = record.getString("col:area");
+                mayWriteRegionDistribution(record, record.getString("col:area"), describedRegionsWriter, describedDistributionsWriter, seen);
             } else if (gazetteer.equals("mrgid") && isValidMarineRegionID(record.getString("col:areaID"))) {
-                distributionsWriter = marineDistributionsWriter;
-                regionsWriter = marineRegionsWriter;
-                areaID = record.getString("col:areaID");
-            } else continue;
-
-            record.fillFieldMap(recordValues);
-            String taxonID = recordValues.get("col:taxonID");
-            if (!seen.containsKey(areaID)) {
-                recordValues.remove("col:taxonID");
-                regionsWriter.writeRow(recordValues);
-                recordValues.put("col:taxonID", taxonID);
-                seen.computeIfAbsent(areaID, key -> new HashSet<>());
-            }
-            if (!seen.get(areaID).contains(taxonID)) {
-                distributionsWriter.writeRow(recordValues);
-                seen.get(areaID).add(taxonID);
+                mayWriteRegionDistribution(record, record.getString("col:areaID"), marineRegionsWriter, marineDistributionsWriter, seen);
             }
         }
 
@@ -183,6 +163,24 @@ public class Loader {
         describedRegionsWriter.close();
         marineDistributionsWriter.close();
         describedDistributionsWriter.close();
+    }
+
+    private static void mayWriteRegionDistribution(Record record, String areaID,
+                                                   TsvWriter regionsWriter, TsvWriter distributionsWriter,
+                                                   Map<String, HashSet<String>> seen) {
+        Map<String, String> recordValues = new HashMap<>();
+        record.fillFieldMap(recordValues);
+        String taxonID = recordValues.get("col:taxonID");
+        if (!seen.containsKey(areaID)) {
+            recordValues.remove("col:taxonID");
+            regionsWriter.writeRow(recordValues);
+            recordValues.put("col:taxonID", taxonID);
+            seen.computeIfAbsent(areaID, key -> new HashSet<>());
+        }
+        if (!seen.get(areaID).contains(taxonID)) {
+            distributionsWriter.writeRow(recordValues);
+            seen.get(areaID).add(taxonID);
+        }
     }
 
     private static TsvParser createTsvParser(Path tsvFile) throws IOException {
