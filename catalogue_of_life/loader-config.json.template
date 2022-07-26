@@ -161,7 +161,7 @@
     },
     "marine-region": {
       "data": [
-        "${data-directory}/MarineDistribution.tsv"
+        "${data-directory}/MarineRegions.tsv"
       ],
       "insert": {
         "entity": "marine-region",
@@ -175,7 +175,7 @@
     },
     "catalogue-of-life-region": {
       "data": [
-        "${data-directory}/DescribedDistribution.tsv"
+        "${data-directory}/DescribedRegions.tsv"
       ],
       "insert": {
         "entity": "catalogue-of-life-region",
@@ -341,117 +341,6 @@
           {
             "attribute": "native-status",
             "column": "col:status"
-          }
-        ]
-      }
-    },
-    "reference-name-usage-reference": {
-      "data": [
-        "${data-directory}/NameUsage.tsv"
-      ],
-      "insert": {
-        "relation": "source",
-        "players": [
-          {
-            "role": "sourced",
-            "required": true,
-            "match": {
-              "type": "taxon",
-              "ownerships": [
-                {
-                  "attribute": "taxon-id",
-                  "column": "col:ID"
-                }
-              ]
-            }
-          },
-          {
-            "role": "source",
-            "required": true,
-            "match": {
-              "type": "reference",
-              "ownerships": [
-                {
-                  "attribute": "reference-id",
-                  "column": "col:referenceID",
-                  "listSeparator": ","
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "reference-name-usage-name": {
-      "data": [
-        "${data-directory}/NameUsage.tsv"
-      ],
-      "insert": {
-        "relation": "source",
-        "players": [
-          {
-            "role": "sourced",
-            "required": true,
-            "match": {
-              "type": "taxon",
-              "ownerships": [
-                {
-                  "attribute": "taxon-id",
-                  "column": "col:ID"
-                }
-              ]
-            }
-          },
-          {
-            "role": "source",
-            "required": true,
-            "match": {
-              "type": "reference",
-              "ownerships": [
-                {
-                  "attribute": "reference-id",
-                  "column": "col:nameReferenceID",
-                  "listSeparator": ","
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "reference-name-usage-according-to": {
-      "data": [
-        "${data-directory}/NameUsage.tsv"
-      ],
-      "insert": {
-        "relation": "source",
-        "players": [
-          {
-            "role": "sourced",
-            "required": true,
-            "match": {
-              "type": "taxon",
-              "ownerships": [
-                {
-                  "attribute": "taxon-id",
-                  "column": "col:ID"
-                }
-              ]
-            }
-          },
-          {
-            "role": "source",
-            "required": true,
-            "match": {
-              "type": "reference",
-              "ownerships": [
-                {
-                  "attribute": "reference-id",
-                  "column": "col:accordingToID",
-                  "listSeparator": ","
-                }
-              ]
-            }
           }
         ]
       }

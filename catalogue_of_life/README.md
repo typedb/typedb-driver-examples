@@ -8,9 +8,8 @@ which enables us to leverage the rule-based inference capabilities of TypeDB and
 
 ## Prerequisites
 
-* System requirements: at least 16 GB of _free_ RAM (this is due to the size of the dataset)
+* System requirements: 12 GB of RAM
 * [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.11.1
-* [TypeDB Loader](https://github.com/typedb-osi/typedb-loader) v1.2.0
 * [Bazel](https://bazel.build/install) v5.1.1
 * An Internet connection
 
