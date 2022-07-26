@@ -132,13 +132,13 @@ build:
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
         bazel test //telecom/phone_calls/java:test --test_output=errors --runs_per_test=20 --jobs=1
-    benchmark-phone-calls-nodejs-test:
-      image: vaticle-ubuntu-21.04
-      command: |
-        bazel run //:typedb-extractor -- dist/typedb-all-linux
-        sudo systemd-run ./dist/typedb-all-linux/typedb server
-        sleep 60
-        bazel test //telecom/phone_calls/nodejs:test --test_output=errors --runs_per_test=20 --jobs=1
+#    benchmark-phone-calls-nodejs-test:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //telecom/phone_calls/nodejs:test --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-phone-calls-python-test:
       image: vaticle-ubuntu-21.04
       command: |
