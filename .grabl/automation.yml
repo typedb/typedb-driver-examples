@@ -117,28 +117,28 @@ build:
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //biology/catalogue_of_life:tests --test_output=errors
+        bazel test //biology/catalogue_of_life:tests --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-gitapp-tests:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //software/github/tests:test-migrator-explorer --test_output=errors
+        bazel test //software/github/tests:test-migrator-explorer --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-phone-calls-java-test:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //telecom/phone_calls/java:test --test_output=errors
+        bazel test //telecom/phone_calls/java:test --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-phone-calls-nodejs-test:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //telecom/phone_calls/nodejs:test --test_output=errors
+        bazel test //telecom/phone_calls/nodejs:test --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-phone-calls-python-test:
       image: vaticle-ubuntu-21.04
       command: |
@@ -146,18 +146,11 @@ build:
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //telecom/phone_calls/python:test --test_output=errors
+        bazel test //telecom/phone_calls/python:test --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-xcom-test:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //gaming/xcom:test --test_output=errors
-    benchmark-xcom-migration:
-      image: vaticle-ubuntu-21.04
-      command: |
-        bazel run //:typedb-extractor -- dist/typedb-all-linux
-        sudo systemd-run ./dist/typedb-all-linux/typedb server
-        sleep 60
-        bazel run //gaming/xcom:migration
+        bazel test //gaming/xcom:test --test_output=errors --runs_per_test=20 --jobs=1
