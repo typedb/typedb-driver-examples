@@ -35,7 +35,7 @@ and performing expressive TypeQL queries using the [Java,](telecom/phone_calls/j
 
 ### Github (GUI)
 
-[The github example](software/github) showcases migration of heavily interconnected github repository data, and provides a visual
+[The GitHub example](software/github) showcases migration of heavily interconnected GitHub repository data, and provides a visual
 interface to explore some sample queries.
 
 ### XCOM Project
