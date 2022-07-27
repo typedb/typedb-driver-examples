@@ -93,7 +93,7 @@ async function loadDataIntoTypeDB(input, session) {
         const transaction = await session.transaction(TransactionType.WRITE);
 
         const typeQLInsertQuery = input.template(item);
-        console.log("Executing TypeQL Query: " + typeQLInsertQuery);
+//        console.log("Executing TypeQL Query: " + typeQLInsertQuery);
         await transaction.query().insert(typeQLInsertQuery);
         await transaction.commit();
     }
