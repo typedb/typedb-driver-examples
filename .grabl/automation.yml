@@ -33,28 +33,28 @@ build:
        bazel run //:typedb-extractor -- dist/typedb-all-linux
        sudo systemd-run ./dist/typedb-all-linux/typedb server
        sleep 60
-       bazel test //catalogue_of_life:tests --test_output=errors
+       bazel test //biology/catalogue_of_life:tests --test_output=errors
     test-gitapp:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //github/tests:test-migrator-explorer --test_output=errors
+        bazel test //software/github/tests:test-migrator-explorer --test_output=errors
     test-phone-calls-java:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //phone_calls/java:test --test_output=errors
+        bazel test //telecom/phone_calls/java:test --test_output=errors
     test-phone-calls-nodejs:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //phone_calls/nodejs:test --test_output=errors
+        bazel test //telecom/phone_calls/nodejs:test --test_output=errors
     test-phone-calls-python:
       image: vaticle-ubuntu-21.04
       command: |
@@ -62,11 +62,95 @@ build:
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //phone_calls/python:test --test_output=errors
+        bazel test //telecom/phone_calls/python:test --test_output=errors
     test-xcom:
       image: vaticle-ubuntu-21.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //xcom:test --test_output=errors
+        bazel test //gaming/xcom:test --test_output=errors
+  performance:
+    test-performance-typedb-core-server:
+      machine: 16-core-32-gb
+      image: vaticle-ubuntu-21.04
+      type: background
+      timeout: "30m"
+      command: |
+        cat > typedb.service <<- EOM
+        [Unit]
+        Description=TypeDB
+
+        [Service]
+        Type=simple
+        Environment=SERVER_JAVAOPTS=-Xmx16G
+        ExecStart=/home/grabl/$GRABL_REPO/dist/typedb-all-linux/typedb server
+        Restart=on-failure
+        RestartSec=10
+        KillMode=process
+
+        [Install]
+        WantedBy=multi-user.target
+        EOM
+
+        sudo mv typedb.service /etc/systemd/system/
+
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        cd ./dist/typedb-all-linux/
+
+        sudo systemctl daemon-reload
+        sudo systemctl start typedb
+        export GRABL_EXPORT_PERFORMANCE_TYPEDB_CORE_URI="${HOSTNAME}:1729"
+      monitor: |
+        sleep 10s
+        tail -f -n +1 /home/grabl/$GRABL_REPO/dist/typedb-all-linux/server/logs/typedb.log
+    benchmark-catalogue-of-life-loader:
+      machine: 16-core-32-gb
+      image: vaticle-ubuntu-21.04
+      dependencies: [test-performance-typedb-core-server]
+      timeout: "30m"
+      command: |
+        bazel run //biology/catalogue_of_life:loader -- --typedb $GRABL_EXPORT_PERFORMANCE_TYPEDB_CORE_URI
+    benchmark-catalogue-of-life-tests:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //biology/catalogue_of_life:tests --test_output=errors --runs_per_test=20 --jobs=1
+    benchmark-gitapp-tests:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //software/github/tests:test-migrator-explorer --test_output=errors --runs_per_test=20 --jobs=1
+    benchmark-phone-calls-java-test:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //telecom/phone_calls/java:test --test_output=errors --runs_per_test=20 --jobs=1
+#    benchmark-phone-calls-nodejs-test:
+#      image: vaticle-ubuntu-21.04
+#      command: |
+#        bazel run //:typedb-extractor -- dist/typedb-all-linux
+#        sudo systemd-run ./dist/typedb-all-linux/typedb server
+#        sleep 60
+#        bazel test //telecom/phone_calls/nodejs:test --test_output=errors --runs_per_test=20 --jobs=1
+    benchmark-phone-calls-python-test:
+      image: vaticle-ubuntu-21.04
+      command: |
+        pyenv global system
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //telecom/phone_calls/python:test --test_output=errors --runs_per_test=20 --jobs=1
+    benchmark-xcom-test:
+      image: vaticle-ubuntu-21.04
+      command: |
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //gaming/xcom:test --test_output=errors --runs_per_test=20 --jobs=1

@@ -1,0 +1,31 @@
+{
+    "author": "Vaticle (community@vaticle.com)",
+    "dependencies": {
+        "@bazel/jasmine": "latest",
+        "jasmine": "latest",
+        "typedb-client": "2.1.1",
+        "jasmine-reporters": "^2.3.2",
+        "papaparse": "^4.6.3",
+        "stream-json": "^1.1.4",
+        "xml-stream": "^0.4.5"
+    },
+    "description": "An example that illustrates how CSV data can be loaded into TypeDB using the Node.js Client",
+    "keywords": [
+        "TypeDB",
+        "TypeQL",
+        "csv",
+        "json",
+        "xml",
+        "migration"
+    ],
+    "license": "ISC",
+    "main": "index.js",
+    "name": "typedb-nodejs-migration-csv-example",
+    "scripts": {
+        "migrateCsv": "node -e 'require(\"./migrateCsv\").init(\"data/\")'",
+        "migrateJson": "node -e 'require(\"./migrateJson\").init(\"data/\")'",
+        "migrateXml": "node -e 'require(\"./migrateXml\").init(\"data/\")'",
+        "queries": "node -e 'require(\"./queries\").init()'"
+    },
+    "version": "1.0.0"
+}

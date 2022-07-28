@@ -2,43 +2,69 @@
 
 [![Grabl](https://grabl.io/api/status/vaticle/typedb-examples/badge.svg)](https://grabl.io/vaticle/typedb-examples)
 
-This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB knowledge graph.
+This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB
+database.
 
-## Explore Client Examples
+## [Biology: Catalogue of Life](biology/catalogue_of_life)
+
+[Catalogue of Life](https://www.catalogueoflife.org/) is a database of over 4.5 million currently known taxa in biology,
+compiled from over a hundred different sources. The example showcases simple data preparation and a sample configuration
+file for loading a large taxonomic dataset using [TypeDB Loader.](https://github.com/typedb-osi/typedb-loader)
+
+## [Gaming: XCOM Project](gaming/xcom)
+
+The XCOM 2 example contains a database of interdependent research tasks in the game XCOM 2, featuring automatic
+inference of available research based on completed tasks and available items. See [the schema](gaming/xcom/schema.tql)
+for the examples of reasoner rules inferring attributes.
+
+## [Software: GitHub](software/github)
+
+The GitHub example showcases migration of heavily interconnected data from a live repository on GitHub or from a Vaticle
+GitHub snapshot, and provides a visual interface to explore some sample queries.
+
+## [Telecom: Phone Calls](telecom/phone_calls)
 
 TypeDB officially supports clients for Java, Node.js and Python. Learn more about [TypeDB Clients](http://docs.vaticle.com/docs/client-api/overview).
 
-### Client Java Examples
-- [Phone Calls: Migrate and perform expressive queries using Client Java](phone_calls/java/)
-- [XCOM Project: Migrate and perform logical queries on tree-structured game data using Client Java](xcom/)
+The Phone Calls example showcases basic migration of a database of customers of a fictional telecom company and calls
+they make in various formats (CSV, JSON, and XML) and expressive TypeQL queries using
+the [Java,](telecom/phone_calls/java) [Node.js,](telecom/phone_calls/nodejs) and [Python](telecom/phone_calls/python)
+clients.
 
-### Client Node.js Examples
-- [Phone Calls: Migrate and perform expressive queries using Client Node.js](phone_calls/nodejs/)
+### Data migration
 
-### Client Python Examples
-- [Phone Calls: Migrate and perform expressive queries using Client Python](phone_calls/python/)
+- Java: [CSV](telecom/phone_calls/java/CSVMigration.java) | [JSON](telecom/phone_calls/java/JSONMigration.java)
+  | [XML](telecom/phone_calls/java/XMLMigration.java)
+- Node.js: [CSV](telecom/phone_calls/nodejs/migrateCsv.js) | [JSON](telecom/phone_calls/nodejs/migrateJson.js)
+  | [XML](telecom/phone_calls/nodejs/migrateXml.js)
+- Python: [CSV](telecom/phone_calls/python/migrate_csv.py) | [JSON](telecom/phone_calls/python/migrate_json.py)
+  | [XML](telecom/phone_calls/python/migrate_xml.py)
 
-## Explore Use Cases
+### Query examples
 
-### Migrate data to TypeDB:
+- [Java](telecom/phone_calls/java/Queries.java)
+- [Node.js](telecom/phone_calls/nodejs/queries.js)
+- [Python](telecom/phone_calls/python/queries.py)
 
-#### serialised:
-- Java: [CSV](phone_calls/java/CSVMigration.java) | [JSON](phone_calls/java/JSONMigration.java) | [XML](phone_calls/java/XMLMigration.java)
-- Node.js: [CSV](phone_calls/nodejs/migrateCsv.js) | [JSON](phone_calls/nodejs/migrateJson.js) | [XML](phone_calls/nodejs/migrateXml.js)
-- Python: [CSV](phone_calls/python/migrate_csv.py) | [JSON](phone_calls/python/migrate_json.py) | [XML](phone_calls/python/migrate_xml.py)
+## Visualise data using TypeDB Studio
 
-### Perform expressive queries:
-- [Java](phone_calls/java/Queries.java)
-- [Node.js](phone_calls/nodejs/queries.js)
-- [Python](phone_calls/python/queries.py)
-    
-## Explore TypeDB Bio
-[BioGrakn](https://github.com/vaticle/typedb-bio) is a collection of knowledge graphs of biomedical data.
+After loading the data of any of the examples, you can
+use [TypeDB Studio](https://github.com/vaticle/typedb-studio/releases) to explore
+the graph structure of the database.
 
-TypeDB Bio provides an intuitive way to query interconnected and heterogeneous biomedical data in one single place. The schema that models the underlying knowledge graph alongside the descriptive query language, TypeQL, makes writing complex queries an extremely straightforward and intuitive process. Furthermore, the automated reasoning capability of TypeDB, allows TypeDB Bio to become an intelligent database of biomedical data that infers implicit knowledge based on the explicitly stored data. TypeDB Bio can understand biological facts, infer based on new findings and enforce research constraints, all at query (run) time.
+## TypeDB Bio
 
-## Explore Schemas
-- [Catalogue of Life](catalogue_of_life/schema.tql)
-- [GitHub](github/schemas)
-- [Phone Calls](phone_calls/schema.tql)
-- [XCOM](xcom/schema.tql)
+[TypeDB Bio](https://github.com/vaticle/typedb-bio) is a collection of knowledge graphs of biomedical data.
+
+TypeDB Bio provides an intuitive way to query interconnected and heterogeneous biomedical data in one single place. The
+schema that models the underlying knowledge graph alongside the descriptive query language, TypeQL, makes writing
+complex queries an extremely straightforward and intuitive process. Furthermore, the automated reasoning capability of
+TypeDB, allows TypeDB Bio to become an intelligent database of biomedical data that infers implicit knowledge based on
+the explicitly stored data. TypeDB Bio can understand biological facts, infer based on new findings and enforce research
+constraints, all at query (run) time.
+
+## TypeDB CTI
+
+[TypeDB CTI](https://github.com/typedb-osi/typedb-cti) is an open source threat intelligence platform for organisations
+to store and manage their cyber threat intelligence (CTI) knowledge. It enables threat intel professionals to bring
+together their disparate CTI information into one database and find new insights about cyber threats.

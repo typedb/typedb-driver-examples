@@ -19,32 +19,29 @@
 # under the License.
 #
 
-# Misc
-.DS_Store
-logs/
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_test")
 
-# IDE files
-.idea/
-.ijwb/
-*.iml
-.vscode
-.settings
-.project
-.classpath
-.factorypath
+package(default_visibility = ["//software/github:__pkg__"])
 
-# Compiled files
-target/
-bin/
+kt_jvm_test(
+    name = "test-migrator-explorer",
+    size = "large",
+    srcs = glob(["*.kt"]),
+    data = [
+        "//software/github/datasets:github-data-json",
+        "//software/github/schemas:github-data-schemas",
+    ],
+    tags = ["maven_coordinates=com.vaticle.typedb:typedb-studio-view:{pom_version}"],
+    test_class = "com.vaticle.typedb.example.software.github.tests.MigratorExplorerTest",
+    deps = [
+        "//software/github/state:state",
+        "@maven//:junit_junit",
+    ],
+)
 
-# NPM
-node_modules/
-
-# Python
-__pycache__
-
-# Bazel
-bazel-*
-
-# Distribution
-dist/
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    license_type = "apache-header",
+)
