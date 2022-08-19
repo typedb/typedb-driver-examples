@@ -103,6 +103,6 @@ class Downloader {
 
     companion object {
         private const val COMMITS_TO_DOWNLOAD = 25
-        private const val DATASETS_PATH = "github/datasets"
+        private const val DATASETS_PATH = "software/github/datasets"
     }
 }
