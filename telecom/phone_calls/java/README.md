@@ -22,9 +22,9 @@ phone_calls::schema::write> source {path-to-the-cloned-repo}/phone_calls/schema.
 phone_calls::schema::write*> commit
 > exit
 ```
-5. Build the example: `bazel build //phone_calls/java/...`.
+5. Build the example: `bazel build //telecom/phone_calls/java/...`.
 6. Migrate the dataset into TypeDB from any of the 3 supported formats: CSV, JSON, or XML, using any one of the following commands:
-- `bazel run //phone_calls/java:csv-migration`,
-- `bazel run //phone_calls/java:json-migration`, or
-- `bazel run //phone_calls/java:xml-migration`.
-7. Launch the interactive query runner: `bazel run //phone_calls/java:queries`.
+- `bazel run //telecom/phone_calls/java:csv-migration`,
+- `bazel run //telecom/phone_calls/java:json-migration`, or
+- `bazel run //telecom/phone_calls/java:xml-migration`.
+7. Launch the interactive query runner: `bazel run //telecom/phone_calls/java:queries`.

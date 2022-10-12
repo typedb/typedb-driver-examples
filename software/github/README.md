@@ -17,8 +17,8 @@ elegantly with TypeQL.
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
-3. Build the project: `bazel build //github/...`
-4. Run the application: `bazel run //github:github-bin-{YOUR_OS}` where `YOUR_OS` is `windows`, `mac` or `linux`.
+3. Build the project: `bazel build //software/github/...`
+4. Run the application: `bazel run //software/github:github-bin-{YOUR_OS}` where `YOUR_OS` is `windows`, `mac` or `linux`.
 
 Now you can use the application to explore any GitHub repository. If you don't want to set up GitHub access tokens, 
 explore an example repository by entering `vaticle/typedb` into the prompt.

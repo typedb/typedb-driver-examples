@@ -55,6 +55,6 @@ is able to fetch the correct answer in one simple query.
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
-3. Build the example: `bazel build //xcom/...`.
-4. Migrate the dataset into TypeDB: `bazel run //xcom:migration`.
-5. Launch the interactive query runner: `bazel run //xcom:queries`.
+3. Build the example: `bazel build //gaming/xcom/...`.
+4. Migrate the dataset into TypeDB: `bazel run //gaming/xcom:migration`.
+5. Launch the interactive query runner: `bazel run //gaming/xcom:queries`.
