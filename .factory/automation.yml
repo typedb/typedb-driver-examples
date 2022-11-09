@@ -58,7 +58,13 @@ build:
     test-phone-calls-python:
       image: vaticle-ubuntu-22.04
       command: |
-        pyenv global system
+        export PYENV_ROOT="/opt/pyenv"
+        pyenv install 3.7.12
+        pyenv global 3.7.12
+        sudo unlink /usr/bin/python3
+        sudo ln -s $(which python3) /usr/bin/python3
+        sudo ln -s /usr/bin/python3 /usr/bin/python
+        sudo ln -s /usr/share/pyshared/lsb_release.py /opt/pyenv/versions/3.7.12/lib/python3.7/site-packages/lsb_release.py
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
@@ -142,7 +148,13 @@ build:
     benchmark-phone-calls-python-test:
       image: vaticle-ubuntu-22.04
       command: |
-        pyenv global system
+        export PYENV_ROOT="/opt/pyenv"
+        pyenv install 3.7.12
+        pyenv global 3.7.12
+        sudo unlink /usr/bin/python3
+        sudo ln -s $(which python3) /usr/bin/python3
+        sudo ln -s /usr/bin/python3 /usr/bin/python
+        sudo ln -s /usr/share/pyshared/lsb_release.py /opt/pyenv/versions/3.7.12/lib/python3.7/site-packages/lsb_release.py
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
