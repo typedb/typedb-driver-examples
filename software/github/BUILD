@@ -64,7 +64,7 @@ java_binary(
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
-    include = glob(["*", ".grabl/*"]),
+    include = glob(["*", ".factory/*"]),
     exclude = ["screenshots/interface.png", "README.md"],
     license_type = "apache-header",
     size = "small",

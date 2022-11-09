@@ -52,7 +52,7 @@ filegroup(
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
-    include = glob([".grabl/*"]) + [".bazelrc", ".gitignore", "BUILD", "WORKSPACE"],
+    include = glob([".factory/*"]) + [".bazelrc", ".gitignore", "BUILD", "WORKSPACE"],
     license_type = "apache-header",
     size = "small",
 )

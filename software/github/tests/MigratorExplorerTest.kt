@@ -32,7 +32,7 @@ import org.junit.Test
 class MigratorExplorerTest {
     @Test
     fun testUsersCollaboratedOnFile() {
-        val automationEditors = Explorer().usersCollaboratedOnFile(".grabl/automation.yml")
+        val automationEditors = Explorer().usersCollaboratedOnFile(".factory/automation.yml")
         assertEquals(automationEditors.size, 2)
         assertTrue(automationEditors.contains("jmsfltchr"))
         assertTrue(automationEditors.contains("lolski"))
@@ -49,7 +49,7 @@ class MigratorExplorerTest {
     fun testFilesEditByUser() {
         val lolskiEditedFiles = Explorer().filesEditedByUser("lolski")
         assertEquals(lolskiEditedFiles.size, 3)
-        assertTrue(lolskiEditedFiles.contains(".grabl/automation.yml"))
+        assertTrue(lolskiEditedFiles.contains(".factory/automation.yml"))
         assertTrue(lolskiEditedFiles.contains("database/RocksConfiguration.java"))
         assertTrue(lolskiEditedFiles.contains("dependencies/vaticle/repositories.bzl"))
     }
@@ -77,7 +77,7 @@ class MigratorExplorerTest {
 
     @Test
     fun testFileEditCount() {
-        val automationFileEditCount = Explorer().fileEditCount(".grabl/automation.yml")
+        val automationFileEditCount = Explorer().fileEditCount(".factory/automation.yml")
         assertEquals(automationFileEditCount.size, 1)
         assertTrue(automationFileEditCount.contains("2"))
         val repositoriesFileEditCount = Explorer().fileEditCount("dependencies/vaticle/repositories.bzl")

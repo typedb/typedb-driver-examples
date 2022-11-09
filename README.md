@@ -1,6 +1,6 @@
 # TypeDB Examples
 
-[![Grabl](https://grabl.io/api/status/vaticle/typedb-examples/badge.svg)](https://grabl.io/vaticle/typedb-examples)
+[![Factory](https://factory.vaticle.com/api/status/vaticle/typedb-examples/badge.svg)](https://factory.vaticle.com/vaticle/typedb-examples)
 
 This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB
 database.
