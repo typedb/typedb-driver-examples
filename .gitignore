@@ -48,3 +48,5 @@ bazel-*
 
 # Distribution
 dist/
+.typedb-studio/
+

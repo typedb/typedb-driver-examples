@@ -1,0 +1,124 @@
+#
+# Copyright (C) 2022 Vaticle
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+define
+
+### Attributes ###
+#common
+    name sub attribute, value string;
+    date sub attribute, value datetime;
+    description sub attribute, value string;
+    id sub attribute, value string;
+#product
+    price sub attribute, value long;
+    stock sub attribute, value long;
+#book
+    ISBN sub attribute, value string;
+    Book_Author sub attribute, value string;
+    Publisher sub attribute, value string;
+#book_review
+    rating sub attribute, value long;
+#book_category
+#category
+#customer
+    contact_info sub attribute, value string;
+    age sub attribute, value long;
+#order
+    status sub attribute, value string;
+    delivery_address sub attribute, value string;
+    payment_details sub attribute, value string;
+#user
+    username sub attribute, value string;
+    password sub attribute, value string;
+    foreign-id sub attribute, value string;
+
+### Entities ###
+    Product sub entity, abstract,
+        owns id @key,
+        owns name,
+        owns description,
+        owns price,
+        owns stock,
+        plays ordering:item,
+        plays reviewing:product;
+
+    Book sub Product,
+        owns ISBN,
+        owns Book_Author,
+        owns Publisher,
+        plays genre_taging:book;
+
+##### Genre tags #####
+
+    Genre sub entity, abstract,
+        plays genre_taging:tag;
+    
+    Fiction sub Genre;
+    Non-fiction sub Genre;
+    Adult_only sub Genre;
+    Kids_friendly sub Genre;
+    
+    Fantasy sub Fiction;
+    Sci-Fi sub Fantasy;
+    Biography sub Non-fiction;
+    Adventure sub Fiction;
+    Detective_story sub Fiction;
+    History sub Non-fiction;
+
+##### Genre tags end #####
+
+    Person sub entity,
+        owns name,
+        plays reviewing:author;
+
+    User sub Person,
+        owns id @key,
+        owns foreign-id,
+        owns username,
+        owns password,
+        owns age;
+
+    Customer sub User,
+        owns contact_info,
+        plays ordering:author;
+
+    Order sub entity,
+        owns id @key,
+        owns date,
+        owns status,
+        owns delivery_address,
+        owns payment_details,
+        plays ordering:order;
+
+### Relations ###
+    reviewing sub relation,
+        owns rating,
+        relates author,
+        relates product;
+
+    genre_taging sub relation,
+        relates tag,
+        relates book;
+
+    ordering sub relation,
+        relates item,
+        relates order,
+        relates author;
