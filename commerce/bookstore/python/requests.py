@@ -1,7 +1,7 @@
 from typedb.client import TypeDB, SessionType, TransactionType
 
 # change later to a config update from other file
-db = '4'  # DB name
+db = '6'  # DB name
 
 
 def selection():
@@ -33,21 +33,37 @@ def search_book(ISBN):
         show_all_books()
         return
     else:
-        with TypeDB.core_client("localhost:1729") as client:  # 1
-            with client.session(db, SessionType.DATA) as session:  # 2
-                with session.transaction(TransactionType.READ) as transaction:  # a
+        with TypeDB.core_client("localhost:1729") as client:
+            with client.session(db, SessionType.DATA) as session:
+                with session.transaction(TransactionType.READ) as transaction:
                     TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '", has name $n, has Book_Author $ba; ' \
-                                        '$r (product: $b) isa reviewing, has rating $rating' \
-                                        'get $n, $ba, $rating;'
+                                        'get $n, $ba;'
+                    # What id we don't have a Book_Author set? We will not have this instance?
+                    # Shall we search ISBNs first and then try to obtain all parameters?
                     print("Executing TypeQL read Query: " + TypeQL_read_query)
                     iterator = transaction.query().match(TypeQL_read_query)
                     k = 0
                     for item in iterator:
                         print(ISBN, item.get('n').get_value(), item.get('ba').get_value(), sep=' — ')
                         k += 1
+
+        # Rating computation
+        with TypeDB.core_client("localhost:1729") as client:  # 1
+            with client.session(db, SessionType.DATA) as session:  # 2
+                with session.transaction(TransactionType.READ) as transaction:  # a
+                    TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '";' \
+                                        '$r (product: $b, author:$a) isa reviewing; $r has rating $rating;' \
+                                        'get $rating;'
+                    print("Executing TypeQL read Query: " + TypeQL_read_query)
+                    iterator = transaction.query().match(TypeQL_read_query)
+                    g = 0
+                    for item in iterator:
+                        print(ISBN, item.get('rating').get_value())
+                        g += 1
                         # insert Rating computation here
-                    print('Results found:', k)
-                    return
+                    print('Total rating records:', g)
+    print('Results found:', k)
+    return
 
 
 def search_user(user):
