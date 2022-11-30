@@ -1,11 +1,8 @@
 import csv, uuid, random
 from typedb.client import TypeDB, SessionType, TransactionType
 
-data_path = "data/"
-db = '3'
-
-
-
+data_path = "data/"  # path to csv files to import/load data
+db = '4'  # Name of the DB to connect on the TypeDB
 
 def parse_data_to_dictionaries(input):
     """
@@ -25,6 +22,15 @@ def parse_data_to_dictionaries(input):
     print('parsing ended')
     return items
 
+
+def load_data_into_typedb(input, session):
+    with session.transaction(TransactionType.READ) as transaction:  # a
+        TypeQL_read_query = ''
+        print("Executing TypeQL read Query: " + TypeQL_read_query)
+        x = concept_map.concepts(transaction.query().match(TypeQL_read_query))
+
+        transaction.commit()
+    return
 
 def load_data_into_typedb(input, session):
     """
@@ -72,17 +78,24 @@ def users_template(user):
     return TypeQL_insert_query
 
 
-def ratings_template(review):  # We have a CSV item data and all DB info on that stage to make a query
-    TypeQL_insert_query = 'insert $r isa Review, has id "' + str(uuid.uuid4()) \
-                          + '", has date 2022-11-27T20:25:51, has rating ' + review["Book-Rating"] + ';'
-
-
+def ratings_template(review):
+    TypeQL_insert_query = 'match $u isa User, has foreign-id "' + review["User-ID"] + '"; ' \
+                          '$b isa Book, has ISBN "' + review["ISBN"] + '"; ' \
+                          'insert $r (author: $u, product: $b) isa reviewing;' \
+                          '$r has rating ' + review["Book-Rating"] + ';'
 
     return TypeQL_insert_query
 
-    TypeQL_insert_query += ' match $b isa Book, has ISBN "' + review["ISBN"] + '",' \
-                           + '$u isa User, has foreign-id "' + review["User-ID"] + '",' \
-                           + ' insert  (author: $u, review_result: $r, reviewed_book: $b) isa book_review;'
+
+def genre_template(genre):
+    transaction.query()
+    TypeQL_insert_query = 'match $b isa Book, has ISBN "' + genre["ISBN"] + '"; ' \
+                          '$g isa Genre, has ISBN "' + review["ISBN"] + '"; ' \
+                          'insert $review (author: $user, product: $book) isa reviewing;' \
+                          '$review has rating ' + review["Book-Rating"] + ';'
+
+    return TypeQL_insert_query
+
 
 Inputs = [
     {
@@ -96,6 +109,10 @@ Inputs = [
     {
         "file": "ratings",
         "template": ratings_template
+    },
+    {
+        "file": "genre",
+        "template": genre_template
     }
 ]
 

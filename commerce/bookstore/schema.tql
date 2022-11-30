@@ -67,6 +67,11 @@ define
         plays genre_taging:book;
 
 ##### Genre tags #####
+# How to use hierarchy of types here?
+# I can't do it with relations as relations require at least two relatives
+# I can recreate this structure as Attributes
+# I can add boolean attribute to mark 1/0 each genre tag in instances. Even create a mask (like net mask)
+
 
     Genre sub entity, abstract,
         plays genre_taging:tag;
@@ -75,6 +80,7 @@ define
     Non-fiction sub Genre;
     Adult_only sub Genre;
     Kids_friendly sub Genre;
+    Other sub Genre;
     
     Fantasy sub Fiction;
     Sci-Fi sub Fantasy;
@@ -119,6 +125,6 @@ define
         relates book;
 
     ordering sub relation,
-        relates item,
         relates order,
+        relates item,
         relates author;
