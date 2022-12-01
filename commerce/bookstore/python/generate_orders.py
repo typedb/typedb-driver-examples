@@ -1,7 +1,8 @@
+# This file to be deleted as redundant
 import random
 from typedb.client import TypeDB, SessionType, TransactionType
 
-db = '3'
+db = '4'
 data_path = 'data/'
 n = 1
 result = []
@@ -16,14 +17,14 @@ with TypeDB.core_client("localhost:1729") as client:
             answers = [ans.get("x") for ans in iterator]
             books = [answer.get_value() for answer in answers]
             for order_id in range(1,6):
-                print("    ", order_id)
                 ordered_books = []
-                for item_n in range(1, random.randint(1, 10)):
+                for item_n in range(1, random.randint(2, 10)):
                     ordered_books.append(books[random.randint(1, 800)])
                 result.append(ordered_books)
 
 n = 1
 k = 1
+# Add ordering relations (assign items from the sets above)
 with TypeDB.core_client("localhost:1729") as client:
     with client.session(db, SessionType.DATA) as session:
         for order in result:
@@ -41,14 +42,3 @@ with TypeDB.core_client("localhost:1729") as client:
                     print(transaction.query().insert(TypeQL_insert_query))
                     transaction.commit()
             n += 1
-
-
-#for order in result:
-#    print('\n')
-#    for book in order:
-#        print(book)
-#print(result)
-
-
-
-

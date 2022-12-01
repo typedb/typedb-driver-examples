@@ -2,7 +2,7 @@ import csv, uuid, random
 from typedb.client import TypeDB, SessionType, TransactionType
 
 data_path = "data/"  # path to csv files to import/load data
-db = '3'  # Name of the DB to connect on the TypeDB
+db = '6'  # Name of the DB to connect on the TypeDB
 
 
 def parse_data_to_dictionaries(input):
@@ -22,16 +22,6 @@ def parse_data_to_dictionaries(input):
             items.append(item)  # 2
     print('parsing ended')
     return items
-
-
-def load_data_into_typedb(input, session):
-    with session.transaction(TransactionType.READ) as transaction:  # a
-        TypeQL_read_query = ''
-        print("Executing TypeQL read Query: " + TypeQL_read_query)
-        x = concept_map.concepts(transaction.query().match(TypeQL_read_query))
-
-        transaction.commit()
-    return
 
 
 def load_data_into_typedb(input, session):
@@ -59,6 +49,7 @@ def load_data_into_typedb(input, session):
 
     print("\nInserted " + str(len(items)) +
           " items from [ " + input["file"] + ".csv] into TypeDB.\n")
+    return  # END of load_data_into_typedb()
 
 
 def books_template(book):
@@ -73,8 +64,8 @@ def users_template(user):
     TypeQL_insert_query = 'insert $u isa User, has id "' + str(uuid.uuid4()) + '", has foreign-id "' + user["User-ID"] + '"'
     if user["Age"] != "NULL":
         TypeQL_insert_query += ',  has age ' + user["Age"]
-#    else:  # In case we want to generate random data
-#        TypeQL_insert_query += ',  has age ' + str(random.randint(18, 105))
+    else:  # Additional logic for missing data
+        TypeQL_insert_query += ',  has age ' + str(random.randint(18, 105))
     TypeQL_insert_query += ', has name "' + random.choice(first_names) + '";'
 
     return TypeQL_insert_query
@@ -109,6 +100,46 @@ def orders_template(order):
     return TypeQL_insert_query
 
 
+def generate_ordered_items():
+    result = []
+    # generate 5 random sets of 2-9 books
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session(db, SessionType.DATA) as session:
+            with session.transaction(TransactionType.READ) as transaction:
+                TypeQL_read_query = 'match $b isa Book, has ISBN $x; get $x; limit 800;'
+                print("Executing TypeQL read Query: " + TypeQL_read_query)
+                iterator = transaction.query().match(TypeQL_read_query)
+                answers = [ans.get("x") for ans in iterator]
+                books = [answer.get_value() for answer in answers]
+                for order_id in range(1,6):
+                    ordered_books = []
+                    for item_n in range(1, random.randint(2, 10)):
+                        ordered_books.append(books[random.randint(0, 799)])  # Exactly 800 books to select from
+                    result.append(ordered_books)
+
+    n = 1
+    # Add ordering relations (assign items from the sets above)
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session(db, SessionType.DATA) as session:
+            for order in result:
+                print('Order #', n, 'contains:')
+                for book in order:
+                    print('\nISBN', book)
+                    with session.transaction(TransactionType.WRITE) as transaction:
+                        TypeQL_insert_query = 'match $b isa Book, has ISBN "' + book + '";' \
+                                              '$o isa Order, has id "' + str(n) + '", has foreign-user-id $fui;' \
+                                              '$u isa User, has foreign-id $fi;' \
+                                              '$fui = $fi;' \
+                                              'insert (order: $o, item: $b, author: $u ) isa ordering;'
+                        # the $fui and $fi variables are compared by value only
+                        print("Executing TypeQL Query: " + TypeQL_insert_query)
+                        print(transaction.query().insert(TypeQL_insert_query))
+                        transaction.commit()
+                n += 1
+    return  # END of generate_ordered_items()
+
+
+
 Inputs = [
     {
         "file": "books",
@@ -135,10 +166,11 @@ Inputs = [
 ]
 
 
-with TypeDB.core_client("localhost:1729") as client:  # 1
-    with client.session(db, SessionType.DATA) as session:  # 2
+with TypeDB.core_client("localhost:1729") as client:
+    with client.session(db, SessionType.DATA) as session:
         for input in Inputs:
-            input["file"] = data_path + input["file"]  # 3a
+            input["file"] = data_path + input["file"]
             print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
-            load_data_into_typedb(input, session)  # 3b
+            load_data_into_typedb(input, session)
+            generate_ordered_items()
 
