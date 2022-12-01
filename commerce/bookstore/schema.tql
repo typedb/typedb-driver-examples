@@ -22,36 +22,36 @@
 define
 
 ### Attributes ###
-#common
+
     name sub attribute, value string;
     date sub attribute, value datetime;
     description sub attribute, value string;
     id sub attribute, value string;
-#product
+
     price sub attribute, value long;
     stock sub attribute, value long;
-#book
+
     ISBN sub attribute, value string;
     Book_Author sub attribute, value string;
     Publisher sub attribute, value string;
-#book_review
+
     rating sub attribute, value long;
-#book_category
-#category
-#customer
-    contact_info sub attribute, value string;
+
     age sub attribute, value long;
-#order
+
     foreign-user-id sub attribute, value string;
     status sub attribute, value string;
     delivery_address sub attribute, value string;
     payment_details sub attribute, value string;
-#user
+
     username sub attribute, value string;
     password sub attribute, value string;
     foreign-id sub attribute, value string;
 
-    genre sub attribute, value string, plays taging:tag;
+    genre sub attribute, value string,
+        plays taging:tag,
+        plays tag-hierarchy:sup-tag,
+        plays tag-hierarchy:sub-tag;
 
 ### Entities ###
     Product sub entity, abstract,
@@ -104,3 +104,20 @@ define
         relates order,
         relates item,
         relates author;
+
+    tag-hierarchy sub relation,
+        relates sub-tag,
+        relates sup-tag;
+        
+##### RULES #####
+
+    rule super-tag-hierarchy:
+        when {
+            $b isa genre;
+            $p isa genre;
+            $bb isa genre;
+            (sup-tag: $p, sub-tag: $b) isa tag-hierarchy;
+            (sup-tag: $b, sub-tag: $bb) isa tag-hierarchy;
+        } then {
+            (sup-tag: $p, sub-tag: $bb) isa tag-hierarchy;
+        };

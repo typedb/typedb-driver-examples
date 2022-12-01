@@ -9,21 +9,29 @@ def selection():
     print("Please choose one of the following functions: ")
     print("1. Search for a Book")
     print("2. Search for a User")
+    print("3. Search for an Order")
+    print("4. Search for books by genre")
     selection = input("Your request: ")
     if selection == '':
         print('Empty selection recognized. Please try again.')
-        return '3'
+        return '1'
     elif selection == '1':  # Book
         search_book(input('Searching for a Book. Please type in an ISBN or press enter for a full listing: '))
-        return '1'
+        return '0'
     elif selection == '2':  # User
         search_user(input('Searching for a User. Please type in a foreign ID or press enter for a full listing: '))
-        return '2'
-    elif x == '0' or 'exit' or 'exit()' or 'close' or 'close()' or 'help':  # Exit
         return '0'
+    elif selection == '3':  # Order
+        search_order(input('Searching for an Order. Please type in an Order ID or press enter for a full listing: '))
+        return '0'
+    elif selection == '4':  # genre
+        search_genre(input('Searching for books by genre. Please type in genre name or press enter for a full listing: '))
+        return '0'
+    elif x == '0' or 'exit' or 'exit()' or 'close' or 'close()' or 'help':  # Exit
+        return '2'
     else:
         print('Invalid selection recognized. Please try again.')
-        return '3'
+        return '1'
 
 
 def search_book(ISBN):
@@ -90,6 +98,33 @@ def search_user(user):
                     return
 
 
+def search_order(order_id):
+    # Different approach - download all orders first
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session(db, SessionType.DATA) as session:
+            with session.transaction(TransactionType.READ) as transaction:
+                TypeQL_read_query = 'match $o isa Order, has id $i, has foreign-user-id $fui, ' \
+                                    'has date $d, has status $s, has delivery_address $da;' \
+                                    'get $i, $fui, $d, $s, $da;'
+                print("Executing TypeQL read Query: " + TypeQL_read_query)
+                iterator = transaction.query().match(TypeQL_read_query)
+                result = ''
+                for answer in iterator:
+                    if order_id == '' or (order_id == answer.get('i').get_value()):
+                        result += '\nOrder ID:' + str(answer.get('i').get_value())
+                        result += ' Foreign User-ID:' + str(answer.get('fui').get_value())
+                        result += ' Date:' + str(answer.get('d').get_value())
+                        result += ' Status:' + str(answer.get('s').get_value())
+                        result += ' Delivery address:' + str(answer.get('da').get_value())
+                        print(result)
+                        result = ''
+    return
+
+
+def search_genre(tag_name):
+    pass
+    return
+
 def show_all_books():
     print('Showing all books')
     with TypeDB.core_client("localhost:1729") as client:  # 1
@@ -123,14 +158,12 @@ def show_all_users():
                 print('Total count:', k)
 
 
-x = '0'
+x = '1'
 print("Bookstore CRM v.0.0.0.0.1a")
 while True:
     x = selection()
-    if x == '1':
+    if x == '0':
         break
     elif x == '2':
-        break
-    elif x == '0':
         print('Terminating program.')
         break

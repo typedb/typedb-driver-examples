@@ -2,7 +2,7 @@ import csv, uuid, random
 from typedb.client import TypeDB, SessionType, TransactionType
 
 data_path = "data/"  # path to csv files to import/load data
-db = '6'  # Name of the DB to connect on the TypeDB
+db = '9'  # Name of the DB to connect on the TypeDB
 
 
 def parse_data_to_dictionaries(input):
@@ -81,6 +81,7 @@ def ratings_template(review):
 
 
 def genre_template(genre):
+
     TypeQL_insert_query = 'match $b isa Book, has ISBN "' + genre["ISBN"] + '"; ' \
                           '$g isa Genre, has ISBN "' + genre["ISBN"] + '"; ' \
                           'insert $review (author: $user, product: $book) isa reviewing;' \
@@ -122,9 +123,9 @@ def generate_ordered_items():
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             for order in result:
-                print('Order #', n, 'contains:')
+                #print('\nOrder #', n, 'contains:')
                 for book in order:
-                    print('\nISBN', book)
+                    #print('\nISBN', book)
                     with session.transaction(TransactionType.WRITE) as transaction:
                         TypeQL_insert_query = 'match $b isa Book, has ISBN "' + book + '";' \
                                               '$o isa Order, has id "' + str(n) + '", has foreign-user-id $fui;' \
@@ -138,6 +139,63 @@ def generate_ordered_items():
                 n += 1
     return  # END of generate_ordered_items()
 
+
+def load_genre_tags():  # Creating genre tags and tag hierarchy
+
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session(db, SessionType.DATA) as session:
+            with session.transaction(TransactionType.WRITE) as transaction:
+                transaction.query().insert('insert $g "Fiction" isa genre;')
+                transaction.query().insert('insert $g "Non fiction" isa genre;')
+                transaction.query().insert('insert $g "Other" isa genre;')
+                transaction.query().insert('insert $g "Adults only" isa genre;')
+                transaction.query().insert('insert $g "Kids friendly" isa genre;')
+                transaction.query().insert('insert $g "Sci-Fi" isa genre;')
+                transaction.query().insert('match $b = "Sci-Fi"; $b isa genre;'
+                                           '$p = "Fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Fantasy" isa genre;')
+                transaction.query().insert('match $b = "Fantasy"; $b isa genre;'
+                                           '$p = "Fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Biography" isa genre;')
+                transaction.query().insert('match $b = "Biography"; $b isa genre;'
+                                           '$p = "Non fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Adventure" isa genre;')
+                transaction.query().insert('match $b = "Adventure"; $b isa genre;'
+                                           '$p = "Fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Detective_story" isa genre;')
+                transaction.query().insert('match $b = "Detective_story"; $b isa genre;'
+                                           '$p = "Fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "History" isa genre;')
+                transaction.query().insert('match $b = "History"; $b isa genre;'
+                                           '$p = "Non fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Politics" isa genre;')
+                transaction.query().insert('match $b = "Politics"; $b isa genre;'
+                                           '$p = "Non fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Up to 5 years" isa genre;')
+                transaction.query().insert('match $b = "Up to 5 years"; $b isa genre;'
+                                           '$p = "Kids friendly"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Technical Documentation" isa genre;')
+                transaction.query().insert('match $b = "Technical Documentation"; $b isa genre;'
+                                           '$p = "Non fiction"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('match $b = "Technical Documentation"; $b isa genre;'
+                                           '$p = "Adults only"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.query().insert('insert $g "Map" isa genre;')
+                transaction.query().insert('match $b = "Map"; $b isa genre;'
+                                           '$p = "Technical Documentation"; $p isa genre;'
+                                           'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
+                transaction.commit()
+    print('\nLoaded genre tags')
+    return
 
 
 Inputs = [
@@ -157,12 +215,12 @@ Inputs = [
         "file": "orders",
         "template": orders_template
     }
-
     #,
     #{
-    #    "file": "genre",
+    #    "file": "genres",
     #    "template": genre_template
     #}
+
 ]
 
 
@@ -173,4 +231,5 @@ with TypeDB.core_client("localhost:1729") as client:
             print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
             load_data_into_typedb(input, session)
             generate_ordered_items()
+            load_genre_tags()
 
