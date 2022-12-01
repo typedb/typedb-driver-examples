@@ -46,7 +46,7 @@ def search_book(ISBN):
                     for item in iterator:
                         print(ISBN, item.get('n').get_value(), item.get('ba').get_value(), sep=' — ')
                         k += 1
-
+        print('Books found:', k)
         # Rating computation
         with TypeDB.core_client("localhost:1729") as client:  # 1
             with client.session(db, SessionType.DATA) as session:  # 2
@@ -57,12 +57,13 @@ def search_book(ISBN):
                     print("Executing TypeQL read Query: " + TypeQL_read_query)
                     iterator = transaction.query().match(TypeQL_read_query)
                     g = 0
+                    s = 0
                     for item in iterator:
-                        print(ISBN, item.get('rating').get_value())
                         g += 1
-                        # insert Rating computation here
-                    print('Total rating records:', g)
-    print('Results found:', k)
+                        rating = item.get('rating').get_value()
+                        # print(g, 'Review rating found:', rating)
+                        s = s + rating
+                    print('Total rating records:', str(g) + '. Average book rating:', round(s/g, 2))
     return
 
 
@@ -85,7 +86,7 @@ def search_user(user):
                         print(user, item.get('n').get_value(), item.get('i').get_value(), sep=' — ')
                         k += 1
                         # insert Rating computation here
-                    print('Results found:', k)
+                    print('Users found:', k)
                     return
 
 

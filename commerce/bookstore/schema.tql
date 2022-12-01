@@ -42,6 +42,7 @@ define
     contact_info sub attribute, value string;
     age sub attribute, value long;
 #order
+    foreign-user-id sub attribute, value string;
     status sub attribute, value string;
     delivery_address sub attribute, value string;
     payment_details sub attribute, value string;
@@ -49,6 +50,8 @@ define
     username sub attribute, value string;
     password sub attribute, value string;
     foreign-id sub attribute, value string;
+
+    genre sub attribute, value string, plays taging:tag;
 
 ### Entities ###
     Product sub entity, abstract,
@@ -64,32 +67,7 @@ define
         owns ISBN,
         owns Book_Author,
         owns Publisher,
-        plays genre_taging:book;
-
-##### Genre tags #####
-# How to use hierarchy of types here?
-# I can't do it with relations as relations require at least two relatives
-# I can recreate this structure as Attributes
-# I can add boolean attribute to mark 1/0 each genre tag in instances. Even create a mask (like net mask)
-
-
-    Genre sub entity, abstract,
-        plays genre_taging:tag;
-    
-    Fiction sub Genre;
-    Non-fiction sub Genre;
-    Adult_only sub Genre;
-    Kids_friendly sub Genre;
-    Other sub Genre;
-    
-    Fantasy sub Fiction;
-    Sci-Fi sub Fantasy;
-    Biography sub Non-fiction;
-    Adventure sub Fiction;
-    Detective_story sub Fiction;
-    History sub Non-fiction;
-
-##### Genre tags end #####
+        plays taging:book;
 
     Person sub entity,
         owns name,
@@ -100,14 +78,12 @@ define
         owns foreign-id,
         owns username,
         owns password,
-        owns age;
-
-    Customer sub User,
-        owns contact_info,
+        owns age,
         plays ordering:author;
 
     Order sub entity,
         owns id @key,
+        owns foreign-user-id,
         owns date,
         owns status,
         owns delivery_address,
@@ -120,7 +96,7 @@ define
         relates author,
         relates product;
 
-    genre_taging sub relation,
+    taging sub relation,
         relates tag,
         relates book;
 

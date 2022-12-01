@@ -2,7 +2,8 @@ import csv, uuid, random
 from typedb.client import TypeDB, SessionType, TransactionType
 
 data_path = "data/"  # path to csv files to import/load data
-db = '6'  # Name of the DB to connect on the TypeDB
+db = '3'  # Name of the DB to connect on the TypeDB
+
 
 def parse_data_to_dictionaries(input):
     """
@@ -31,6 +32,7 @@ def load_data_into_typedb(input, session):
 
         transaction.commit()
     return
+
 
 def load_data_into_typedb(input, session):
     """
@@ -96,6 +98,17 @@ def genre_template(genre):
     return TypeQL_insert_query
 
 
+def orders_template(order):
+    TypeQL_insert_query = 'insert $o isa Order, has id "' + order["id"] + '",' \
+                          'has foreign-user-id "' + order["User-ID"] + '", ' \
+                          'has date ' + order["date"] + ', ' \
+                          'has status "' + order["status"] + '",' \
+                          'has delivery_address "' + order["delivery_address"] + '", ' \
+                          'has payment_details "' + order["payment_details"] + '";'
+
+    return TypeQL_insert_query
+
+
 Inputs = [
     {
         "file": "books",
@@ -108,7 +121,12 @@ Inputs = [
     {
         "file": "ratings",
         "template": ratings_template
+    },
+    {
+        "file": "orders",
+        "template": orders_template
     }
+
     #,
     #{
     #    "file": "genre",
