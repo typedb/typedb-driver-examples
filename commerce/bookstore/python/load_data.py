@@ -2,7 +2,7 @@ import csv, uuid, random
 from typedb.client import TypeDB, SessionType, TransactionType
 
 data_path = "data/"  # path to csv files to import/load data
-db = '9'  # Name of the DB to connect on the TypeDB
+db = '2'  # Name of the DB to connect on the TypeDB
 
 
 def parse_data_to_dictionaries(input):
@@ -83,9 +83,8 @@ def ratings_template(review):
 def genre_template(genre):
 
     TypeQL_insert_query = 'match $b isa Book, has ISBN "' + genre["ISBN"] + '"; ' \
-                          '$g isa Genre, has ISBN "' + genre["ISBN"] + '"; ' \
-                          'insert $review (author: $user, product: $book) isa reviewing;' \
-                          '$review has rating ' + genre["Book-Rating"] + ';'
+                          '$g isa genre; $g "' + genre["Genre"] + '"; ' \
+                          'insert $tag (tag: $g, book: $b) isa taging;'
 
     return TypeQL_insert_query
 
@@ -214,13 +213,11 @@ Inputs = [
     {
         "file": "orders",
         "template": orders_template
+    },
+    {
+        "file": "genres",
+        "template": genre_template
     }
-    #,
-    #{
-    #    "file": "genres",
-    #    "template": genre_template
-    #}
-
 ]
 
 

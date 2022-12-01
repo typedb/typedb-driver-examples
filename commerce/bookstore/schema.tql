@@ -121,3 +121,14 @@ define
         } then {
             (sup-tag: $p, sub-tag: $bb) isa tag-hierarchy;
         };
+        
+    rule super-tag:
+        when {
+            $book isa Book;
+            $tag (tag:$g, book: $b) isa taging;
+            $g isa genre;
+            $sup isa genre;
+            (sup-tag: $sup, sub-tag: $g) isa tag-hierarchy;
+        } then {
+            (tag:$sup, book: $b) isa taging;
+        };

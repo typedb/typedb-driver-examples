@@ -1,7 +1,7 @@
-from typedb.client import TypeDB, SessionType, TransactionType
+from typedb.client import TypeDB, SessionType, TransactionType, TypeDBOptions
 
 # change later to a config update from other file
-db = '6'  # DB name
+db = '2'  # DB name
 
 
 def selection():
@@ -25,7 +25,8 @@ def selection():
         search_order(input('Searching for an Order. Please type in an Order ID or press enter for a full listing: '))
         return '0'
     elif selection == '4':  # genre
-        search_genre(input('Searching for books by genre. Please type in genre name or press enter for a full listing: '))
+        show_genres()
+        search_genre(input('Searching for books by genre. Please type in genre name: '))
         return '0'
     elif x == '0' or 'exit' or 'exit()' or 'close' or 'close()' or 'help':  # Exit
         return '2'
@@ -99,7 +100,7 @@ def search_user(user):
 
 
 def search_order(order_id):
-    # Different approach - download all orders first
+    # Different approach - download all orders first, filter later
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
@@ -122,8 +123,31 @@ def search_order(order_id):
 
 
 def search_genre(tag_name):
-    pass
+    if tag_name == '':
+        print('Empty input. Lets look for a Map genre, so you can find what you are looking for.')
+        tag_name = 'Map'
+    TB = TypeDBOptions.core()
+    TB.infer = True
+    with TypeDB.core_client("localhost:1729") as client:
+        with client.session(db, SessionType.DATA) as session:
+            with session.transaction(TransactionType.READ, TB) as transaction:
+                TypeQL_read_query = 'match $g isa genre; $g "' + tag_name + '";' \
+                                    '$b isa Book, has name $n, has ISBN $i; ' \
+                                    '(tag:$g, book: $b) isa taging; ' \
+                                    'get $i, $n;'
+                print("Executing TypeQL read Query: " + TypeQL_read_query)
+                iterator = transaction.query().match(TypeQL_read_query)
+                result = ''
+                print('Looking for a', tag_name, 'genre. Here is what we have:')
+                k = 1
+                for answer in iterator:
+                    result = '\n' + str(k)
+                    result += ' ISBN:' + str(answer.get('i').get_value())
+                    result += ' Book title:' + str(answer.get('n').get_value())
+                    print(result)
+                    k += 1
     return
+
 
 def show_all_books():
     print('Showing all books')
@@ -157,6 +181,20 @@ def show_all_users():
                           + item.get('i').get_value())
                 print('Total count:', k)
 
+
+def show_genres():
+    with TypeDB.core_client("localhost:1729") as client:  # 1
+        with client.session(db, SessionType.DATA) as session:  # 2
+            with session.transaction(TransactionType.READ) as transaction:  # a
+                TypeQL_read_query = 'match $g isa genre; get $g;'
+                print("Executing TypeQL read Query: " + TypeQL_read_query)
+                iterator = transaction.query().match(TypeQL_read_query)
+                k = 0
+                for item in iterator:
+                    k += 1
+                    print(k, item.get("g").get_value())
+                print('Total count:', k)
+    return
 
 x = '1'
 print("Bookstore CRM v.0.0.0.0.1a")
