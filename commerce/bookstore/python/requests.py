@@ -1,7 +1,7 @@
 from typedb.client import TypeDB, SessionType, TransactionType, TypeDBOptions
 
 # change later to a config update from other file
-db = '2'  # DB name
+db = 'bookstore'  # DB name
 
 
 def selection():

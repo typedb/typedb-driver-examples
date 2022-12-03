@@ -1,2 +1,0 @@
-match $x isa Category_tag, has name $n;
-get $n;
