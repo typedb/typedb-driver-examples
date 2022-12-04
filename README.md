@@ -68,3 +68,9 @@ constraints, all at query (run) time.
 [TypeDB CTI](https://github.com/typedb-osi/typedb-cti) is an open source threat intelligence platform for organisations
 to store and manage their cyber threat intelligence (CTI) knowledge. It enables threat intel professionals to bring
 together their disparate CTI information into one database and find new insights about cyber threats.
+
+## [Commerce: Bookstore](commerce/bookstore)
+
+The bookstore example uses python to showcases migration of data into TypeDB and executing queries on this data. 
+
+Read the [README](commerce/bookstore/README.md) file for instructions. Check [the schema](commerce/bookstore/schema.tql) or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script files.
