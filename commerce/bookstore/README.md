@@ -6,7 +6,7 @@ This is a simple example of using TypeDB.
 
 ## Introduction
 
-We have imaginary online Bookstore and our script/application implements some very basic functions:
+We have an imaginary online bookstore and our script/application implements some very basic functions:
 
 - Search for a Book
 - Search for a User
