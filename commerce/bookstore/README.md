@@ -36,7 +36,7 @@ You can clearly see the implementation of mentioned functions in the source code
 
 ### Files
 
-This example located in the `typedb/commerce/bookstore/` directory and consists of the following main files:
+This example is located in the `typedb/commerce/bookstore/` directory and consists of the following main files:
 - Python scripts
   - `python/load_data.py` — used to load the bookstore DB schema and data
   - `python/requests.py` — provides simple command line interface to execute requests on TypeDB database
