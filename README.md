@@ -21,11 +21,14 @@ file for loading a large taxonomic dataset using [TypeDB Loader.](https://github
 
 ### [Commerce: Bookstore](commerce/bookstore)
 
-The bookstore example uses python to showcases migration of data into TypeDB and executing queries on this data.
+The bookstore example uses Python to showcase migration of data into TypeDB and executing queries on this data.
+
+The data of the Books, Users and Orders loaded from the `.csv` files in the [data](commerce/bookstore/python/data) 
+directory.
 
 Read the [README](commerce/bookstore/README.md) file for instructions. Check [the schema](commerce/bookstore/schema.tql)
 or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script
-files.
+files in the [python](commerce/bookstore/python) directory.
 
 ### [Gaming: XCOM Project](gaming/xcom)
 
