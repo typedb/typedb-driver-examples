@@ -2,27 +2,43 @@
 
 [![Factory](https://factory.vaticle.com/api/status/vaticle/typedb-examples/badge.svg)](https://factory.vaticle.com/vaticle/typedb-examples)
 
-This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB
+## Table of contents
+
+- [Examples in this repository](#examples-in-this-repository)
+- [Loaded data visualisation](#loaded-data-visualisation)
+- [Additional examples](#additional-examples)
+
+## Examples in this repository
+
+This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB 
 database.
 
-## [Biology: Catalogue of Life](biology/catalogue_of_life)
+### [Biology: Catalogue of Life](biology/catalogue_of_life)
 
 [Catalogue of Life](https://www.catalogueoflife.org/) is a database of over 4.5 million currently known taxa in biology,
 compiled from over a hundred different sources. The example showcases simple data preparation and a sample configuration
 file for loading a large taxonomic dataset using [TypeDB Loader.](https://github.com/typedb-osi/typedb-loader)
 
-## [Gaming: XCOM Project](gaming/xcom)
+### [Commerce: Bookstore](commerce/bookstore)
+
+The bookstore example uses python to showcases migration of data into TypeDB and executing queries on this data.
+
+Read the [README](commerce/bookstore/README.md) file for instructions. Check [the schema](commerce/bookstore/schema.tql)
+or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script
+files.
+
+### [Gaming: XCOM Project](gaming/xcom)
 
 The XCOM 2 example contains a database of interdependent research tasks in the game XCOM 2, featuring automatic
 inference of available research based on completed tasks and available items. See [the schema](gaming/xcom/schema.tql)
 for the examples of reasoner rules inferring attributes.
 
-## [Software: GitHub](software/github)
+### [Software: GitHub](software/github)
 
 The GitHub example showcases migration of heavily interconnected data from a live repository on GitHub or from a Vaticle
 GitHub snapshot, and provides a visual interface to explore some sample queries.
 
-## [Telecom: Phone Calls](telecom/phone_calls)
+### [Telecom: Phone Calls](telecom/phone_calls)
 
 TypeDB officially supports clients for Java, Node.js and Python. Learn more about [TypeDB Clients](http://docs.vaticle.com/docs/client-api/overview).
 
@@ -31,7 +47,7 @@ they make in various formats (CSV, JSON, and XML) and expressive TypeQL queries 
 the [Java,](telecom/phone_calls/java) [Node.js,](telecom/phone_calls/nodejs) and [Python](telecom/phone_calls/python)
 clients.
 
-### Data migration
+#### Data migration
 
 - Java: [CSV](telecom/phone_calls/java/CSVMigration.java) | [JSON](telecom/phone_calls/java/JSONMigration.java)
   | [XML](telecom/phone_calls/java/XMLMigration.java)
@@ -40,19 +56,22 @@ clients.
 - Python: [CSV](telecom/phone_calls/python/migrate_csv.py) | [JSON](telecom/phone_calls/python/migrate_json.py)
   | [XML](telecom/phone_calls/python/migrate_xml.py)
 
-### Query examples
+#### Query examples
 
 - [Java](telecom/phone_calls/java/Queries.java)
 - [Node.js](telecom/phone_calls/nodejs/queries.js)
 - [Python](telecom/phone_calls/python/queries.py)
 
-## Visualise data using TypeDB Studio
+## Loaded data visualisation
 
-After loading the data of any of the examples, you can
-use [TypeDB Studio](https://github.com/vaticle/typedb-studio/releases) to explore
-the graph structure of the database.
+After loading the data for any of the examples, you can use
+[TypeDB Studio](https://github.com/vaticle/typedb-studio/releases) to explore the graph structure of the database.
 
-## TypeDB Bio
+## Additional examples
+
+There are some examples in other repositories that are recommended for more advanced users.
+
+### TypeDB Bio
 
 [TypeDB Bio](https://github.com/vaticle/typedb-bio) is a collection of knowledge graphs of biomedical data.
 
@@ -63,14 +82,8 @@ TypeDB, allows TypeDB Bio to become an intelligent database of biomedical data t
 the explicitly stored data. TypeDB Bio can understand biological facts, infer based on new findings and enforce research
 constraints, all at query (run) time.
 
-## TypeDB CTI
+### TypeDB CTI
 
 [TypeDB CTI](https://github.com/typedb-osi/typedb-cti) is an open source threat intelligence platform for organisations
 to store and manage their cyber threat intelligence (CTI) knowledge. It enables threat intel professionals to bring
 together their disparate CTI information into one database and find new insights about cyber threats.
-
-## [Commerce: Bookstore](commerce/bookstore)
-
-The bookstore example uses python to showcases migration of data into TypeDB and executing queries on this data. 
-
-Read the [README](commerce/bookstore/README.md) file for instructions. Check [the schema](commerce/bookstore/schema.tql) or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script files.
