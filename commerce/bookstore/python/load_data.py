@@ -56,7 +56,6 @@ def books_template(book):  # building a TypeQL request to insert a book
 
 def users_template(user):  # building a TypeQL request to insert a user
     first_names = ('John', 'Andy', 'Joe', 'Bob', 'Alex', 'Mary', 'Alexa', 'Monika', 'Vladimir', 'Tom', 'Jerry')
-    random.choice(first_names)
     TypeQL_insert_query = 'insert $u isa User, has id "' + str(uuid.uuid4()) + '", has foreign-id "' + user["User-ID"] + '"'
     if user["Age"] != "NULL":
         TypeQL_insert_query += ',  has age ' + user["Age"]
