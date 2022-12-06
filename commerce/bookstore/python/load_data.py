@@ -188,6 +188,7 @@ def load_genre_tags():  # Creating genre tags and tag hierarchy
 
 
 def load_data():  # Main data load function
+    load_genre_tags()  # Load genre tags
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             for input in Inputs:
@@ -195,7 +196,7 @@ def load_data():  # Main data load function
                 if debug: print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
                 load_data_into_typedb(input, session)  # Main data loading function. Repeat for only file in Inputs
             generate_ordered_items()  # Add randomly generated lists of items into orders
-            load_genre_tags()  # Load genre tags
+
     return
 
 

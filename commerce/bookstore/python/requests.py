@@ -90,7 +90,7 @@ def search_user(user):  # Search User by foreign-id (or show all Users if empty 
             with client.session(db, SessionType.DATA) as session:  # 2
                 with session.transaction(TransactionType.READ) as transaction:  # a
                     TypeQL_read_query = 'match $u isa User, has id $i, has name $n, has foreign-id "' + user + '"; ' \
-                                        'get $i, $n;'  # We can limit the number of results by adding ' limit 100;'
+                                        'get $i, $n;'  # Limit the number of results by adding ' limit 100;'
                     if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                     iterator = transaction.query().match(TypeQL_read_query)  # Executing query
                     k = 0
@@ -108,12 +108,13 @@ def search_order(order_id):  # Search Order by id (or show all Orders if empty i
             with session.transaction(TransactionType.READ) as transaction:
                 TypeQL_read_query = 'match $o isa Order, has id $i, has foreign-user-id $fui, ' \
                                     'has date $d, has status $s, has delivery_address $da;' \
-                                    'get $i, $fui, $d, $s, $da;'
+                                    'get $i, $fui, $d, $s, $da; sort $i asc;'
+                # matched results sorted by id in ascending order
                 if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                 iterator = transaction.query().match(TypeQL_read_query)  # Execute query
                 result = ''
                 for answer in iterator:  # Iterate through results (orders)
-                    if order_id == '' or (order_id == answer.get('i').get_value()):  # show all or one with this order_id
+                    if order_id == '' or (order_id == answer.get('i').get_value()):  # show all or one with the order_id
                         result += '\nOrder ID:' + str(answer.get('i').get_value())
                         result += ' Foreign User-ID:' + str(answer.get('fui').get_value())
                         result += ' Date:' + str(answer.get('d').get_value())
@@ -157,7 +158,7 @@ def show_all_books():  # Just show all Books
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 TypeQL_read_query = 'match $b isa Book, has ISBN $i, has name $n, has Book_Author $ba; ' \
-                                    'get $i, $n, $ba;'  # We can limit the number of results by adding ' limit 100;'
+                                    'get $i, $n, $ba;'  # Limit the number of results by adding ' limit 100;'
                 if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                 iterator = transaction.query().match(TypeQL_read_query)  # Executing match query
                 k = 0  # Counter
@@ -175,7 +176,8 @@ def show_all_users():  # Just show all Users
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 TypeQL_read_query = 'match $u isa User, has id $i, has name $n, has foreign-id $fi; ' \
-                                    'get $i, $n, $fi;'  # We can limit the number of results by adding ' limit 100;'
+                                    'get $i, $n, $fi; sort $fi asc;'  # Limit the number of results by adding ' limit 100;'
+                # Results sorted by foreign-id in ascending order. Since $fi is a string 9 goes after 88 and before 91
                 if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                 iterator = transaction.query().match(TypeQL_read_query)  # Executing query
                 k = 0  # Counter
