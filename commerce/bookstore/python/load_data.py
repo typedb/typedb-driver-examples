@@ -266,6 +266,7 @@ with TypeDB.core_client("localhost:1729") as client:
                 client.databases().get(db).delete()  # Deleting the DB
                 print('Deleted DB ' + db + '.')
                 client.databases().create(db)  # Creating new (empty) DB
+                print('DB ' + db + ' created. Applying schema...')
                 if setup():  # Schema has been loaded
                     load_data()  # Main data loading function
             else:
@@ -274,6 +275,6 @@ with TypeDB.core_client("localhost:1729") as client:
     else:  # DB is non-existent
         print('DB ' + db + ' is absent. Trying to create.')
         client.databases().create(db)  # Creating the DB
-        print('DB ' + db + ' created. Connecting.')
+        print('DB ' + db + ' created. Applying schema...')
         if setup():  # Schema has been loaded
             load_data()  # Main data loading function

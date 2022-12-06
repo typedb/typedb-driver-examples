@@ -45,7 +45,8 @@ def search_book(ISBN):  # Search Book by ISBN (or show all Books if empty ISBN g
         with TypeDB.core_client("localhost:1729") as client:
             with client.session(db, SessionType.DATA) as session:
                 with session.transaction(TransactionType.READ) as transaction:
-                    TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '", has name $n, has Book_Author $ba; ' \
+                    TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '", has name $n, ' \
+                                        'has Book_Author $ba; ' \
                                         'get $n, $ba;'
                     if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                     iterator = transaction.query().match(TypeQL_read_query)  # Execute query
@@ -61,17 +62,20 @@ def search_book(ISBN):  # Search Book by ISBN (or show all Books if empty ISBN g
                     TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '";' \
                                         '$r (product: $b, author:$a) isa reviewing; $r has rating $rating;' \
                                         'get $rating;'
-                    print("Executing TypeQL read Query: " + TypeQL_read_query)
+                    if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                     iterator = transaction.query().match(TypeQL_read_query)  # Execute query
                     g = 0
                     s = 0
                     for item in iterator:  # iterating through query results
                         g += 1  # counter
-                        rating = item.get('rating').get_value()
+                        rating = item.get('rating').get_value()  # Get rating value
                         if debug: print(g, 'Review rating found:', rating)
                         s = s + rating  # sum
-                    print('Total rating records:', str(g) + '. Average book rating:', round(s/g, 2))
-                    # printed s (sum) divided by g (number of results), rounded to 2 signs after a comma
+                    if g > 0:  # If there was any rating (counter was altered)
+                        print('Total rating records:', str(g) + '. Average book rating:', round(s/g, 2))
+                        # printed s (sum) divided by g (number of results), rounded to 2 signs after a comma
+                    else:  # No rating found
+                        print('No rating data for this Book.')
     return
 
 
@@ -87,7 +91,7 @@ def search_user(user):  # Search User by foreign-id (or show all Users if empty 
                 with session.transaction(TransactionType.READ) as transaction:  # a
                     TypeQL_read_query = 'match $u isa User, has id $i, has name $n, has foreign-id "' + user + '"; ' \
                                         'get $i, $n;'  # We can limit the number of results by adding ' limit 100;'
-                    print("Executing TypeQL read Query: " + TypeQL_read_query)
+                    if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
                     iterator = transaction.query().match(TypeQL_read_query)  # Executing query
                     k = 0
                     for item in iterator:  # Iterating through results
