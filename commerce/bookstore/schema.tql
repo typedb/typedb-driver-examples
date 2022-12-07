@@ -32,7 +32,7 @@ define
     stock sub attribute, value long;
 
     ISBN sub attribute, value string;
-    book_author sub attribute, value string;
+    book-author sub attribute, value string;
     publisher sub attribute, value string;
 
     rating sub attribute, value long;
@@ -41,8 +41,8 @@ define
 
     foreign-user-id sub attribute, value string;
     status sub attribute, value string;
-    delivery_address sub attribute, value string;
-    payment_details sub attribute, value string;
+    delivery-address sub attribute, value string;
+    payment-details sub attribute, value string;
 
     username sub attribute, value string;
     password sub attribute, value string;
@@ -65,7 +65,7 @@ define
 
     book sub product,
         owns ISBN,
-        owns book_author,
+        owns book-author,
         owns publisher,
         plays taging:book;
 
@@ -86,8 +86,8 @@ define
         owns foreign-user-id,
         owns date,
         owns status,
-        owns delivery_address,
-        owns payment_details,
+        owns delivery-address,
+        owns payment-details,
         plays ordering:order;
 
 ### Relations ###

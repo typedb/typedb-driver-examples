@@ -43,7 +43,7 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
 
 def books_generate_query(book):  # building a TypeQL request to insert a book
     return 'insert $b isa book, has id "' + str(uuid.uuid4()) + '", has ISBN "' + book["ISBN"] + '", has name "' \
-           + book["Book-Title"] + '", has book_author "' + book["Book-Author"] + '", has publisher "' \
+           + book["Book-Title"] + '", has book-author "' + book["Book-Author"] + '", has publisher "' \
            + book["Publisher"] + '", has price ' + str(random.randint(3, 100)) + ', has stock ' \
            + str(random.randint(0, 25)) + ';'
 
@@ -83,8 +83,8 @@ def orders_generate_query(order):  # building a TypeQL request to insert an orde
                           'has foreign-user-id "' + order["User-ID"] + '", ' \
                           'has date ' + order["date"] + ', ' \
                           'has status "' + order["status"] + '",' \
-                          'has delivery_address "' + order["delivery_address"] + '", ' \
-                          'has payment_details "' + order["payment_details"] + '";'
+                          'has delivery-address "' + order["delivery_address"] + '", ' \
+                          'has payment-details "' + order["payment_details"] + '";'
 
     return typeql_insert_query
 

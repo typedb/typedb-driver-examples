@@ -46,7 +46,7 @@ def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN g
             with client.session(db, SessionType.DATA) as session:
                 with session.transaction(TransactionType.READ) as transaction:
                     typeql_read_query = 'match $b isa book, has ISBN "' + ISBN + '", has name $n, ' \
-                                        'has book_author $ba; ' \
+                                        'has book-author $ba; ' \
                                         'get $n, $ba;'
                     if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                     iterator = transaction.query().match(typeql_read_query)  # Execute query
@@ -107,7 +107,7 @@ def search_order(order_id):  # Search order by id (or show all orders if empty i
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 typeql_read_query = 'match $o isa order, has id $i, has foreign-user-id $fui, ' \
-                                    'has date $d, has status $s, has delivery_address $da;' \
+                                    'has date $d, has status $s, has delivery-address $da;' \
                                     'get $i, $fui, $d, $s, $da; sort $i asc;'
                 # matched results sorted by id in ascending order
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
@@ -157,7 +157,7 @@ def show_all_books():  # Just show all books
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                typeql_read_query = 'match $b isa book, has ISBN $i, has name $n, has book_author $ba; ' \
+                typeql_read_query = 'match $b isa book, has ISBN $i, has name $n, has book-author $ba; ' \
                                     'get $i, $n, $ba;'  # Limit the number of results by adding ' limit 100;'
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                 iterator = transaction.query().match(typeql_read_query)  # Executing match query
