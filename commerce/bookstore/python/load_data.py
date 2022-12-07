@@ -30,10 +30,10 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
     items = parse_data_to_dictionaries(input)  # gets the data items as a list of dictionaries
     for item in items:  # for each item dictionary
         with session.transaction(TransactionType.WRITE) as transaction:  # creates a TypeDB transaction
-            TypeQL_insert_query = input["template"](item)  # b # This calls one of the _template functions to
+            typeql_insert_query = input["template"](item)  # b # This calls one of the _template functions to
             # construct the corresponding TypeQL insert query
-            if debug: print("Executing TypeQL Query: " + TypeQL_insert_query)
-            transaction.query().insert(TypeQL_insert_query)  # runs the query
+            if debug: print("Executing TypeQL Query: " + typeql_insert_query)
+            transaction.query().insert(typeql_insert_query)  # runs the query
             transaction.commit()  # commits the transaction
 
     print("Inserted " + str(len(items)) +
@@ -41,63 +41,63 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
     return  # END of load_data_into_typedb()
 
 
-def books_generate_query(book):  # building a TypeQL request to insert a Book
-    return 'insert $b isa Book, has id "' + str(uuid.uuid4()) + '", has ISBN "' + book["ISBN"] + '", has name "' \
-           + book["Book-Title"] + '", has Book_Author "' + book["Book-Author"] + '", has Publisher "' \
+def books_generate_query(book):  # building a TypeQL request to insert a book
+    return 'insert $b isa book, has id "' + str(uuid.uuid4()) + '", has ISBN "' + book["ISBN"] + '", has name "' \
+           + book["Book-Title"] + '", has book_author "' + book["Book-Author"] + '", has publisher "' \
            + book["Publisher"] + '", has price ' + str(random.randint(3, 100)) + ', has stock ' \
            + str(random.randint(0, 25)) + ';'
 
 
-def users_generate_query(user):  # building a TypeQL request to insert a User
+def users_generate_query(user):  # building a TypeQL request to insert a user
     first_names = ('John', 'Andy', 'Joe', 'Bob', 'Alex', 'Mary', 'Alexa', 'Monika', 'Vladimir', 'Tom', 'Jerry')
-    TypeQL_insert_query = 'insert $u isa User, has id "' + str(uuid.uuid4()) + '", has foreign-id "' + user["User-ID"] + '"'
+    typeql_insert_query = 'insert $u isa user, has id "' + str(uuid.uuid4()) + '", has foreign-id "' + user["User-ID"] + '"'
     if user["Age"] != "NULL":  # Check the data before loading it
-        TypeQL_insert_query += ',  has age ' + user["Age"]  # If we have Age data in the file - we will use it
+        typeql_insert_query += ',  has age ' + user["Age"]  # If we have Age data in the file - we will use it
     else:  # Additional logic for missing data: in this case — we generate random values
-        TypeQL_insert_query += ',  has age ' + str(random.randint(18, 105))  # Add random age
-    TypeQL_insert_query += ', has name "' + random.choice(first_names) + '";'  # Add random name
+        typeql_insert_query += ',  has age ' + str(random.randint(18, 105))  # Add random age
+    typeql_insert_query += ', has name "' + random.choice(first_names) + '";'  # Add random name
 
-    return TypeQL_insert_query
+    return typeql_insert_query
 
 
 def ratings_generate_query(review):  # building a TypeQL request to insert a review (reviewing relation)
-    TypeQL_insert_query = 'match $u isa User, has foreign-id "' + review["User-ID"] + '"; ' \
-                          '$b isa Book, has ISBN "' + review["ISBN"] + '"; ' \
+    typeql_insert_query = 'match $u isa user, has foreign-id "' + review["User-ID"] + '"; ' \
+                          '$b isa book, has ISBN "' + review["ISBN"] + '"; ' \
                           'insert $r (author: $u, product: $b) isa reviewing;' \
                           '$r has rating ' + review["Book-Rating"] + ';'
 
-    return TypeQL_insert_query
+    return typeql_insert_query
 
 
 def genre_generate_query(genre):  # building a TypeQL request to insert a genre/book association
 
-    TypeQL_insert_query = 'match $b isa Book, has ISBN "' + genre["ISBN"] + '"; ' \
+    typeql_insert_query = 'match $b isa book, has ISBN "' + genre["ISBN"] + '"; ' \
                           '$g isa genre; $g "' + genre["Genre"] + '"; ' \
                           'insert $tag (tag: $g, book: $b) isa taging;'
 
-    return TypeQL_insert_query
+    return typeql_insert_query
 
 
-def orders_generate_query(order):  # building a TypeQL request to insert an Order
-    TypeQL_insert_query = 'insert $o isa Order, has id "' + order["id"] + '",' \
+def orders_generate_query(order):  # building a TypeQL request to insert an order
+    typeql_insert_query = 'insert $o isa order, has id "' + order["id"] + '",' \
                           'has foreign-user-id "' + order["User-ID"] + '", ' \
                           'has date ' + order["date"] + ', ' \
                           'has status "' + order["status"] + '",' \
                           'has delivery_address "' + order["delivery_address"] + '", ' \
                           'has payment_details "' + order["payment_details"] + '";'
 
-    return TypeQL_insert_query
+    return typeql_insert_query
 
 
-def generate_ordered_items():  # Generating random item-lists for orders from Books
+def generate_ordered_items():  # Generating random item-lists for orders from books
     result = []
     # generate 5 random sets of 2-9 books
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                TypeQL_read_query = 'match $b isa Book, has ISBN $x; get $x; limit 800;'  # get 800 books
-                if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                iterator = transaction.query().match(TypeQL_read_query)  # Execute read query
+                typeql_read_query = 'match $b isa book, has ISBN $x; get $x; limit 800;'  # get 800 books
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Execute read query
                 answers = [ans.get("x") for ans in iterator]
                 books = [answer.get_value() for answer in answers]  # This contains the result (800 ISBN records)
                 for order_id in range(1,6):  # Go through all 5 orders
@@ -115,14 +115,14 @@ def generate_ordered_items():  # Generating random item-lists for orders from Bo
                 for book in order:
                     if debug: print('\nISBN', book)
                     with session.transaction(TransactionType.WRITE) as transaction:
-                        TypeQL_insert_query = 'match $b isa Book, has ISBN "' + book + '";' \
-                                              '$o isa Order, has id "' + str(n) + '", has foreign-user-id $fui;' \
-                                              '$u isa User, has foreign-id $fi;' \
+                        typeql_insert_query = 'match $b isa book, has ISBN "' + book + '";' \
+                                              '$o isa order, has id "' + str(n) + '", has foreign-user-id $fui;' \
+                                              '$u isa user, has foreign-id $fi;' \
                                               '$fui = $fi;' \
                                               'insert (order: $o, item: $b, author: $u ) isa ordering;'
                                               # the $fui and $fi variables are compared by value only
-                        if debug: print("Executing TypeQL Query: " + TypeQL_insert_query)
-                        transaction.query().insert(TypeQL_insert_query)
+                        if debug: print("Executing TypeQL Query: " + typeql_insert_query)
+                        transaction.query().insert(typeql_insert_query)
                         transaction.commit()
                 n += 1
     return  # END of generate_ordered_items()
@@ -183,7 +183,6 @@ def load_genre_tags():  # Creating genre tags and tag hierarchy
                                            'insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;')
                 transaction.commit()
     print('Loaded genre tags.')
-    print('\nData loading complete!')
     return
 
 
@@ -196,7 +195,7 @@ def load_data():  # Main data load function
                 if debug: print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
                 load_data_into_typedb(input, session)  # Main data loading function. Repeat for only file in Inputs
             generate_ordered_items()  # Add randomly generated lists of items into orders
-
+            print('\nData loading complete!')
     return
 
 
@@ -205,8 +204,8 @@ def has_existing_data():  # Checking whether the DB has schema and data already
         with client.session(db, SessionType.SCHEMA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 try:
-                    TypeQL_read_query = 'match $b isa Book, has ISBN $x; get $x; limit 3;'
-                    transaction.query().match(TypeQL_read_query)
+                    typeql_read_query = 'match $b isa book, has ISBN $x; get $x; limit 3;'
+                    transaction.query().match(typeql_read_query)
                     print('The DB contains the schema and loaded data already.')
                     return True
                 except:  # If the attempt was unsuccessful — we consider DB as empty (brand new, no schema)

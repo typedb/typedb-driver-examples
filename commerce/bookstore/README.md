@@ -8,9 +8,9 @@ This is a simple example of using TypeDB.
 
 We have an imaginary online bookstore and our script/application implements some very basic functions:
 
-- Search for a Book
-- Search for a User
-- Search for an Order
+- Search for a book
+- Search for a user
+- Search for an order
 - Search for books by genre
 
 This application consists of two python scripts. It has not much in terms of usability as it is merely a demonstration of TypeDB queries. 
@@ -64,8 +64,8 @@ The bookstore schema has the following attributes:
 - description (string )
 - id (string) 
 - ISBN (string) 
-- Book_Author (string) 
-- Publisher (string) 
+- book_author (string) 
+- publisher (string) 
 - foreign-user-id (string) 
 - status (string) 
 - delivery_address (string) 
@@ -87,11 +87,11 @@ The bookstore schema has the following attributes:
 
 The bookstore schema has the following entities:
 
-- Product 
-  - Book
-- Person
-  - User
-- Order
+- product 
+  - book
+- person
+  - user
+- order
 
 #### Relations
 
@@ -126,7 +126,7 @@ The second one works also for genre tags, used to improve tag searching experien
 ```
 rule super-tag:
     when {
-        $book isa Book;
+        $book isa book;
         $tag (tag:$g, book: $b) isa taging;
         $g isa genre;
         $sup isa genre;

@@ -7,24 +7,24 @@ debug = False  # Set True to enable additional output for debugging
 def selection():  # This is the main UI to select a function to proceed with
 
     print("Please choose one of the following functions: ")
-    print("1. Search for a Book")
-    print("2. Search for a User")
-    print("3. Search for an Order")
+    print("1. Search for a book")
+    print("2. Search for a user")
+    print("3. Search for an order")
     print("4. Search for books by genre")
     selection = input("Your request: ")  # Storing answer here
     if selection == '':
         print('Empty selection recognized. Please try again.')
         return '1'
-    elif selection == '1':  # We chose variant #1 — searching for a Book
-        search_book(input('Searching for a Book. Please type in an ISBN or press enter for a full listing: '))
+    elif selection == '1':  # We chose variant #1 — searching for a book
+        search_book(input('Searching for a book. Please type in an ISBN or press enter for a full listing: '))
         return '0'
-    elif selection == '2':  # 2. Searching for a User
-        search_user(input('Searching for a User. Please type in a foreign ID or press enter for a full listing: '))
+    elif selection == '2':  # 2. Searching for a user
+        search_user(input('Searching for a user. Please type in a foreign ID or press enter for a full listing: '))
         return '0'
-    elif selection == '3':  # 3. Searching for an Order
-        search_order(input('Searching for an Order. Please type in an Order ID or press enter for a full listing: '))
+    elif selection == '3':  # 3. Searching for an order
+        search_order(input('Searching for an order. Please type in an order ID or press enter for a full listing: '))
         return '0'
-    elif selection == '4':  # 4. Searching for Books by genre
+    elif selection == '4':  # 4. Searching for books by genre
         show_all_genres()  # Display all genres as a tip
         search_genre(input('Searching for books by genre. Please type in genre name: '))
         return '0'
@@ -35,35 +35,35 @@ def selection():  # This is the main UI to select a function to proceed with
         return '1'
 
 
-def search_book(ISBN):  # Search Book by ISBN (or show all Books if empty ISBN given)
+def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN given)
 
     if ISBN == '':  # empty ISBN given
         print('Empty input. Listing all books')
-        show_all_books()  # Display all Books
+        show_all_books()  # Display all books
         return
     else:  # Non-empty ISBN given
         with TypeDB.core_client("localhost:1729") as client:
             with client.session(db, SessionType.DATA) as session:
                 with session.transaction(TransactionType.READ) as transaction:
-                    TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '", has name $n, ' \
-                                        'has Book_Author $ba; ' \
+                    typeql_read_query = 'match $b isa book, has ISBN "' + ISBN + '", has name $n, ' \
+                                        'has book_author $ba; ' \
                                         'get $n, $ba;'
-                    if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                    iterator = transaction.query().match(TypeQL_read_query)  # Execute query
+                    if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                    iterator = transaction.query().match(typeql_read_query)  # Execute query
                     k = 0  # counter
                     for item in iterator:  # Iterating through results of the match query
                         print(ISBN, item.get('n').get_value(), item.get('ba').get_value(), sep=' — ')  # Print results
                         k += 1
-        print('Books found:', k)  # Print counter as a number of results
+        print('books found:', k)  # Print counter as a number of results
         # Rating computation
         with TypeDB.core_client("localhost:1729") as client:  # 1
             with client.session(db, SessionType.DATA) as session:  # 2
                 with session.transaction(TransactionType.READ) as transaction:  # a
-                    TypeQL_read_query = 'match $b isa Book, has ISBN "' + ISBN + '";' \
+                    typeql_read_query = 'match $b isa book, has ISBN "' + ISBN + '";' \
                                         '$r (product: $b, author:$a) isa reviewing; $r has rating $rating;' \
                                         'get $rating;'
-                    if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                    iterator = transaction.query().match(TypeQL_read_query)  # Execute query
+                    if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                    iterator = transaction.query().match(typeql_read_query)  # Execute query
                     g = 0
                     s = 0
                     for item in iterator:  # iterating through query results
@@ -75,24 +75,24 @@ def search_book(ISBN):  # Search Book by ISBN (or show all Books if empty ISBN g
                         print('Total rating records:', str(g) + '. Average book rating:', round(s/g, 2))
                         # printed s (sum) divided by g (number of results), rounded to 2 signs after a comma
                     else:  # No rating found
-                        print('No rating data for this Book.')
+                        print('No rating data for this book.')
     return
 
 
-def search_user(user):  # Search User by foreign-id (or show all Users if empty id given)
+def search_user(user):  # Search user by foreign-id (or show all users if empty id given)
 
     if user == '':
         print('Empty input. Listing all users')
-        show_all_users()  # Display all Users
+        show_all_users()  # Display all users
         return
     else:
         with TypeDB.core_client("localhost:1729") as client:  # 1
             with client.session(db, SessionType.DATA) as session:  # 2
                 with session.transaction(TransactionType.READ) as transaction:  # a
-                    TypeQL_read_query = 'match $u isa User, has id $i, has name $n, has foreign-id "' + user + '"; ' \
+                    typeql_read_query = 'match $u isa user, has id $i, has name $n, has foreign-id "' + user + '"; ' \
                                         'get $i, $n;'  # Limit the number of results by adding ' limit 100;'
-                    if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                    iterator = transaction.query().match(TypeQL_read_query)  # Executing query
+                    if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                    iterator = transaction.query().match(typeql_read_query)  # Executing query
                     k = 0
                     for item in iterator:  # Iterating through results
                         print(user, item.get('n').get_value(), item.get('i').get_value(), sep=' — ')  # Print results
@@ -101,17 +101,17 @@ def search_user(user):  # Search User by foreign-id (or show all Users if empty 
                     return
 
 
-def search_order(order_id):  # Search Order by id (or show all Orders if empty id given)
+def search_order(order_id):  # Search order by id (or show all orders if empty id given)
     # Different approach - download all orders first, filter later
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                TypeQL_read_query = 'match $o isa Order, has id $i, has foreign-user-id $fui, ' \
+                typeql_read_query = 'match $o isa order, has id $i, has foreign-user-id $fui, ' \
                                     'has date $d, has status $s, has delivery_address $da;' \
                                     'get $i, $fui, $d, $s, $da; sort $i asc;'
                 # matched results sorted by id in ascending order
-                if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                iterator = transaction.query().match(TypeQL_read_query)  # Execute query
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Execute query
                 result = ''
                 for answer in iterator:  # Iterate through results (orders)
                     if order_id == '' or (order_id == answer.get('i').get_value()):  # show all or one with the order_id
@@ -126,7 +126,7 @@ def search_order(order_id):  # Search Order by id (or show all Orders if empty i
     return
 
 
-def search_genre(tag_name):  # Search Books by genre tag
+def search_genre(tag_name):  # Search books by genre tag
     if tag_name == '':  # Empty input. But we already showed all tags/genres before
         print('Empty input. Lets look for a Map genre, so you can find what you are looking for.')
         tag_name = 'Map'  # Choosing genre instead of an empty input
@@ -135,32 +135,32 @@ def search_genre(tag_name):  # Search Books by genre tag
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ, TB) as transaction:
-                TypeQL_read_query = 'match $g isa genre; $g "' + tag_name + '";' \
-                                    '$b isa Book, has name $n, has ISBN $i; ' \
+                typeql_read_query = 'match $g isa genre; $g "' + tag_name + '";' \
+                                    '$b isa book, has name $n, has ISBN $i; ' \
                                     '(tag:$g, book: $b) isa taging; ' \
                                     'get $i, $n;'
-                if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                iterator = transaction.query().match(TypeQL_read_query)  # Execute query
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Execute query
                 print('Looking for a', tag_name, 'genre. Here is what we have:')
                 k = 1  # Counter
                 for answer in iterator:  # Iterating through results
                     result = '\n' + str(k)  # Prepare the positional number of result
                     result += ' ISBN:' + str(answer.get('i').get_value())  # Prepare ISBN
-                    result += ' Book title:' + str(answer.get('n').get_value())  # Prepare Book name
+                    result += ' book title:' + str(answer.get('n').get_value())  # Prepare book name
                     print(result)  # Print prepared result
                     k += 1  # Increase the counter
     return
 
 
-def show_all_books():  # Just show all Books
+def show_all_books():  # Just show all books
     print('Showing all books')
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                TypeQL_read_query = 'match $b isa Book, has ISBN $i, has name $n, has Book_Author $ba; ' \
+                typeql_read_query = 'match $b isa book, has ISBN $i, has name $n, has book_author $ba; ' \
                                     'get $i, $n, $ba;'  # Limit the number of results by adding ' limit 100;'
-                if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                iterator = transaction.query().match(TypeQL_read_query)  # Executing match query
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Executing match query
                 k = 0  # Counter
                 for item in iterator:  # Iterating through results
                     k += 1
@@ -170,16 +170,16 @@ def show_all_books():  # Just show all Books
     return
 
 
-def show_all_users():  # Just show all Users
+def show_all_users():  # Just show all users
     print('Showing all users')
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                TypeQL_read_query = 'match $u isa User, has id $i, has name $n, has foreign-id $fi; ' \
+                typeql_read_query = 'match $u isa user, has id $i, has name $n, has foreign-id $fi; ' \
                                     'get $i, $n, $fi; sort $fi asc;'  # Limit the number of results by adding ' limit 100;'
                 # Results sorted by foreign-id in ascending order. Since $fi is a string 9 goes after 88 and before 91
-                if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                iterator = transaction.query().match(TypeQL_read_query)  # Executing query
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Executing query
                 k = 0  # Counter
                 for item in iterator:  # Iterating through results
                     k += 1
@@ -193,9 +193,9 @@ def show_all_genres():  # Just display all genre tags
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                TypeQL_read_query = 'match $g isa genre; get $g;'  # Prepare query
-                if debug: print("Executing TypeQL read Query: " + TypeQL_read_query)
-                iterator = transaction.query().match(TypeQL_read_query)  # Execute transaction
+                typeql_read_query = 'match $g isa genre; get $g;'  # Prepare query
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Execute transaction
                 k = 0  # Counter
                 for item in iterator:  # Iterating through all results
                     k += 1

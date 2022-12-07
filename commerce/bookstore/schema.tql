@@ -32,8 +32,8 @@ define
     stock sub attribute, value long;
 
     ISBN sub attribute, value string;
-    Book_Author sub attribute, value string;
-    Publisher sub attribute, value string;
+    book_author sub attribute, value string;
+    publisher sub attribute, value string;
 
     rating sub attribute, value long;
 
@@ -54,7 +54,7 @@ define
         plays tag-hierarchy:sub-tag;
 
 ### Entities ###
-    Product sub entity, abstract,
+    product sub entity, abstract,
         owns id @key,
         owns name,
         owns description,
@@ -63,17 +63,17 @@ define
         plays ordering:item,
         plays reviewing:product;
 
-    Book sub Product,
+    book sub product,
         owns ISBN,
-        owns Book_Author,
-        owns Publisher,
+        owns book_author,
+        owns publisher,
         plays taging:book;
 
-    Person sub entity,
+    person sub entity,
         owns name,
         plays reviewing:author;
 
-    User sub Person,
+    user sub person,
         owns id @key,
         owns foreign-id,
         owns username,
@@ -81,7 +81,7 @@ define
         owns age,
         plays ordering:author;
 
-    Order sub entity,
+    order sub entity,
         owns id @key,
         owns foreign-user-id,
         owns date,
@@ -124,7 +124,7 @@ define
         
     rule super-tag:
         when {
-            $book isa Book;
+            $book isa book;
             $tag (tag:$g, book: $b) isa taging;
             $g isa genre;
             $sup isa genre;
