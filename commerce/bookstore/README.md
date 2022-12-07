@@ -13,7 +13,7 @@ We have an imaginary online bookstore and our script/application implements some
 - Search for an order
 - Search for books by genre
 
-This application consists of two python scripts. It has not much in terms of usability as it is merely a demonstration of TypeDB queries. 
+This application consists of two Python scripts. It has not much in terms of usability as it is merely a demonstration of TypeDB queries. 
 
 You can clearly see the implementation of mentioned functions in the source codes.
 
@@ -21,16 +21,16 @@ You can clearly see the implementation of mentioned functions in the source code
 
 * [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.14.1+
 * Python v.3.9+
-* `typedb.client` — [python client](https://docs.vaticle.com/docs/client-api/python) for TypeDB
+* `typedb.client` — [Python client](https://docs.vaticle.com/docs/client-api/python) for TypeDB
 * This repository
 
 ## Quickstart
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
-3. Launch `typedb-examples/commerce/bookstore/python/load_data.py` python script. It will load the bookstore schema and data into the DB.
-4. Launch `typedb-examples/commerce/bookstore/python/requests.py` python script and follow the instructions to explore example functions and data.
-5. Use this simple example to learn the basics of using TypeDB! Explore source codes of the both python scripts and TypeDB Studio to explore DB schema and content.
+3. Launch `typedb-examples/commerce/bookstore/python/load_data.py` Python script. It will load the bookstore schema and data into the DB.
+4. Launch `typedb-examples/commerce/bookstore/python/requests.py` Python script and follow the instructions to explore example functions and data.
+5. Use this simple example to learn the basics of using TypeDB! Explore source codes of the both Python scripts and TypeDB Studio to explore DB schema and content.
 
 ## How it works
 
