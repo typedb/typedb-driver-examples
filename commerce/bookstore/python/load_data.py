@@ -22,7 +22,7 @@ def parse_data_to_dictionaries(input):
     return items
 
 
-def load_data_into_typedb(input, session):
+def load_data_into_typedb(input, session):  # Requests generation of insert queries and sends them to TypeDB
     """
       :param input as dictionary: contains details required to parse the data
       :param session: off of which a transaction will be created
@@ -41,14 +41,14 @@ def load_data_into_typedb(input, session):
     return  # END of load_data_into_typedb()
 
 
-def books_template(book):  # building a TypeQL request to insert a Book
+def books_generate_query(book):  # building a TypeQL request to insert a Book
     return 'insert $b isa Book, has id "' + str(uuid.uuid4()) + '", has ISBN "' + book["ISBN"] + '", has name "' \
            + book["Book-Title"] + '", has Book_Author "' + book["Book-Author"] + '", has Publisher "' \
            + book["Publisher"] + '", has price ' + str(random.randint(3, 100)) + ', has stock ' \
            + str(random.randint(0, 25)) + ';'
 
 
-def users_template(user):  # building a TypeQL request to insert a User
+def users_generate_query(user):  # building a TypeQL request to insert a User
     first_names = ('John', 'Andy', 'Joe', 'Bob', 'Alex', 'Mary', 'Alexa', 'Monika', 'Vladimir', 'Tom', 'Jerry')
     TypeQL_insert_query = 'insert $u isa User, has id "' + str(uuid.uuid4()) + '", has foreign-id "' + user["User-ID"] + '"'
     if user["Age"] != "NULL":  # Check the data before loading it
@@ -60,7 +60,7 @@ def users_template(user):  # building a TypeQL request to insert a User
     return TypeQL_insert_query
 
 
-def ratings_template(review):  # building a TypeQL request to insert a review (reviewing relation)
+def ratings_generate_query(review):  # building a TypeQL request to insert a review (reviewing relation)
     TypeQL_insert_query = 'match $u isa User, has foreign-id "' + review["User-ID"] + '"; ' \
                           '$b isa Book, has ISBN "' + review["ISBN"] + '"; ' \
                           'insert $r (author: $u, product: $b) isa reviewing;' \
@@ -69,7 +69,7 @@ def ratings_template(review):  # building a TypeQL request to insert a review (r
     return TypeQL_insert_query
 
 
-def genre_template(genre):  # building a TypeQL request to insert a genre/book association
+def genre_generate_query(genre):  # building a TypeQL request to insert a genre/book association
 
     TypeQL_insert_query = 'match $b isa Book, has ISBN "' + genre["ISBN"] + '"; ' \
                           '$g isa genre; $g "' + genre["Genre"] + '"; ' \
@@ -78,7 +78,7 @@ def genre_template(genre):  # building a TypeQL request to insert a genre/book a
     return TypeQL_insert_query
 
 
-def orders_template(order):  # building a TypeQL request to insert an Order
+def orders_generate_query(order):  # building a TypeQL request to insert an Order
     TypeQL_insert_query = 'insert $o isa Order, has id "' + order["id"] + '",' \
                           'has foreign-user-id "' + order["User-ID"] + '", ' \
                           'has date ' + order["date"] + ', ' \
@@ -233,23 +233,23 @@ def setup():  # Loading schema
 Inputs = [
     {
         "file": "books",
-        "template": books_template
+        "template": books_generate_query
     },
     {
         "file": "users",
-        "template": users_template
+        "template": users_generate_query
     },
     {
         "file": "ratings",
-        "template": ratings_template
+        "template": ratings_generate_query
     },
     {
         "file": "orders",
-        "template": orders_template
+        "template": orders_generate_query
     },
     {
         "file": "genres",
-        "template": genre_template
+        "template": genre_generate_query
     }
 ]
 
