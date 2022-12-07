@@ -15,7 +15,7 @@ We have an imaginary online bookstore and our script/application implements some
 
 This application consists of two python scripts. It has not much in terms of usability as it is merely a demonstration of TypeDB queries. 
 
-You can clearly see the implementation of mentioned functions in the source codes.
+You can find the implementation of each function listed above in the source code.
 
 ## Prerequisites
 
