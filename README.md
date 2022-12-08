@@ -5,7 +5,7 @@
 ## Table of contents
 
 - [Examples in this repository](#examples-in-this-repository)
-- [Loaded data visualisation](#loaded-data-visualisation)
+- [Data visualisation](#data-visualisation)
 - [Additional examples](#additional-examples)
 
 ## Examples in this repository
@@ -65,7 +65,7 @@ clients.
 - [Node.js](telecom/phone_calls/nodejs/queries.js)
 - [Python](telecom/phone_calls/python/queries.py)
 
-## Loaded data visualisation
+## Data visualisation
 
 After loading the data for any of the examples, you can use
 [TypeDB Studio](https://github.com/vaticle/typedb-studio/releases) to explore the graph structure of the database.
