@@ -44,8 +44,8 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
     items = parse_data_to_dictionaries(input)  # gets the data items as a list of dictionaries
     for item in items:  # for each item dictionary
         with session.transaction(TransactionType.WRITE) as transaction:  # creates a TypeDB transaction
-            i = input(item)  # This is an object of input type with an item as a parameter
-            typeql_insert_query = i.load()  # This calls one of the _generate_query functions to
+            i = input(item)
+            typeql_insert_query = i.load()  # input["template"](item)  # b # This calls one of the _template functions to
             # construct the corresponding TypeQL insert query
             if debug: print("Executing TypeQL Query: " + typeql_insert_query)
             transaction.query().insert(typeql_insert_query)  # runs the query
@@ -219,11 +219,11 @@ def load_data():  # Main data load function
     loaders.create_genre_tags()  # Creating genre tags before loading data
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
-            for input in Inputs:  # Iterating through all CSV files
-                input["file"] = data_path + input["file"]
-                if debug: print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
-                load_data_into_typedb(input, session)  # Main data loading function. Repeat for only file in Inputs
-            # generate_orders()  # Add randomly generated lists of items into orders
+            for input_type in Input_types_list:  # Iterating through all CSV files
+                r = input_type('')
+                if debug: print("Loading from [" + r.file + "] into TypeDB ...")
+                load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
+            # generate_ordered_items()  # Add randomly generated lists of items into orders
             print("\nData loading complete!")
     return
 
@@ -255,6 +255,60 @@ def setup():  # Loading schema
                     except Exception as e:
                         print("Failed to load schema: " + str(e))
                         return False  # Setup failed
+
+
+class Input:
+    def __init__(self, item):
+        self.item = item
+
+
+class BookInput(Input):
+    def __init__(self, item):
+        super().__init__(item)
+        self.file = data_path + 'books.csv'
+
+    def load(self):
+        return books_generate_query(self.item)
+
+
+class UserInput(Input):
+    def __init__(self, item):
+        super().__init__(item)
+        self.file = data_path + 'users.csv'
+
+    def load(self):
+        return users_generate_query(self.item)
+
+
+class RatingInput(Input):
+    def __init__(self, item):
+        super().__init__(item)
+        self.file = data_path + 'ratings.csv'
+
+    def load(self):
+        return ratings_generate_query(self.item)
+
+
+class OrderInput(Input):
+    def __init__(self, item):
+        super().__init__(item)
+        self.file = data_path + 'orders.csv'
+
+    def load(self):
+        return orders_generate_query(self.item)
+
+
+class GenreInput(Input):
+    def __init__(self, item):
+        super().__init__(item)
+        self.file = data_path + 'genres.csv'
+
+    def load(self):
+        return genre_generate_query(self.item)
+
+
+# This is a list of files to import data from and corresponding functions to load the parsed data into the DB
+Input_types_list = [BookInput, UserInput, RatingInput, OrderInput, GenreInput]
 
 # This is the main body of this script
 with TypeDB.core_client("localhost:1729") as client:
