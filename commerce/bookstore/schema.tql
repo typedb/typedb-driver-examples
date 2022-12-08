@@ -61,7 +61,7 @@ define
         owns price,
         owns stock,
         plays ordering:item,
-        plays reviewing:product;
+        plays review:product;
 
     book sub product,
         owns ISBN,
@@ -71,7 +71,7 @@ define
 
     person sub entity,
         owns name,
-        plays reviewing:author;
+        plays review:author;
 
     user sub person,
         owns id @key,
@@ -91,7 +91,7 @@ define
         plays ordering:order;
 
 ### Relations ###
-    reviewing sub relation,
+    review sub relation,
         owns rating,
         relates author,
         relates product;

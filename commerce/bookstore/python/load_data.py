@@ -74,10 +74,10 @@ def users_generate_query(user):  # building a TypeQL request to insert a user
     return typeql_insert_query
 
 
-def ratings_generate_query(review):  # building a TypeQL request to insert a review (reviewing relation)
+def ratings_generate_query(review):  # building a TypeQL request to insert a review (review relation)
     typeql_insert_query = "match $u isa user, has foreign-id '" + review["User-ID"] + "'; " \
                           "$b isa book, has ISBN '" + review["ISBN"] + "'; " \
-                          "insert $r (author: $u, product: $b) isa reviewing;" \
+                          "insert $r (author: $u, product: $b) isa review;" \
                           "$r has rating " + review["Book-Rating"] + ";"
 
     return typeql_insert_query

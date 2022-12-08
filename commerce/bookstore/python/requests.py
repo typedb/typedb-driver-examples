@@ -72,7 +72,7 @@ def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN g
             with client.session(db, SessionType.DATA) as session:  # 2
                 with session.transaction(TransactionType.READ) as transaction:  # a
                     typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "';" \
-                                        "$r (product: $b, author:$a) isa reviewing; $r has rating $rating;" \
+                                        "$r (product: $b, author:$a) isa review; $r has rating $rating;" \
                                         "get $rating;"
                     if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                     iterator = transaction.query().match(typeql_read_query)  # Execute query
