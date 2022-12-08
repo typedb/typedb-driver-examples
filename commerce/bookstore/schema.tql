@@ -113,9 +113,6 @@ define
 
     rule super-tag-hierarchy:
         when {
-            $b isa genre;
-            $p isa genre;
-            $bb isa genre;
             (sup-tag: $p, sub-tag: $b) isa tag-hierarchy;
             (sup-tag: $b, sub-tag: $bb) isa tag-hierarchy;
         } then {
