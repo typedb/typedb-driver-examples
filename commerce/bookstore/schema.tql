@@ -24,7 +24,7 @@ define
 ### Attributes ###
 
     name sub attribute, value string;
-    created-date sub attribute, value datetime;
+    date sub attribute, value datetime;
     description sub attribute, value string;
     id sub attribute, value string;
 
@@ -48,7 +48,8 @@ define
     password sub attribute, value string;
     foreign-id sub attribute, value string;
 
-    genre-tag sub attribute, value string,
+    genre sub attribute, value string,
+        plays taging:tag,
         plays tag-hierarchy:sup-tag,
         plays tag-hierarchy:sub-tag;
 
@@ -59,14 +60,14 @@ define
         owns description,
         owns price,
         owns stock,
-        plays order:item,
+        plays ordering:item,
         plays review:product;
 
     book sub product,
-        owns genre-tag,
         owns ISBN,
         owns book-author,
-        owns publisher;
+        owns publisher,
+        plays taging:book;
 
     person sub entity,
         owns name,
@@ -78,7 +79,16 @@ define
         owns username,
         owns password,
         owns age,
-        plays order:author;
+        plays ordering:author;
+
+    order sub entity,
+        owns id @key,
+        owns foreign-user-id,
+        owns date,
+        owns status,
+        owns delivery-address,
+        owns payment-details,
+        plays ordering:order;
 
 ### Relations ###
     review sub relation,
@@ -86,13 +96,12 @@ define
         relates author,
         relates product;
 
-    order sub relation,
-        owns id @key,
-        owns foreign-user-id,
-        owns created-date,
-        owns status,
-        owns delivery-address,
-        owns payment-details,
+    taging sub relation,
+        relates tag,
+        relates book;
+
+    ordering sub relation,
+        relates order,
         relates item,
         relates author;
 
@@ -104,6 +113,9 @@ define
 
     rule super-tag-hierarchy:
         when {
+            $b isa genre;
+            $p isa genre;
+            $bb isa genre;
             (sup-tag: $p, sub-tag: $b) isa tag-hierarchy;
             (sup-tag: $b, sub-tag: $bb) isa tag-hierarchy;
         } then {
@@ -113,10 +125,10 @@ define
     rule super-tag:
         when {
             $book isa book;
-            $g isa genre-tag;
-            $book has $g;
-            $sup isa genre-tag;
+            $tag (tag:$g, book: $b) isa taging;
+            $g isa genre;
+            $sup isa genre;
             (sup-tag: $sup, sub-tag: $g) isa tag-hierarchy;
         } then {
-            $book has $sup;
+            (tag:$sup, book: $b) isa taging;
         };
