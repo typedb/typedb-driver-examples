@@ -1,7 +1,21 @@
 import csv, uuid, random
-from typedb.client import TypeDB, SessionType, TransactionType
+import sys
 
-debug = False  # Set True to enable additional output for debugging
+from typedb.client import TypeDB, SessionType, TransactionType
+import argparse
+
+# Verbosity option implementation
+parser = argparse.ArgumentParser(description='Loads data into TypeDB for the Bookstore example')
+parser.add_argument("-v", "--verbose", "-d", "--debug", help='Increase output verbosity',
+                    dest="verbosity", action='store_true')
+args = vars(parser.parse_args())
+
+if args["verbosity"]:  # if the argument was set
+    print("High verbosity option turned on.")
+    debug = True  # Shows verbose debug messages in the console output
+else:
+    debug = False  # No debug messages
+
 data_path = "data/"  # path to csv files to import/load data
 db = "bookstore"  # Name of the DB to connect on the TypeDB
 
