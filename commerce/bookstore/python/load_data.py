@@ -42,15 +42,14 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
     items = parse_data_to_dictionaries(input)  # gets the data items as a list of dictionaries
     for item in items:  # for each item dictionary
         with session.transaction(TransactionType.WRITE) as transaction:  # creates a TypeDB transaction
-            i = input(item)
-            typeql_insert_query = i.load()  # input["template"](item)  # b # This calls one of the _template functions to
+            i = input(item)  # This is an object of input type with an item as a parameter
+            typeql_insert_query = i.load()  # This calls one of the _generate_query functions to
             # construct the corresponding TypeQL insert query
             if debug: print("Executing TypeQL Query: " + typeql_insert_query)
             transaction.query().insert(typeql_insert_query)  # runs the query
             transaction.commit()  # commits the transaction
 
-    print("Inserted " + str(len(items)) +
-          " items from [ " + i.file + "] into TypeDB.\n")
+    print("Inserted " + str(len(items)) + " items from [ " + i.file + "] into TypeDB.\n")
     return  # END of load_data_into_typedb()
 
 
@@ -189,8 +188,8 @@ def load_data():  # Main data load function
     create_genre_tags()  # Creating genre tags before loading data
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
-            for input_type in Input_types_list:  # Iterating through all CSV files
-                r = input_type('')
+            for input_type in Input_types_list:  # Iterating through all types of import
+                r = input_type('')  # default object of the input_type
                 if debug: print("Loading from [" + r.file + "] into TypeDB ...")
                 load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
             # generate_ordered_items()  # Add randomly generated lists of items into orders
@@ -277,7 +276,7 @@ class GenreInput(Input):
         return genre_generate_query(self.item)
 
 
-# This is a list of files to import data from and corresponding functions to load the parsed data into the DB
+# This is a list of classes to import data with filenames and corresponding methods to load the parsed data into the DB
 Input_types_list = [BookInput, UserInput, RatingInput, OrderInput, GenreInput]
 
 # This is the main body of this script
