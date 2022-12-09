@@ -49,7 +49,6 @@ define
     foreign-id sub attribute, value string;
 
     genre sub attribute, value string,
-        plays taging:tag,
         plays tag-hierarchy:sup-tag,
         plays tag-hierarchy:sub-tag;
 
@@ -64,10 +63,10 @@ define
         plays review:product;
 
     book sub product,
+        owns genre,
         owns ISBN,
         owns book-author,
-        owns publisher,
-        plays taging:book;
+        owns publisher;
 
     person sub entity,
         owns name,
@@ -96,10 +95,6 @@ define
         relates author,
         relates product;
 
-    taging sub relation,
-        relates tag,
-        relates book;
-
     ordering sub relation,
         relates order,
         relates item,
@@ -122,10 +117,10 @@ define
     rule super-tag:
         when {
             $book isa book;
-            $tag (tag:$g, book: $b) isa taging;
             $g isa genre;
+            $book has $g;
             $sup isa genre;
             (sup-tag: $sup, sub-tag: $g) isa tag-hierarchy;
         } then {
-            (tag:$sup, book: $b) isa taging;
+            $book has $sup;
         };
