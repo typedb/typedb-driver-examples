@@ -48,7 +48,7 @@ define
     password sub attribute, value string;
     foreign-id sub attribute, value string;
 
-    genre sub attribute, value string,
+    genre-tag sub attribute, value string,
         plays tag-hierarchy:sup-tag,
         plays tag-hierarchy:sub-tag;
 
@@ -63,7 +63,7 @@ define
         plays review:product;
 
     book sub product,
-        owns genre,
+        owns genre-tag,
         owns ISBN,
         owns book-author,
         owns publisher;
@@ -117,9 +117,9 @@ define
     rule super-tag:
         when {
             $book isa book;
-            $g isa genre;
+            $g isa genre-tag;
             $book has $g;
-            $sup isa genre;
+            $sup isa genre-tag;
             (sup-tag: $sup, sub-tag: $g) isa tag-hierarchy;
         } then {
             $book has $sup;

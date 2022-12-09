@@ -86,7 +86,7 @@ def ratings_generate_query(review):  # building a TypeQL request to insert a rev
 def genre_generate_query(genre):  # building a TypeQL request to insert a genre/book association
 
     typeql_insert_query = "match $b isa book, has ISBN '" + genre["ISBN"] + "'; " \
-                          "$g isa genre; $g '" + genre["Genre"] + "'; " \
+                          "$g isa genre-tag; $g '" + genre["Genre"] + "'; " \
                           "insert $b has $g;"
 
     return typeql_insert_query
@@ -147,53 +147,53 @@ def create_genre_tags():  # Creating genre tags and tag hierarchy
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.WRITE) as transaction:
-                transaction.query().insert("insert $g 'Fiction' isa genre;")
-                transaction.query().insert("insert $g 'Non fiction' isa genre;")
-                transaction.query().insert("insert $g 'Other' isa genre;")
-                transaction.query().insert("insert $g 'Adults only' isa genre;")
-                transaction.query().insert("insert $g 'Kids friendly' isa genre;")
-                transaction.query().insert("insert $g 'Sci-Fi' isa genre;")
-                transaction.query().insert("match $b = 'Sci-Fi'; $b isa genre;"
-                                           "$p = 'Fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Fiction' isa genre-tag;")
+                transaction.query().insert("insert $g 'Non fiction' isa genre-tag;")
+                transaction.query().insert("insert $g 'Other' isa genre-tag;")
+                transaction.query().insert("insert $g 'Adults only' isa genre-tag;")
+                transaction.query().insert("insert $g 'Kids friendly' isa genre-tag;")
+                transaction.query().insert("insert $g 'Sci-Fi' isa genre-tag;")
+                transaction.query().insert("match $b = 'Sci-Fi'; $b isa genre-tag;"
+                                           "$p = 'Fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Fantasy' isa genre;")
-                transaction.query().insert("match $b = 'Fantasy'; $b isa genre;"
-                                           "$p = 'Fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Fantasy' isa genre-tag;")
+                transaction.query().insert("match $b = 'Fantasy'; $b isa genre-tag;"
+                                           "$p = 'Fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Biography' isa genre;")
-                transaction.query().insert("match $b = 'Biography'; $b isa genre;"
-                                           "$p = 'Non fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Biography' isa genre-tag;")
+                transaction.query().insert("match $b = 'Biography'; $b isa genre-tag;"
+                                           "$p = 'Non fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Adventure' isa genre;")
-                transaction.query().insert("match $b = 'Adventure'; $b isa genre;"
-                                           "$p = 'Fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Adventure' isa genre-tag;")
+                transaction.query().insert("match $b = 'Adventure'; $b isa genre-tag;"
+                                           "$p = 'Fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Detective_story' isa genre;")
-                transaction.query().insert("match $b = 'Detective_story'; $b isa genre;"
-                                           "$p = 'Fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Detective_story' isa genre-tag;")
+                transaction.query().insert("match $b = 'Detective_story'; $b isa genre-tag;"
+                                           "$p = 'Fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'History' isa genre;")
-                transaction.query().insert("match $b = 'History'; $b isa genre;"
-                                           "$p = 'Non fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'History' isa genre-tag;")
+                transaction.query().insert("match $b = 'History'; $b isa genre-tag;"
+                                           "$p = 'Non fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Politics' isa genre;")
-                transaction.query().insert("match $b = 'Politics'; $b isa genre;"
-                                           "$p = 'Non fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Politics' isa genre-tag;")
+                transaction.query().insert("match $b = 'Politics'; $b isa genre-tag;"
+                                           "$p = 'Non fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Up to 5 years' isa genre;")
-                transaction.query().insert("match $b = 'Up to 5 years'; $b isa genre;"
-                                           "$p = 'Kids friendly'; $p isa genre;"
+                transaction.query().insert("insert $g 'Up to 5 years' isa genre-tag;")
+                transaction.query().insert("match $b = 'Up to 5 years'; $b isa genre-tag;"
+                                           "$p = 'Kids friendly'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Technical Documentation' isa genre;")
-                transaction.query().insert("match $b = 'Technical Documentation'; $b isa genre;"
-                                           "$p = 'Non fiction'; $p isa genre;"
+                transaction.query().insert("insert $g 'Technical Documentation' isa genre-tag;")
+                transaction.query().insert("match $b = 'Technical Documentation'; $b isa genre-tag;"
+                                           "$p = 'Non fiction'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("match $b = 'Technical Documentation'; $b isa genre;"
-                                           "$p = 'Adults only'; $p isa genre;"
+                transaction.query().insert("match $b = 'Technical Documentation'; $b isa genre-tag;"
+                                           "$p = 'Adults only'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Map' isa genre;")
-                transaction.query().insert("match $b = 'Map'; $b isa genre;"
-                                           "$p = 'Technical Documentation'; $p isa genre;"
+                transaction.query().insert("insert $g 'Map' isa genre-tag;")
+                transaction.query().insert("match $b = 'Map'; $b isa genre-tag;"
+                                           "$p = 'Technical Documentation'; $p isa genre-tag;"
                                            "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
                 transaction.commit()
     print("Created genre tags.")

@@ -147,7 +147,7 @@ def search_genre(tag_name):  # Search books by genre tag
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ, TB) as transaction:
-                typeql_read_query = "match $g isa genre; $g '" + tag_name + "';" \
+                typeql_read_query = "match $g isa genre-tag; $g '" + tag_name + "';" \
                                     "$b isa book, has name $n, has ISBN $i, has $g; " \
                                     "get $i, $n;"
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
@@ -204,7 +204,7 @@ def show_all_genres():  # Just display all genre tags
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
-                typeql_read_query = "match $g isa genre; get $g;"  # Prepare query
+                typeql_read_query = "match $g isa genre-tag; get $g;"  # Prepare query
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                 iterator = transaction.query().match(typeql_read_query)  # Execute transaction
                 k = 0  # Counter
