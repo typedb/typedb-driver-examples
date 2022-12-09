@@ -5,15 +5,15 @@ import config
 debug = False
 
 
-class Input:
-    def __init__(self, item):
+class Loader:
+    def __init__(self, item, filename):
         self.item = item
+        self.file = filename
 
 
-class BookInput(Input):
+class BookInput(Loader):
     def __init__(self, item):
-        super().__init__(item)
-        self.file = config.data_path + 'books.csv'
+        super().__init__(item, config.data_path + 'books.csv')
 
     def load(self):  # building a TypeQL request to insert a book
         return "insert $b isa book, has id '" + str(uuid.uuid4()) + "', has ISBN '" + self.item["ISBN"] + \
@@ -22,10 +22,9 @@ class BookInput(Input):
                ", has stock " + str(random.randint(0, 25)) + ";"
 
 
-class UserInput(Input):
+class UserInput(Loader):
     def __init__(self, item):
-        super().__init__(item)
-        self.file = config.data_path + 'users.csv'
+        super().__init__(item, config.data_path + 'users.csv')
 
     def load(self):  # building a TypeQL request to insert a user
         first_names = ("John", "Andy", "Joe", "Bob", "Alex", "Mary", "Alexa", "Monika", "Vladimir", "Tom", "Jerry")
@@ -39,10 +38,9 @@ class UserInput(Input):
         return typeql_insert_query
 
 
-class RatingInput(Input):
+class RatingInput(Loader):
     def __init__(self, item):
-        super().__init__(item)
-        self.file = config.data_path + 'ratings.csv'
+        super().__init__(item, config.data_path + 'ratings.csv')
 
     def load(self):  # building a TypeQL request to insert a review (reviewing relation)
         typeql_insert_query = "match $u isa user, has foreign-id '" + self.item["User-ID"] + "'; " \
@@ -52,10 +50,9 @@ class RatingInput(Input):
         return typeql_insert_query
 
 
-class OrderInput(Input):
+class OrderInput(Loader):
     def __init__(self, item):
-        super().__init__(item)
-        self.file = config.data_path + 'orders.csv'
+        super().__init__(item, config.data_path + 'orders.csv')
 
     def load(self):  # building a TypeQL request to insert an order
         typeql_insert_query = "insert $o isa order, has id '" + self.item["id"] + "'," \
@@ -67,10 +64,9 @@ class OrderInput(Input):
         return typeql_insert_query
 
 
-class GenreInput(Input):
+class GenreInput(Loader):
     def __init__(self, item):
-        super().__init__(item)
-        self.file = config.data_path + 'genres.csv'
+        super().__init__(item, config.data_path + 'genres.csv')
 
     def load(self):  # building a TypeQL request to insert a genre/book association
         typeql_insert_query = "match $b isa book, has ISBN '" + self.item["ISBN"] + "'; " \
