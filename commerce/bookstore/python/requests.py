@@ -148,8 +148,7 @@ def search_genre(tag_name):  # Search books by genre tag
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ, TB) as transaction:
                 typeql_read_query = "match $g isa genre; $g '" + tag_name + "';" \
-                                    "$b isa book, has name $n, has ISBN $i; " \
-                                    "(tag:$g, book: $b) isa taging; " \
+                                    "$b isa book, has name $n, has ISBN $i, has $g; " \
                                     "get $i, $n;"
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                 iterator = transaction.query().match(typeql_read_query)  # Execute query

@@ -87,7 +87,7 @@ def genre_generate_query(genre):  # building a TypeQL request to insert a genre/
 
     typeql_insert_query = "match $b isa book, has ISBN '" + genre["ISBN"] + "'; " \
                           "$g isa genre; $g '" + genre["Genre"] + "'; " \
-                          "insert $tag (tag: $g, book: $b) isa taging;"
+                          "insert $b has $g;"
 
     return typeql_insert_query
 
