@@ -1,7 +1,7 @@
-import csv, uuid, random
-import sys
-
+import csv
 from typedb.client import TypeDB, SessionType, TransactionType
+import loaders
+import config
 import argparse
 
 # Verbosity option implementation
@@ -189,12 +189,12 @@ def create_genre_tags():  # Creating genre tags and tag hierarchy
 def load_data():  # Main data load function
     loaders.create_genre_tags()  # Creating genre tags before loading data
     with TypeDB.core_client("localhost:1729") as client:
-        with client.session(db, SessionType.DATA) as session:
-            for input_type in Input_types_list:  # Iterating through all types of import
+        with client.session(config.db, SessionType.DATA) as session:
+            for input_type in loaders.Input_types_list:  # Iterating through all types of import
                 r = input_type('')  # default object of the input_type
                 if debug: print("Loading from [" + r.file + "] into TypeDB ...")
                 load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
-            # generate_ordered_items()  # Add randomly generated lists of items into orders
+            # loaders.generate_ordered_items()  # Add randomly generated lists of items into orders
             print("\nData loading complete!")
     return
 
@@ -226,60 +226,6 @@ def setup():  # Loading schema
                     except Exception as e:
                         print("Failed to load schema: " + str(e))
                         return False  # Setup failed
-
-
-class Input:
-    def __init__(self, item):
-        self.item = item
-
-
-class BookInput(Input):
-    def __init__(self, item):
-        super().__init__(item)
-        self.file = data_path + 'books.csv'
-
-    def load(self):
-        return books_generate_query(self.item)
-
-
-class UserInput(Input):
-    def __init__(self, item):
-        super().__init__(item)
-        self.file = data_path + 'users.csv'
-
-    def load(self):
-        return users_generate_query(self.item)
-
-
-class RatingInput(Input):
-    def __init__(self, item):
-        super().__init__(item)
-        self.file = data_path + 'ratings.csv'
-
-    def load(self):
-        return ratings_generate_query(self.item)
-
-
-class OrderInput(Input):
-    def __init__(self, item):
-        super().__init__(item)
-        self.file = data_path + 'orders.csv'
-
-    def load(self):
-        return orders_generate_query(self.item)
-
-
-class GenreInput(Input):
-    def __init__(self, item):
-        super().__init__(item)
-        self.file = data_path + 'genres.csv'
-
-    def load(self):
-        return genre_generate_query(self.item)
-
-
-# This is a list of classes to import data with filenames and corresponding methods to load the parsed data into the DB
-Input_types_list = [BookInput, UserInput, RatingInput, OrderInput, GenreInput]
 
 # This is the main body of this script
 with TypeDB.core_client("localhost:1729") as client:
