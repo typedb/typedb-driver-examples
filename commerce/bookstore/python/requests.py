@@ -119,7 +119,7 @@ def search_order(order_id):  # Search order by id (or show all orders if empty i
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 typeql_read_query = "match $o isa order, has id $i, has foreign-user-id $fui, " \
-                                    "has date $d, has status $s, has delivery-address $da;" \
+                                    "has created-date $d, has status $s, has delivery-address $da;" \
                                     "get $i, $fui, $d, $s, $da; sort $i asc;"
                 # matched results sorted by id in ascending order
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)

@@ -92,20 +92,25 @@ def genre_generate_query(genre):  # building a TypeQL request to insert a genre/
     return typeql_insert_query
 
 
-def orders_generate_query(order):  # building a TypeQL request to insert an order
-    typeql_insert_query = "insert $o isa order, has id '" + order["id"] + "'," \
-                          "has foreign-user-id '" + order["User-ID"] + "', " \
-                          "has date " + order["date"] + ", " \
-                          "has status '" + order["status"] + "'," \
-                          "has delivery-address '" + order["delivery_address"] + "', " \
-                          "has payment-details '" + order["payment_details"] + "';"
+def orders_generate_query(order):  # building a TypeQL request to insert an order information
+    i = 0
+    typeql_insert_query = "match $u isa user, has foreign-id '" + order["User-ID"] + "';"
+    for book in random_books():
+        i += 1
+        print("Book #" + str(i) + " ISBN: " + book)
+        typeql_insert_query += "$b" + str(i) + " isa book, has ISBN '" + book + "';"
 
+    typeql_insert_query += "insert $o isa order, has id '" + order["id"] + "', " \
+                           "has foreign-user-id '" + order["User-ID"] + "', has created-date " + order["date"] + ", " \
+                           "has status '" + order["status"] + "'," \
+                           "has delivery-address '" + order["delivery_address"] + "', " \
+                           "has payment-details '" + order["payment_details"] + "';"
+    for j in range(1, i+1):  # for all i books in the order
+        typeql_insert_query += "$o (item: $b" + str(j) + ", author: $u) isa order;"
     return typeql_insert_query
 
 
-def generate_ordered_items():  # Generating random item-lists for orders from books
-    result = []
-    # generate 5 random sets of 2-9 books
+def random_books():
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
@@ -114,13 +119,19 @@ def generate_ordered_items():  # Generating random item-lists for orders from bo
                 iterator = transaction.query().match(typeql_read_query)  # Execute read query
                 answers = [ans.get("x") for ans in iterator]
                 books = [answer.get_value() for answer in answers]  # This contains the result (800 ISBN records)
-                for order_id in range(1,6):  # Go through all 5 orders
-                    ordered_books = []
-                    for item_n in range(1, random.randint(2, 10)):  #
-                        ordered_books.append(books[random.randint(0, 799)])  # Exactly 800 books to select from
-                    result.append(ordered_books)
+                # for order_id in range(1,6):  # Go through all 5 orders
+                ordered_books = []  # Resetting variable to store ordered items for an order
+                for item_n in range(1, random.randint(2, 10)):  # Iterate through random (2-9) number of books
+                    ordered_books.append(books[random.randint(0, 799)])  # Select random book from 800
+    return ordered_books
 
-    n = 1
+"""
+def generate_order_items():  # Generating random items for 5 orders
+    result = []
+
+                    result.append(ordered_books)  # Add this orders items to the result
+
+    n = 1  # Order number (and ID) iterator
     # Add ordering relations (assign items from the sets above)
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(db, SessionType.DATA) as session:
@@ -129,17 +140,21 @@ def generate_ordered_items():  # Generating random item-lists for orders from bo
                 for book in order:
                     if debug: print("\nISBN", book)
                     with session.transaction(TransactionType.WRITE) as transaction:
-                        typeql_insert_query = "match $b isa book, has ISBN '" + book + "';" \
-                                              "$o isa order, has id '" + str(n) + "', has foreign-user-id $fui;" \
+                        typeql_insert_query = "match $o isa order, has id '" + str(n) + "', has foreign-user-id $fui" \
+                                              "$b isa book, has ISBN '" + book + "';" \
                                               "$u isa user, has foreign-id $fi;" \
-                                              "$fui = $fi;" \
-                                              "insert (order: $o, item: $b, author: $u ) isa ordering;"
+                                              "$fui = $fi" \
+                                              "insert $o (item: $b, author: $u) isa order;"
                                               # the $fui and $fi variables are compared by value only
                         if debug: print("Executing TypeQL Query: " + typeql_insert_query)
-                        transaction.query().insert(typeql_insert_query)
+                        check_iterator = transaction.query().insert(typeql_insert_query).get_value
+                        check_answers = [ans.get("o") for ans in check_iterator]
+                        inserted_order_item = [answer.get_value() for answer in check_answers]
+                        print("Inserted 1 item of the Order #" + str(n), inserted_order_item)
                         transaction.commit()
                 n += 1
-    return  # END of generate_ordered_items()
+    return  # END of generate_orders()
+"""
 
 
 def create_genre_tags():  # Creating genre tags and tag hierarchy
@@ -203,12 +218,12 @@ def create_genre_tags():  # Creating genre tags and tag hierarchy
 def load_data():  # Main data load function
     loaders.create_genre_tags()  # Creating genre tags before loading data
     with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            for input_type in loaders.Input_types_list:  # Iterating through all types of import
-                r = input_type('')  # default object of the input_type
-                if debug: print("Loading from [" + r.file + "] into TypeDB ...")
-                load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
-            loaders.generate_ordered_items()  # Add randomly generated lists of items into orders
+        with client.session(db, SessionType.DATA) as session:
+            for input in Inputs:  # Iterating through all CSV files
+                input["file"] = data_path + input["file"]
+                if debug: print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
+                load_data_into_typedb(input, session)  # Main data loading function. Repeat for only file in Inputs
+            # generate_orders()  # Add randomly generated lists of items into orders
             print("\nData loading complete!")
     return
 

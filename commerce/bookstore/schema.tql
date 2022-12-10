@@ -24,7 +24,7 @@ define
 ### Attributes ###
 
     name sub attribute, value string;
-    date sub attribute, value datetime;
+    created-date sub attribute, value datetime;
     description sub attribute, value string;
     id sub attribute, value string;
 
@@ -59,7 +59,7 @@ define
         owns description,
         owns price,
         owns stock,
-        plays ordering:item,
+        plays order:item,
         plays review:product;
 
     book sub product,
@@ -78,16 +78,7 @@ define
         owns username,
         owns password,
         owns age,
-        plays ordering:author;
-
-    order sub entity,
-        owns id @key,
-        owns foreign-user-id,
-        owns date,
-        owns status,
-        owns delivery-address,
-        owns payment-details,
-        plays ordering:order;
+        plays order:author;
 
 ### Relations ###
     review sub relation,
@@ -95,8 +86,13 @@ define
         relates author,
         relates product;
 
-    ordering sub relation,
-        relates order,
+    order sub relation,
+        owns id @key,
+        owns foreign-user-id,
+        owns created-date,
+        owns status,
+        owns delivery-address,
+        owns payment-details,
         relates item,
         relates author;
 
