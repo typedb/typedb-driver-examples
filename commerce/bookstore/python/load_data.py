@@ -127,37 +127,6 @@ def random_books():
                     ordered_books.append(books[random.randint(0, 799)])  # Select random book from 800
     return ordered_books
 
-"""
-def generate_order_items():  # Generating random items for 5 orders
-    result = []
-
-                    result.append(ordered_books)  # Add this orders items to the result
-
-    n = 1  # Order number (and ID) iterator
-    # Add ordering relations (assign items from the sets above)
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(db, SessionType.DATA) as session:
-            for order in result:
-                if debug: print("\nOrder #", n, "contains:")
-                for book in order:
-                    if debug: print("\nISBN", book)
-                    with session.transaction(TransactionType.WRITE) as transaction:
-                        typeql_insert_query = "match $o isa order, has id '" + str(n) + "', has foreign-user-id $fui" \
-                                              "$b isa book, has ISBN '" + book + "';" \
-                                              "$u isa user, has foreign-id $fi;" \
-                                              "$fui = $fi" \
-                                              "insert $o (item: $b, author: $u) isa order;"
-                                              # the $fui and $fi variables are compared by value only
-                        if debug: print("Executing TypeQL Query: " + typeql_insert_query)
-                        check_iterator = transaction.query().insert(typeql_insert_query).get_value
-                        check_answers = [ans.get("o") for ans in check_iterator]
-                        inserted_order_item = [answer.get_value() for answer in check_answers]
-                        print("Inserted 1 item of the Order #" + str(n), inserted_order_item)
-                        transaction.commit()
-                n += 1
-    return  # END of generate_orders()
-"""
-
 
 def create_genre_tags():  # Creating genre tags and tag hierarchy
 
