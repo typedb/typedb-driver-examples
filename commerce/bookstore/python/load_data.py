@@ -96,8 +96,8 @@ def orders_generate_query(order):  # building a TypeQL request to insert an orde
     i = 0
     typeql_insert_query = "match $u isa user, has foreign-id '" + order["User-ID"] + "';"
     for book in random_books():
-        i += 1
-        print("Book #" + str(i) + " ISBN: " + book)
+        i += 1  # counter for the number of books
+        if debug: print("Book #" + str(i) + " ISBN: " + book)
         typeql_insert_query += "$b" + str(i) + " isa book, has ISBN '" + book + "';"
 
     typeql_insert_query += "insert $o isa order, has id '" + order["id"] + "', " \
@@ -105,8 +105,10 @@ def orders_generate_query(order):  # building a TypeQL request to insert an orde
                            "has status '" + order["status"] + "'," \
                            "has delivery-address '" + order["delivery_address"] + "', " \
                            "has payment-details '" + order["payment_details"] + "';"
+    typeql_insert_query += "$o ("
     for j in range(1, i+1):  # for all i books in the order
-        typeql_insert_query += "$o (item: $b" + str(j) + ", author: $u) isa order;"
+        typeql_insert_query += "item: $b" + str(j) + ","
+    typeql_insert_query += " author: $u) isa order;"
     return typeql_insert_query
 
 
