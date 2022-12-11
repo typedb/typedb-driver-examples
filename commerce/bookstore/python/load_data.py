@@ -5,9 +5,9 @@ import config
 import argparse
 
 # Verbosity option implementation
-parser = argparse.ArgumentParser(description='Loads data into TypeDB for the Bookstore example')
-parser.add_argument("-v", "--verbose", "-d", "--debug", help='Increase output verbosity',
-                    dest="verbosity", action='store_true')
+parser = argparse.ArgumentParser(description="Loads data into TypeDB for the Bookstore example")
+parser.add_argument("-v", "--verbose", "-d", "--debug", help="Increase output verbosity",
+                    dest="verbosity", action="store_true")
 args = vars(parser.parse_args())
 
 if args["verbosity"]:  # if the argument was set
@@ -25,7 +25,7 @@ def parse_data_to_dictionaries(input):
     if debug: print("Parsing of " + input["file"] + "started.")
     items = []
 
-    with open(input('').file, encoding="UTF-8") as data:  # reads the file through a stream,
+    with open(input("").file, encoding="UTF-8") as data:  # reads the file through a stream,
         for row in csv.DictReader(data, delimiter=";", skipinitialspace=True):
             item = {key: value for key, value in row.items()}  # fieldnames (keys) are taken from the first row
             items.append(item)  # adds the dictionary to the list of items
@@ -57,7 +57,7 @@ def load_data():  # Main data load function
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(config.db, SessionType.DATA) as session:
             for input_type in loaders.Input_types_list:  # Iterating through all types of import
-                r = input_type('')  # default object of the input_type
+                r = input_type("")  # default object of the input_type
                 if debug: print("Loading from [" + r.file + "] into TypeDB ...")
                 load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
             # loaders.generate_ordered_items()  # Add randomly generated lists of items into orders
