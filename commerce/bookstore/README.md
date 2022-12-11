@@ -21,7 +21,8 @@ You can find the implementation of each function listed above in the source code
 
 * [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.14.1+
 * Python v.3.9+
-* `typedb.client` — [Python client](https://docs.vaticle.com/docs/client-api/python) for TypeDB
+  * `typedb.client` — [Python client](https://docs.vaticle.com/docs/client-api/python) for TypeDB
+  * Common Python libraries: csv, argparse, uuid, random
 * This repository
 
 ## Quickstart
@@ -30,7 +31,7 @@ You can find the implementation of each function listed above in the source code
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
 3. Launch `typedb-examples/commerce/bookstore/python/load_data.py` Python script. It will load the bookstore schema and data into the DB.
 4. Launch `typedb-examples/commerce/bookstore/python/requests.py` Python script and follow the instructions to explore example functions and data.
-5. Use this simple example to learn the basics of using TypeDB! Explore source codes of the both Python scripts and TypeDB Studio to explore DB schema and content.
+5. Use this simple example to learn the basics of using TypeDB! Explore source codes of the Python scripts and use TypeDB Studio to explore DB schema and content.
 
 ## How it works
 
@@ -40,8 +41,11 @@ This example is located in the `typedb/commerce/bookstore/` directory and consis
 - Python scripts
   - `python/load_data.py` — used to load the bookstore DB schema and data
   - `python/requests.py` — provides simple command line interface to execute requests on TypeDB database
-- `schema.tql` — DB schema
+  - `python/loaders.py` — internal (imported) file with data loading classes and functions
+  - `python/config.py` — internal settings: database name and path to directory with imported csv files
+- `schema.tql` — DB schema in TypeQL
 - `README.md` — documentation for the bookstore example. You are reading it right now
+- `todo.md` — list of ideas for improvements in the future. If you want to contribute to this example, you can start with these ideas
 - Bookstore dataset `python/data/`:
   - `books.csv`
   - `users.csv`
@@ -73,9 +77,9 @@ The bookstore schema has the following attributes:
 - username (string) 
 - password (string) 
 - foreign-id (string) 
-- genre (string) 
+- genre-tag (string) 
 
-- date (datetime)
+- created-date (datetime)
 
 - price (long) 
 - stock (long) 
@@ -91,29 +95,24 @@ The bookstore schema has the following entities:
   - book
 - person
   - user
-- order
 
 #### Relations
 
 The bookstore schema has the following relations:
 
-- reviewing
-- taging 
-- ordering 
+- review
+- order
 - tag-hierarchy
 
 #### Rules
 
 The bookstore schema has two rules to demonstrate rules usability.
 
-The first one works for genre tags, serves no real purpose but follows the following basic logic — a child (sub-tag) of my child is my child. The first rule text:
+The first one works for genre tags, serves no real purpose but follows the following basic logic — a child (sub-tag) of my child is my child. The code for the first rule:
 
 ```
 rule super-tag-hierarchy:
     when {
-        $b isa genre;
-        $p isa genre;
-        $bb isa genre;
         (sup-tag: $p, sub-tag: $b) isa tag-hierarchy;
         (sup-tag: $b, sub-tag: $bb) isa tag-hierarchy;
     } then {
@@ -127,11 +126,11 @@ The second one works also for genre tags, used to improve tag searching experien
 rule super-tag:
     when {
         $book isa book;
-        $tag (tag:$g, book: $b) isa taging;
-        $g isa genre;
-        $sup isa genre;
+        $g isa genre-tag;
+        $book has $g;
+        $sup isa genre-tag;
         (sup-tag: $sup, sub-tag: $g) isa tag-hierarchy;
     } then {
-        (tag:$sup, book: $b) isa taging;
+        $book has $sup;
     };
 ```

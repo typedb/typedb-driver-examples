@@ -13,7 +13,7 @@ class Loader:  # Superclass for all loaders
 
 class BookInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'books.csv')  # Set exact filename to parse with this class
+        super().__init__(item, config.data_path + "books.csv")  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a book
         return "insert $b isa book, has id '" + str(uuid.uuid4()) + "', has ISBN '" + self.item["ISBN"] + \
@@ -24,7 +24,7 @@ class BookInput(Loader):
 
 class UserInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'users.csv')  # Set exact filename to parse with this class
+        super().__init__(item, config.data_path + "users.csv")  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a user
         first_names = ("John", "Andy", "Joe", "Bob", "Alex", "Mary", "Alexa", "Monika", "Vladimir", "Tom", "Jerry")
@@ -40,7 +40,7 @@ class UserInput(Loader):
 
 class RatingInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'ratings.csv')  # Set exact filename to parse with this class
+        super().__init__(item, config.data_path + "ratings.csv")  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a review (review relation)
         typeql_insert_query = "match $u isa user, has foreign-id '" + self.item["User-ID"] + "'; " \
@@ -52,7 +52,7 @@ class RatingInput(Loader):
 
 class OrderInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'orders.csv')  # Set exact filename to parse with this class
+        super().__init__(item, config.data_path + "orders.csv")  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert an order
         i = 0
@@ -77,7 +77,7 @@ class OrderInput(Loader):
 
 class GenreInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'genres.csv')  # Set exact filename to parse with this class
+        super().__init__(item, config.data_path + "genres.csv")  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a genre/book association
         typeql_insert_query = "match $b isa book, has ISBN '" + self.item["ISBN"] + "'; " \
