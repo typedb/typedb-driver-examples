@@ -157,7 +157,7 @@ def search_genre(tag_name):  # Search books by genre tag
                 for answer in iterator:  # Iterating through results
                     result = "\n" + str(k)  # Prepare the positional number of result
                     result += " ISBN:" + str(answer.get("i").get_value())  # Prepare ISBN
-                    result += " book title:" + str(answer.get("n").get_value())  # Prepare book name
+                    result += ", Book title:" + str(answer.get("n").get_value())  # Prepare book name
                     print(result)  # Print prepared result
                     k += 1  # Increase the counter
     return
