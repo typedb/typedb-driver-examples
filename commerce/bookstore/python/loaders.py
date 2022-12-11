@@ -5,15 +5,15 @@ import config
 debug = False
 
 
-class Loader:
+class Loader:  # Superclass for all loaders
     def __init__(self, item, filename):
-        self.item = item
-        self.file = filename
+        self.item = item  # Object (line) from csv file
+        self.file = filename  # Filename of the csv file to import from
 
 
 class BookInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'books.csv')
+        super().__init__(item, config.data_path + 'books.csv')  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a book
         return "insert $b isa book, has id '" + str(uuid.uuid4()) + "', has ISBN '" + self.item["ISBN"] + \
@@ -24,7 +24,7 @@ class BookInput(Loader):
 
 class UserInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'users.csv')
+        super().__init__(item, config.data_path + 'users.csv')  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a user
         first_names = ("John", "Andy", "Joe", "Bob", "Alex", "Mary", "Alexa", "Monika", "Vladimir", "Tom", "Jerry")
@@ -40,7 +40,7 @@ class UserInput(Loader):
 
 class RatingInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'ratings.csv')
+        super().__init__(item, config.data_path + 'ratings.csv')  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a review (review relation)
         typeql_insert_query = "match $u isa user, has foreign-id '" + self.item["User-ID"] + "'; " \
@@ -52,7 +52,7 @@ class RatingInput(Loader):
 
 class OrderInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'orders.csv')
+        super().__init__(item, config.data_path + 'orders.csv')  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert an order
         i = 0
@@ -77,7 +77,7 @@ class OrderInput(Loader):
 
 class GenreInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + 'genres.csv')
+        super().__init__(item, config.data_path + 'genres.csv')  # Set exact filename to parse with this class
 
     def load(self):  # building a TypeQL request to insert a genre/book association
         typeql_insert_query = "match $b isa book, has ISBN '" + self.item["ISBN"] + "'; " \
@@ -87,7 +87,6 @@ class GenreInput(Loader):
 
 
 def create_genre_tags():  # Creating genre tags and tag hierarchy
-
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(config.db, SessionType.DATA) as session:
             with session.transaction(TransactionType.WRITE) as transaction:
@@ -158,45 +157,6 @@ def random_books():
                 for item_n in range(1, random.randint(2, 10)):  # Iterate through random (2-9) number of books
                     ordered_books.append(books[random.randint(0, 799)])  # Select random book from 800
     return ordered_books
-
-
-def generate_ordered_items():  # Generating random item-lists for orders from books
-    result = []
-    # generate 5 random sets of 2-9 books
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.READ) as transaction:
-                typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 800;"  # get 800 books
-                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-                iterator = transaction.query().match(typeql_read_query)  # Execute read query
-                answers = [ans.get("x") for ans in iterator]
-                books = [answer.get_value() for answer in answers]  # This contains the result (800 ISBN records)
-                for order_id in range(1, 6):  # Go through all 5 orders
-                    ordered_books = []
-                    for item_n in range(1, random.randint(2, 10)):  #
-                        ordered_books.append(books[random.randint(0, 799)])  # Exactly 800 books to select from
-                    result.append(ordered_books)
-
-    n = 1
-    # Add ordering relations (assign items from the sets above)
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            for order in result:
-                if debug: print("\nOrder #", n, "contains:")
-                for book in order:
-                    if debug: print("\nISBN", book)
-                    with session.transaction(TransactionType.WRITE) as transaction:
-                        typeql_insert_query = "match $b isa book, has ISBN '" + book + "';" \
-                                              "$o isa order, has id '" + str(n) + "', has foreign-user-id $fui;" \
-                                              "$u isa user, has foreign-id $fi;" \
-                                              "$fui = $fi;" \
-                                              "insert (order: $o, item: $b, author: $u ) isa ordering;"
-                        # the $fui and $fi variables are compared by value only
-                        if debug: print("Executing TypeQL Query: " + typeql_insert_query)
-                        transaction.query().insert(typeql_insert_query)
-                        transaction.commit()
-                n += 1
-    return  # END of generate_ordered_items()
 
 
 # This is a list of classes to import data
