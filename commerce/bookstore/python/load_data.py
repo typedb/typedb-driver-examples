@@ -193,8 +193,7 @@ def load_data():  # Main data load function
             for input in Inputs:  # Iterating through all CSV files
                 input["file"] = data_path + input["file"]
                 if debug: print("Loading from [" + input["file"] + ".csv] into TypeDB ...")
-                load_data_into_typedb(input, session)  # Main data loading function. Repeat for only file in Inputs
-            # generate_orders()  # Add randomly generated lists of items into orders
+                load_data_into_typedb(input, session)  # Main data loading function. Repeat for every file in Inputs
             print("\nData loading complete!")
     return
 
