@@ -8,7 +8,7 @@ parser.add_argument("-v", "--verbose", "-d", "--debug", help="Increase output ve
                     dest="verbosity", action="store_true")
 args = vars(parser.parse_args())
 
-if args["verbosity"]:  # if the argument was set
+if args["verbose"]:  # if the argument was set
     print("High verbosity option turned on.")
     debug = True  # Shows verbose debug messages in the console output
 else:

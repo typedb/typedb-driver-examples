@@ -5,12 +5,12 @@ import config
 import argparse
 
 # Verbosity option implementation
-parser = argparse.ArgumentParser(description="Loads data into TypeDB for the Bookstore example")
-parser.add_argument("-v", "--verbose", "-d", "--debug", help="Increase output verbosity",
-                    dest="verbosity", action="store_true")
+parser = argparse.ArgumentParser(description='Loads data into TypeDB for the Bookstore example')
+parser.add_argument("-v", "--verbose", "-d", "--debug", help='Increase output verbosity',
+                    dest="verbose", action='store_true')
 args = vars(parser.parse_args())
 
-if args["verbosity"]:  # if the argument was set
+if args["verbose"]:  # if the argument was set
     print("High verbosity option turned on.")
     debug = True  # Shows verbose debug messages in the console output
 else:
@@ -60,7 +60,6 @@ def load_data():  # Main data load function
                 r = input_type("")  # default object of the input_type
                 if debug: print("Loading from [" + r.file + "] into TypeDB ...")
                 load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
-            # loaders.generate_ordered_items()  # Add randomly generated lists of items into orders
             print("\nData loading complete!")
     return
 
