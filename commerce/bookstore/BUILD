@@ -32,8 +32,8 @@ filegroup(
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
-    include = glob(["*","python/*","request-examples/*"]),
-    exclude = glob(["python/data/*", "images/*", "*.md"]),
+    include = glob(["*","python/*"]),
+    exclude = glob(["python/data/*", "images/*", "*.md", "python/todo.md","request-examples/*"]),
     license_type = "apache-header",
     size = "small",
 )
