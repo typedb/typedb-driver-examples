@@ -20,13 +20,14 @@
 #
 
 from typedb.client import TypeDB, SessionType, TransactionType, TypeDBOptions
+from enum import Enum
 import argparse
 import config
 
 # Verbosity option implementation
 parser = argparse.ArgumentParser(description="Bookstore example requests")
 parser.add_argument("-v", "--verbose", "-d", "--debug", help="Increase output verbosity",
-                    dest="verbosity", action="store_true")
+                    dest="verbose", action="store_true")
 args = vars(parser.parse_args())
 
 if args["verbose"]:  # if the argument was set
@@ -36,6 +37,12 @@ else:
     debug = False  # No debug messages
 
 
+class ResultCode(Enum):
+    OK = 0,
+    INPUT_INVALID = 1,
+    EXIT = 2
+
+
 def selection():  # This is the main UI to select a function to proceed with
 
     print("Please choose one of the following functions: ")
@@ -43,28 +50,29 @@ def selection():  # This is the main UI to select a function to proceed with
     print("2. Search for a user")
     print("3. Search for an order")
     print("4. Search for books by genre")
+    print("0. Exit")
     selection = input("Your request: ")  # Storing answer here
     if selection == "":
         print("Empty selection recognized. Please try again.")
-        return "1"
+        return ResultCode.INPUT_INVALID
     elif selection == "1":  # We chose variant #1 — searching for a book
         search_book(input("Searching for a book. Please type in an ISBN or press enter for a full listing: "))
-        return "0"
+        return ResultCode.OK
     elif selection == "2":  # 2. Searching for a user
         search_user(input("Searching for a user. Please type in a foreign ID or press enter for a full listing: "))
-        return "0"
+        return ResultCode.OK
     elif selection == "3":  # 3. Searching for an order
         search_order(input("Searching for an order. Please type in an order ID or press enter for a full listing: "))
-        return "0"
+        return ResultCode.OK
     elif selection == "4":  # 4. Searching for books by genre
         show_all_genres()  # Display all genres as a tip
         search_genre(input("Searching for books by genre. Please type in genre name: "))
-        return "0"
-    elif x == "0" or "exit" or "exit()" or "close" or "close()" or "help":  # Exit the program
-        return "2"
+        return ResultCode.OK
+    elif selection == "0" or "exit" or "exit()" or "close" or "close()" or "help":  # Exit the program
+        return ResultCode.EXIT
     else:
         print("Invalid selection recognized. Please try again.")  # Something else / unrecognized - repeat
-        return "1"
+        return ResultCode.INPUT_INVALID
 
 
 def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN given)
@@ -234,13 +242,13 @@ def show_all_genres():  # Just display all genre tags
                 print("Total count:", k)  # Printing counter value after all iterations
     return
 
+
 # This is the main body of this script
-x = "1"
 print("Bookstore CRM v.0.0.0.0.1a")
 while True:  # This cycle will repeat until one of the following breaks happen
-    x = selection()  # call selection UI once per cycle
-    if x == "0":  # If we successfully selected one of the functions — we no longer need to repeat the selection
+    x = selection()  # Call selection UI once per cycle
+    if x == ResultCode.OK:  # Successfully selected one of the functions — we no longer need to repeat the selection
         break  # This stops printing selection of the function UI after successful pick
-    elif x == "2":  # If we chose to exit
+    elif x == ResultCode.EXIT:  # Chose to exit
         print("Terminating program.")
-        break  # This stops printing selection of the function UI after successful pick
+        break  # This stops printing selection of the function UI after exit
