@@ -18,7 +18,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+"""
 exports_files(["requirements.txt"])
 
 load("@rules_python//python:python.bzl", "py_library", "py_test")
@@ -66,3 +66,4 @@ py_library(
         "@vaticle_typedb_client_python//:client_python"
     ]
 )
+"""
