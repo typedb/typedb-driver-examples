@@ -18,6 +18,16 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
+checkstyle_test(
+    name = "checkstyle",
+    include = glob(["*"]),
+    exclude = glob(["data/*", "*.md"]),
+    license_type = "apache-header",
+    size = "small",
+)
+
 """
 exports_files(["requirements.txt"])
 
