@@ -23,7 +23,7 @@ load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
     include = glob(["*"]),
-    exclude = glob(["data/*", "*.md"]),
+    exclude = glob(["data/*", "*.md", "*.txt"]),
     license_type = "apache-header",
     size = "small",
 )
