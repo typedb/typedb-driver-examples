@@ -96,72 +96,38 @@ class OrderInput(Loader):
         return typeql_insert_query
 
 
-class GenreInput(Loader):
+class BookGenreInput(Loader):
     def __init__(self, item):
-        super().__init__(item, config.data_path + "genres.csv")  # Set exact filename to parse with this class
+        super().__init__(item, config.data_path + "book_genres.csv")  # Set exact filename to parse with this class
 
-    def load(self):  # building a TypeQL request to insert a genre/book association
+    def load(self):  # building a TypeQL request to insert a book/genre association
         typeql_insert_query = "match $b isa book, has ISBN '" + self.item["ISBN"] + "'; " \
                               "$g isa genre-tag; $g '" + self.item["Genre"] + "'; " \
                               "insert $b has $g;"
         return typeql_insert_query
 
 
-def create_genre_tags():  # Creating genre tags and tag hierarchy
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.WRITE) as transaction:
-                transaction.query().insert("insert $g 'Fiction' isa genre-tag;")
-                transaction.query().insert("insert $g 'Non fiction' isa genre-tag;")
-                transaction.query().insert("insert $g 'Other' isa genre-tag;")
-                transaction.query().insert("insert $g 'Adults only' isa genre-tag;")
-                transaction.query().insert("insert $g 'Kids friendly' isa genre-tag;")
-                transaction.query().insert("insert $g 'Sci-Fi' isa genre-tag;")
-                transaction.query().insert("match $b = 'Sci-Fi'; $b isa genre-tag;"
-                                           "$p = 'Fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Fantasy' isa genre-tag;")
-                transaction.query().insert("match $b = 'Fantasy'; $b isa genre-tag;"
-                                           "$p = 'Fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Biography' isa genre-tag;")
-                transaction.query().insert("match $b = 'Biography'; $b isa genre-tag;"
-                                           "$p = 'Non fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Adventure' isa genre-tag;")
-                transaction.query().insert("match $b = 'Adventure'; $b isa genre-tag;"
-                                           "$p = 'Fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Detective_story' isa genre-tag;")
-                transaction.query().insert("match $b = 'Detective_story'; $b isa genre-tag;"
-                                           "$p = 'Fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'History' isa genre-tag;")
-                transaction.query().insert("match $b = 'History'; $b isa genre-tag;"
-                                           "$p = 'Non fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Politics' isa genre-tag;")
-                transaction.query().insert("match $b = 'Politics'; $b isa genre-tag;"
-                                           "$p = 'Non fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Up to 5 years' isa genre-tag;")
-                transaction.query().insert("match $b = 'Up to 5 years'; $b isa genre-tag;"
-                                           "$p = 'Kids friendly'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Technical Documentation' isa genre-tag;")
-                transaction.query().insert("match $b = 'Technical Documentation'; $b isa genre-tag;"
-                                           "$p = 'Non fiction'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("match $b = 'Technical Documentation'; $b isa genre-tag;"
-                                           "$p = 'Adults only'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.query().insert("insert $g 'Map' isa genre-tag;")
-                transaction.query().insert("match $b = 'Map'; $b isa genre-tag;"
-                                           "$p = 'Technical Documentation'; $p isa genre-tag;"
-                                           "insert $th (sub-tag: $b, sup-tag: $p) isa tag-hierarchy;")
-                transaction.commit()
-    print("Created genre tags.")
-    return
+class GenreInput(Loader):
+    def __init__(self, item):
+        super().__init__(item, config.data_path + "genres.csv")  # Set exact filename to parse with this class
+
+    def load(self):  # building a TypeQL request to insert genre-tags
+        typeql_insert_query = "insert $g '" + self.item["Genre"] + "' isa genre-tag;"
+        return typeql_insert_query
+
+
+class GenreHierarchyInput(Loader):
+    def __init__(self, item):
+        super().__init__(item, config.data_path + "genres.csv")  # Set exact filename to parse with this class
+
+    def load(self):  # building a TypeQL request to insert genre hierarchy
+        if self.item["Genre"] != "NULL":
+            typeql_insert_query = "match $g = '" + self.item["Genre"] + "'; $g isa genre-tag;" \
+                                 "$p = '" + self.item["Parent"] + "'; $p isa genre-tag;" \
+                                 "insert $th (sub-tag: $g, sup-tag: $p) isa tag-hierarchy;"
+        else:
+            typeql_insert_query = ""
+        return typeql_insert_query
 
 
 def random_books():
@@ -180,6 +146,6 @@ def random_books():
     return ordered_books
 
 
-# This is a list of classes to import data
-# Classes have filenames and corresponding methods to load the parsed data into the DB
-Input_types_list = [BookInput, UserInput, RatingInput, OrderInput, GenreInput]
+# This is a list of classes to import data. The order of values is important for loading data order.
+# Classes have filenames and corresponding methods to load the parsed data into the TypeDB
+Input_types_list = [GenreInput, GenreHierarchyInput, BookInput, UserInput, RatingInput, OrderInput, BookGenreInput]

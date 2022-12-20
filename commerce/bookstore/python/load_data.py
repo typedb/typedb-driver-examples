@@ -38,54 +38,52 @@ else:
     debug = False  # No debug messages
 
 
-def parse_data_to_dictionaries(input):
-    """
-      :param input.file as string: the path to the data file, minus the format
-      :returns items as list of dictionaries: each item representing a data item from the file at input.file
-    """
+def parse_data_to_dictionaries(input):  # input.file as string: the path to the data file
     if debug: print("Parsing of " + input["file"] + "started.")
-    items = []
-
-    with open(input("").file, encoding="UTF-8") as data:  # reads the file through a stream,
-        for row in csv.DictReader(data, delimiter=";", skipinitialspace=True):
-            item = {key: value for key, value in row.items()}  # fieldnames (keys) are taken from the first row
+    items = []  # prepare empty list
+    with open(input("").file, encoding="UTF-8") as data:  # reads the input.file through a stream
+        for row in csv.DictReader(data, delimiter=";", skipinitialspace=True):  # iterate through rows
+            item = {key: value for key, value in row.items()}  # Creates an item. Keys are taken from the first row
             items.append(item)  # adds the dictionary to the list of items
     if debug: print("Parsing of " + input["file"] + " successful.")
-    return items
+    return items  # items as list of dictionaries: each item representing a data item from the file at input.file
 
 
-def load_data_into_typedb(input, session):  # Requests generation of insert queries and sends them to TypeDB
+def load_data_into_typedb(input, session):  # Requests generation of insert queries and sends queries to the TypeDB
     """
-      :param input as dictionary: contains details required to parse the data
-      :param session: off of which a transaction will be created
+      :param input as class: has load method to build insert query. Object initiated with an item to insert
+      :param session: an established connection to the TypeDB off of which a transaction will be created
     """
-    items = parse_data_to_dictionaries(input)  # gets the data items as a list of dictionaries
-    for item in items:  # for each item dictionary
+    items = parse_data_to_dictionaries(input)  # parses csv file (input.file) to create a list of dictionaries
+    skip_count = 0  # counter of non-successful insert attempts
+    for item in items:  # for each item dictionary in the list (former row in csv file)
         with session.transaction(TransactionType.WRITE) as transaction:  # creates a TypeDB transaction
-            i = input(item)  # This is an object of input type with an item as a parameter
-            typeql_insert_query = i.load()  # This calls one of the _generate_query functions to
-            # construct the corresponding TypeQL insert query
-            if debug: print("Executing TypeQL Query: " + typeql_insert_query)
-            transaction.query().insert(typeql_insert_query)  # runs the query
-            transaction.commit()  # commits the transaction
-
-    print("Inserted " + str(len(items)) + " items from [ " + i.file + "] into TypeDB.\n")
+            input_object = input(item)  # This is an object of input class initiated with an item as a parameter
+            typeql_insert_query = input_object.load()  # This builds the corresponding TypeQL insert query from item
+            if typeql_insert_query != "":
+                if debug: print("Executing TypeQL Query: " + typeql_insert_query)
+                transaction.query().insert(typeql_insert_query)  # runs the query
+                transaction.commit()  # commits the transaction
+                # todo: Add a transaction result check. Increase skip_cont if nothing was inserted
+            else:
+                if debug: print("Item parsing resulted in empty query statement. Skipping this item —", item)
+                skip_count += 1
+    print("Inserted " + str(len(items) - skip_count) + " out of " + str(len(items)) + " items from [ "
+          + input_object.file + "] into TypeDB with", input.__name__)
     return  # END of load_data_into_typedb()
 
 
 def load_data():  # Main data load function
-    loaders.create_genre_tags()  # Creating genre tags before loading data
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(config.db, SessionType.DATA) as session:
-            for input_type in loaders.Input_types_list:  # Iterating through all types of import
-                r = input_type("")  # default object of the input_type
-                if debug: print("Loading from [" + r.file + "] into TypeDB ...")
-                load_data_into_typedb(input_type, session)  # Main data loading function. Repeat for only file in Inputs
+            for input_type in loaders.Input_types_list:  # Iterating through the list of classes to import all data
+                if debug: print("Loading from [" + input_type("").file + "] into TypeDB ...")
+                load_data_into_typedb(input_type, session)  # Call to load data: session and import class as parameters
             print("\nData loading complete!")
     return
 
 
-def has_existing_data():  # Checking whether the DB has schema and data already
+def has_existing_data():  # Checking whether the DB already has the schema and the data loaded
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(config.db, SessionType.SCHEMA) as session:
             with session.transaction(TransactionType.READ) as transaction:
@@ -93,9 +91,9 @@ def has_existing_data():  # Checking whether the DB has schema and data already
                     typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 3;"
                     transaction.query().match(typeql_read_query)
                     print("The DB contains the schema and loaded data already.")
-                    return True
-                except:  # If the attempt was unsuccessful — we consider DB as empty (brand new, no schema)
-                    return False
+                    return True  # Success means DB most likely already has the schema and the data loaded
+                except:
+                    return False  # Exception — we consider DB as empty (brand new, no schema, no data)
 
 
 def setup():  # Loading schema
@@ -112,6 +110,7 @@ def setup():  # Loading schema
                     except Exception as e:
                         print("Failed to load schema: " + str(e))
                         return False  # Setup failed
+
 
 # This is the main body of this script
 with TypeDB.core_client("localhost:1729") as client:
