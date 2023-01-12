@@ -43,12 +43,7 @@ py_binary(
     srcs = ["load_data.py"],
     deps = [
         "@vaticle_typedb_client_python//:client_python",
-
         bookstore_requirement("argparse")
-
-#import loaders
-#import config
-
     ],
     data = [
         "//commerce/bookstore:data-csv"
