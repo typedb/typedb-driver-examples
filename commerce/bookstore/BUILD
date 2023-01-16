@@ -25,7 +25,7 @@ exports_files(
 
 filegroup(
     name = "data-csv",
-    srcs = glob(["python/data/*.csv"]),
+    srcs = glob(["data/*.csv"]),
     visibility = ["//visibility:public"]
 )
 
@@ -33,7 +33,7 @@ load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
     include = glob(["*","python/*"]),
-    exclude = glob(["images/*", "*.md", "request-examples/*"]),
+    exclude = glob(["images/*", "*.md", "request-examples/*", "data/*", "*.txt"]),
     license_type = "apache-header",
     size = "small",
 )

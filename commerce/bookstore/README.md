@@ -46,7 +46,7 @@ This example is located in the `typedb/commerce/bookstore/` directory and consis
 - `schema.tql` — DB schema in TypeQL
 - `README.md` — documentation for the bookstore example. You are reading it right now
 - `todo.md` — list of ideas for improvements in the future. If you want to contribute to this example, you can start with these ideas
-- Bookstore dataset `python/data/`:
+- Bookstore dataset `data/`:
   - `books.csv`
   - `users.csv`
   - `ratings.csv`
