@@ -96,7 +96,7 @@ def has_existing_data():  # Checking whether the DB already has the schema and t
                     return False  # Exception — we consider DB as empty (brand new, no schema, no data)
 
 
-def setup():  # Loading schema
+def load_schema():  # Loading schema
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(config.db, SessionType.SCHEMA) as session:
             with open("../schema.tql", "r") as schema:  # Read the schema.tql file
@@ -118,7 +118,7 @@ with TypeDB.core_client("localhost:1729") as client:
         print("Detected DB " + config.db + ". Connecting.")
         if not has_existing_data():  # Most likely the DB is empty and has no schema
             print("Attempting to load the schema and data.")
-            if setup():  # Schema has been loaded
+            if load_schema():  # Schema has been loaded
                 load_data()  # Main data loading function
         else:  # The data check showed that we already have schema and some data in the DB
             print("To reload data we will delete the existing DB... Please confirm!")
@@ -127,7 +127,7 @@ with TypeDB.core_client("localhost:1729") as client:
                 print("Deleted DB " + config.db + ".")
                 client.databases().create(config.db)  # Creating new (empty) DB
                 print("DB " + config.db + " created. Applying schema...")
-                if setup():  # Schema has been loaded
+                if load_schema():  # Schema has been loaded
                     load_data()  # Main data loading function
             else:
                 exit("Database was not deleted due to user choice. Exiting.")
@@ -136,5 +136,5 @@ with TypeDB.core_client("localhost:1729") as client:
         print("DB " + config.db + " is absent. Trying to create.")
         client.databases().create(config.db)  # Creating the DB
         print("DB " + config.db + " created. Applying schema...")
-        if setup():  # Schema has been loaded
+        if load_schema():  # Schema has been loaded
             load_data()  # Main data loading function
