@@ -82,7 +82,7 @@ def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN g
         show_all_books()  # Display all books
         return
     else:  # Non-empty ISBN given
-        show_book(ISBN)  # Display book by ISBN
+        show_book(ISBN)  # Display selected book
         return
 
 
@@ -123,6 +123,7 @@ def show_book(ISBN):  # Searching book by ISBN and print info
                     # printed average (s (sum) divided by g (number of results)), rounded to 2 signs after a comma
                 else:  # No rating results found by the query
                     print("No rating data for this book.")
+    return
 
 
 def search_user(user):  # Search user by foreign-id (or show all users if empty id given)
@@ -132,19 +133,25 @@ def search_user(user):  # Search user by foreign-id (or show all users if empty 
         show_all_users()  # Display all users
         return
     else:
-        with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
-            with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
-                with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
-                    typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id '" + user + "'; " \
-                                        "get $i, $n;"  # Limit the number of results by adding " limit 100;"
-                    if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-                    iterator = transaction.query().match(typeql_read_query)  # Executing query
-                    k = 0
-                    for item in iterator:  # Iterating through results
-                        print(user, item.get("n").get_value(), item.get("i").get_value(), sep=" — ")  # Print results
-                        k += 1  # Counter
-                    print("Users found:", k)  # Print number of results
-                    return
+        show_user(user)  # Display selected user
+        return
+
+
+def show_user(user):  # Display user by foreign-id
+
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
+                typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id '" + user + "'; " \
+                                    "get $i, $n;"  # Limit the number of results by adding " limit 100;"
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Executing query
+                k = 0
+                for item in iterator:  # Iterating through results
+                    print(user, item.get("n").get_value(), item.get("i").get_value(), sep=" — ")  # Print results
+                    k += 1  # Counter
+                print("Users found:", k)  # Print number of results
+                return
 
 
 def search_order(order_id):  # Search order by id (or show all orders if empty id given)
@@ -159,7 +166,7 @@ def search_order(order_id):  # Search order by id (or show all orders if empty i
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                 iterator = transaction.query().match(typeql_read_query)  # Execute query
                 result = ""
-                for answer in iterator:  # Iterate through results (orders)
+                for answer in iterator:  # Iterate through result of the query (all orders)
                     if order_id == "" or (order_id == answer.get("i").get_value()):  # show all or one with the order_id
                         result += "\nOrder ID:" + str(answer.get("i").get_value())
                         result += " Foreign User-ID:" + str(answer.get("fui").get_value())
