@@ -82,41 +82,47 @@ def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN g
         show_all_books()  # Display all books
         return
     else:  # Non-empty ISBN given
-        with TypeDB.core_client("localhost:1729") as client:
-            with client.session(config.db, SessionType.DATA) as session:
-                with session.transaction(TransactionType.READ) as transaction:
-                    typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "', has name $n, " \
-                                        "has book-author $ba; " \
-                                        "get $n, $ba;"
-                    if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-                    iterator = transaction.query().match(typeql_read_query)  # Execute query
-                    k = 0  # counter
-                    for item in iterator:  # Iterating through results of the match query
-                        print(ISBN, item.get("n").get_value(), item.get("ba").get_value(), sep=" — ")  # Print results
-                        k += 1
-        print("books found:", k)  # Print counter as a number of results
-        # Rating computation
-        with TypeDB.core_client("localhost:1729") as client:  # 1
-            with client.session(config.db, SessionType.DATA) as session:  # 2
-                with session.transaction(TransactionType.READ) as transaction:  # a
-                    typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "';" \
-                                        "$r (product: $b, author:$a) isa review; $r has rating $rating;" \
-                                        "get $rating;"
-                    if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-                    iterator = transaction.query().match(typeql_read_query)  # Execute query
-                    g = 0
-                    s = 0
-                    for item in iterator:  # iterating through query results
-                        g += 1  # counter
-                        rating = item.get("rating").get_value()  # Get rating value
-                        if debug: print(g, "Review rating found:", rating)
-                        s = s + rating  # sum
-                    if g > 0:  # If there was any rating (counter was altered)
-                        print("Total rating records:", str(g) + ". Average book rating:", round(s/g, 2))
-                        # printed s (sum) divided by g (number of results), rounded to 2 signs after a comma
-                    else:  # No rating found
-                        print("No rating data for this book.")
-    return
+        show_book(ISBN)  # Display book by ISBN
+        return
+
+
+def show_book(ISBN):  # Searching book by ISBN and print info
+
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
+                typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "', has name $n, " \
+                                    "has book-author $ba; " \
+                                    "get $n, $ba;"
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Execute match query
+                k = 0  # Counter initialisation
+                for item in iterator:  # Iterating through results of the match query
+                    print(ISBN, item.get("n").get_value(), item.get("ba").get_value(), sep=" — ")  # Print every result
+                    k += 1
+    print("Books found:", k)  # Print the counter as the number of results found
+
+    # Rating computation
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
+                typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "';" \
+                                    "$r (product: $b, author:$a) isa review; $r has rating $rating;" \
+                                    "get $rating;"
+                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                iterator = transaction.query().match(typeql_read_query)  # Execute match query
+                g = 0  # Initialising counter
+                s = 0  # Initialising sum variable
+                for item in iterator:  # Iterating through query results
+                    g += 1  # Increase the counter for every query result
+                    rating = item.get("rating").get_value()  # Get rating value
+                    if debug: print(g, "Review rating found:", rating)
+                    s = s + rating  # Add to sum
+                if g > 0:  # If there was any rating (counter was increased)
+                    print("Total rating records:", str(g) + ". Average book rating:", round(s/g, 2))
+                    # printed average (s (sum) divided by g (number of results)), rounded to 2 signs after a comma
+                else:  # No rating results found by the query
+                    print("No rating data for this book.")
 
 
 def search_user(user):  # Search user by foreign-id (or show all users if empty id given)
@@ -126,9 +132,9 @@ def search_user(user):  # Search user by foreign-id (or show all users if empty 
         show_all_users()  # Display all users
         return
     else:
-        with TypeDB.core_client("localhost:1729") as client:  # 1
-            with client.session(config.db, SessionType.DATA) as session:  # 2
-                with session.transaction(TransactionType.READ) as transaction:  # a
+        with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+            with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+                with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                     typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id '" + user + "'; " \
                                         "get $i, $n;"  # Limit the number of results by adding " limit 100;"
                     if debug: print("Executing TypeQL read Query: " + typeql_read_query)
@@ -143,9 +149,9 @@ def search_user(user):  # Search user by foreign-id (or show all users if empty 
 
 def search_order(order_id):  # Search order by id (or show all orders if empty id given)
     # Different approach - download all orders first, filter later
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.READ) as transaction:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $o isa order, has id $i, has foreign-user-id $fui, " \
                                     "has created-date $d, has status $s, has delivery-address $da;" \
                                     "get $i, $fui, $d, $s, $da; sort $i asc;"
@@ -172,9 +178,9 @@ def search_genre(tag_name):  # Search books by genre tag
         tag_name = "Map"  # Choosing genre instead of an empty input
     TB = TypeDBOptions.core()  # Initialising a new set of options
     TB.infer = True  # Enabling inference in this new set of options
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.READ, TB) as transaction:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ, TB) as transaction:  # Open transaction to read
                 typeql_read_query = "match $g isa genre-tag; $g '" + tag_name + "';" \
                                     "$b isa book, has name $n, has ISBN $i, has $g; " \
                                     "get $i, $n;"
@@ -193,9 +199,9 @@ def search_genre(tag_name):  # Search books by genre tag
 
 def show_all_books():  # Just show all books
     print("Showing all books")
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.READ) as transaction:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $b isa book, has ISBN $i, has name $n, has book-author $ba; " \
                                     "get $i, $n, $ba;"  # Limit the number of results by adding " limit 100;"
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
@@ -211,9 +217,9 @@ def show_all_books():  # Just show all books
 
 def show_all_users():  # Just show all users
     print("Showing all users")
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.READ) as transaction:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id $fi; " \
                                     "get $i, $n, $fi; sort $fi asc;"  # Limit the number of results by adding " limit 100;"
                 # Results sorted by foreign-id in ascending order. Since $fi is a string 9 goes after 88 and before 91
@@ -229,9 +235,9 @@ def show_all_users():  # Just show all users
 
 
 def show_all_genres():  # Just display all genre tags
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
-            with session.transaction(TransactionType.READ) as transaction:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $g isa genre-tag; get $g;"  # Prepare query
                 if debug: print("Executing TypeQL read Query: " + typeql_read_query)
                 iterator = transaction.query().match(typeql_read_query)  # Execute transaction

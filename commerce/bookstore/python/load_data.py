@@ -57,7 +57,7 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
     items = parse_data_to_dictionaries(input)  # parses csv file (input.file) to create a list of dictionaries
     skip_count = 0  # counter of non-successful insert attempts
     for item in items:  # for each item dictionary in the list (former row in csv file)
-        with session.transaction(TransactionType.WRITE) as transaction:  # creates a TypeDB transaction
+        with session.transaction(TransactionType.WRITE) as transaction:  # Open transaction to write with session provided
             input_object = input(item)  # This is an object of input class initiated with an item as a parameter
             typeql_insert_query = input_object.load()  # This builds the corresponding TypeQL insert query from item
             if typeql_insert_query != "":
@@ -74,8 +74,8 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
 
 
 def load_data():  # Main data load function
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.DATA) as session:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             for input_type in loaders.Input_types_list:  # Iterating through the list of classes to import all data
                 if debug: print("Loading from [" + input_type("").file + "] into TypeDB ...")
                 load_data_into_typedb(input_type, session)  # Call to load data: session and import class as parameters
@@ -84,9 +84,9 @@ def load_data():  # Main data load function
 
 
 def has_existing_data():  # Checking whether the DB already has the schema and the data loaded
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.SCHEMA) as session:
-            with session.transaction(TransactionType.READ) as transaction:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
+            with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 try:
                     typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 3;"
                     transaction.query().match(typeql_read_query)
@@ -97,11 +97,11 @@ def has_existing_data():  # Checking whether the DB already has the schema and t
 
 
 def load_schema():  # Loading schema
-    with TypeDB.core_client("localhost:1729") as client:
-        with client.session(config.db, SessionType.SCHEMA) as session:
+    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+        with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
             with open("../schema.tql", "r") as schema:  # Read the schema.tql file
                 define_query = schema.read()
-                with session.transaction(TransactionType.WRITE) as transaction:
+                with session.transaction(TransactionType.WRITE) as transaction:  # Open transaction to write
                     try:
                         transaction.query().define(define_query)  # Execute query to load the schema
                         transaction.commit()  # Commit transaction
@@ -113,7 +113,7 @@ def load_schema():  # Loading schema
 
 
 # This is the main body of this script
-with TypeDB.core_client("localhost:1729") as client:
+with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
     if client.databases().contains(config.db):  # Check the DB existence
         print("Detected DB " + config.db + ". Connecting.")
         if not has_existing_data():  # Most likely the DB is empty and has no schema
