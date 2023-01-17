@@ -23,13 +23,14 @@ import random, uuid
 from typedb.client import TypeDB, SessionType, TransactionType
 import config
 
-debug = False
+debug = False  # Default value for debug verbosity flag
 
 
 class Loader:  # Superclass for all loaders
-    def __init__(self, item, filename):
+    def __init__(self, item, filename, verbose = debug):
         self.item = item  # Object (line) from csv file
         self.file = filename  # Filename of the csv file to import from
+        self.verbose = verbose
 
 
 class BookInput(Loader):
@@ -78,9 +79,9 @@ class OrderInput(Loader):
     def load(self):  # building a TypeQL request to insert an order
         i = 0
         typeql_insert_query = "match $u isa user, has foreign-id '" + self.item["User-ID"] + "';"
-        for book in random_books():
+        for book in random_books(self.verbose):
             i += 1  # counter for the number of books
-            if debug: print("Book #" + str(i) + " ISBN: " + book)
+            if self.verbose: print("Book #" + str(i) + " ISBN: " + book)
             typeql_insert_query += "$b" + str(i) + " isa book, has ISBN '" + book + "';"
 
         typeql_insert_query += "insert $o isa order, has id '" + self.item["id"] + "', " \
@@ -130,12 +131,12 @@ class GenreHierarchyInput(Loader):
         return typeql_insert_query
 
 
-def random_books():
+def random_books(verbose):
     with TypeDB.core_client("localhost:1729") as client:
         with client.session(config.db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 800;"  # get 800 books
-                if debug: print("Executing TypeQL read Query: " + typeql_read_query)
+                if verbose: print("Executing TypeQL read Query: " + typeql_read_query)
                 iterator = transaction.query().match(typeql_read_query)  # Execute read query
                 answers = [ans.get("x") for ans in iterator]
                 books = [answer.get_value() for answer in answers]  # This contains the result (800 ISBN records)

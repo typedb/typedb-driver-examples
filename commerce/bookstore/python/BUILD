@@ -46,7 +46,8 @@ py_binary(
         bookstore_requirement("argparse")
     ],
     data = [
-        "//commerce/bookstore:data-csv"
+        "//commerce/bookstore:data-csv",
+        "//commerce/bookstore:data-tql"
     ]
 )
 

@@ -19,13 +19,19 @@
 # under the License.
 #
 
-exports_files(
-    glob(["*.tql"])
-)
+# exports_files(
+#     glob(["*.tql"])
+# )
 
 filegroup(
     name = "data-csv",
     srcs = glob(["data/*.csv"]),
+    visibility = ["//visibility:public"]
+)
+
+filegroup(
+    name = "data-tql",
+    srcs = glob(["*.tql"]),
     visibility = ["//visibility:public"]
 )
 
