@@ -123,7 +123,7 @@ rule super-tag-hierarchy:
 The second one works also for genre tags, used to improve tag searching experience. By assigning tag to a book you are also assigning all sup-tags to the same book. So the book can be found not only by exact tag you have assigned to it, but also by all of its parent tags.
 
 ```
-rule super-tag:
+rule super-tag-ownership:
     when {
         $book isa book;
         $g isa genre-tag;

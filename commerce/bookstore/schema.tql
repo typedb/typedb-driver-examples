@@ -110,7 +110,7 @@ define
             (sup-tag: $p, sub-tag: $bb) isa tag-hierarchy;
         };
         
-    rule super-tag:
+    rule super-tag-ownership:
         when {
             $book isa book;
             $g isa genre-tag;
