@@ -145,11 +145,6 @@ pip_install(
     requirements = "//telecom/phone_calls/python:requirements.txt"
 )
 
-pip_install(
-    name = "bookstore_pip",
-    requirements = "//commerce/bookstore/python:requirements.txt"
-)
-
 # Load java example dependencies
 load("//dependencies/maven:artifacts.bzl", vaticle_typedb_examples_maven_artifacts = "artifacts")
 
