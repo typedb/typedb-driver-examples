@@ -53,7 +53,9 @@ load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
     include = glob([".factory/*", "commerce/bookstore/**/*"]) + [".bazelrc", ".gitignore", "BUILD", "WORKSPACE"],
-    exclude = glob(["commerce/bookstore/data/*", "commerce/bookstore/images/*", "request-examples"]),
+    exclude = glob(["commerce/bookstore/data/*", "commerce/bookstore/images/*", "commerce/bookstore/request-examples/*",
+                    "commerce/bookstore/README.md", "commerce/bookstore/python/requirements.txt",
+                    "commerce/bookstore/python/todo.md"]),
     license_type = "apache-header",
     size = "small",
 )
