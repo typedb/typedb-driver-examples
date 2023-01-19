@@ -20,6 +20,7 @@
 #
 
 import csv
+import os
 from typedb.client import TypeDB, SessionType, TransactionType
 import loaders
 import config
@@ -97,9 +98,10 @@ def has_existing_data():  # Checking whether the DB already has the schema and t
 
 
 def load_schema():  # Loading schema
+    this_script_dir = os.path.dirname(__file__)  # Look for a path to this script, load_data.py
     with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
         with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
-            with open("../schema.tql", "r") as schema:  # Read the schema.tql file
+            with open(os.path.join(this_script_dir, "../schema.tql"), "r") as schema:  # Read the schema.tql file
                 define_query = schema.read()
                 with session.transaction(TransactionType.WRITE) as transaction:  # Open transaction to write
                     try:
