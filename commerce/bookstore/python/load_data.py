@@ -39,27 +39,27 @@ else:
     debug = False  # No debug messages
 
 
-def parse_data_to_dictionaries(input):  # input.file as string: the path to the data file
+def parse_data_to_dictionaries(input):  # input.file is a string: the path to the dataset file
     if debug: print("Parsing of " + input["file"] + "started.")
-    items = []  # prepare empty list
-    with open(input("").file, encoding="UTF-8") as data:  # reads the input.file through a stream
+    items = []  # prepare an empty list
+    with open(input("").file, encoding="UTF-8") as data:  # reads the dataset file through a stream
         for row in csv.DictReader(data, delimiter=";", skipinitialspace=True):  # iterate through rows
             item = {key: value for key, value in row.items()}  # Creates an item. Keys are taken from the first row
             items.append(item)  # adds the dictionary to the list of items
     if debug: print("Parsing of " + input["file"] + " successful.")
-    return items  # items as list of dictionaries: each item representing a data item from the file at input.file
+    return items  # items as list of dictionaries: each item representing a data item from the file at loader.file
 
 
-def load_data_into_typedb(input, session):  # Requests generation of insert queries and sends queries to the TypeDB
+def load_data_into_typedb(loader, session):  # Requests generation of insert queries and sends queries to the TypeDB
     """
-      :param input as class: has load method to build insert query. Object initiated with an item to insert
+      :param loader as class: has load method to build insert query. Object initiated with an item to insert
       :param session: an established connection to the TypeDB off of which a transaction will be created
     """
-    items = parse_data_to_dictionaries(input)  # parses csv file (input.file) to create a list of dictionaries
+    items = parse_data_to_dictionaries(loader)  # parses csv file (loader.file) to create a list of dictionaries
     skip_count = 0  # counter of non-successful insert attempts
     for item in items:  # for each item dictionary in the list (former row in csv file)
         with session.transaction(TransactionType.WRITE) as transaction:  # Open transaction to write with session provided
-            input_object = input(item)  # This is an object of input class initiated with an item as a parameter
+            input_object = loader(item)  # This is an object of one of the Loader subclass initiated with an item
             typeql_insert_query = input_object.load()  # This builds the corresponding TypeQL insert query from item
             if typeql_insert_query != "":
                 if debug: print("Executing TypeQL Query: " + typeql_insert_query)
@@ -70,16 +70,16 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
                 if debug: print("Item parsing resulted in empty query statement. Skipping this item —", item)
                 skip_count += 1
     print("Inserted " + str(len(items) - skip_count) + " out of " + str(len(items)) + " items from [ "
-          + input_object.file + "] into TypeDB with", input.__name__)
+          + input_object.file + "] into TypeDB with", loader.__name__)
     return  # END of load_data_into_typedb()
 
 
 def load_data():  # Main data load function
     with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
-            for input_type in loaders.Input_types_list:  # Iterating through the list of classes to import all data
-                if debug: print("Loading from [" + input_type("").file + "] into TypeDB ...")
-                load_data_into_typedb(input_type, session)  # Call to load data: session and import class as parameters
+            for loader in loaders.loaders_list:  # Iterating through the list of classes to import all data
+                if debug: print("Loading from [" + loader("").file + "] into TypeDB ...")
+                load_data_into_typedb(loader, session)  # Call to load data: session and import class as parameters
             print("\nData loading complete!")
     return
 

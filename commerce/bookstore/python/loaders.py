@@ -33,7 +33,7 @@ class Loader:  # Superclass for all loaders
         self.verbose = verbose
 
 
-class BookInput(Loader):
+class BookLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "books.csv")  # Set exact filename to parse with this class
 
@@ -44,7 +44,7 @@ class BookInput(Loader):
                ", has stock " + str(random.randint(0, 25)) + ";"
 
 
-class UserInput(Loader):
+class UserLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "users.csv")  # Set exact filename to parse with this class
 
@@ -60,7 +60,7 @@ class UserInput(Loader):
         return typeql_insert_query
 
 
-class RatingInput(Loader):
+class RatingLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "ratings.csv")  # Set exact filename to parse with this class
 
@@ -72,7 +72,7 @@ class RatingInput(Loader):
         return typeql_insert_query
 
 
-class OrderInput(Loader):
+class OrderLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "orders.csv")  # Set exact filename to parse with this class
 
@@ -97,7 +97,7 @@ class OrderInput(Loader):
         return typeql_insert_query
 
 
-class BookGenreInput(Loader):
+class BookGenreLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "book_genres.csv")  # Set exact filename to parse with this class
 
@@ -108,7 +108,7 @@ class BookGenreInput(Loader):
         return typeql_insert_query
 
 
-class GenreInput(Loader):
+class GenreLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "genres.csv")  # Set exact filename to parse with this class
 
@@ -117,7 +117,7 @@ class GenreInput(Loader):
         return typeql_insert_query
 
 
-class GenreHierarchyInput(Loader):
+class GenreHierarchyLoader(Loader):
     def __init__(self, item):
         super().__init__(item, config.data_path + "genres.csv")  # Set exact filename to parse with this class
 
@@ -147,6 +147,6 @@ def random_books(verbose):
     return ordered_books
 
 
-# This is a list of classes to import data. The order of values is important for loading data order.
-# Classes have filenames and corresponding methods to load the parsed data into the TypeDB
-Input_types_list = [GenreInput, GenreHierarchyInput, BookInput, UserInput, RatingInput, OrderInput, BookGenreInput]
+# This is a list of classes to import (load) data. The order of values is important for loading data order.
+# Classes have filenames and corresponding methods to load the parsed data into the TypeDB.
+loaders_list = [GenreLoader, GenreHierarchyLoader, BookLoader, UserLoader, RatingLoader, OrderLoader, BookGenreLoader]
