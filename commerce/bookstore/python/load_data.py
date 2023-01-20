@@ -75,7 +75,7 @@ def load_data_into_typedb(input, session):  # Requests generation of insert quer
 
 
 def load_data():  # Main data load function
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             for input_type in loaders.Input_types_list:  # Iterating through the list of classes to import all data
                 if debug: print("Loading from [" + input_type("").file + "] into TypeDB ...")
@@ -85,7 +85,7 @@ def load_data():  # Main data load function
 
 
 def has_existing_data():  # Checking whether the DB already has the schema and the data loaded
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 try:
@@ -99,7 +99,7 @@ def has_existing_data():  # Checking whether the DB already has the schema and t
 
 def load_schema():  # Loading schema
     this_script_dir = os.path.dirname(__file__)  # Look for a path to this script, load_data.py
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
             with open(os.path.join(this_script_dir, "../schema.tql"), "r") as schema:  # Read the schema.tql file
                 define_query = schema.read()
@@ -115,7 +115,7 @@ def load_schema():  # Loading schema
 
 
 # This is the main body of this script
-with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
     if client.databases().contains(config.db):  # Check the DB existence
         print("Detected DB " + config.db + ". Connecting.")
         if not has_existing_data():  # Most likely the DB is empty and has no schema

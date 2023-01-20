@@ -88,7 +88,7 @@ def search_book(ISBN):  # Search book by ISBN (or show all books if empty ISBN g
 
 def show_book(ISBN):  # Searching book by ISBN and print info
 
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "', has name $n, " \
@@ -103,7 +103,7 @@ def show_book(ISBN):  # Searching book by ISBN and print info
     print("Books found:", k)  # Print the counter as the number of results found
 
     # Rating computation
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "';" \
@@ -139,7 +139,7 @@ def search_user(user):  # Search user by foreign-id (or show all users if empty 
 
 def show_user(user):  # Display user by foreign-id
 
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id '" + user + "'; " \
@@ -156,7 +156,7 @@ def show_user(user):  # Display user by foreign-id
 
 def search_order(order_id):  # Search order by id (or show all orders if empty id given)
     # Different approach - download all orders first, filter later
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $o isa order, has id $i, has foreign-user-id $fui, " \
@@ -185,7 +185,7 @@ def search_genre(tag_name):  # Search books by genre tag
         tag_name = "Map"  # Choosing genre instead of an empty input
     TB = TypeDBOptions.core()  # Initialising a new set of options
     TB.infer = True  # Enabling inference in this new set of options
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ, TB) as transaction:  # Open transaction to read
                 typeql_read_query = "match $g isa genre-tag; $g '" + tag_name + "';" \
@@ -206,7 +206,7 @@ def search_genre(tag_name):  # Search books by genre tag
 
 def show_all_books():  # Just show all books
     print("Showing all books")
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $b isa book, has ISBN $i, has name $n, has book-author $ba; " \
@@ -224,7 +224,7 @@ def show_all_books():  # Just show all books
 
 def show_all_users():  # Just show all users
     print("Showing all users")
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id $fi; " \
@@ -242,7 +242,7 @@ def show_all_users():  # Just show all users
 
 
 def show_all_genres():  # Just display all genre tags
-    with TypeDB.core_client("localhost:1729") as client:  # Establishing connection
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                 typeql_read_query = "match $g isa genre-tag; get $g;"  # Prepare query
