@@ -69,19 +69,22 @@ def load_data_into_typedb(loader, session):  # Requests generation of insert que
             else:
                 if debug: print("Item parsing resulted in empty query statement. Skipping this item —", item)
                 skip_count += 1
-    print("Inserted " + str(len(items) - skip_count) + " out of " + str(len(items)) + " items from [ "
+    loaded_count = len(items) - skip_count
+    print("Inserted " + str(loaded_count) + " out of " + str(len(items)) + " items from [ "
           + input_object.file + "] into TypeDB with", loader.__name__)
-    return  # END of load_data_into_typedb()
+    return loaded_count  # END of load_data_into_typedb()
 
 
 def load_data():  # Main data load function
+    res = []
     with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
         with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
             for loader in loaders.loaders_list:  # Iterating through the list of classes to import all data
                 if debug: print("Loading from [" + loader("").file + "] into TypeDB ...")
-                load_data_into_typedb(loader, session)  # Call to load data: session and import class as parameters
+                res.append(load_data_into_typedb(loader, session))  # Call loader to load data with session
             print("\nData loading complete!")
-    return
+            if debug: print("We have inserted the following nu,ber of items:", res)
+    return res
 
 
 def has_existing_data():  # Checking whether the DB already has the schema and the data loaded
@@ -114,29 +117,36 @@ def load_schema():  # Loading schema
                         return False  # Setup failed
 
 
-# This is the main body of this script
-with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
-    if client.databases().contains(config.db):  # Check the DB existence
-        print("Detected DB " + config.db + ". Connecting.")
-        if not has_existing_data():  # Most likely the DB is empty and has no schema
-            print("Attempting to load the schema and data.")
-            if load_schema():  # Schema has been loaded
-                load_data()  # Main data loading function
-        else:  # The data check showed that we already have schema and some data in the DB
-            print("To reload data we will delete the existing DB... Please confirm!")
-            if input("Type in Delete to proceed with deletion: ") == "delete" or "Delete" or "DELETE":
-                client.databases().get(config.db).delete()  # Deleting the DB
-                print("Deleted DB " + config.db + ".")
-                client.databases().create(config.db)  # Creating new (empty) DB
-                print("DB " + config.db + " created. Applying schema...")
+def main():  # This is the main function of this script
+    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
+        if client.databases().contains(config.db):  # Check the DB existence
+            print("Detected DB " + config.db + ". Connecting.")
+            if not has_existing_data():  # Most likely the DB is empty and has no schema
+                print("Attempting to load the schema and data.")
                 if load_schema():  # Schema has been loaded
                     load_data()  # Main data loading function
-            else:
-                exit("Database was not deleted due to user choice. Exiting.")
+            else:  # The data check showed that we already have schema and some data in the DB
+                print("To reload data we will delete the existing DB... Please confirm!")
+                if input("Type in Delete to proceed with deletion: ") == "delete" or "Delete" or "DELETE":
+                    client.databases().get(config.db).delete()  # Deleting the DB
+                    print("Deleted DB " + config.db + ".")
+                    client.databases().create(config.db)  # Creating new (empty) DB
+                    print("DB " + config.db + " created. Applying schema...")
+                    if load_schema():  # Schema has been loaded
+                        return load_data()  # Main data loading function
+                else:
+                    exit("Database was not deleted due to user choice. Exiting.")
+                    return False
 
-    else:  # DB is non-existent
-        print("DB " + config.db + " is absent. Trying to create.")
-        client.databases().create(config.db)  # Creating the DB
-        print("DB " + config.db + " created. Applying schema...")
-        if load_schema():  # Schema has been loaded
-            load_data()  # Main data loading function
+        else:  # DB is non-existent
+            print("DB " + config.db + " is absent. Trying to create.")
+            client.databases().create(config.db)  # Creating the DB
+            print("DB " + config.db + " created. Applying schema...")
+            if load_schema():  # Schema has been loaded
+                return load_data()  # Main data loading function
+
+    return False
+
+
+if __name__ == '__main__':
+    main()
