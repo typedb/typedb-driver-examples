@@ -26,6 +26,7 @@ import requests
 import config
 from typedb.client import TypeDB, SessionType, TransactionType
 
+
 class LoadDataTests(TestCase):
     @mock.patch('load_data.input', create=True)
     def test_load_data(self, mocked_input):

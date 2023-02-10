@@ -13,16 +13,15 @@ We have an imaginary online bookstore and our script/application implements some
 - Search for an order
 - Search for books by genre
 
-This application consists of two Python scripts. It has not much in terms of usability as it is merely a demonstration of TypeDB queries. 
-
-You can find the implementation of each function listed above in the source code.
+This application consists of Python scripts. It has not much in terms of usability as it is merely a 
+demonstration of TypeDB queries. But you can easily explore the implementation of each function in the scripts.
 
 ## Prerequisites
 
 * [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.14.1+
 * Python v.3.9+
   * `typedb.client` — [Python client](https://docs.vaticle.com/docs/client-api/python) for TypeDB
-  * Common Python libraries: csv, argparse, uuid, random
+  * Common Python libraries: os, csv, argparse, enum, uuid, random, unittest
 * This repository
 
 ## Quickstart
@@ -37,7 +36,7 @@ You can find the implementation of each function listed above in the source code
 
 ### Files
 
-This example is located in the `typedb/commerce/bookstore/` directory and consists of the following main files:
+This example is located in the `typedb-examples/commerce/bookstore/` directory and consists of the following main files:
 - Python scripts
   - `python/load_data.py` — used to load the bookstore DB schema and data
   - `python/requests.py` — provides simple command line interface to execute requests on TypeDB database
@@ -45,6 +44,7 @@ This example is located in the `typedb/commerce/bookstore/` directory and consis
   - `python/config.py` — internal settings: database name and path to directory with imported csv files
 - `schema.tql` — DB schema in TypeQL
 - `README.md` — documentation for the bookstore example. You are reading it right now
+- `tests.py` — a set of tests for the example
 - `todo.md` — list of ideas for improvements in the future. If you want to contribute to this example, you can start with these ideas
 - Bookstore dataset `data/`:
   - `books.csv`
@@ -53,6 +53,7 @@ This example is located in the `typedb/commerce/bookstore/` directory and consis
   - `order.csv`
   - `genres.csv`
 - `request-examples/` — directory with examples of requests for the database. Files of `.tql` format can be used in Type DB Studio directly or to create a request for other TypeDB clients
+- `requirements.txt` — list of major requirements for internal testing environment
 
 ### Schema
 
@@ -65,7 +66,7 @@ The schema stored in the `schema.tql` file and loaded by the `load_data.py` scri
 The bookstore schema has the following attributes:
 
 - name (string)
-- description (string )
+- description (string)
 - id (string) 
 - ISBN (string) 
 - book-author (string) 
@@ -85,7 +86,6 @@ The bookstore schema has the following attributes:
 - stock (long) 
 - rating (long) 
 - age (long)
-
 
 #### Entities
 
@@ -120,7 +120,9 @@ rule super-tag-hierarchy:
     };
 ```
 
-The second one works also for genre tags, used to improve tag searching experience. By assigning tag to a book you are also assigning all sup-tags to the same book. So the book can be found not only by exact tag you have assigned to it, but also by all of its parent tags.
+The second one works also for genre tags, used to improve tag searching experience. By assigning tag to a book you 
+are also assigning all sup-tags to the same book. So the book can be found not only by exact tag you have assigned 
+to it, but also by all the parent tags of this tag.
 
 ```
 rule super-tag-ownership:

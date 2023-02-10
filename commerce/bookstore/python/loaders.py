@@ -132,7 +132,7 @@ class GenreHierarchyLoader(Loader):
 
 
 def random_books(verbose):
-    with TypeDB.core_client("localhost:1729") as client:
+    with TypeDB.core_client(config.typedb_server_addr) as client:
         with client.session(config.db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 800;"  # get 800 books
