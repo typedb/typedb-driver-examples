@@ -1,0 +1,1 @@
+insert $b isa book, has name "Harry Potter", has description "Book about Harry Potter", has price 100, has id 1;

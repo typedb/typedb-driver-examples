@@ -1,0 +1,2 @@
+match $x isa book, has $atr;
+get $atr;

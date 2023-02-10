@@ -19,34 +19,6 @@
 # under the License.
 #
 
-# Misc
-.DS_Store
-logs/
-
-# IDE files
-.idea/
-.ijwb/
-*.iml
-.vscode
-.settings
-.project
-.classpath
-.factorypath
-
-# Compiled files
-target/
-bin/
-
-# NPM
-node_modules/
-
-# Python
-__pycache__
-
-# Bazel
-bazel-*
-
-# Distribution
-dist/
-.typedb-studio/
-
+data_path = "../data/"  # path to csv files to import/load data
+db = "bookstore"  # Name of the DB to connect on the TypeDB
+typedb_server_addr = "localhost:1729"

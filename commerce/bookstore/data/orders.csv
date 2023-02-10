@@ -1,0 +1,6 @@
+id;User-ID;date;status;delivery_address;payment_details
+1;22;2022-11-21T10:23:13;active;London, 60 Red Lion St, 7; Cash
+2;85;2022-11-22T17:16:42;new;Moscow, Prospekt Vernadskogo 97 korp.3; Pyyple card #1111
+3;95;2022-11-23T08:32:21;completed;Hamburg, Am Kaiserkai 73; Crypto waller #FFFF
+4;14;2022-11-24T19:55:34;canceled;Milan, Corso Magenta 97; NFC Token #8
+5;79;2022-11-25T15:43:01;active;Fukuoka, 299-1015, Hachiya, Buzen-shi; Credit Card *9837

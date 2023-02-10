@@ -1,0 +1,122 @@
+#
+# Copyright (C) 2022 Vaticle
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+define
+
+### Attributes ###
+
+    name sub attribute, value string;
+    created-date sub attribute, value datetime;
+    description sub attribute, value string;
+    id sub attribute, value string;
+
+    price sub attribute, value long;
+    stock sub attribute, value long;
+
+    ISBN sub attribute, value string;
+    book-author sub attribute, value string;
+    publisher sub attribute, value string;
+
+    rating sub attribute, value long;
+
+    age sub attribute, value long;
+
+    foreign-user-id sub attribute, value string;
+    status sub attribute, value string;
+    delivery-address sub attribute, value string;
+    payment-details sub attribute, value string;
+
+    username sub attribute, value string;
+    password sub attribute, value string;
+    foreign-id sub attribute, value string;
+
+    genre-tag sub attribute, value string,
+        plays tag-hierarchy:sup-tag,
+        plays tag-hierarchy:sub-tag;
+
+### Entities ###
+    product sub entity, abstract,
+        owns id @key,
+        owns name,
+        owns description,
+        owns price,
+        owns stock,
+        plays order:item,
+        plays review:product;
+
+    book sub product,
+        owns genre-tag,
+        owns ISBN,
+        owns book-author,
+        owns publisher;
+
+    person sub entity,
+        owns name,
+        plays review:author;
+
+    user sub person,
+        owns id @key,
+        owns foreign-id,
+        owns username,
+        owns password,
+        owns age,
+        plays order:author;
+
+### Relations ###
+    review sub relation,
+        owns rating,
+        relates author,
+        relates product;
+
+    order sub relation,
+        owns id @key,
+        owns foreign-user-id,
+        owns created-date,
+        owns status,
+        owns delivery-address,
+        owns payment-details,
+        relates item,
+        relates author;
+
+    tag-hierarchy sub relation,
+        relates sub-tag,
+        relates sup-tag;
+        
+##### RULES #####
+
+    rule super-tag-hierarchy:
+        when {
+            (sup-tag: $p, sub-tag: $b) isa tag-hierarchy;
+            (sup-tag: $b, sub-tag: $bb) isa tag-hierarchy;
+        } then {
+            (sup-tag: $p, sub-tag: $bb) isa tag-hierarchy;
+        };
+        
+    rule super-tag-ownership:
+        when {
+            $book isa book;
+            $g isa genre-tag;
+            $book has $g;
+            $sup isa genre-tag;
+            (sup-tag: $sup, sub-tag: $g) isa tag-hierarchy;
+        } then {
+            $book has $sup;
+        };

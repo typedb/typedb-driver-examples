@@ -1,0 +1,17 @@
+Genre;Parent
+Fiction;NULL
+Non fiction;NULL
+Other;NULL
+Adults only;NULL
+Kids friendly;NULL
+Sci-Fi;Fiction
+Fantasy;Fiction
+Biography;Non fiction
+Adventure;NULL
+Detective_story;Fiction
+History;Non fiction
+Politics;Non fiction
+Up to 5 years;Kids friendly
+Technical Documentation;Non fiction
+Technical Documentation;Adults only
+Map;Technical Documentation
