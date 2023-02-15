@@ -23,18 +23,18 @@ load("@rules_python//python:python.bzl", "py_binary", "py_test")
 
 
 py_library(
-    name = "solve",
-    srcs = ["solve.py"],
+    name = "solver",
+    srcs = ["solver.py"],
     deps = [
         "@vaticle_typedb_client_python//:client_python",
     ]
 )
 
 py_binary(
-    name = "solver",
-    srcs = ["solve.py"],
+    name = "driver",
+    srcs = ["driver.py"],
     deps = [
-        "solve",
+        "solver",
         "@vaticle_typedb_client_python//:client_python"
     ],
     data = [
@@ -52,7 +52,7 @@ py_test(
     name = "test",
     srcs = ["test.py"],
     deps = [
-        "solve",
+        "solver",
         "@vaticle_typedb_client_python//:client_python"
     ],
     data = [

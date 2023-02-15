@@ -24,7 +24,7 @@ import unittest
 
 from typedb.client import TypeDB
 
-from solve import Solver
+from solver import Solver
 
 
 class Test(unittest.TestCase):
