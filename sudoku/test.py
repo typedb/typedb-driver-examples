@@ -19,7 +19,7 @@
 # under the License.
 #
 import timeit
-from os.path import join as path_join
+import os.path
 import unittest
 
 from typedb.client import TypeDB
@@ -29,7 +29,7 @@ from solver import Solver
 
 class Test(unittest.TestCase):
     DATABASE_NAME = "test_sudoku6x6"
-    SAMPLE_PATH = "sudoku/sample"
+    SAMPLE_PATH = os.path.join(os.path.dirname(__file__), "sample")
     SAMPLES = [("sudoku1.txt", "solution1.txt"),
                ("sudoku2.txt", "solution2.txt"),
                ("sudoku3.txt", "solution3.txt"),
@@ -43,11 +43,11 @@ class Test(unittest.TestCase):
 
     def test_samples(self):
         for (sample_file, solution_file) in Test.SAMPLES:
-            sudoku = self.solver.read_sudoku(path_join(Test.SAMPLE_PATH, sample_file))
+            sudoku = self.solver.read_sudoku(os.path.join(Test.SAMPLE_PATH, sample_file))
             time_start = timeit.default_timer()
             solver_solution = self.solver.solve(sudoku)
             print("Solved %s in %d ms"% (sample_file, int(1 + 1000 * (timeit.default_timer() - time_start))))
-            expected_solution = self.solver.read_sudoku(path_join(Test.SAMPLE_PATH, solution_file))
+            expected_solution = self.solver.read_sudoku(os.path.join(Test.SAMPLE_PATH, solution_file))
             self.assertEqual(expected_solution, solver_solution)
 
     def tearDown(self):

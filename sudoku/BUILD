@@ -29,6 +29,10 @@ py_library(
     srcs = ["solver.py"],
     deps = [
         sudoku_requirement("typedb-client")
+    ],
+    data = [
+        ":sudoku6x6_schema.tql",
+        ":sudoku6x6_data.tql",
     ]
 )
 
@@ -40,9 +44,6 @@ py_binary(
         sudoku_requirement("typedb-client")
     ],
     data = [
-        "sudoku6x6_schema.tql",
-        "sudoku6x6_data.tql",
-
         "sample/sudoku1.txt",
         "sample/sudoku2.txt",
         "sample/sudoku3.txt",
@@ -58,9 +59,6 @@ py_test(
         sudoku_requirement("typedb-client")
     ],
     data = [
-            "sudoku6x6_schema.tql",
-            "sudoku6x6_data.tql",
-
             "sample/sudoku1.txt",
             "sample/sudoku2.txt",
             "sample/sudoku3.txt",

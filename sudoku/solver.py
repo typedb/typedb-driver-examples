@@ -19,14 +19,14 @@
 # under the License.
 #
 
-
+import os.path
 from typing import List
 
 from typedb.client import TypeDB, TypeDBOptions, SessionType, TransactionType
 
 class Solver:
-    SCHEMA_FILE = "sudoku/sudoku6x6_schema.tql"
-    DATA_FILE = "sudoku/sudoku6x6_data.tql"
+    SCHEMA_FILE = os.path.join(os.path.dirname(__file__), "sudoku6x6_schema.tql")
+    DATA_FILE = os.path.join(os.path.dirname(__file__), "sudoku6x6_data.tql")
     QUERY_TEMPLATE = """
     match
         $connector-hack = -1 isa connector-hack;
