@@ -19,14 +19,16 @@
 # under the License.
 #
 exports_files(["requirements.txt"])
+
 load("@rules_python//python:python.bzl", "py_binary", "py_test")
+load("@sudoku_pip//:requirements.bzl", sudoku_requirement = "requirement")
 
-
+# Define targets
 py_library(
     name = "solver",
     srcs = ["solver.py"],
     deps = [
-        "@vaticle_typedb_client_python//:client_python",
+        sudoku_requirement("typedb-client")
     ]
 )
 
@@ -35,7 +37,7 @@ py_binary(
     srcs = ["driver.py"],
     deps = [
         "solver",
-        "@vaticle_typedb_client_python//:client_python"
+        sudoku_requirement("typedb-client")
     ],
     data = [
         "sudoku6x6_schema.tql",
@@ -53,7 +55,7 @@ py_test(
     srcs = ["test.py"],
     deps = [
         "solver",
-        "@vaticle_typedb_client_python//:client_python"
+        sudoku_requirement("typedb-client")
     ],
     data = [
             "sudoku6x6_schema.tql",
@@ -69,6 +71,8 @@ py_test(
             "sample/solution4.txt",
             ]
 )
+
+# Define checkstyle
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 checkstyle_test(
     name = "checkstyle",
