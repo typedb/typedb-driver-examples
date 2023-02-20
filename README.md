@@ -30,6 +30,11 @@ Read the [README](commerce/bookstore/README.md) file for instructions. Check [th
 or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script
 files in the [python](commerce/bookstore/python) directory.
 
+### [Games: Sudoku](games/sudoku)
+
+The sudoku example demonstrates the ability of TypeDB's reasoner to solve a smaller 6x6 version of the classic puzzle.
+The sudoku is passed to the driver program in a text file and solved by querying a simple TypeDB database.
+
 ### [Games: XCOM Project](games/xcom)
 
 The XCOM 2 example contains a database of interdependent research tasks in the game XCOM 2, featuring automatic
