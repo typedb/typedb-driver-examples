@@ -16,7 +16,7 @@ If not, you'll have to install the dependencies using:
 ### Running the solver
 Through bazel:
 
-    `bazel run //sudoku:driver -- (<sudoku-path|setup>)`
+    `bazel run //games/sudoku:driver -- (<sudoku-path|setup>)`
 Directly:
 
     `python driver.py (<sudoku-path>|setup)`
@@ -24,10 +24,10 @@ Directly:
 Running with 
 * `setup` will (re)create the database and load the required schema & data.
 * `<sudoku-path>` will solve the sudoku in the specified file. It will also run setup if required.
-    - When running through bazel, use the path to the samples is: `sudoku/sample/sudoku*.txt`.
+    - When running through bazel, use the path to the samples is: `games/sudoku/sample/sudoku*.txt`.
 
 ### Running tests
-`bazel test //sudoku:test`  or `python test.py`
+`bazel test //games/sudoku:test`  or `python test.py`
     
 ## Defining the sudoku file
 The file specified through the `sudoku-path` argument must contain a space

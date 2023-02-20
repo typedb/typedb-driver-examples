@@ -147,7 +147,7 @@ pip_install(
 
 pip_install(
     name = "sudoku_pip",
-    requirements = "//sudoku:requirements.txt"
+    requirements = "//games/sudoku:requirements.txt"
 )
 
 # Load java example dependencies
