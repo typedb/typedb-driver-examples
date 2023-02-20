@@ -21,7 +21,7 @@
 
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
 
-package(default_visibility = ["//gaming/xcom:__pkg__"])
+package(default_visibility = ["//games/xcom:__pkg__"])
 
 filegroup(
     name = "logback-xml",

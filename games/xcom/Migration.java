@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.vaticle.typedb.example.gaming.xcom;
+package com.vaticle.typedb.example.games.xcom;
 
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -82,7 +82,7 @@ public class Migration {
         TypeDBSession schemaSession = client.session(databaseName, TypeDBSession.Type.SCHEMA);
         TypeDBTransaction schemaTransaction = schemaSession.transaction(TypeDBTransaction.Type.WRITE);
         Writer queryBuffer = new StringWriter();
-        getReader("gaming/xcom/schema.tql").transferTo(queryBuffer);
+        getReader("games/xcom/schema.tql").transferTo(queryBuffer);
         schemaTransaction.query().define(queryBuffer.toString());
         schemaTransaction.commit();
         System.out.println("\nCreated the database.\n");
@@ -111,7 +111,7 @@ public class Migration {
 
     /** define template for constructing a research project TypeQL insert query */
     static Input initialiseTechInput() {
-        return new Input("gaming/xcom/data/tech") {
+        return new Input("games/xcom/data/tech") {
             @Override
             public String template(Json researchProject) {
                 return "insert $research_project isa research-project, has name " + researchProject.at("name") + ";";
@@ -121,7 +121,7 @@ public class Migration {
 
     /** define template for constructing a research project tech requirement TypeQL insert query */
     static Input initialiseResearchProjectTechRequirementInput() {
-        return new Input("gaming/xcom/data/tech_required_tech") {
+        return new Input("games/xcom/data/tech_required_tech") {
             @Override
             public String template(Json techRequirement) {
                 // match tech
@@ -137,7 +137,7 @@ public class Migration {
 
     /** define template for constructing an item TypeQL insert query */
     static Input initialiseItemInput() {
-        return new Input("gaming/xcom/data/resource") {
+        return new Input("games/xcom/data/resource") {
             @Override
             public String template(Json item) {
                 return "insert $item isa item, has name " + item.at("name") + ";";
@@ -147,7 +147,7 @@ public class Migration {
 
     /** define template for constructing a research project resource cost TypeQL insert query */
     static Input initialiseResearchResourceCostInput() {
-        return new Input("gaming/xcom/data/tech_required_resource") {
+        return new Input("games/xcom/data/tech_required_resource") {
             @Override
             public String template(Json researchCost) {
                 // match tech

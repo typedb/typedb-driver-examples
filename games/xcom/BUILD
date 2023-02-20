@@ -45,8 +45,8 @@ java_library(
 
 java_test(
     name = "test",
-    classpath_resources = ["//gaming/xcom/config:logback-xml"],
-    test_class = "com.vaticle.typedb.example.gaming.xcom.XCOMTest",
+    classpath_resources = ["//games/xcom/config:logback-xml"],
+    test_class = "com.vaticle.typedb.example.games.xcom.XCOMTest",
     srcs = [
         "XCOMTest.java"
     ],
@@ -68,8 +68,8 @@ java_test(
 
 java_binary(
     name = "migration",
-    classpath_resources = ["//gaming/xcom/config:logback-xml"],
-    main_class = "com.vaticle.typedb.example.gaming.xcom.Migration",
+    classpath_resources = ["//games/xcom/config:logback-xml"],
+    main_class = "com.vaticle.typedb.example.games.xcom.Migration",
     srcs = ["Migration.java"],
     deps = [
         "@vaticle_typedb_client_java//:client-java",
@@ -84,8 +84,8 @@ java_binary(
 
 java_binary(
     name = "queries",
-    classpath_resources = ["//gaming/xcom/config:logback-xml"],
-    main_class = "com.vaticle.typedb.example.gaming.xcom.Queries",
+    classpath_resources = ["//games/xcom/config:logback-xml"],
+    main_class = "com.vaticle.typedb.example.games.xcom.Queries",
     srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
     deps = [
         "@vaticle_typedb_client_java//:client-java",

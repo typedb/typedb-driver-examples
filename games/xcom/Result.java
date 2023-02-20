@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.vaticle.typedb.example.gaming.xcom;
+package com.vaticle.typedb.example.games.xcom;
 
 public class Result<T> {
     public Result() {
