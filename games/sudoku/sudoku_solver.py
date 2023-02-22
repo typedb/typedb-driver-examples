@@ -21,8 +21,10 @@
 import timeit
 from sys import argv
 
-from solver import Solver
+from typedb_sudoku import Solver
 from typedb.client import TypeDB
+
+from utils import read_sudoku, format_sudoku
 
 DATABASE_NAME = "sudoku6x6"
 
@@ -40,17 +42,17 @@ def main():
         return
 
     solver.setup()
-    sudoku = solver.read_sudoku(argv[1])
 
+    sudoku = read_sudoku(argv[1])
     print("Solving:")
-    print(solver.format_sudoku(sudoku), "\n")
+    print(format_sudoku(sudoku), "\n")
 
     time_start = timeit.default_timer()
     solution = solver.solve(sudoku)
     time_taken_ms = int((timeit.default_timer() - time_start) * 1000 + 1)
     if solution:
         print("Found solution in " + str(time_taken_ms) + " ms:")
-        print(solver.format_sudoku(solution))
+        print(format_sudoku(solution))
     else:
         print("No solution (took " + str(time_taken_ms) + " ms)")
 

@@ -41,15 +41,6 @@ class Solver:
         self.client = TypeDB.core_client(host)
         self.db_name = db_name
 
-    def read_sudoku(self, filename: str):
-        with open(filename) as sudoku_file:
-            sudoku = [list(map(int, row.split())) for row in sudoku_file if row.strip()]
-        assert len(sudoku) == 6 and all(len(row)==6 for row in sudoku)
-        return sudoku
-
-    def format_sudoku(self, sudoku: List[List[int]]):
-        return "\n".join(" ".join(map(str, row)) for row in sudoku)
-
     def database_exists(self):
         return self.client.databases().contains(self.db_name)
 

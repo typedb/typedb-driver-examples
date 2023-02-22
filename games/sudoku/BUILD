@@ -26,7 +26,7 @@ load("@sudoku_pip//:requirements.bzl", sudoku_requirement = "requirement")
 # Define targets
 py_library(
     name = "solver",
-    srcs = ["solver.py"],
+    srcs = ["typedb_sudoku.py"],
     deps = [
         sudoku_requirement("typedb-client")
     ],

@@ -24,8 +24,8 @@ import unittest
 
 from typedb.client import TypeDB
 
-from solver import Solver
-
+from typedb_sudoku import Solver
+from utils import read_sudoku
 
 class Test(unittest.TestCase):
     DATABASE_NAME = "test_sudoku6x6"
@@ -43,11 +43,11 @@ class Test(unittest.TestCase):
 
     def test_samples(self):
         for (sample_file, solution_file) in Test.SAMPLES:
-            sudoku = self.solver.read_sudoku(os.path.join(Test.SAMPLE_PATH, sample_file))
+            sudoku = read_sudoku(os.path.join(Test.SAMPLE_PATH, sample_file))
             time_start = timeit.default_timer()
             solver_solution = self.solver.solve(sudoku)
             print("Solved %s in %d ms"% (sample_file, int(1 + 1000 * (timeit.default_timer() - time_start))))
-            expected_solution = self.solver.read_sudoku(os.path.join(Test.SAMPLE_PATH, solution_file))
+            expected_solution = read_sudoku(os.path.join(Test.SAMPLE_PATH, solution_file))
             self.assertEqual(expected_solution, solver_solution)
 
     def tearDown(self):
