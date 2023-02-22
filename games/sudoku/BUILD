@@ -36,27 +36,12 @@ py_library(
     ]
 )
 
-py_binary(
-    name = "driver",
-    srcs = ["driver.py"],
-    deps = [
-        "solver",
-        sudoku_requirement("typedb-client")
-    ],
-    data = [
-        "sample/sudoku1.txt",
-        "sample/sudoku2.txt",
-        "sample/sudoku3.txt",
-        "sample/sudoku4.txt",
-        ],
-)
-
 py_test(
     name = "test",
     srcs = ["test.py"],
     deps = [
         "solver",
-        sudoku_requirement("typedb-client")
+        sudoku_requirement("typedb-client")q
     ],
     data = [
             "sample/sudoku1.txt",

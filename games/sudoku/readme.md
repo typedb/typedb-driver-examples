@@ -7,24 +7,17 @@ Some of the numbers will be filled in as part of the puzzle.
 
 
 ## Usage
+The driver program requires an instance of typedb server to be running. 
+If you are not running TypeDB locally on the default port, specify the address as the second commandline parameter.
+
 ### Setup
-If you're using bazel, it will take care of the dependencies for you.
-If not, you'll have to install the dependencies using:
-
-`python -m pip requirements.txt`
-
+1. Install the dependencies:
+    * `python -m pip requirements.txt`
+2. Create the database with required schema and data:
+    * `python driver.py setup [typedb-address]`
+  
 ### Running the solver
-Through bazel:
-
-    `bazel run //games/sudoku:driver -- (<sudoku-path|setup>)`
-Directly:
-
-    `python driver.py (<sudoku-path>|setup)`
-
-Running with 
-* `setup` will (re)create the database and load the required schema & data.
-* `<sudoku-path>` will solve the sudoku in the specified file. It will also run setup if required.
-    - When running through bazel, use the path to the samples is: `games/sudoku/sample/sudoku*.txt`.
+`python driver.py <sudoku-path> [typedb-address]`
 
 ### Running tests
 `bazel test //games/sudoku:test`  or `python test.py`

@@ -24,17 +24,17 @@ from sys import argv
 from solver import Solver
 from typedb.client import TypeDB
 
-HOST = TypeDB.DEFAULT_ADDRESS
 DATABASE_NAME = "sudoku6x6"
 
 def main():
-    if len(argv) != 2:
+    if len(argv) < 2:
         print("Usage:")
-        print("python3 %s setup:            Loads required schema & data" % argv[0])
-        print("python3 %s <sudoku_file>:    Reads & solves the sudoku in <sudoku_file>" % argv[0])
+        print("python3 %s setup [typedb_address]           Loads required schema & data" % argv[0])
+        print("python3 %s <sudoku_file> [typedb_address]   Reads & solves the sudoku in <sudoku_file>" % argv[0])
         return
 
-    solver = Solver(HOST, DATABASE_NAME)
+    host = argv[2] if len(argv) >= 3 else TypeDB.DEFAULT_ADDRESS
+    solver = Solver(host, DATABASE_NAME)
     if argv[1] == "setup":
         solver.setup(force=True)
         return
