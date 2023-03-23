@@ -1,1 +1,1 @@
-typedb-client==2.14.0
+typedb-client==2.16.1

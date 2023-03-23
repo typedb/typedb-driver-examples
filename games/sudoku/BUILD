@@ -41,7 +41,7 @@ py_test(
     srcs = ["test.py"],
     deps = [
         "solver",
-        sudoku_requirement("typedb-client")q
+        sudoku_requirement("typedb-client")
     ],
     data = [
             "sample/sudoku1.txt",
