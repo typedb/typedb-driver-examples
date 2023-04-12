@@ -82,7 +82,7 @@ def load_data(client):  # Main data load function
             if debug: print("Loading from [" + loader("").file + "] into TypeDB ...")
             res.append(load_data_into_typedb(loader, session))  # Call loader to load data with session
         print("\nData loading complete!")
-        if debug: print("We have inserted the following nu,ber of items:", res)
+        if debug: print("We have inserted the following number of items:", res)
     return res
 
 
