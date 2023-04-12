@@ -1,0 +1,42 @@
+{
+  transactions {
+    amount
+    number
+    time
+    cardholder {
+      firstName
+      lastName
+      birthDate
+      gender
+      job
+      address {
+        city
+        state
+        street
+        zip
+      }
+      coords {
+        latitude
+        longitude
+      }
+      cc {
+        number
+        bank {
+          name
+          coords {
+            latitude
+            longitude
+          }
+        }
+      }
+    }
+    merchant {
+      name
+      category
+      coords {
+        latitude
+        longitude
+      }
+    }
+  }
+}

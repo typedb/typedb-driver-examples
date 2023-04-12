@@ -1,0 +1,9 @@
+{
+  banks {
+    name
+    coords {
+      latitude
+      longitude
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  merchants {
+    name
+    category
+    coords {
+      latitude
+      longitude
+    }
+  }
+}
