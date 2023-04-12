@@ -124,7 +124,7 @@ def main():  # This is the main function of this script
                     load_data(client)  # Main data loading function
             else:  # The data check showed that we already have schema and some data in the DB
                 print("To reload data we will delete the existing DB... Please confirm!")
-                if input("Type in Delete to proceed with deletion: ") == "delete" or "Delete" or "DELETE":
+                if input("Type in Delete to proceed with deletion: ").lower() == "delete":
                     client.databases().get(config.db).delete()  # Deleting the DB
                     print("Deleted DB " + config.db + ".")
                     client.databases().create(config.db)  # Creating new (empty) DB
