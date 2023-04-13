@@ -8,9 +8,9 @@ import javax.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-public class TypeDbBeans {
+public class TypeDBBeans {
 
-  private static final Logger LOGGER = Logger.getLogger(TypeDbBeans.class);
+  private static final Logger LOGGER = Logger.getLogger(TypeDBBeans.class);
 
   @ConfigProperty(name = "typedb.host", defaultValue="localhost")
   String host;

@@ -1,6 +1,6 @@
 define
 
-# dataset ?
+# dataset without banks
 # https://www.kaggle.com/datasets/kartik2112/fraud-detection?select=fraudTrain.csv
 
 name sub attribute,

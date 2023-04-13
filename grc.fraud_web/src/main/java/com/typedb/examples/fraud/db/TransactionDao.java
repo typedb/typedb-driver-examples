@@ -1,6 +1,5 @@
-package com.typedb.examples.fraud.dao;
+package com.typedb.examples.fraud.db;
 
-import com.typedb.examples.fraud.db.TypeDbSessionWrapper;
 import com.typedb.examples.fraud.model.Transaction;
 import com.typedb.examples.fraud.util.Formatter;
 import java.util.Hashtable;
@@ -10,7 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class TransactionDao {
+public class TransactionDao implements StandardDao<Transaction> {
 
   private static final String PERSON_CARD_MATCH =
       "match " +
@@ -27,9 +26,9 @@ public class TransactionDao {
   private static final String SUSPECT_TX_MATCH =
       "  $suspect (unsafe_buyer: $cardholder, unsafe_company: $merchant) isa unsafe_relationship;";
   @Inject
-  TypeDbSessionWrapper db;
+  TypeDBSessionWrapper db;
 
-  public TransactionDao(TypeDbSessionWrapper db) {
+  public TransactionDao(TypeDBSessionWrapper db) {
     this.db = db;
   }
 

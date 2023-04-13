@@ -1,6 +1,5 @@
-package com.typedb.examples.fraud.dao;
+package com.typedb.examples.fraud.db;
 
-import com.typedb.examples.fraud.db.TypeDbSessionWrapper;
 import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.BankCoordinates;
 import java.util.Hashtable;
@@ -10,7 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class BankDao {
+public class BankDao implements StandardDao<Bank> {
 
   private static final String INSERT_QUERY_TEMPLATE =
       "insert " +
@@ -24,7 +23,7 @@ public class BankDao {
       "  $bankGeo (geo: $bankCoords, identify: $bank) isa geolocate;";
 
   @Inject
-  TypeDbSessionWrapper db;
+  TypeDBSessionWrapper db;
 
   public Set<Bank> getAll() {
 

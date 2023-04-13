@@ -15,9 +15,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 @RequestScoped
-public class TypeDbSessionWrapper {
+public class TypeDBSessionWrapper {
 
-  private static final Logger LOGGER = Logger.getLogger(TypeDbSessionWrapper.class);
+  private static final Logger LOGGER = Logger.getLogger(TypeDBSessionWrapper.class);
 
   @Inject
   TypeDBClient client;

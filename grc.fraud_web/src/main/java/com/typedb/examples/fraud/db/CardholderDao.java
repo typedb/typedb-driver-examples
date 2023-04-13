@@ -1,6 +1,5 @@
-package com.typedb.examples.fraud.dao;
+package com.typedb.examples.fraud.db;
 
-import com.typedb.examples.fraud.db.TypeDbSessionWrapper;
 import com.typedb.examples.fraud.model.Cardholder;
 import java.util.Hashtable;
 import java.util.Set;
@@ -9,7 +8,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class CardholderDao {
+public class CardholderDao implements StandardDao<Cardholder> {
 
   private static final String INSERT_QUERY_TEMPLATE =
       "match " +
@@ -31,7 +30,7 @@ public class CardholderDao {
       "  $cardholderAccount (owner: $cardholder, attached_card: $cc, attached_bank: $bank) isa bank_account;";
 
   @Inject
-  TypeDbSessionWrapper db;
+  TypeDBSessionWrapper db;
 
   public Set<Cardholder> getAll() {
 

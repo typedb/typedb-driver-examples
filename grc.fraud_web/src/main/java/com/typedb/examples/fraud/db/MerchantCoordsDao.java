@@ -1,4 +1,4 @@
-package com.typedb.examples.fraud.dao;
+package com.typedb.examples.fraud.db;
 
 import com.typedb.examples.fraud.model.MerchantCoordinates;
 import java.util.Hashtable;

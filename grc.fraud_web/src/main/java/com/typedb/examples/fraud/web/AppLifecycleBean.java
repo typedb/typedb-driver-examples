@@ -2,10 +2,8 @@ package com.typedb.examples.fraud.web;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.typedb.examples.fraud.dao.BankDao;
-import com.typedb.examples.fraud.dao.CardholderDao;
-import com.typedb.examples.fraud.dao.MerchantDao;
-import com.typedb.examples.fraud.dao.TransactionDao;
+import com.typedb.examples.fraud.db.StandardDao;
+import com.typedb.examples.fraud.db.TransactionDao;
 import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.BankCoordinates;
 import com.typedb.examples.fraud.model.Cardholder;
@@ -37,11 +35,11 @@ public class AppLifecycleBean {
   TypeDBClient client;
 
   @Inject
-  BankDao banks;
+  StandardDao<Bank> banks;
   @Inject
-  CardholderDao cardholders;
+  StandardDao<Cardholder> cardholders;
   @Inject
-  MerchantDao merchants;
+  StandardDao<Merchant> merchants;
   @Inject
   TransactionDao transactions;
 
@@ -49,9 +47,8 @@ public class AppLifecycleBean {
 
     LOGGER.info("Deleting database");
 
-    if(client.databases().contains("fraud")) {
-      client.databases().get("fraud").delete();
-    }
+    client.databases().get("fraud").delete();
+
     LOGGER.info("Creating database");
 
     client.databases().create("fraud");
