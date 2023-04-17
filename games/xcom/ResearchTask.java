@@ -19,9 +19,14 @@
  * under the License.
  */
 
-package com.vaticle.typedb.example.gaming.xcom;
+package com.vaticle.typedb.example.games.xcom;
 
-public enum TransactionMode {
-    READ,
-    WRITE
+public class ResearchTask {
+    public ResearchTask(String name, double progressPercent) {
+        this.name = name;
+        this.progressPercent = progressPercent;
+    }
+
+    public String name;
+    public double progressPercent;
 }

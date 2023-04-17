@@ -69,13 +69,27 @@ build:
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
         bazel test //telecom/phone_calls/python:test --test_output=errors
+    test-sudoku:
+      image: vaticle-ubuntu-22.04
+      command: |
+        export PYENV_ROOT="/opt/pyenv"
+        pyenv install 3.7.12
+        pyenv global 3.7.12
+        sudo unlink /usr/bin/python3
+        sudo ln -s $(which python3) /usr/bin/python3
+        sudo ln -s /usr/bin/python3 /usr/bin/python
+        sudo ln -s /usr/share/pyshared/lsb_release.py /opt/pyenv/versions/3.7.12/lib/python3.7/site-packages/lsb_release.py
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //games/sudoku:test --test_output=errors
     test-xcom:
       image: vaticle-ubuntu-22.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //gaming/xcom:test --test_output=errors
+        bazel test //games/xcom:test --test_output=errors
   performance:
     test-performance-typedb-core-server:
       machine: 16-core-64-gb
@@ -159,10 +173,24 @@ build:
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
         bazel test //telecom/phone_calls/python:test --test_output=errors --runs_per_test=20 --jobs=1
+    benchmark-sudoku-test:
+      image: vaticle-ubuntu-22.04
+      command: |
+        export PYENV_ROOT="/opt/pyenv"
+        pyenv install 3.7.12
+        pyenv global 3.7.12
+        sudo unlink /usr/bin/python3
+        sudo ln -s $(which python3) /usr/bin/python3
+        sudo ln -s /usr/bin/python3 /usr/bin/python
+        sudo ln -s /usr/share/pyshared/lsb_release.py /opt/pyenv/versions/3.7.12/lib/python3.7/site-packages/lsb_release.py
+        bazel run //:typedb-extractor -- dist/typedb-all-linux
+        sudo systemd-run ./dist/typedb-all-linux/typedb server
+        sleep 60
+        bazel test //games/sudoku:test --test_output=errors --runs_per_test=20 --jobs=1
     benchmark-xcom-test:
       image: vaticle-ubuntu-22.04
       command: |
         bazel run //:typedb-extractor -- dist/typedb-all-linux
         sudo systemd-run ./dist/typedb-all-linux/typedb server
         sleep 60
-        bazel test //gaming/xcom:test --test_output=errors --runs_per_test=20 --jobs=1
+        bazel test //games/xcom:test --test_output=errors --runs_per_test=20 --jobs=1

@@ -19,17 +19,12 @@
 # under the License.
 #
 
-load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
-
-package(default_visibility = ["//gaming/xcom:__pkg__"])
-
-filegroup(
-    name = "logback-xml",
-    srcs = ["logback.xml"],
-)
-
-checkstyle_test(
-    name = "checkstyle",
-    include = glob(["*"]),
-    license_type = "apache-header",
-)
+insert
+$connector-hack = -1 isa connector-hack;
+$v1 = 1 isa number;
+$v2 = 2 isa number;
+$v3 = 3 isa number;
+$v4 = 4 isa number;
+$v5 = 5 isa number;
+$v6 = 6 isa number;
+(mem: $v1, mem: $v2, mem: $v3, mem: $v4, mem: $v5, mem: $v6) isa permutation;

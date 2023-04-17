@@ -1,0 +1,87 @@
+#
+# Copyright (C) 2022 Vaticle
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+define
+
+# A temporary hack for the reasoner planner to consider all given values in a single retrievable.
+connector-hack sub attribute, value long;
+permutation sub relation, relates mem;
+permutation sub relation, relates mem;
+permutation sub relation, relates mem;
+
+number sub attribute, value long,
+    plays permutation:mem,
+    plays solution:pos11, plays solution:pos12, plays solution:pos13, plays solution:pos14, plays solution:pos15, plays solution:pos16,
+    plays solution:pos21, plays solution:pos22, plays solution:pos23, plays solution:pos24, plays solution:pos25, plays solution:pos26,
+    plays solution:pos31, plays solution:pos32, plays solution:pos33, plays solution:pos34, plays solution:pos35, plays solution:pos36,
+    plays solution:pos41, plays solution:pos42, plays solution:pos43, plays solution:pos44, plays solution:pos45, plays solution:pos46,
+    plays solution:pos51, plays solution:pos52, plays solution:pos53, plays solution:pos54, plays solution:pos55, plays solution:pos56,
+    plays solution:pos61, plays solution:pos62, plays solution:pos63, plays solution:pos64, plays solution:pos65, plays solution:pos66;
+
+solution sub relation,
+    relates pos11, relates pos12, relates pos13, relates pos14, relates pos15, relates pos16,
+    relates pos21, relates pos22, relates pos23, relates pos24, relates pos25, relates pos26,
+    relates pos31, relates pos32, relates pos33, relates pos34, relates pos35, relates pos36,
+    relates pos41, relates pos42, relates pos43, relates pos44, relates pos45, relates pos46,
+    relates pos51, relates pos52, relates pos53, relates pos54, relates pos55, relates pos56,
+    relates pos61, relates pos62, relates pos63, relates pos64, relates pos65, relates pos66;
+
+
+# These rules always fail, but makes each of them "concludable" and we hit the the reasoner instead of traversal
+rule dummy-triggers-reasoner:
+when {
+    $v = -1 isa number;
+} then {
+   (mem: $v, mem: $v, mem: $v, mem: $v, mem: $v, mem: $v) isa permutation;
+};
+
+rule solution-rule:
+when {
+    (mem: $a1, mem: $b1, mem: $c1, mem: $d1, mem: $e1, mem: $f1) isa permutation;
+    (mem: $a2, mem: $b2, mem: $c2, mem: $d2, mem: $e2, mem: $f2) isa permutation;
+    (mem: $a3, mem: $b3, mem: $c3, mem: $d3, mem: $e3, mem: $f3) isa permutation;
+    (mem: $a4, mem: $b4, mem: $c4, mem: $d4, mem: $e4, mem: $f4) isa permutation;
+    (mem: $a5, mem: $b5, mem: $c5, mem: $d5, mem: $e5, mem: $f5) isa permutation;
+    (mem: $a6, mem: $b6, mem: $c6, mem: $d6, mem: $e6, mem: $f6) isa permutation;
+
+    (mem: $a1, mem: $a2, mem: $a3, mem: $a4, mem: $a5, mem: $a6) isa permutation;
+    (mem: $b1, mem: $b2, mem: $b3, mem: $b4, mem: $b5, mem: $b6) isa permutation;
+    (mem: $c1, mem: $c2, mem: $c3, mem: $c4, mem: $c5, mem: $c6) isa permutation;
+    (mem: $d1, mem: $d2, mem: $d3, mem: $d4, mem: $d5, mem: $d6) isa permutation;
+    (mem: $e1, mem: $e2, mem: $e3, mem: $e4, mem: $e5, mem: $e6) isa permutation;
+    (mem: $f1, mem: $f2, mem: $f3, mem: $f4, mem: $f5, mem: $f6) isa permutation;
+
+    (mem: $a1, mem: $b1, mem: $c1, mem: $a2, mem: $b2, mem: $c2) isa permutation;
+    (mem: $a3, mem: $b3, mem: $c3, mem: $a4, mem: $b4, mem: $c4) isa permutation;
+    (mem: $a5, mem: $b5, mem: $c5, mem: $a6, mem: $b6, mem: $c6) isa permutation;
+    (mem: $d1, mem: $e1, mem: $f1, mem: $d2, mem: $e2, mem: $f2) isa permutation;
+    (mem: $d3, mem: $e3, mem: $f3, mem: $d4, mem: $e4, mem: $f4) isa permutation;
+    (mem: $d5, mem: $e5, mem: $f5, mem: $d6, mem: $e6, mem: $f6) isa permutation;
+} then {
+    (
+    pos11: $a1, pos12: $b1, pos13: $c1, pos14: $d1, pos15: $e1, pos16: $f1,
+    pos21: $a2, pos22: $b2, pos23: $c2, pos24: $d2, pos25: $e2, pos26: $f2,
+    pos31: $a3, pos32: $b3, pos33: $c3, pos34: $d3, pos35: $e3, pos36: $f3,
+    pos41: $a4, pos42: $b4, pos43: $c4, pos44: $d4, pos45: $e4, pos46: $f4,
+    pos51: $a5, pos52: $b5, pos53: $c5, pos54: $d5, pos55: $e5, pos56: $f5,
+    pos61: $a6, pos62: $b6, pos63: $c6, pos64: $d6, pos65: $e6, pos66: $f6
+    ) isa solution;
+};

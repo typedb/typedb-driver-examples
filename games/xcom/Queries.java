@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.vaticle.typedb.example.gaming.xcom;
+package com.vaticle.typedb.example.games.xcom;
 
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
