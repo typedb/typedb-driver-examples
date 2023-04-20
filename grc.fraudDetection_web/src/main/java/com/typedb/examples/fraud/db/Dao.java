@@ -23,7 +23,7 @@ package com.typedb.examples.fraud.db;
 
 import java.util.Set;
 
-public interface StandardDao<T> {
+public interface Dao<T> {
 
   Set<T> getAll();
 

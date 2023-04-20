@@ -21,7 +21,7 @@
 
 package com.typedb.examples.fraud.web;
 
-import com.typedb.examples.fraud.db.StandardDao;
+import com.typedb.examples.fraud.db.Dao;
 import com.typedb.examples.fraud.db.TransactionDao;
 import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.Cardholder;
@@ -37,11 +37,11 @@ import org.eclipse.microprofile.graphql.Query;
 public class GqlResource {
 
   @Inject
-  StandardDao<Bank> banks;
+  Dao<Bank> banks;
   @Inject
-  StandardDao<Merchant> merchants;
+  Dao<Merchant> merchants;
   @Inject
-  StandardDao<Cardholder> cardholders;
+  Dao<Cardholder> cardholders;
   @Inject
   TransactionDao transactions;
 

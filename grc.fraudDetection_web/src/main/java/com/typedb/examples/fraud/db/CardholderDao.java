@@ -29,7 +29,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class CardholderDao implements StandardDao<Cardholder> {
+public class CardholderDao implements Dao<Cardholder> {
 
   private static final String INSERT_QUERY_TEMPLATE =
       "match " +

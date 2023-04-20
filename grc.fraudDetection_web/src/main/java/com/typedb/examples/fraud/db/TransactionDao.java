@@ -30,7 +30,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class TransactionDao implements StandardDao<Transaction> {
+public class TransactionDao implements Dao<Transaction> {
 
   private static final String PERSON_CARD_MATCH =
       "match " +

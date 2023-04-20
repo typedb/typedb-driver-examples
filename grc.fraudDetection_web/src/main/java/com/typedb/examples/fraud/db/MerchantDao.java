@@ -29,7 +29,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 @RequestScoped
-public class MerchantDao implements StandardDao<Merchant> {
+public class MerchantDao implements Dao<Merchant> {
 
   private static final String INSERT_QUERY_TEMPLATE =
       "insert " +
