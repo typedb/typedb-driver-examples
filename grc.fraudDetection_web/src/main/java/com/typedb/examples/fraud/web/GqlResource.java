@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
+import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 
 @GraphQLApi
@@ -64,6 +65,13 @@ public class GqlResource {
   public Set<Cardholder> getCardholders() {
 
     return cardholders.getAll();
+  }
+
+  @Query
+  @Description("Get all cardholders with given last name")
+  public Set<Cardholder> getCardholdersFromLastName(@Name("lastName") String lastName){
+
+    return cardholders.getName(lastName);
   }
 
   @Query

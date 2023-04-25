@@ -44,6 +44,9 @@ public class TransactionDao implements Dao<Transaction> {
   private static final String TX_MATCH =
       "  $tx (used_card: $cc ,to: $merchant) isa transaction, has timestamp $txTime, has amount $txAmount, has transaction_number $txNum;";
 
+  private static final String TX_MATCH_NAME =
+      " $txNum = \"%s\";";
+
   private static final String SUSPECT_TX_MATCH =
       "  $suspect (unsafe_buyer: $cardholder, unsafe_company: $merchant) isa unsafe_relationship;";
   @Inject
@@ -71,6 +74,21 @@ public class TransactionDao implements Dao<Transaction> {
     if (suspect) {
       getQueryStr += SUSPECT_TX_MATCH;
     }
+
+    var results = db.getAll(getQueryStr);
+
+    var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());
+
+    return transactions;
+  }
+
+  public Set<Transaction> getName(String name) {
+
+    var matchName = TX_MATCH_NAME.formatted(name);
+
+
+    var getQueryStr =
+            "match " + TX_MATCH + matchName + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH;
 
     var results = db.getAll(getQueryStr);
 

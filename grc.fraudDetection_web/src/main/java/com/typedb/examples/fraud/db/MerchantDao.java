@@ -21,6 +21,7 @@
 
 package com.typedb.examples.fraud.db;
 
+import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.Merchant;
 import java.util.Hashtable;
 import java.util.Set;
@@ -42,6 +43,9 @@ public class MerchantDao implements Dao<Merchant> {
       "  $merchantCoords isa Geo_coordinate, has latitude $merchantLat, has longitude $merchantLon;" +
       "  $merchantGeo (geo: $merchantCoords, identify: $merchant) isa geolocate;";
 
+  protected static final String MERCHANT_MATCH_NAME =
+      "  $merchantName = \"%s\";";
+
   @Inject
   TypeDBSessionWrapper db;
 
@@ -53,6 +57,19 @@ public class MerchantDao implements Dao<Merchant> {
 
     return merchants;
   }
+
+  public Set<Merchant> getName(String name){
+
+    var matchName = MERCHANT_MATCH_NAME.formatted(name);
+    var getQueryStr = "match " + MERCHANT_MATCH + matchName;
+
+    var results = db.getAll(getQueryStr);
+
+    var merchants = results.stream().map(MerchantDao::fromResult).collect(Collectors.toSet());
+
+    return merchants;
+  }
+
 
   public void insertAll(Set<Merchant> merchants) {
 

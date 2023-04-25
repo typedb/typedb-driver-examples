@@ -27,6 +27,8 @@ public interface Dao<T> {
 
   Set<T> getAll();
 
+  Set<T> getName(String name);
+
   void insertAll(Set<T> data);
 
 }

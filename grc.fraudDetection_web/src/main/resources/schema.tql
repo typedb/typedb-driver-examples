@@ -125,7 +125,6 @@ bank_account sub relation,
     relates attached_card,
     relates attached_bank;
 
-#maybe add transaction_number as ID
 transaction sub relation,
     owns timestamp,
     owns amount,
@@ -133,15 +132,13 @@ transaction sub relation,
     relates used_card,
     relates to;
 
-#locate as a subtype of geolocate
-locate sub relation,
-    relates location,
-    relates geo,
-    relates identify;
-
 geolocate sub relation,
     relates geo,
     relates identify;
+
+#locate as a subtype of geolocate
+locate sub geolocate,
+    relates location;
 
 customer_relationship sub relation,
     relates buyer,

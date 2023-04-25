@@ -23,6 +23,8 @@ package com.typedb.examples.fraud.db;
 
 import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.BankCoordinates;
+import com.typedb.examples.fraud.model.Cardholder;
+
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,12 +45,26 @@ public class BankDao implements Dao<Bank> {
       "  $bankCoords isa Geo_coordinate, has latitude $bankLat, has longitude $bankLon;" +
       "  $bankGeo (geo: $bankCoords, identify: $bank) isa geolocate;";
 
+  protected static final String BANK_MATCH_NAME =
+      "  $bankName = \"%s\";";
   @Inject
   TypeDBSessionWrapper db;
 
   public Set<Bank> getAll() {
 
     var results = db.getAll("match " + BANK_MATCH);
+
+    var banks = results.stream().map(BankDao::fromResult).collect(Collectors.toSet());
+
+    return banks;
+  }
+
+  public Set<Bank> getName(String name){
+
+    var matchName = BANK_MATCH_NAME.formatted(name);
+    var getQueryStr = "match " + BANK_MATCH + matchName;
+
+    var results = db.getAll(getQueryStr);
 
     var banks = results.stream().map(BankDao::fromResult).collect(Collectors.toSet());
 

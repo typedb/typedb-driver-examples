@@ -50,12 +50,27 @@ public class CardholderDao implements Dao<Cardholder> {
       "  $cc isa Card, has card_number $ccNum;" +
       "  $cardholderAccount (owner: $cardholder, attached_card: $cc, attached_bank: $bank) isa bank_account;";
 
+  protected static final String CARDHOLDER_MATCH_LASTNAME =
+      " $lastName = \"%s\";";
+
   @Inject
   TypeDBSessionWrapper db;
 
   public Set<Cardholder> getAll() {
 
     var getQueryStr = "match " + CARDHOLDER_MATCH + BankDao.BANK_MATCH;
+
+    var results = db.getAll(getQueryStr);
+
+    var cardholders = results.stream().map(CardholderDao::fromResult).collect(Collectors.toSet());
+
+    return cardholders;
+  }
+
+  public Set<Cardholder> getName(String lastName){
+
+    var matchLastName = CARDHOLDER_MATCH_LASTNAME.formatted(lastName);
+    var getQueryStr = "match " + CARDHOLDER_MATCH + matchLastName + BankDao.BANK_MATCH;
 
     var results = db.getAll(getQueryStr);
 
