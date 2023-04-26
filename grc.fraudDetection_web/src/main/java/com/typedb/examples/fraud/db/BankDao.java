@@ -53,7 +53,7 @@ public class BankDao implements Dao<Bank> {
 
     var getQueryStr = "match " + BANK_MATCH;
 
-    return getQueryHandler(getQueryStr);
+    return getBanks(getQueryStr);
   }
 
   public Set<Bank> getByName(String name){
@@ -61,7 +61,7 @@ public class BankDao implements Dao<Bank> {
     var matchName = BANK_MATCH_NAME.formatted(name);
     var getQueryStr = "match " + BANK_MATCH + matchName;
 
-    return getQueryHandler(getQueryStr);
+    return getBanks(getQueryStr);
   }
 
   public void insertAll(Set<Bank> banks) {
@@ -71,7 +71,7 @@ public class BankDao implements Dao<Bank> {
     db.insertAll(queries);
   }
 
-  private Set<Bank> getQueryHandler(String query){
+  private Set<Bank> getBanks(String query){
 
     var results = db.getAll(query);
     var banks = results.stream().map(BankDao::fromResult).collect(Collectors.toSet());

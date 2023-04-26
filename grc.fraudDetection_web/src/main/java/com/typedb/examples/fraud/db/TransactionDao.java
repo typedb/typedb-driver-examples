@@ -79,7 +79,7 @@ public class TransactionDao implements Dao<Transaction> {
       getQueryStr += SUSPECT_TX_MATCH;
     }
 
-    return getQueryHandler(getQueryStr);
+    return getTransactions(getQueryStr);
   }
 
   public Set<Transaction> getByName(String name) {
@@ -89,7 +89,7 @@ public class TransactionDao implements Dao<Transaction> {
     var getQueryStr =
             "match " + TX_MATCH + matchName + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH;
 
-    return getQueryHandler(getQueryStr);
+    return getTransactions(getQueryStr);
   }
 
   public Set<Transaction> getLimitOffset(int limit, int offset){
@@ -99,10 +99,10 @@ public class TransactionDao implements Dao<Transaction> {
     var getQueryStr =
         "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH + matchLimitOffset;
 
-    return getQueryHandler(getQueryStr);
+    return getTransactions(getQueryStr);
   }
 
-  private Set<Transaction> getQueryHandler(String query){
+  private Set<Transaction> getTransactions(String query){
 
     var results = db.getAll(query);
     var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());

@@ -60,7 +60,7 @@ public class CardholderDao implements Dao<Cardholder> {
 
     var getQueryStr = "match " + CARDHOLDER_MATCH + BankDao.BANK_MATCH;
 
-    return getQueryHandler(getQueryStr);
+    return getCardholders(getQueryStr);
   }
 
   public Set<Cardholder> getByName(String lastName){
@@ -68,10 +68,10 @@ public class CardholderDao implements Dao<Cardholder> {
     var matchLastName = CARDHOLDER_MATCH_LASTNAME.formatted(lastName);
     var getQueryStr = "match " + CARDHOLDER_MATCH + matchLastName + BankDao.BANK_MATCH;
 
-    return getQueryHandler(getQueryStr);
+    return getCardholders(getQueryStr);
   }
 
-  private Set<Cardholder> getQueryHandler(String query){
+  private Set<Cardholder> getCardholders(String query){
 
     var results = db.getAll(query);
     var cardholders = results.stream().map(CardholderDao::fromResult).collect(Collectors.toSet());

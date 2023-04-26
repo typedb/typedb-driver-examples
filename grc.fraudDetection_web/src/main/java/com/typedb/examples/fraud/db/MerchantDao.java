@@ -21,7 +21,6 @@
 
 package com.typedb.examples.fraud.db;
 
-import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.Merchant;
 import java.util.Hashtable;
 import java.util.Set;
@@ -53,7 +52,7 @@ public class MerchantDao implements Dao<Merchant> {
 
     var getQueryStr = "match " + MERCHANT_MATCH;
 
-    return getQueryHandler(getQueryStr);
+    return getMerchants(getQueryStr);
   }
 
   public Set<Merchant> getByName(String name){
@@ -61,10 +60,10 @@ public class MerchantDao implements Dao<Merchant> {
     var matchName = MERCHANT_MATCH_NAME.formatted(name);
     var getQueryStr = "match " + MERCHANT_MATCH + matchName;
 
-    return getQueryHandler(getQueryStr);
+    return getMerchants(getQueryStr);
   }
 
-  private Set<Merchant> getQueryHandler(String query){
+  private Set<Merchant> getMerchants(String query){
 
     var results = db.getAll(query);
     var merchants = results.stream().map(MerchantDao::fromResult).collect(Collectors.toSet());
