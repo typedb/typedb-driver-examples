@@ -136,7 +136,6 @@ geolocate sub relation,
     relates geo,
     relates identify;
 
-#locate as a subtype of geolocate
 locate sub geolocate,
     relates location;
 
@@ -168,6 +167,8 @@ rule isa_same_place:
         $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         (geo: $geo1, identify: $per, $arg) isa locate;
         (geo: $geo2, identify: $com) isa geolocate;
+        $com isa Company;
+        $per isa Person;
     } then {
         (person: $per, company: $com, located_com: $geo2, located_per: $geo1) isa same_place;
     };

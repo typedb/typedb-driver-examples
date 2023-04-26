@@ -87,4 +87,11 @@ public class GqlResource {
 
     return transactions.getSuspect();
   }
+
+  @Query
+  @Description("Get all transactions with limit and offset")
+  public Set<Transaction> getTransactionsLimitOffset(@Name("limit") int limit, @Name("offset") int offset){
+
+    return transactions.getLimitOffset(limit, offset);
+  }
 }

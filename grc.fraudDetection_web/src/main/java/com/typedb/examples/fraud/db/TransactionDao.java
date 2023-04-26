@@ -49,6 +49,10 @@ public class TransactionDao implements Dao<Transaction> {
 
   private static final String SUSPECT_TX_MATCH =
       "  $suspect (unsafe_buyer: $cardholder, unsafe_company: $merchant) isa unsafe_relationship;";
+
+  private static final String LIMIT_OFFSET_TX_MATCH =
+      " offset %d; limit %d;";
+
   @Inject
   TypeDBSessionWrapper db;
 
@@ -86,7 +90,6 @@ public class TransactionDao implements Dao<Transaction> {
 
     var matchName = TX_MATCH_NAME.formatted(name);
 
-
     var getQueryStr =
             "match " + TX_MATCH + matchName + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH;
 
@@ -95,6 +98,21 @@ public class TransactionDao implements Dao<Transaction> {
     var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());
 
     return transactions;
+  }
+
+  public Set<Transaction> getLimitOffset(int limit, int offset){
+
+    var matchLimitOffset = LIMIT_OFFSET_TX_MATCH.formatted(offset, limit);
+
+        var getQueryStr =
+            "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH + matchLimitOffset;
+
+    var results = db.getAll(getQueryStr);
+
+    var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());
+
+    return transactions;
+
   }
 
   public void insertAll(Set<Transaction> transactions) {
