@@ -71,7 +71,7 @@ public class GqlResource {
   @Description("Get all cardholders with given last name")
   public Set<Cardholder> getCardholdersFromLastName(@Name("lastName") String lastName){
 
-    return cardholders.getName(lastName);
+    return cardholders.getByName(lastName);
   }
 
   @Query

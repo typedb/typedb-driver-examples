@@ -23,7 +23,6 @@ package com.typedb.examples.fraud.db;
 
 import com.typedb.examples.fraud.model.Bank;
 import com.typedb.examples.fraud.model.BankCoordinates;
-import com.typedb.examples.fraud.model.Cardholder;
 
 import java.util.Hashtable;
 import java.util.Set;
@@ -52,23 +51,17 @@ public class BankDao implements Dao<Bank> {
 
   public Set<Bank> getAll() {
 
-    var results = db.getAll("match " + BANK_MATCH);
+    var getQueryStr = "match " + BANK_MATCH;
 
-    var banks = results.stream().map(BankDao::fromResult).collect(Collectors.toSet());
-
-    return banks;
+    return getQueryHandler(getQueryStr);
   }
 
-  public Set<Bank> getName(String name){
+  public Set<Bank> getByName(String name){
 
     var matchName = BANK_MATCH_NAME.formatted(name);
     var getQueryStr = "match " + BANK_MATCH + matchName;
 
-    var results = db.getAll(getQueryStr);
-
-    var banks = results.stream().map(BankDao::fromResult).collect(Collectors.toSet());
-
-    return banks;
+    return getQueryHandler(getQueryStr);
   }
 
   public void insertAll(Set<Bank> banks) {
@@ -76,6 +69,14 @@ public class BankDao implements Dao<Bank> {
     var queries = banks.stream().map(this::getInsertQueryStr).collect(Collectors.toSet());
 
     db.insertAll(queries);
+  }
+
+  private Set<Bank> getQueryHandler(String query){
+
+    var results = db.getAll(query);
+    var banks = results.stream().map(BankDao::fromResult).collect(Collectors.toSet());
+
+    return banks;
   }
 
   protected static Bank fromResult(Hashtable<String, String> result) {

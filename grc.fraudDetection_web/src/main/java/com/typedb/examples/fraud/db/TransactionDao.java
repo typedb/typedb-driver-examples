@@ -79,40 +79,35 @@ public class TransactionDao implements Dao<Transaction> {
       getQueryStr += SUSPECT_TX_MATCH;
     }
 
-    var results = db.getAll(getQueryStr);
-
-    var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());
-
-    return transactions;
+    return getQueryHandler(getQueryStr);
   }
 
-  public Set<Transaction> getName(String name) {
+  public Set<Transaction> getByName(String name) {
 
     var matchName = TX_MATCH_NAME.formatted(name);
 
     var getQueryStr =
             "match " + TX_MATCH + matchName + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH;
 
-    var results = db.getAll(getQueryStr);
-
-    var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());
-
-    return transactions;
+    return getQueryHandler(getQueryStr);
   }
 
   public Set<Transaction> getLimitOffset(int limit, int offset){
 
     var matchLimitOffset = LIMIT_OFFSET_TX_MATCH.formatted(offset, limit);
 
-        var getQueryStr =
-            "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH + matchLimitOffset;
+    var getQueryStr =
+        "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH + matchLimitOffset;
 
-    var results = db.getAll(getQueryStr);
+    return getQueryHandler(getQueryStr);
+  }
 
+  private Set<Transaction> getQueryHandler(String query){
+
+    var results = db.getAll(query);
     var transactions = results.stream().map(TransactionDao::fromResult).collect(Collectors.toSet());
 
     return transactions;
-
   }
 
   public void insertAll(Set<Transaction> transactions) {

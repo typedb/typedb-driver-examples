@@ -60,20 +60,20 @@ public class CardholderDao implements Dao<Cardholder> {
 
     var getQueryStr = "match " + CARDHOLDER_MATCH + BankDao.BANK_MATCH;
 
-    var results = db.getAll(getQueryStr);
-
-    var cardholders = results.stream().map(CardholderDao::fromResult).collect(Collectors.toSet());
-
-    return cardholders;
+    return getQueryHandler(getQueryStr);
   }
 
-  public Set<Cardholder> getName(String lastName){
+  public Set<Cardholder> getByName(String lastName){
 
     var matchLastName = CARDHOLDER_MATCH_LASTNAME.formatted(lastName);
     var getQueryStr = "match " + CARDHOLDER_MATCH + matchLastName + BankDao.BANK_MATCH;
 
-    var results = db.getAll(getQueryStr);
+    return getQueryHandler(getQueryStr);
+  }
 
+  private Set<Cardholder> getQueryHandler(String query){
+
+    var results = db.getAll(query);
     var cardholders = results.stream().map(CardholderDao::fromResult).collect(Collectors.toSet());
 
     return cardholders;

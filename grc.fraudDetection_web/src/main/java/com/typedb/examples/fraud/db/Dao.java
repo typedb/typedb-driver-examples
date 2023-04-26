@@ -21,13 +21,15 @@
 
 package com.typedb.examples.fraud.db;
 
+import javax.inject.Inject;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface Dao<T> {
 
   Set<T> getAll();
 
-  Set<T> getName(String name);
+  Set<T> getByName(String name);
 
   void insertAll(Set<T> data);
 

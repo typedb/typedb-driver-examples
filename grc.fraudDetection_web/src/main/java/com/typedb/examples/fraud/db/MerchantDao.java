@@ -51,25 +51,26 @@ public class MerchantDao implements Dao<Merchant> {
 
   public Set<Merchant> getAll() {
 
-    var results = db.getAll("match " + MERCHANT_MATCH);
+    var getQueryStr = "match " + MERCHANT_MATCH;
 
-    var merchants = results.stream().map(MerchantDao::fromResult).collect(Collectors.toSet());
-
-    return merchants;
+    return getQueryHandler(getQueryStr);
   }
 
-  public Set<Merchant> getName(String name){
+  public Set<Merchant> getByName(String name){
 
     var matchName = MERCHANT_MATCH_NAME.formatted(name);
     var getQueryStr = "match " + MERCHANT_MATCH + matchName;
 
-    var results = db.getAll(getQueryStr);
+    return getQueryHandler(getQueryStr);
+  }
 
+  private Set<Merchant> getQueryHandler(String query){
+
+    var results = db.getAll(query);
     var merchants = results.stream().map(MerchantDao::fromResult).collect(Collectors.toSet());
 
     return merchants;
   }
-
 
   public void insertAll(Set<Merchant> merchants) {
 
