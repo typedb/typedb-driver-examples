@@ -1,72 +1,128 @@
-# fraud_web
+# fraudDetection_web
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project uses Quarkus, the Supersonic Subatomic Java Framework in order to let us present results with GraphQL.
+In this project, we use TypeDB to represent a queryable database of relevant fraud detection data about some transactions between Cardholders and Companies.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## Introduction
+
+We have an imaginary transaction dataset and our application implements some very basic functions:
+
+- Search for Bank
+- Search for Cardholder
+- Search for Company
+- Search for Transaction 
 
 ## Running the application in dev mode
 
-You can run your application in dev mode that enables live coding using:
-
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`.
+2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
+3. You can run your application in dev mode that enables live coding using:
 ```shell script
 ./mvnw compile quarkus:dev
 ```
-
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only
 > at http://localhost:8080/q/dev/.
 
-## Packaging and running the application
+4. You can then choose the GraphQL UI.
+5. You can now use this interface to query the database (you can find all available queries in the top right corner).
 
-The application can be packaged using:
+## TypeDB Description
 
-```shell script
-./mvnw package
+### Schema
+
+The schema is stored in the `schema.tql` file.
+
+#### Attributes
+
+The bookstore schema has the following attributes:
+
+- name (string)
+- first_name (string)
+- last_name (string) 
+- job (string) 
+- gender (string -> regex) 
+- company_type (string) 
+- transaction_type (string) 
+- street (string) 
+- city (string) 
+- state (string) 
+####
+- timestamp (datetime) 
+- date_of_birth (datetime) 
+####
+- card_number (long)  
+####
+- amount (double)
+- longitude (double)
+- latitude (double)
+
+#### Entities
+
+The bookstore schema has the following entities:
+
+- Geo_coordinate
+- Address
+- Card
+- Person
+- Company
+- Bank
+
+#### Relations
+
+The bookstore schema has the following relations:
+
+- bank_account
+- transaction
+- geolocate
+  - locate
+- customer_relationship
+- unsafe_relationship
+- same_place
+
+#### Rules
+
+The fraudDetection schema has three rules to demonstrate rules usability.
+
+The first one is here to create a direct relation between CardHolder and Company with a Transaction exists between them.
+```
+rule isa_customer_relationship:
+    when {
+        (owner: $per, attached_card: $car, $gar) isa bank_account;
+        (used_card: $car, to: $com) isa transaction;
+    } then {
+        (buyer: $per, company: $com) isa customer_relationship;
+    };
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into
-the `target/quarkus-app/lib/` directory.
+The second one works to create a relation between every Company and Person that are in the same geographical area.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+```
+rule isa_same_place:
+    when {
+        $geo1 isa Geo_coordinate, has longitude $l1, has latitude $l2;
+        $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
+        (geo: $geo1, identify: $per, $arg) isa locate;
+        (geo: $geo2, identify: $com) isa geolocate;
+        $com isa Company;
+        $per isa Person;
+    } then {
+        (person: $per, company: $com, located_com: $geo2, located_per: $geo1) isa same_place;
+    };
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Pnative
+This third rule is using the relation created by the previous rule in order to find Transaction that are happening between
+Person and Company that are not is the same area, marking them as potentially not safe
 ```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container
-using:
-
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
+rule is_not_safe:
+    when {
+        $per isa Person;
+        $com isa Company;
+        (buyer: $per, company: $com) isa customer_relationship;
+        not{
+            (person: $per, company: $com) isa same_place;
+        };
+    } then {
+        (unsafe_buyer: $per, unsafe_company: $com) isa unsafe_relationship;
+    };
 ```
-
-You can then execute your native executable with: `./target/fraud_web-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please
-consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- SmallRye GraphQL ([guide](https://quarkus.io/guides/microprofile-graphql)): Create GraphQL
-  Endpoints using the
-  code-first approach from MicroProfile GraphQL
-
-## Provided Code
-
-### SmallRye GraphQL
-
-Start coding with this Hello GraphQL Query
-
-[Related guide section...](https://quarkus.io/guides/smallrye-graphql)
