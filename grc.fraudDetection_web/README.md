@@ -12,6 +12,21 @@ We have an imaginary transaction dataset and our application implements some ver
 - Search for Company
 - Search for Transaction 
 
+We are demonstrating sub-typing, powerful rules and rule combination in our schema. 
+####
+We are also how easy it is to create complex queries using query composition.
+####
+We are using the DAO design pattern, we have following components on which our design depends:
+
+- The model which is transferred from one layer to the other.
+- The interfaces which provides a flexible design.
+- The interface implementation which is a concrete implementation of the persistence logic.
+
+The querry composition can be observed in all DAOs.
+```javascript
+String getQueryStr = "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH;
+```
+
 ## Running the application in dev mode
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`.
