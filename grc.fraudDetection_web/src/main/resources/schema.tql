@@ -79,7 +79,6 @@ latitude sub attribute,
 Geo_coordinate sub entity,
     owns longitude,
     owns latitude,
-    plays locate:geo,
     plays geolocate:geo,
     plays same_place:located_com,
     plays same_place:located_per;

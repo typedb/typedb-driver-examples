@@ -14,22 +14,22 @@ We have an imaginary transaction dataset and our application implements some ver
 
 We are demonstrating sub-typing, powerful rules and rule combination in our schema. 
 ####
-We are also how easy it is to create complex queries using query composition.
+We can also see how easy it is to create complex queries using query composition.
 ####
-We are using the DAO design pattern, we have following components on which our design depends:
+We are using the DAO design pattern, we have the following components on which our design depends:
 
 - The model which is transferred from one layer to the other.
-- The interfaces which provides a flexible design.
+- The interfaces which provide a flexible design.
 - The interface implementation which is a concrete implementation of the persistence logic.
 
-The querry composition can be observed in all DAOs.
-```javascript
+The query composition can be observed in all DAOs.
+```java
 String getQueryStr = "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + BankDao.BANK_MATCH + MerchantDao.MERCHANT_MATCH;
 ```
 
 ## Running the application in dev mode
 
-1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`.
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples/grc.fraudDetection_web`.
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
 3. You can run your application in dev mode that enables live coding using:
 ```shell script
@@ -45,7 +45,7 @@ String getQueryStr = "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + Bank
 
 ### Schema
 
-The schema is stored in the `schema.tql` file.
+The schema is stored in the `schema.tql` file under [src/main/resources/](src/main/resources/schema.tql).
 
 #### Attributes
 
