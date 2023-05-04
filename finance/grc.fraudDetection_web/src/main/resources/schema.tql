@@ -44,7 +44,9 @@ company_type sub attribute,
     value string;
 
 timestamp sub attribute,
-    value datetime;
+    value datetime,
+    plays customer_relationship:timestamp,
+    plays same_place:timestamp;
 
 date_of_birth sub attribute,
     value datetime;
@@ -54,6 +56,9 @@ card_number sub attribute,
 
 amount sub attribute,
     value double;
+
+is_safe sub attribute,
+    value boolean;
 
 transaction_number sub attribute,
     value string;
@@ -128,6 +133,7 @@ transaction sub relation,
     owns timestamp,
     owns amount,
     owns transaction_number,
+    owns is_safe,
     relates used_card,
     relates to;
 
@@ -139,6 +145,7 @@ locate sub geolocate,
     relates address;
 
 customer_relationship sub relation,
+    relates timestamp,
     relates buyer,
     relates company;
 
@@ -149,37 +156,51 @@ unsafe_relationship sub relation,
 same_place sub relation,
     relates person,
     relates company,
+    relates timestamp,
     relates located_com,
     relates located_per;
 
 rule isa_customer_relationship:
     when {
-        (owner: $per, attached_card: $car, $gar) isa bank_account;
-        (used_card: $car, to: $com) isa transaction;
+        (owner: $per, attached_card: $car) isa bank_account;
+        $trans (used_card: $car, to: $com) isa transaction;
+        $trans has timestamp $time;
     } then {
-        (buyer: $per, company: $com) isa customer_relationship;
+        (buyer: $per, company: $com, timestamp: $time) isa customer_relationship;
     };
 
 rule isa_same_place:
     when {
+        $per isa Person;
+        $com isa Company;
         $geo1 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         (coordinates: $geo1, transacting_party: $per, $arg) isa locate;
         (coordinates: $geo2, transacting_party: $com) isa geolocate;
-        $com isa Company;
-        $per isa Person;
+        (buyer: $per, company: $com, timestamp: $time) isa customer_relationship;
     } then {
-        (person: $per, company: $com, located_com: $geo2, located_per: $geo1) isa same_place;
+        (person: $per, company: $com, timestamp: $time, located_com: $geo2, located_per: $geo1) isa same_place;
     };
 
 rule is_not_safe:
     when {
         $per isa Person;
         $com isa Company;
-        (buyer: $per, company: $com) isa customer_relationship;
+        (owner: $per, attached_card: $car, $gar) isa bank_account;
+        $trans (used_card: $car, to: $com) isa transaction, has timestamp $time;
         not{
-            (person: $per, company: $com) isa same_place;
+            (person: $per, company: $com, timestamp: $time) isa same_place;
         };
     } then {
-        (unsafe_buyer: $per, unsafe_company: $com) isa unsafe_relationship;
+        $trans has is_safe false;
+    };
+
+rule is_safe:
+    when {
+        $trans isa transaction;
+        not{
+            $trans has is_safe false;
+        };
+    } then {
+        $trans has is_safe true;
     };

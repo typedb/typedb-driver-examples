@@ -48,7 +48,7 @@ public class TransactionDao implements Dao<Transaction> {
       " $txNum = \"%s\";";
 
   private static final String SUSPECT_TX_MATCH =
-      "  $suspect (unsafe_buyer: $cardholder, unsafe_company: $merchant) isa unsafe_relationship;";
+      "  $tx has as_safe false;";
 
   private static final String LIMIT_OFFSET_TX_MATCH =
       " offset %d; limit %d;";
