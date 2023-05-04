@@ -35,12 +35,12 @@ public class MerchantDao implements Dao<Merchant> {
       "insert " +
       "  $merchant isa Company, has name \"%s\", has company_type \"%s\";" +
       "  $merchantCoords isa Geo_coordinate, has latitude %s, has longitude %s;" +
-      "  $merchantGeo (geo: $merchantCoords, identify: $merchant) isa geolocate;";
+      "  $merchantGeo (coordinates: $merchantCoords, transacting_party: $merchant) isa geolocate;";
 
   protected static final String MERCHANT_MATCH =
       "  $merchant isa Company, has name $merchantName, has company_type $merchantType;" +
       "  $merchantCoords isa Geo_coordinate, has latitude $merchantLat, has longitude $merchantLon;" +
-      "  $merchantGeo (geo: $merchantCoords, identify: $merchant) isa geolocate;";
+      "  $merchantGeo (coordinates: $merchantCoords, transacting_party: $merchant) isa geolocate;";
 
   protected static final String MERCHANT_MATCH_NAME =
       "  $merchantName = \"%s\";";

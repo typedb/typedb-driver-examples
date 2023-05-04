@@ -79,7 +79,7 @@ latitude sub attribute,
 Geo_coordinate sub entity,
     owns longitude,
     owns latitude,
-    plays geolocate:geo,
+    plays geolocate:coordinates,
     plays same_place:located_com,
     plays same_place:located_per;
 
@@ -88,7 +88,7 @@ Address sub entity,
     owns city,
     owns state,
     owns zip,
-    plays locate:location;
+    plays locate:address;
 
 Card sub entity,
     owns card_number,
@@ -102,7 +102,7 @@ Person sub entity,
     owns job,
     owns date_of_birth,
     plays bank_account:owner,
-    plays locate:identify,
+    plays locate:transacting_party,
     plays customer_relationship:buyer,
     plays same_place:person,
     plays unsafe_relationship:unsafe_buyer;
@@ -111,7 +111,7 @@ Company sub entity,
     owns name,
     owns company_type,
     plays transaction:to,
-    plays geolocate:identify,
+    plays geolocate:transacting_party,
     plays customer_relationship:company,
     plays same_place:company,
     plays unsafe_relationship:unsafe_company;
@@ -132,11 +132,11 @@ transaction sub relation,
     relates to;
 
 geolocate sub relation,
-    relates geo,
-    relates identify;
+    relates coordinates,
+    relates transacting_party;
 
 locate sub geolocate,
-    relates location;
+    relates address;
 
 customer_relationship sub relation,
     relates buyer,
@@ -164,8 +164,8 @@ rule isa_same_place:
     when {
         $geo1 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
-        (geo: $geo1, identify: $per, $arg) isa locate;
-        (geo: $geo2, identify: $com) isa geolocate;
+        (coordinates: $geo1, transacting_party: $per, $arg) isa locate;
+        (coordinates: $geo2, transacting_party: $com) isa geolocate;
         $com isa Company;
         $per isa Person;
     } then {

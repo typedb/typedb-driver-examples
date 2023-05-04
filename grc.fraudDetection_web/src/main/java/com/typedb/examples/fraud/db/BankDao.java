@@ -37,12 +37,12 @@ public class BankDao implements Dao<Bank> {
       "insert " +
       "  $bank isa Bank, has name \"%s\", has company_type \"Bank\";" +
       "  $bankCoords isa Geo_coordinate, has latitude %s, has longitude %s;" +
-      "  $bankGeo (geo: $bankCoords, identify: $bank) isa geolocate;";
+      "  $bankGeo (coordinates: $bankCoords, transacting_party: $bank) isa geolocate;";
 
   protected static final String BANK_MATCH =
       "  $bank isa Bank, has name $bankName;" +
       "  $bankCoords isa Geo_coordinate, has latitude $bankLat, has longitude $bankLon;" +
-      "  $bankGeo (geo: $bankCoords, identify: $bank) isa geolocate;";
+      "  $bankGeo (coordinates: $bankCoords, transacting_party: $bank) isa geolocate;";
 
   protected static final String BANK_MATCH_NAME =
       "  $bankName = \"%s\";";

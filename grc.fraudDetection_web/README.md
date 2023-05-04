@@ -116,8 +116,8 @@ rule isa_same_place:
     when {
         $geo1 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
-        (geo: $geo1, identify: $per, $arg) isa locate;
-        (geo: $geo2, identify: $com) isa geolocate;
+        (coordinates: $geo1, transacting_party: $per, $arg) isa locate;
+        (coordinates: $geo2, transacting_party: $com) isa geolocate;
         $com isa Company;
         $per isa Person;
     } then {
