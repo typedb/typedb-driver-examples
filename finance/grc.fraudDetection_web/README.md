@@ -49,7 +49,7 @@ The schema is stored in the `schema.tql` file under [src/main/resources/](src/ma
 
 #### Attributes
 
-The bookstore schema has the following attributes:
+The schema has the following attributes:
 
 - name (string)
 - first_name (string)
@@ -73,7 +73,7 @@ The bookstore schema has the following attributes:
 
 #### Entities
 
-The bookstore schema has the following entities:
+The schema has the following entities:
 
 - Geo_coordinate
 - Address
@@ -84,7 +84,7 @@ The bookstore schema has the following entities:
 
 #### Relations
 
-The bookstore schema has the following relations:
+The schema has the following relations:
 
 - bank_account
 - transaction
