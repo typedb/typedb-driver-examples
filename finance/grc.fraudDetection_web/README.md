@@ -33,6 +33,8 @@ String getQueryStr = "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + Bank
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
 3. You can run your application in dev mode that enables live coding using:
 ```shell script
+mvn package
+mvn -N wrapper:wrapper 
 ./mvnw compile quarkus:dev
 ```
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only
