@@ -31,7 +31,7 @@ String getQueryStr = "match " + TX_MATCH + CardholderDao.CARDHOLDER_MATCH + Bank
 
 1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples/grc.fraudDetection_web`.
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
-3. You can run your application in dev mode that enables live coding using:
+4. You can run your application in dev mode that enables live coding using (you will need at least Java19):
 ```shell script
 mvn package
 mvn -N wrapper:wrapper 
