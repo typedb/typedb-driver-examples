@@ -68,10 +68,13 @@ The schema has the following attributes:
 - date_of_birth (datetime) 
 ####
 - card_number (long)  
+- zip (long)
 ####
 - amount (double)
 - longitude (double)
 - latitude (double)
+####
+- is_safe (boolean)
 
 #### Entities
 
@@ -98,16 +101,17 @@ The schema has the following relations:
 
 #### Rules
 
-The fraudDetection schema has three rules to demonstrate rules usability.
+The fraudDetection schema has four rules to demonstrate rules usability.
 
 The first one is here to create a direct relation between CardHolder and Company with a Transaction exists between them.
 ```
 rule isa_customer_relationship:
     when {
-        (owner: $per, attached_card: $car, $gar) isa bank_account;
-        (used_card: $car, to: $com) isa transaction;
+        (owner: $per, attached_card: $car) isa bank_account;
+        $trans (used_card: $car, to: $com) isa transaction;
+        $trans has timestamp $time;
     } then {
-        (buyer: $per, company: $com) isa customer_relationship;
+        (buyer: $per, company: $com, timestamp: $time) isa customer_relationship;
     };
 ```
 
@@ -116,14 +120,15 @@ The second one works to create a relation between every Company and Person that 
 ```
 rule isa_same_place:
     when {
+        $per isa Person;
+        $com isa Company;
         $geo1 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
         (coordinates: $geo1, transacting_party: $per, $arg) isa locate;
         (coordinates: $geo2, transacting_party: $com) isa geolocate;
-        $com isa Company;
-        $per isa Person;
+        (buyer: $per, company: $com, timestamp: $time) isa customer_relationship;
     } then {
-        (person: $per, company: $com, located_com: $geo2, located_per: $geo1) isa same_place;
+        (person: $per, company: $com, timestamp: $time, located_com: $geo2, located_per: $geo1) isa same_place;
     };
 ```
 
@@ -135,11 +140,25 @@ rule is_not_safe:
     when {
         $per isa Person;
         $com isa Company;
-        (buyer: $per, company: $com) isa customer_relationship;
+        (owner: $per, attached_card: $car, $gar) isa bank_account;
+        $trans (used_card: $car, to: $com) isa transaction, has timestamp $time;
         not{
-            (person: $per, company: $com) isa same_place;
+            (person: $per, company: $com, timestamp: $time) isa same_place;
         };
     } then {
-        (unsafe_buyer: $per, unsafe_company: $com) isa unsafe_relationship;
+        $trans has is_safe false;
     };
 ```
+
+The fourth rule is using the previous one in order to mark a Transaction as safe. 
+``` 
+rule is_safe:
+    when {
+        $trans isa transaction;
+        not{
+            $trans has is_safe false;
+        };
+    } then {
+        $trans has is_safe true;
+    };
+``` 
