@@ -112,4 +112,15 @@ public class Transaction {
   public int hashCode() {
     return Objects.hash(amount, number, time, merchant, cardholder);
   }
+
+  @Override
+  public String toString() {
+    return "Transaction{" +
+            "amount='" + amount + '\'' +
+            ", number='" + number + '\'' +
+            ", time='" + time + '\'' +
+            ", merchant=" + merchant +
+            ", cardholder=" + cardholder +
+            '}';
+  }
 }

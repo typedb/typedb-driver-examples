@@ -82,7 +82,9 @@ public class AppLifecycleBean {
 
         URL file = this.getClass().getClassLoader().getResource("schema.tql");
 
-        assert file != null;
+        if (file == null) {
+          throw new AssertionError();
+        }
 
         String query = Files.readString(Paths.get(file.toURI()));
 
@@ -122,7 +124,7 @@ public class AppLifecycleBean {
 
           Bank bank = sampleBanks.stream().skip((int) (sampleBanks.size() * Math.random())).findFirst().get();
 
-          tx.getCardholder().getCc().setBank(bank);
+          tx.getCardholder().getCreditCard().setBank(bank);
         });
 
         sampleMerchants.addAll(sampleTransactions.stream().map(Transaction::getMerchant).collect(Collectors.toSet()));
