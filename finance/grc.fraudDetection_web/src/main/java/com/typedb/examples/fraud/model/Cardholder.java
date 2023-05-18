@@ -43,12 +43,12 @@ public class Cardholder {
   @CsvRecurse
   private CardholderCoordinates coords;
   @CsvRecurse
-  private CreditCard cc;
+  private CreditCard creditCard;
 
   public Cardholder() {}
 
   public Cardholder(String firstName, String lastName, String gender, String job, String birthDate,
-      Address address, CardholderCoordinates coords, CreditCard cc) {
+      Address address, CardholderCoordinates coords, CreditCard creditCard) {
 
     this.firstName = firstName;
     this.lastName = lastName;
@@ -57,7 +57,7 @@ public class Cardholder {
     this.birthDate = birthDate;
     this.address = address;
     this.coords = coords;
-    this.cc = cc;
+    this.creditCard = creditCard;
   }
 
   public String getFirstName() {
@@ -116,12 +116,12 @@ public class Cardholder {
     this.coords = coords;
   }
 
-  public CreditCard getCc() {
-    return cc;
+  public CreditCard getCreditCard() {
+    return creditCard;
   }
 
-  public void setCc(CreditCard cc) {
-    this.cc = cc;
+  public void setCreditCard(CreditCard creditCard) {
+    this.creditCard = creditCard;
   }
 
   @Override
@@ -144,18 +144,17 @@ public class Cardholder {
     return Objects.hash(firstName, lastName);
   }
 
-  @Override
-  public String toString() {
-
-    return
-        "cardholder {" +
-        "  firstName = '" + firstName + "', " +
-        "  lastName = '" + lastName + "', " +
-        "  gender = '" + gender + "', " +
-        "  job = '" + job + "', " +
-        "  birthDate = '" + birthDate + "', " +
-        "  address = " + address + ", " +
-        "  coords = " + coords +
-        "}";
+  @java.lang.Override
+  public java.lang.String toString() {
+    return "Cardholder{" +
+            "firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", gender='" + gender + '\'' +
+            ", job='" + job + '\'' +
+            ", birthDate='" + birthDate + '\'' +
+            ", address=" + address +
+            ", coords=" + coords +
+            ", cc=" + creditCard +
+            '}';
   }
 }

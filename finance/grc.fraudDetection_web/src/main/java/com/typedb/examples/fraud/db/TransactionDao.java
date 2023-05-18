@@ -134,7 +134,7 @@ public class TransactionDao implements Dao<Transaction> {
   private String getInsertQueryStr(Transaction transaction) {
 
     var match = PERSON_CARD_MATCH.formatted(
-        transaction.getCardholder().getCc().getNumber(),
+        transaction.getCardholder().getCreditCard().getNumber(),
         transaction.getMerchant().getName()
     );
 

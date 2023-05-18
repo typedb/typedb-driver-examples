@@ -88,7 +88,7 @@ public class CardholderDao implements Dao<Cardholder> {
 
   protected static Cardholder fromResult(Hashtable<String, String> result) {
 
-    var cc = CreditCardDao.fromResult(result);
+    var creditCard = CreditCardDao.fromResult(result);
     var coords = CardholderCoordsDao.fromResult(result);
     var addr = AddressDao.fromResult(result);
 
@@ -98,7 +98,7 @@ public class CardholderDao implements Dao<Cardholder> {
     var job = result.get("job");
     var birthDate = result.get("birthDate");
 
-    var cardholder = new Cardholder(firstName, lastName, gender, job, birthDate, addr, coords, cc);
+    var cardholder = new Cardholder(firstName, lastName, gender, job, birthDate, addr, coords, creditCard);
 
     return cardholder;
   }
@@ -106,7 +106,7 @@ public class CardholderDao implements Dao<Cardholder> {
   private String getInsertQueryStr(Cardholder cardholder) {
 
     var insertQueryStr = INSERT_QUERY_TEMPLATE.formatted(
-        cardholder.getCc().getBank().getName(),
+        cardholder.getCreditCard().getBank().getName(),
         cardholder.getCoords().getLatitude(),
         cardholder.getCoords().getLongitude(),
         cardholder.getAddress().getStreet(),
@@ -118,7 +118,7 @@ public class CardholderDao implements Dao<Cardholder> {
         cardholder.getGender(),
         cardholder.getJob(),
         cardholder.getBirthDate(),
-        cardholder.getCc().getNumber()
+        cardholder.getCreditCard().getNumber()
     );
 
     return insertQueryStr;
