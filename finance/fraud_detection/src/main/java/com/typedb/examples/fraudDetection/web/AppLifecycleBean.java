@@ -19,17 +19,17 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.web;
+package com.typedb.examples.fraudDetection.web;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.typedb.examples.fraudDectection.db.Dao;
-import com.typedb.examples.fraudDectection.db.TransactionDao;
-import com.typedb.examples.fraudDectection.model.Bank;
-import com.typedb.examples.fraudDectection.model.BankCoordinates;
-import com.typedb.examples.fraudDectection.model.Cardholder;
-import com.typedb.examples.fraudDectection.model.Merchant;
-import com.typedb.examples.fraudDectection.model.Transaction;
+import com.typedb.examples.fraudDetection.db.Dao;
+import com.typedb.examples.fraudDetection.db.TransactionDao;
+import com.typedb.examples.fraudDetection.model.Bank;
+import com.typedb.examples.fraudDetection.model.BankCoordinates;
+import com.typedb.examples.fraudDetection.model.Cardholder;
+import com.typedb.examples.fraudDetection.model.Merchant;
+import com.typedb.examples.fraudDetection.model.Transaction;
 import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;

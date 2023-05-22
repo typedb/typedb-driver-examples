@@ -19,14 +19,14 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.web;
+package com.typedb.examples.fraudDetection.web;
 
-import com.typedb.examples.fraudDectection.db.Dao;
-import com.typedb.examples.fraudDectection.db.TransactionDao;
-import com.typedb.examples.fraudDectection.model.Bank;
-import com.typedb.examples.fraudDectection.model.Cardholder;
-import com.typedb.examples.fraudDectection.model.Merchant;
-import com.typedb.examples.fraudDectection.model.Transaction;
+import com.typedb.examples.fraudDetection.db.Dao;
+import com.typedb.examples.fraudDetection.db.TransactionDao;
+import com.typedb.examples.fraudDetection.model.Bank;
+import com.typedb.examples.fraudDetection.model.Cardholder;
+import com.typedb.examples.fraudDetection.model.Merchant;
+import com.typedb.examples.fraudDetection.model.Transaction;
 import java.util.Set;
 import javax.inject.Inject;
 import org.eclipse.microprofile.graphql.Description;

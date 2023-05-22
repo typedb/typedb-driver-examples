@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.model;
+package com.typedb.examples.fraudDetection.model;
 
 import com.opencsv.bean.CsvBindByName;
 import java.util.Objects;

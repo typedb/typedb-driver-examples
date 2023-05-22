@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.db;
+package com.typedb.examples.fraudDetection.db;
 
 import java.util.Set;
 import java.util.stream.Collectors;

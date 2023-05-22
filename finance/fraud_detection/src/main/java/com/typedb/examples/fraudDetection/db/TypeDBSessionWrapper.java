@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.db;
+package com.typedb.examples.fraudDetection.db;
 
 import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBOptions;

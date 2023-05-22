@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.util;
+package com.typedb.examples.fraudDetection.util;
 
 public class Formatter {
 

@@ -19,10 +19,10 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.db;
+package com.typedb.examples.fraudDetection.db;
 
-import com.typedb.examples.fraudDectection.model.Bank;
-import com.typedb.examples.fraudDectection.model.BankCoordinates;
+import com.typedb.examples.fraudDetection.model.Bank;
+import com.typedb.examples.fraudDetection.model.BankCoordinates;
 
 import java.util.Hashtable;
 import java.util.Set;

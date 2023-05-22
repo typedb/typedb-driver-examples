@@ -19,9 +19,9 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.db;
+package com.typedb.examples.fraudDetection.db;
 
-import com.typedb.examples.fraudDectection.model.CreditCard;
+import com.typedb.examples.fraudDetection.model.CreditCard;
 import java.util.Hashtable;
 
 public class CreditCardDao {

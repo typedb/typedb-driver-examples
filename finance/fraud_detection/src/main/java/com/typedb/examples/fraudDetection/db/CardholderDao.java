@@ -19,9 +19,9 @@
  * under the License.
  */
 
-package com.typedb.examples.fraudDectection.db;
+package com.typedb.examples.fraudDetection.db;
 
-import com.typedb.examples.fraudDectection.model.Cardholder;
+import com.typedb.examples.fraudDetection.model.Cardholder;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.stream.Collectors;
