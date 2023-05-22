@@ -1,4 +1,4 @@
-# fraud_detection
+# Fraud Detection TypeDB Example
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework in order to let us present results with GraphQL.
 In this project, we use TypeDB to represent a queryable database of relevant fraud detection data about some transactions between Cardholders and Companies.
