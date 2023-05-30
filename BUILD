@@ -62,7 +62,7 @@ checkstyle_test(
 
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_fraud")
 checkstyle_fraud(
-    name = "checkstyle_fraud",
+    name = "checkstyle",
     include = glob([".factory/*", "finance/fraud_detection/**/*"]) + [".bazelrc", ".gitignore", "BUILD", "WORKSPACE"],
     exclude = glob(["finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/db/*", "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/model/*",
                     "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/util/*", "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/web/*",
