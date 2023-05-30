@@ -1,0 +1,206 @@
+#
+# Copyright (C) 2022 Vaticle
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# dataset without banks
+# https://www.kaggle.com/datasets/kartik2112/fraud-detection?select=fraudTrain.csv
+
+ define
+
+name sub attribute,
+    value string;
+
+first_name sub attribute,
+    value string;
+
+last_name sub attribute,
+    value string;
+
+job sub attribute,
+    value string;
+
+gender sub attribute,
+    value string,
+    regex "^(F|M|O)$";
+
+company_type sub attribute,
+    value string;
+
+timestamp sub attribute,
+    value datetime,
+    plays customer_relationship:timestamp,
+    plays same_place:timestamp;
+
+date_of_birth sub attribute,
+    value datetime;
+
+card_number sub attribute,
+    value long;
+
+amount sub attribute,
+    value double;
+
+is_safe sub attribute,
+    value boolean;
+
+transaction_number sub attribute,
+    value string;
+
+street sub attribute,
+    value string;
+
+city sub attribute,
+    value string;
+
+state sub attribute,
+    value string;
+
+zip sub attribute,
+    value long;
+
+longitude sub attribute,
+    value double;
+
+latitude sub attribute,
+    value double;
+
+Geo_coordinate sub entity,
+    owns longitude,
+    owns latitude,
+    plays geolocate:coordinates,
+    plays same_place:located_com,
+    plays same_place:located_per;
+
+Address sub entity,
+    owns street,
+    owns city,
+    owns state,
+    owns zip,
+    plays locate:address;
+
+Card sub entity,
+    owns card_number,
+    plays bank_account:attached_card,
+    plays transaction:used_card;
+
+Person sub entity,
+    owns first_name,
+    owns last_name,
+    owns gender,
+    owns job,
+    owns date_of_birth,
+    plays bank_account:owner,
+    plays locate:transacting_party,
+    plays customer_relationship:buyer,
+    plays same_place:person,
+    plays unsafe_relationship:unsafe_buyer;
+
+Company sub entity,
+    owns name,
+    owns company_type,
+    plays transaction:to,
+    plays geolocate:transacting_party,
+    plays customer_relationship:company,
+    plays same_place:company,
+    plays unsafe_relationship:unsafe_company;
+
+Bank sub Company,
+    plays bank_account:attached_bank;
+
+bank_account sub relation,
+    relates owner,
+    relates attached_card,
+    relates attached_bank;
+
+transaction sub relation,
+    owns timestamp,
+    owns amount,
+    owns transaction_number,
+    owns is_safe,
+    relates used_card,
+    relates to;
+
+geolocate sub relation,
+    relates coordinates,
+    relates transacting_party;
+
+locate sub geolocate,
+    relates address;
+
+customer_relationship sub relation,
+    relates timestamp,
+    relates buyer,
+    relates company;
+
+unsafe_relationship sub relation,
+    relates unsafe_buyer,
+    relates unsafe_company;
+
+same_place sub relation,
+    relates person,
+    relates company,
+    relates timestamp,
+    relates located_com,
+    relates located_per;
+
+rule isa_customer_relationship:
+    when {
+        (owner: $per, attached_card: $car) isa bank_account;
+        $trans (used_card: $car, to: $com) isa transaction;
+        $trans has timestamp $time;
+    } then {
+        (buyer: $per, company: $com, timestamp: $time) isa customer_relationship;
+    };
+
+rule isa_same_place:
+    when {
+        $per isa Person;
+        $com isa Company;
+        $geo1 isa Geo_coordinate, has longitude $l1, has latitude $l2;
+        $geo2 isa Geo_coordinate, has longitude $l1, has latitude $l2;
+        (coordinates: $geo1, transacting_party: $per, $arg) isa locate;
+        (coordinates: $geo2, transacting_party: $com) isa geolocate;
+        (buyer: $per, company: $com, timestamp: $time) isa customer_relationship;
+    } then {
+        (person: $per, company: $com, timestamp: $time, located_com: $geo2, located_per: $geo1) isa same_place;
+    };
+
+rule is_not_safe:
+    when {
+        $per isa Person;
+        $com isa Company;
+        (owner: $per, attached_card: $car, $gar) isa bank_account;
+        $trans (used_card: $car, to: $com) isa transaction, has timestamp $time;
+        not{
+            (person: $per, company: $com, timestamp: $time) isa same_place;
+        };
+    } then {
+        $trans has is_safe false;
+    };
+
+rule is_safe:
+    when {
+        $trans isa transaction;
+        not{
+            $trans has is_safe false;
+        };
+    } then {
+        $trans has is_safe true;
+    };
