@@ -67,7 +67,11 @@ checkstyle_test(
     exclude = glob(["finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/db/*", "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/model/*",
                     "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/util/*", "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/web/*",
                     "finance/fraud_detection/src/test/resources/*",
-                    "commerce/bookstore/python/README.md"]),
+                    "finance/fraud_detection/README.md", "finance/fraud_detection/mvnw",
+                    "finance/fraud_detection/pom.xml", "finance/fraud_detection/src/main/resources/META-INF/resources/index.html",
+                    "finance/fraud_detection/src/main/resources/application.properties",
+                    "finance/fraud_detection/src/main/resources/data.csv",
+                    "finance/fraud_detection/src/main/resources/logback.xml"]),
     license_type = "apache-header",
     size = "small",
 )
