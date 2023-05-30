@@ -60,6 +60,18 @@ checkstyle_test(
     size = "small",
 )
 
+load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_fraud")
+checkstyle_fraud(
+    name = "checkstyle_fraud",
+    include = glob([".factory/*", "finance/fraud_detection/**/*"]) + [".bazelrc", ".gitignore", "BUILD", "WORKSPACE"],
+    exclude = glob(["finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/db/*", "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/model/*",
+                    "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/util/*", "finance/fraud_detection/src/main/java/com/typedb/examples/fraudDetection/web/*",
+                    "finance/fraud_detection/src/test/resources/*",
+                    "commerce/bookstore/python/README.md"]),
+    license_type = "apache-header",
+    size = "small",
+)
+
 checkstyle_test(
     name = "checkstyle-license",
     include = ["LICENSE"],
