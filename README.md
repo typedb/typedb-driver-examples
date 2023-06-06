@@ -1,6 +1,6 @@
-# TypeDB Examples
+# TypeDB Driver Examples
 
-[![Factory](https://factory.vaticle.com/api/status/vaticle/typedb-examples/badge.svg)](https://factory.vaticle.com/vaticle/typedb-examples)
+[![Factory](https://factory.vaticle.com/api/status/vaticle/typedb-driver-examples/badge.svg)](https://factory.vaticle.com/vaticle/typedb-driver-examples)
 
 ## Table of contents
 
