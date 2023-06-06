@@ -41,7 +41,7 @@ class Downloader {
     var state by mutableStateOf(State.NOT_STARTED)
 
     /**
-     * repo_path is a string like "vaticle/typedb-examples". This class only supports downloading from GitHub.
+     * repo_path is a string like "vaticle/typedb-driver-examples". This class only supports downloading from GitHub.
      */
     fun download(input: String): String {
         // Did what the user enter match the shape of what we're expecting? That is, two non-empty strings separated by
