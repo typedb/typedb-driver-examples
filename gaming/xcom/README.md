@@ -53,7 +53,7 @@ is able to fetch the correct answer in one simple query.
 
 ## Quickstart
 
-1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-driver-examples && cd typedb-driver-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
 3. Build the example: `bazel build //gaming/xcom/...`.
 4. Migrate the dataset into TypeDB: `bazel run //gaming/xcom:migration`.
