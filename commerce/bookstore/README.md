@@ -26,17 +26,17 @@ demonstration of TypeDB queries. But you can easily explore the implementation o
 
 ## Quickstart
 
-1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-driver-examples && cd typedb-driver-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server). Check that it's listening to address: `0.0.0.0:1729`.
-3. Launch `typedb-examples/commerce/bookstore/python/load_data.py` Python script. It will load the bookstore schema and data into the DB.
-4. Launch `typedb-examples/commerce/bookstore/python/requests.py` Python script and follow the instructions to explore example functions and data.
+3. Launch `typedb-driver-examples/commerce/bookstore/python/load_data.py` Python script. It will load the bookstore schema and data into the DB.
+4. Launch `typedb-driver-examples/commerce/bookstore/python/requests.py` Python script and follow the instructions to explore example functions and data.
 5. Use this simple example to learn the basics of using TypeDB! Explore source codes of the Python scripts and use TypeDB Studio to explore DB schema and content.
 
 ## How it works
 
 ### Files
 
-This example is located in the `typedb-examples/commerce/bookstore/` directory and consists of the following main files:
+This example is located in the `typedb-driver-examples/commerce/bookstore/` directory and consists of the following main files:
 - Python scripts
   - `python/load_data.py` — used to load the bookstore DB schema and data
   - `python/requests.py` — provides simple command line interface to execute requests on TypeDB database
