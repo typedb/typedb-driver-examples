@@ -15,7 +15,7 @@ elegantly with TypeQL.
 
 ## Quickstart
 
-1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-driver-examples && cd typedb-driver-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
 3. Build the project: `bazel build //software/github/...`
 4. Run the application: `bazel run //software/github:github-bin-{YOUR_OS}` where `YOUR_OS` is `windows`, `mac` or `linux`.
