@@ -11,7 +11,7 @@ The Phone Calls Node.js example showcases:
 
 ## Quickstart
 
-1. Checkout this repository: `git clone https://github.com/vaticle/typedb-examples && cd typedb-examples`
+1. Checkout this repository: `git clone https://github.com/vaticle/typedb-driver-examples && cd typedb-driver-examples`
 2. Start the [TypeDB Server](http://docs.vaticle.com/docs/running-typedb/install-and-run#start-the-typedb-server).
 3. Go to the directory where you have your `typedb-all` distribution unarchived, and run: `./typedb console` (or `typedb console`, if TypeDB was installed via a package manager)
 4. Load the Phone Calls schema:
