@@ -30,6 +30,11 @@ Read the [README](commerce/bookstore/README.md) file for instructions. Check [th
 or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script
 files in the [python](commerce/bookstore/python) directory.
 
+### [Finance: Fraud Detection](finance/fraud_detection)
+
+The Fraud Detection example uses Quarkus, the Supersonic Subatomic Java Framework in order to let us present results with GraphQL.
+In this project, we use TypeDB to represent a queryable database of relevant fraud detection data about some transactions between Cardholders and Companies.
+
 ### [Gaming: XCOM Project](gaming/xcom)
 
 The XCOM 2 example contains a database of interdependent research tasks in the game XCOM 2, featuring automatic
