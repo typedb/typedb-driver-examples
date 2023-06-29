@@ -28,13 +28,9 @@ import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBOptions;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
-import org.example.Configuration.AppConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.example.configuration.AppConfiguration;
 
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class TypeDBSessionWrapper {

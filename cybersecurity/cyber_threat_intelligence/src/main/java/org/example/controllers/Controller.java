@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
-import org.example.Configuration.AppConfiguration;
+import org.example.configuration.AppConfiguration;
 import org.example.db.*;
 import org.example.model.*;
 import org.example.model.Class;

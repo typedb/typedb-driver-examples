@@ -5,11 +5,10 @@ import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
-import org.example.Configuration.AppConfiguration;
+import org.example.configuration.AppConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;

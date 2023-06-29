@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package org.example.Configuration;
+package org.example.configuration;
 
 import graphql.scalars.ExtendedScalars;
 import org.springframework.context.annotation.Bean;
@@ -33,5 +33,4 @@ public class GraphQlConfiguration {
     public RuntimeWiringConfigurer runtimeWiringConfigurer() {
         return wiringBuilder -> wiringBuilder.scalar(ExtendedScalars.Json);
     }
-    
 }

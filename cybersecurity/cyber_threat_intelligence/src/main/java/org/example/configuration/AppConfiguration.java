@@ -19,12 +19,10 @@
  * under the License.
  */
 
-package org.example.Configuration;
+package org.example.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 @Configuration
 public class AppConfiguration {
