@@ -28,9 +28,8 @@ import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBOptions;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.common.collection.Pair;
 import org.example.configuration.AppConfiguration;
-
-import java.util.Hashtable;
 import java.util.logging.Logger;
 
 public class TypeDBSessionWrapper {
@@ -40,35 +39,26 @@ public class TypeDBSessionWrapper {
     private final TypeDBClient client;
     private TypeDBSession session;
 
-    public Hashtable<String, Hashtable<String, String>> getAll(String query) {
-        newSession();
-        Hashtable<String, Hashtable<String, String>> result = new Hashtable<String, Hashtable<String, String>>();
-
-        try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
-
-            var dbResults = readTx.query().matchGroup(query);
-            dbResults.forEach(e -> {
-                String key = e.owner().asEntity().getIID();
-                result.put(key, new Hashtable<String, String>());
-                e.conceptMaps().forEach(m -> {
-                    var json = m.toJSON().get("attribute").toString();
-                    LOGGER.info(json);
-                    var array = json.split(",");
-                    String key2 = array[0].split("\":")[1];
-                    String value2 = array[2].split("\":")[1].split("}")[0];
-                    result.get(key).put(key2, value2);
-                });
-            });
+    private Pair<String, String> extractPair(com.vaticle.typedb.client.api.answer.ConceptMap values, ObjectNode currentNode) {
+        var json = values.toJSON().get("attribute");
+        var key = json.asObject().get("type").asString();
+        var valueTmp = json.asObject().get("value");
+        String value = "";
+        if(valueTmp.isString()){
+            value = valueTmp.asString();
         }
-
-        return result;
+        else
+        {
+            value = valueTmp.toString();
+        }
+        return (new Pair<>(key, value));
     }
 
     public ObjectNode getAllJSON(String query) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-
+        LOGGER.info("getAllJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
 
             var dbResults = readTx.query().matchGroup(query);
@@ -76,13 +66,8 @@ public class TypeDBSessionWrapper {
                 String key = e.owner().toJSON().toString().split("\"")[11];
                 ObjectNode childNode = mapper.createObjectNode();
                 e.conceptMaps().forEach(m -> {
-                    var json = m.toJSON().get("attribute").toString();
-                    var array = json.split(",");
-                    String key2 = array[0].split("\":")[1];
-                    String value2 = array[2].split("\":")[1].split("}")[0];
-                    key2 = key2.replaceAll("^\"|\"$", "");
-                    value2 = value2.replaceAll("^\"|\"$", "");
-                    childNode.put(key2, value2);
+                    var pair = extractPair(m, childNode);
+                    childNode.put(pair.first(), pair.second());
                 });
                 rootNode.set(key, childNode);
             });
@@ -94,7 +79,7 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-
+        LOGGER.info("getIIDJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
 
             var dbResults = readTx.query().matchGroup(query);
@@ -102,13 +87,8 @@ public class TypeDBSessionWrapper {
                 String key = e.owner().asEntity().getIID();
                 ObjectNode childNode = mapper.createObjectNode();
                 e.conceptMaps().forEach(m -> {
-                    var json = m.toJSON().get("attribute").toString();
-                    var array = json.split(",");
-                    String key2 = array[0].split("\":")[1];
-                    String value2 = array[2].split("\":")[1].split("}")[0];
-                    key2 = key2.replaceAll("^\"|\"$", "");
-                    value2 = value2.replaceAll("^\"|\"$", "");
-                    childNode.put(key2, value2);
+                    var pair = extractPair(m, childNode);
+                    childNode.put(pair.first(), pair.second());
                 });
                 rootNode.set(key, childNode);
             });
@@ -120,7 +100,7 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-
+        LOGGER.info("getSchemaJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             System.out.println("QUERY -> " + query);
             var dbResults = readTx.query().match(query);
@@ -160,7 +140,7 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-
+        LOGGER.info("getListJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             var dbResults = readTx.query().matchGroup(query);
             dbResults.forEach(e -> {
@@ -169,14 +149,8 @@ public class TypeDBSessionWrapper {
                 ObjectNode childNode = mapper.createObjectNode();
                 if(asAttribute){
                     e.conceptMaps().forEach(m -> {
-                        var json = m.toJSON().get("attribute").toString();
-
-                        var array = json.split(",");
-                        String key2 = array[0].split("\":")[1];
-                        String value2 = array[2].split("\":")[1].split("}")[0];
-                        key2 = key2.replaceAll("^\"|\"$", "");
-                        value2 = value2.replaceAll("^\"|\"$", "");
-                        childNode.put(key2, value2);
+                        var pair = extractPair(m, childNode);
+                        childNode.put(pair.first(), pair.second());
                     });
                 }
 
@@ -208,7 +182,7 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-
+        LOGGER.info("getListAttrJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             var dbResults = readTx.query().matchGroup(query);
             dbResults.forEach(e -> {
@@ -217,14 +191,8 @@ public class TypeDBSessionWrapper {
                 ObjectNode childNode = mapper.createObjectNode();
                 if(asAttribute){
                     e.conceptMaps().forEach(m -> {
-                        var json = m.toJSON().get("attribute").toString();
-
-                        var array = json.split(",");
-                        String key2 = array[0].split("\":")[1];
-                        String value2 = array[2].split("\":")[1].split("}")[0];
-                        key2 = key2.replaceAll("^\"|\"$", "");
-                        value2 = value2.replaceAll("^\"|\"$", "");
-                        childNode.put(key2, value2);
+                        var pair = extractPair(m, childNode);
+                        childNode.put(pair.first(), pair.second());
                     });
                 }
 
@@ -276,7 +244,7 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-
+        LOGGER.info("getRelJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             var dbResults = readTx.query().matchGroup(query);
             dbResults.forEach(e -> {
@@ -284,21 +252,15 @@ public class TypeDBSessionWrapper {
                 String key = e.owner().toJSON().toString().split("\"")[11];
                 ObjectNode childNode = mapper.createObjectNode();
                 e.conceptMaps().forEach(m -> {
-                    var json = m.toJSON().get("attribute").toString();
-
-                    var array = json.split(",");
-                    String key2 = array[0].split("\":")[1];
-                    String value2 = array[2].split("\":")[1].split("}")[0];
-                    key2 = key2.replaceAll("^\"|\"$", "");
-                    value2 = value2.replaceAll("^\"|\"$", "");
-                    childNode.put(key2, value2);
+                    var pair = extractPair(m, childNode);
+                    childNode.put(pair.first(), pair.second());
                 });
 
                 String[] rolePlayersTmp = rolePlayers.split(";");
 
                 String queryBegin = "match $rel (";
                 for(int i = 0; i < rolePlayersTmp.length; i++){
-                     queryBegin += rolePlayersTmp[i] + ": $r" + i + ",";
+                    queryBegin += rolePlayersTmp[i] + ": $r" + i + ",";
                 }
                 queryBegin = removeLastChar(queryBegin);
                 queryBegin += ") isa " + relName +", has stix_id \"" + key + "\";";
@@ -326,7 +288,7 @@ public class TypeDBSessionWrapper {
         this.client = client;
         if(this.client.databases().contains(appConfiguration.getDatabase())){
             session = this.client.session(appConfiguration.getDatabase(), TypeDBSession.Type.DATA,
-                TypeDBOptions.core().infer(true));
+                    TypeDBOptions.core().infer(true));
         }
     }
 
