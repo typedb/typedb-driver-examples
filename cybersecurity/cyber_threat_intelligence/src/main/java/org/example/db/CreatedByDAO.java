@@ -50,13 +50,13 @@ public class CreatedByDAO {
         return getJSON(getQueryStr);
     }
 
-    public ObjectNode getSearchJSON(String type, String name) {
+    public ObjectNode getSearchJSON(String attrType, String attrName) {
 
-        if (typeString.contains(" " + type + ";")){
-            name = "\"" + name + "\"";
+        if (typeString.contains(" " + attrType + ";")){
+            attrName = "\"" + attrName + "\"";
         }
 
-        String search = "$ta has " + type + " = " + name + ";";
+        String search = "$ta has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + CREATED_BY_MATCH + search + "group $ta;";
 
         return getJSON(getQueryStr);

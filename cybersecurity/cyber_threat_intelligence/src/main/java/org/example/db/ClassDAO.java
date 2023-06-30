@@ -83,19 +83,19 @@ public class ClassDAO {
         return getJSON(getQueryStr);
     }
 
-    public String getSearchString(String type, String name) {
-        return getSearchJSON(type, name).toString();
+    public String getSearchString(String attrType, String attrName) {
+        return getSearchJSON(attrType, attrName).toString();
     }
 
-    public Set<Class> getSearchBeans(String type, String name) throws JsonProcessingException {
+    public Set<Class> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + type + ";")){
-            name = "\"" + name + "\"";
+        if (typeString.contains(" " + attrType + ";")){
+            attrName = "\"" + attrName + "\"";
         }
 
-        String search = "$class has " + type + " = " + name + ";";
+        String search = "$class has " + attrType + " = " + attrName + ";";
         String getQueryStr = "match " + CLASS_MATCH + search + " group $id;";
 
         ObjectNode json = getJSON(getQueryStr);

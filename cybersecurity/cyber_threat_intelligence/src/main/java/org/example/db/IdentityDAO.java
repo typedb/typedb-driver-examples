@@ -71,31 +71,31 @@ public class IdentityDAO {
         return result;
     }
 
-    public ObjectNode getSearchJSON(String type, String name) {
+    public ObjectNode getSearchJSON(String attrType, String attrName) {
 
-        if (typeString.contains(" " + type + ";")){
-            name = "\"" + name + "\"";
+        if (typeString.contains(" " + attrType + ";")){
+            attrName = "\"" + attrName + "\"";
         }
 
-        String search = "$identity has " + type + " = " + name + ";";
+        String search = "$identity has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + IDENTITY_MATCH + search + "group $id;";
 
         return getJSON(getQueryStr);
     }
 
-    public String getSearchString(String type, String name) {
-        return getSearchJSON(type, name).toString();
+    public String getSearchString(String attrType, String attrName) {
+        return getSearchJSON(attrType, attrName).toString();
     }
 
-    public Set<Identity> getSearchBeans(String type, String name) throws JsonProcessingException {
+    public Set<Identity> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + type + ";")){
-            name = "\"" + name + "\"";
+        if (typeString.contains(" " + attrType + ";")){
+            attrName = "\"" + attrName + "\"";
         }
 
-        String search = "$identity has " + type + " = " + name + ";";
+        String search = "$identity has " + attrType + " = " + attrName + ";";
 
         String getQueryStr = "match " + IDENTITY_MATCH + search + " group $id;";
         ObjectNode json = getJSON(getQueryStr);
