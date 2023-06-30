@@ -41,9 +41,13 @@ public class SightingDAO {
         typeString = sighting.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel ,sighting.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + SIGHTING_MATCH + "group $id; ";
-        return db.getRelJSON(getQueryStr, nameRel ,sighting.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -55,7 +59,7 @@ public class SightingDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + SIGHTING_MATCH + search + "group $id;";
 
-        return db.getRelJSON(getQueryStr, nameRel, sighting.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

@@ -46,9 +46,13 @@ public class GroupDAO {
         typeString = tempGroup.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getAllJSON(getQueryStr);
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + GROUP_MATCH + "group $id; ";
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getAllString() {
@@ -60,7 +64,7 @@ public class GroupDAO {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + GROUP_MATCH + "group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, Group> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Group>>(){});
         Set<Group> result = new HashSet<>(test.values());
 
@@ -76,7 +80,7 @@ public class GroupDAO {
         String search = "$group has " + type + " = " + name + ";";
         var getQueryStr = "match " + GROUP_MATCH + search + "group $id;";
 
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getSearchString(String type, String name) {
@@ -95,7 +99,7 @@ public class GroupDAO {
         String search = "$group has " + type + " = " + name + ";";
 
         String getQueryStr = "match " + GROUP_MATCH + search + " group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, Group> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Group>>(){});
         Set<Group> result = new HashSet<>(test.values());
 

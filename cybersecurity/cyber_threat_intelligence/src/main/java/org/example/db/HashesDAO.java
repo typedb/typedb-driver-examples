@@ -41,9 +41,13 @@ public class HashesDAO {
         typeString = hashes.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getListAttrJSON(getQueryStr, nameRel ,hashes.getRolePlayers(), true);
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + HASHES_MATCH + "group $ta; ";
-        return db.getListAttrJSON(getQueryStr, nameRel ,hashes.getRolePlayers(), true);
+        return getJSON(getQueryStr);
     }
 
 

@@ -42,9 +42,13 @@ public class ImpersonatesDAO {
         typeString = impersonates.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel ,impersonates.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + IMPERSONATES_MATCH + "group $id; ";
-        return db.getRelJSON(getQueryStr, nameRel ,impersonates.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -56,7 +60,7 @@ public class ImpersonatesDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + IMPERSONATES_MATCH + search + "group $id;";
 
-        return db.getRelJSON(getQueryStr, nameRel, impersonates.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

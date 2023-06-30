@@ -41,9 +41,13 @@ public class IndicatesDAO {
         typeString = indicates.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel ,indicates.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + INDICATES_MATCH + "group $id; ";
-        return db.getRelJSON(getQueryStr, nameRel ,indicates.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -55,7 +59,7 @@ public class IndicatesDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + INDICATES_MATCH + search + "group $id;";
 
-        return db.getRelJSON(getQueryStr, nameRel, indicates.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

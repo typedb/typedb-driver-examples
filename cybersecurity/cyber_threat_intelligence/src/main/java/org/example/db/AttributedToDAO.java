@@ -41,9 +41,13 @@ public class AttributedToDAO {
         typeString = attributed_to.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel, attributed_to.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + ATTRIBUTED_TO_MATCH + "group $id; ";
-        return db.getRelJSON(getQueryStr, nameRel ,attributed_to.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -55,7 +59,7 @@ public class AttributedToDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + ATTRIBUTED_TO_MATCH + search + "group $id;";
 
-        return db.getRelJSON(getQueryStr, nameRel, attributed_to.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

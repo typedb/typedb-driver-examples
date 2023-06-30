@@ -40,9 +40,13 @@ public class KillChainPhasesDAO {
         typeString = kill_chain_phases.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getListJSON(getQueryStr, nameRel ,kill_chain_phases.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + KILL_CHAIN_PHASES_MATCH + "group $ta; ";
-        return db.getListJSON(getQueryStr, nameRel ,kill_chain_phases.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -54,7 +58,7 @@ public class KillChainPhasesDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + KILL_CHAIN_PHASES_MATCH + search + "group $ta;";
 
-        return db.getListJSON(getQueryStr, nameRel, kill_chain_phases.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

@@ -46,9 +46,13 @@ public class IndividualDAO {
         typeString = tempIndividual.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getAllJSON(getQueryStr);
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + INDIVIDUAL_MATCH + "group $id; ";
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getAllString() {
@@ -60,7 +64,7 @@ public class IndividualDAO {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + INDIVIDUAL_MATCH + "group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, Individual> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Individual>>(){});
         Set<Individual> result = new HashSet<>(test.values());
 
@@ -76,7 +80,7 @@ public class IndividualDAO {
         String search = "$individual has " + type + " = " + name + ";";
         var getQueryStr = "match " + INDIVIDUAL_MATCH + search + "group $id;";
 
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getSearchString(String type, String name) {
@@ -94,7 +98,7 @@ public class IndividualDAO {
         String search = "$individual has " + type + " = " + name + ";";
 
         String getQueryStr = "match " + INDIVIDUAL_MATCH + search + " group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, Individual> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Individual>>(){});
         Set<Individual> result = new HashSet<>(test.values());
 

@@ -41,9 +41,13 @@ public class ExternalReferencesDAO {
         typeString = external_references.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getListJSON(getQueryStr, nameRel ,external_references.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + EXTERNAL_REFERENCES_MATCH + "group $ta; ";
-        return db.getListJSON(getQueryStr, nameRel ,external_references.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -55,7 +59,7 @@ public class ExternalReferencesDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + EXTERNAL_REFERENCES_MATCH + search + "group $ta;";
 
-        return db.getListJSON(getQueryStr, nameRel, external_references.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

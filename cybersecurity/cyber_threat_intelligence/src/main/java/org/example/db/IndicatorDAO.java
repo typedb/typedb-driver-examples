@@ -46,9 +46,13 @@ public class IndicatorDAO {
         typeString = tempIndicator.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getAllJSON(getQueryStr);
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + INDICATOR_MATCH + "group $id; ";
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getAllString() {
@@ -60,7 +64,7 @@ public class IndicatorDAO {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + INDICATOR_MATCH + "group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>(){});
         Set<Indicator> result = new HashSet<>(test.values());
 
@@ -76,7 +80,7 @@ public class IndicatorDAO {
         String search = "$indicator has " + type + " = " + name + ";";
         var getQueryStr = "match " + INDICATOR_MATCH + search + "group $id;";
 
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getSearchString(String type, String name) {
@@ -95,7 +99,7 @@ public class IndicatorDAO {
         String search = "$indicator has " + type + " = " + name + ";";
 
         String getQueryStr = "match " + INDICATOR_MATCH + search + " group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>(){});
         Set<Indicator> result = new HashSet<>(test.values());
 

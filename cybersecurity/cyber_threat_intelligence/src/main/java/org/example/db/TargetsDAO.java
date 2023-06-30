@@ -42,9 +42,13 @@ public class TargetsDAO {
         typeString = targets.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel ,targets.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + TARGETS_MATCH + "group $id; ";
-        return db.getRelJSON(getQueryStr, nameRel ,targets.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -56,7 +60,7 @@ public class TargetsDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + TARGETS_MATCH + search + "group $id;";
 
-        return db.getRelJSON(getQueryStr, nameRel, targets.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

@@ -43,19 +43,19 @@ public class ThreatActorDAO {
             "  $ta isa threat_actor, has stix_id $id ,has $attribute;" +
                     "$attribute isa! $j; ";
 
-    public ThreatActorDAO(){
-        System.out.println("CONSTRUCTEUR DEFAULT");
-    }
     public ThreatActorDAO(TypeDBSessionWrapper db) {
-        System.out.println("CONSTRUCTEUR DB");
         this.db = db;
         ThreatActor tempThreatActor = new ThreatActor();
         typeString = tempThreatActor.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getAllJSON(getQueryStr);
+    }
+    
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + TA_MATCH + "group $id;";
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getAllString() {
@@ -67,7 +67,7 @@ public class ThreatActorDAO {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + TA_MATCH + " group $id;";
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>(){});
         Set<ThreatActor> result = new HashSet<>(test.values());
 
@@ -83,7 +83,7 @@ public class ThreatActorDAO {
         var getQueryStr = "match " + TA_MATCH + search + "group $id;";
         System.out.println(getQueryStr);
 
-        return db.getAllJSON(getQueryStr);
+        return getJSON(getQueryStr);
     }
 
     public String getSearchString(String type, String name) {
@@ -102,7 +102,7 @@ public class ThreatActorDAO {
         String getQueryStr = "match " + TA_MATCH + search + " group $id;";
         System.out.println(getQueryStr);
 
-        ObjectNode json = db.getAllJSON(getQueryStr);
+        ObjectNode json = getJSON(getQueryStr);
         Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>(){});
         Set<ThreatActor> result = new HashSet<>(test.values());
 

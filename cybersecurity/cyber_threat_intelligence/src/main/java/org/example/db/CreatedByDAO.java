@@ -41,9 +41,13 @@ public class CreatedByDAO {
         typeString = created_by.getTypeString();
     }
 
+    private ObjectNode getJSON(String getQueryStr) {
+        return db.getListJSON(getQueryStr, nameRel ,created_by.getRolePlayers());
+    }
+
     public ObjectNode getAllJSON() {
         var getQueryStr = "match " + CREATED_BY_MATCH + "group $ta; ";
-        return db.getListJSON(getQueryStr, nameRel ,created_by.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
     public ObjectNode getSearchJSON(String type, String name) {
@@ -55,7 +59,7 @@ public class CreatedByDAO {
         String search = "$ta has " + type + " = " + name + ";";
         var getQueryStr = "match " + CREATED_BY_MATCH + search + "group $ta;";
 
-        return db.getListJSON(getQueryStr, nameRel, created_by.getRolePlayers());
+        return getJSON(getQueryStr);
     }
 
 }

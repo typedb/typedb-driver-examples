@@ -33,12 +33,16 @@ public class SchemaDAO {
         this.db = db;
     }
 
+    private ObjectNode getJSON(String query){
+        return db.getSchemaJSON(query);
+    }
+
     public ObjectNode getSchemaAllJSON(){
-        return db.getSchemaJSON(queryAll);
+        return getJSON(queryAll);
     }
 
     public ObjectNode getSchemaCurrentJSON(){
-        return db.getSchemaJSON(queryCurrent);
+        return getJSON(queryCurrent);
     }
 
 }
