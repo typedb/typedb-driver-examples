@@ -6,6 +6,7 @@ import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
 import org.example.configuration.AppConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -18,19 +19,18 @@ import java.util.logging.Logger;
 
 @Component
 public class CTIBean implements ApplicationListener<ApplicationReadyEvent> {
-    private TypeDBClient client;
     private static final Logger LOGGER = Logger.getLogger("AppSpringWeb");
 
     @Autowired
     private AppConfiguration appConfiguration;
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
         String address = appConfiguration.getAddress() + ":" + appConfiguration.getPort();
         String database = appConfiguration.getDatabase();
         String dataset = appConfiguration.getDataset();
         String schema = appConfiguration.getSchema();
-        client = TypeDB.coreClient(address);
+        TypeDBClient client = TypeDB.coreClient(address);
         LOGGER.info("Deleting Database");
         if (client.databases().contains(database)) {
             client.databases().get(database).delete();

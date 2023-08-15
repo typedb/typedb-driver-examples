@@ -31,9 +31,9 @@ public class File extends StixCyberObservableObject {
 
     private Integer size;
     private String name;
-    private String name_enc;
-    private String magic_number_hex;
-    private String mime_type;
+    private String nameEnc;
+    private String magicNumberHex;
+    private String mimeType;
     private Date ctime;
     private Date mtime;
     private Date atime;
@@ -54,28 +54,28 @@ public class File extends StixCyberObservableObject {
         this.name = name;
     }
 
-    public String getName_enc() {
-        return name_enc;
+    public String getNameEnc() {
+        return nameEnc;
     }
 
-    public void setName_enc(String name_enc) {
-        this.name_enc = name_enc;
+    public void setNameEnc(String nameEnc) {
+        this.nameEnc = nameEnc;
     }
 
-    public String getMagic_number_hex() {
-        return magic_number_hex;
+    public String getMagicNumberHex() {
+        return magicNumberHex;
     }
 
-    public void setMagic_number_hex(String magic_number_hex) {
-        this.magic_number_hex = magic_number_hex;
+    public void setMagicNumberHex(String magicNumberHex) {
+        this.magicNumberHex = magicNumberHex;
     }
 
-    public String getMime_type() {
-        return mime_type;
+    public String getMimeType() {
+        return mimeType;
     }
 
-    public void setMime_type(String mime_type) {
-        this.mime_type = mime_type;
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     public Date getCtime() {

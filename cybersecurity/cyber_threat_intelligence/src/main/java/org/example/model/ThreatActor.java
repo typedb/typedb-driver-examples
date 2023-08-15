@@ -32,17 +32,17 @@ public class ThreatActor extends StixDomainObject {
     private String name;
     private String description;
     private String aliases;
-    private String stix_role;
-    private Date first_seen;
-    private Date last_seen;
+    private String stixRole;
+    private Date firstSeen;
+    private Date lastSeen;
     private String goals;
-    private String resource_level;
-    private String primary_motivation;
-    private String secondary_motivation;
+    private String resourceLevel;
+    private String primaryMotivation;
+    private String secondaryMotivation;
     private String sophistication;
-    private String personal_characteristics;
+    private String personalCharacteristics;
     private String roles;
-    private String threat_actor_types;
+    private String threatActorTypes;
 
     public ThreatActor() {
     }
@@ -75,28 +75,28 @@ public class ThreatActor extends StixDomainObject {
         this.aliases = aliases;
     }
 
-    public String getStix_role() {
-        return stix_role;
+    public String getStixRole() {
+        return stixRole;
     }
 
-    public void setStix_role(String stix_role) {
-        this.stix_role = stix_role;
+    public void setStixRole(String stixRole) {
+        this.stixRole = stixRole;
     }
 
-    public Date getFirst_seen() {
-        return first_seen;
+    public Date getFirstSeen() {
+        return firstSeen;
     }
 
-    public void setFirst_seen(Date first_seen) {
-        this.first_seen = first_seen;
+    public void setFirstSeen(Date firstSeen) {
+        this.firstSeen = firstSeen;
     }
 
-    public Date getLast_seen() {
-        return last_seen;
+    public Date getLastSeen() {
+        return lastSeen;
     }
 
-    public void setLast_seen(Date last_seen) {
-        this.last_seen = last_seen;
+    public void setLastSeen(Date lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
     public String getGoals() {
@@ -107,28 +107,28 @@ public class ThreatActor extends StixDomainObject {
         this.goals = goals;
     }
 
-    public String getResource_level() {
-        return resource_level;
+    public String getResourceLevel() {
+        return resourceLevel;
     }
 
-    public void setResource_level(String resource_level) {
-        this.resource_level = resource_level;
+    public void setResourceLevel(String resourceLevel) {
+        this.resourceLevel = resourceLevel;
     }
 
-    public String getPrimary_motivation() {
-        return primary_motivation;
+    public String getPrimaryMotivation() {
+        return primaryMotivation;
     }
 
-    public void setPrimary_motivation(String primary_motivation) {
-        this.primary_motivation = primary_motivation;
+    public void setPrimaryMotivation(String primaryMotivation) {
+        this.primaryMotivation = primaryMotivation;
     }
 
-    public String getSecondary_motivation() {
-        return secondary_motivation;
+    public String getSecondaryMotivation() {
+        return secondaryMotivation;
     }
 
-    public void setSecondary_motivation(String secondary_motivation) {
-        this.secondary_motivation = secondary_motivation;
+    public void setSecondaryMotivation(String secondaryMotivation) {
+        this.secondaryMotivation = secondaryMotivation;
     }
 
     public String getSophistication() {
@@ -139,12 +139,12 @@ public class ThreatActor extends StixDomainObject {
         this.sophistication = sophistication;
     }
 
-    public String getPersonal_characteristics() {
-        return personal_characteristics;
+    public String getPersonalCharacteristics() {
+        return personalCharacteristics;
     }
 
-    public void setPersonal_characteristics(String personal_characteristics) {
-        this.personal_characteristics = personal_characteristics;
+    public void setPersonalCharacteristics(String personalCharacteristics) {
+        this.personalCharacteristics = personalCharacteristics;
     }
 
     public String getRoles() {
@@ -155,11 +155,11 @@ public class ThreatActor extends StixDomainObject {
         this.roles = roles;
     }
 
-    public String getThreat_actor_types() {
-        return threat_actor_types;
+    public String getThreatActorTypes() {
+        return threatActorTypes;
     }
 
-    public void setThreat_actor_types(String threat_actor_types) {
-        this.threat_actor_types = threat_actor_types;
+    public void setThreatActorTypes(String threatActorTypes) {
+        this.threatActorTypes = threatActorTypes;
     }
 }

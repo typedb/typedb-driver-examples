@@ -28,10 +28,10 @@ public class Identity extends StixDomainObject {
     public static final String typeString = StixDomainObject.typeString + " name; description; stix_role; identity_class; sector; contact_information;";
     private String name;
     private String description;
-    private String stix_role;
-    private String identity_class;
+    private String stixRole;
+    private String identityClass;
     private String sector;
-    private String contact_information;
+    private String contactInformation;
 
     public Identity() {
     }
@@ -52,20 +52,20 @@ public class Identity extends StixDomainObject {
         this.description = description;
     }
 
-    public String getStix_role() {
-        return stix_role;
+    public String getStixRole() {
+        return stixRole;
     }
 
-    public void setStix_role(String stix_role) {
-        this.stix_role = stix_role;
+    public void setStixRole(String stixRole) {
+        this.stixRole = stixRole;
     }
 
-    public String getIdentity_class() {
-        return identity_class;
+    public String getIdentityClass() {
+        return identityClass;
     }
 
-    public void setIdentity_class(String identity_class) {
-        this.identity_class = identity_class;
+    public void setIdentityClass(String identityClass) {
+        this.identityClass = identityClass;
     }
 
     public String getSector() {
@@ -76,11 +76,11 @@ public class Identity extends StixDomainObject {
         this.sector = sector;
     }
 
-    public String getContact_information() {
-        return contact_information;
+    public String getContactInformation() {
+        return contactInformation;
     }
 
-    public void setContact_information(String contact_information) {
-        this.contact_information = contact_information;
+    public void setContactInformation(String contactInformation) {
+        this.contactInformation = contactInformation;
     }
 }

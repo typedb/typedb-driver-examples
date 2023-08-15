@@ -26,34 +26,34 @@ import java.util.Date;
 public class StixCoreRelationship {
     public static final String typeString = " stix_id; stix_version; stix_type;";
 
-    private String spec_version;
-    private String stix_id;
-    private String stix_type;
+    private String specVersion;
+    private String stixId;
+    private String stixType;
     private Date created;
     private Date modified;
 
-    public String getSpec_version() {
-        return spec_version;
+    public String getSpecVersion() {
+        return specVersion;
     }
 
-    public void setSpec_version(String spec_version) {
-        this.spec_version = spec_version;
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
     }
 
-    public String getStix_id() {
-        return stix_id;
+    public String getStixId() {
+        return stixId;
     }
 
-    public void setStix_id(String stix_id) {
-        this.stix_id = stix_id;
+    public void setStixId(String stixId) {
+        this.stixId = stixId;
     }
 
-    public String getStix_type() {
-        return stix_type;
+    public String getStixType() {
+        return stixType;
     }
 
-    public void setStix_type(String stix_type) {
-        this.stix_type = stix_type;
+    public void setStixType(String stixType) {
+        this.stixType = stixType;
     }
 
     public Date getCreated() {

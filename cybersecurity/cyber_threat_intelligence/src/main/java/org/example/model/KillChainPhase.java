@@ -27,22 +27,22 @@ public class KillChainPhase extends StixSubObject {
     @JsonIgnore
     public static final String typeString = StixSubObject.typeString + " kill_chain_name; kill_chain_phase_name;";
 
-    private String kill_chain_name;
-    private String kill_chain_phase_name;
+    private String killChainName;
+    private String killChainPhaseName;
 
-    public String getKill_chain_name() {
-        return kill_chain_name;
+    public String getKillChainName() {
+        return killChainName;
     }
 
-    public void setKill_chain_name(String kill_chain_name) {
-        this.kill_chain_name = kill_chain_name;
+    public void setKillChainName(String killChainName) {
+        this.killChainName = killChainName;
     }
 
-    public String getKill_chain_phase_name() {
-        return kill_chain_phase_name;
+    public String getKillChainPhaseName() {
+        return killChainPhaseName;
     }
 
-    public void setKill_chain_phase_name(String kill_chain_phase_name) {
-        this.kill_chain_phase_name = kill_chain_phase_name;
+    public void setKillChainPhaseName(String killChainPhaseName) {
+        this.killChainPhaseName = killChainPhaseName;
     }
 }

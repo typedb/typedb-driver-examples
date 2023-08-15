@@ -29,19 +29,13 @@ public class StixCoreObject {
 
     @JsonIgnore
     public static final String typeString = " spec_version;";
-    private String spec_version;
-
-    public StixCoreObject() {
-    }
-    public StixCoreObject(String spec_version) {
-        this.spec_version = spec_version;
+    private String specVersion;
+    
+    public String getSpecVersion() {
+        return specVersion;
     }
 
-    public String getSpec_version() {
-        return spec_version;
-    }
-
-    public void setSpec_version(String spec_version) {
-        this.spec_version = spec_version;
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
     }
 }

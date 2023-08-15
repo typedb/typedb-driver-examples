@@ -30,14 +30,14 @@ public class Hashes {
     @JsonIgnore
     public static final String rolePlayers = " hash_value; hashes_owner;";
 
-    private String hash_algorithm;
+    private String hashAlgorithm;
 
 
-    public String getHash_algorithm() {
-        return hash_algorithm;
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
     }
 
-    public void setHash_algorithm(String hash_algorithm) {
-        this.hash_algorithm = hash_algorithm;
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
     }
 }

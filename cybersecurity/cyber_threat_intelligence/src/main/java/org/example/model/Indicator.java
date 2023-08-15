@@ -32,10 +32,10 @@ public class Indicator extends StixDomainObject {
     private String name;
     private String description;
     private String pattern;
-    private String pattern_type;
-    private String pattern_version;
-    private Date valid_from;
-    private Date valid_until;
+    private String patternType;
+    private String patternVersion;
+    private Date validFrom;
+    private Date validUntil;
 
     public Indicator() {
     }
@@ -64,35 +64,35 @@ public class Indicator extends StixDomainObject {
         this.pattern = pattern;
     }
 
-    public String getPattern_type() {
-        return pattern_type;
+    public String getPatternType() {
+        return patternType;
     }
 
-    public void setPattern_type(String pattern_type) {
-        this.pattern_type = pattern_type;
+    public void setPatternType(String patternType) {
+        this.patternType = patternType;
     }
 
-    public String getPattern_version() {
-        return pattern_version;
+    public String getPatternVersion() {
+        return patternVersion;
     }
 
-    public void setPattern_version(String pattern_version) {
-        this.pattern_version = pattern_version;
+    public void setPatternVersion(String patternVersion) {
+        this.patternVersion = patternVersion;
     }
 
-    public Date getValid_from() {
-        return valid_from;
+    public Date getValidFrom() {
+        return validFrom;
     }
 
-    public void setValid_from(Date valid_from) {
-        this.valid_from = valid_from;
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
     }
 
-    public Date getValid_until() {
-        return valid_until;
+    public Date getValidUntil() {
+        return validUntil;
     }
 
-    public void setValid_until(Date valid_until) {
-        this.valid_until = valid_until;
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
     }
 }

@@ -38,11 +38,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 @RestController
 public class Controller {
-    private static final Logger LOGGER = Logger.getLogger("Controller");
     private final TypeDBSessionWrapper wrapper;
 
     @Autowired
@@ -125,14 +123,14 @@ public class Controller {
 
     @QueryMapping(value = "getClass")
     @GetMapping(value = "/class", produces = "application/json")
-    public ObjectNode get_ClassJSON() {
+    public ObjectNode getClassJSON() {
         ClassDAO classDAO = new ClassDAO(wrapper);
         return classDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/class-beans", produces = "application/json")
-    public Set<Class> get_ClassBeans() throws JsonProcessingException {
+    public Set<Class> getClassBeans() throws JsonProcessingException {
         ClassDAO classDAO = new ClassDAO(wrapper);
         return classDAO.findAllBeans();
     }

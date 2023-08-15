@@ -32,24 +32,24 @@ public class AttributedTo {
     @JsonIgnore
     public static final String rolePlayers = " attributing; attributed;";
 
-    private String stix_id;
-    private String spec_version;
+    private String stixId;
+    private String specVersion;
     private Date created;
 
     private Date modified;
 
 
 
-    public String getSpec_version() {
-        return spec_version;
+    public String getSpecVersion() {
+        return specVersion;
     }
 
-    public String getStix_id() {
-        return stix_id;
+    public String getStixId() {
+        return stixId;
     }
 
-    public void setStix_id(String stix_id) {
-        this.stix_id = stix_id;
+    public void setStixId(String stixId) {
+        this.stixId = stixId;
     }
 
     public Date getCreated() {

@@ -32,10 +32,41 @@ public class Sighting extends StixCoreRelationship {
     @JsonIgnore
     public static final String rolePlayers = " sighting_of; observed_data;";
 
-    private Date first_seen;
-    private Date last_seen;
+    private Date firstSeen;
+    private Date lastSeen;
 
     private Double count;
     private String summary;
+    public Date getFirstSeen() {
+        return firstSeen;
+    }
+
+    public void setFirstSeen(Date firstSeen) {
+        this.firstSeen = firstSeen;
+    }
+
+    public Date getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(Date lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
+    public Double getCount() {
+        return count;
+    }
+
+    public void setCount(Double count) {
+        this.count = count;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
 }
