@@ -42,8 +42,7 @@ public class IdUnknownDAO {
 
     public IdUnknownDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        IdUnknown tempIdUnknown = new IdUnknown();
-        typeString = tempIdUnknown.getTypeString();
+        typeString = IdUnknown.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +60,10 @@ public class IdUnknownDAO {
 
         String getQueryStr = "match " + IDUNKNOWN_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, IdUnknown>>() {
+        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<IdUnknown> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -93,11 +91,10 @@ public class IdUnknownDAO {
 
         String getQueryStr = "match " + IDUNKNOWN_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, IdUnknown>>() {
+        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<IdUnknown> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

@@ -27,21 +27,20 @@ import org.example.model.CreatedBy;
 public class CreatedByDAO {
     protected static final String CREATED_BY_MATCH =
             "$ta (creator: $AAA, created: $BBB) isa created_by;";
+    private static final String nameRel = "created_by";
     private final TypeDBSessionWrapper db;
-    private final CreatedBy created_by;
-
-    private final String nameRel = "created_by";
     private final String typeString;
+    private final String rolePlayers;
 
 
     public CreatedByDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        created_by = new CreatedBy();
-        typeString = created_by.getTypeString();
+        typeString = CreatedBy.typeString;
+        rolePlayers = CreatedBy.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel, created_by.getRolePlayers());
+        return db.getListJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

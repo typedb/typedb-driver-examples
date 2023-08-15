@@ -24,22 +24,14 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Hashes {
+    @JsonIgnore
+    public static final String typeString = " hash_algorithm;";
+
+    @JsonIgnore
+    public static final String rolePlayers = " hash_value; hashes_owner;";
 
     private String hash_algorithm;
 
-    @JsonIgnore
-    private final String typeString = " hash_algorithm;";
-
-    @JsonIgnore
-    private final String rolePlayers = " hash_value; hashes_owner;";
-
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
 
     public String getHash_algorithm() {
         return hash_algorithm;

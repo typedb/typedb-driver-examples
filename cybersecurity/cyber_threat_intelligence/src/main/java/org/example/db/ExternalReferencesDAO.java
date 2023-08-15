@@ -28,21 +28,19 @@ import org.example.model.ExternalReferences;
 public class ExternalReferencesDAO {
     protected static final String EXTERNAL_REFERENCES_MATCH =
             "$ta (referencing: $AAA, referenced: $BBB) isa external_references;";
+    private static final String nameRel = "external_references";
     private final TypeDBSessionWrapper db;
-    private final ExternalReferences external_references;
-
-    private final String nameRel = "external_references";
     private final String typeString;
-
+    private final String rolePlayers;
 
     public ExternalReferencesDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        external_references = new ExternalReferences();
-        typeString = external_references.getTypeString();
+        typeString = ExternalReferences.typeString;
+        rolePlayers = ExternalReferences.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel, external_references.getRolePlayers());
+        return db.getListJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

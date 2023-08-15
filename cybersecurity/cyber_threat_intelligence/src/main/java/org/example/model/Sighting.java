@@ -26,6 +26,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 public class Sighting extends StixCoreRelationship {
+    @JsonIgnore
+    public static final String typeString = StixCoreRelationship.typeString + " summary;";
+
+    @JsonIgnore
+    public static final String rolePlayers = " sighting_of; observed_data;";
 
     private Date first_seen;
     private Date last_seen;
@@ -33,18 +38,4 @@ public class Sighting extends StixCoreRelationship {
     private Double count;
     private String summary;
 
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " summary;";
-
-    @JsonIgnore
-    private final String rolePlayers = " sighting_of; observed_data;";
-
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
 }

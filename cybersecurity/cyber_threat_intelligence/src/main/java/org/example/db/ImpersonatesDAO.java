@@ -29,21 +29,20 @@ public class ImpersonatesDAO {
     protected static final String IMPERSONATES_MATCH =
             "$ta (impersonating: $AAA, impersonated: $BBB) isa impersonates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    private static final String nameRel = "impersonates";
     private final TypeDBSessionWrapper db;
-    private final Impersonates impersonates;
-
-    private final String nameRel = "impersonates";
     private final String typeString;
+    private final String rolePlayers;
 
 
     public ImpersonatesDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        impersonates = new Impersonates();
-        typeString = impersonates.getTypeString();
+        typeString = Impersonates.typeString;
+        rolePlayers = Impersonates.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, impersonates.getRolePlayers());
+        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

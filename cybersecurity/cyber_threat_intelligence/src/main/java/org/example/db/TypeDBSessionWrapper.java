@@ -32,15 +32,12 @@ import com.vaticle.typedb.client.api.answer.ConceptMap;
 import com.vaticle.typedb.common.collection.Pair;
 import org.example.configuration.AppConfiguration;
 
-import java.util.logging.Logger;
-
 public class TypeDBSessionWrapper {
-    private static final Logger LOGGER = Logger.getLogger("TypeDBSessionWrapper");
     private final AppConfiguration appConfiguration;
     private final TypeDBClient client;
     private TypeDBSession session;
 
-    private Pair<String, String> extractPair(ConceptMap values, ObjectNode currentNode) {
+    private Pair<String, String> extractPair(ConceptMap values) {
         var json = values.toJSON().get("attribute");
         var key = json.asObject().get("type").asString();
         var valueTmp = json.asObject().get("value");
@@ -64,7 +61,7 @@ public class TypeDBSessionWrapper {
                 String key = e.owner().toJSON().toString().split("\"")[11];
                 ObjectNode childNode = mapper.createObjectNode();
                 e.conceptMaps().forEach(m -> {
-                    var pair = extractPair(m, childNode);
+                    var pair = extractPair(m);
                     childNode.put(pair.first(), pair.second());
                 });
                 rootNode.set(key, childNode);
@@ -84,7 +81,7 @@ public class TypeDBSessionWrapper {
                 String key = e.owner().asEntity().getIID();
                 ObjectNode childNode = mapper.createObjectNode();
                 e.conceptMaps().forEach(m -> {
-                    var pair = extractPair(m, childNode);
+                    var pair = extractPair(m);
                     childNode.put(pair.first(), pair.second());
                 });
                 rootNode.set(key, childNode);
@@ -144,7 +141,7 @@ public class TypeDBSessionWrapper {
                 ObjectNode childNode = mapper.createObjectNode();
                 if (asAttribute) {
                     e.conceptMaps().forEach(m -> {
-                        var pair = extractPair(m, childNode);
+                        var pair = extractPair(m);
                         childNode.put(pair.first(), pair.second());
                     });
                 }
@@ -185,7 +182,7 @@ public class TypeDBSessionWrapper {
                 ObjectNode childNode = mapper.createObjectNode();
                 if (asAttribute) {
                     e.conceptMaps().forEach(m -> {
-                        var pair = extractPair(m, childNode);
+                        var pair = extractPair(m);
                         childNode.put(pair.first(), pair.second());
                     });
                 }
@@ -207,12 +204,8 @@ public class TypeDBSessionWrapper {
                         var nodeTmp = getIIDJSON(queryTmp);
                         childNode.set(removeFirstChar(rolePlayersTmp[i]), nodeTmp);
                     } else {
-                        queryTmp += " group $r" + i + ";";
                         var dbResults2 = readTx.query().matchGroup(query);
                         dbResults2.forEach(w -> {
-
-
-                            ObjectNode childNode2 = mapper.createObjectNode();
                             w.conceptMaps().forEach(m -> {
                                 String value3 = m.map().get("AAA").asAttribute().toString();
                                 value3 = removeLastChar(value3.split(":")[1]);
@@ -244,7 +237,7 @@ public class TypeDBSessionWrapper {
                 String key = e.owner().toJSON().toString().split("\"")[11];
                 ObjectNode childNode = mapper.createObjectNode();
                 e.conceptMaps().forEach(m -> {
-                    var pair = extractPair(m, childNode);
+                    var pair = extractPair(m);
                     childNode.put(pair.first(), pair.second());
                 });
 
@@ -285,14 +278,14 @@ public class TypeDBSessionWrapper {
     }
 
     private String removeLastChar(String str) {
-        if (str == null || str.length() == 0) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
         return str.substring(0, str.length() - 1);
     }
 
     private String removeFirstChar(String str) {
-        if (str == null || str.length() == 0) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
         return str.substring(1);

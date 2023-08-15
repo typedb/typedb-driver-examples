@@ -27,21 +27,17 @@ import org.example.model.Hashes;
 public class HashesDAO {
     protected static final String HASHES_MATCH =
             "$ta (hash_value: $AAA, hashes_owner: $BBB) isa hashes, has $attribute;";
+    private static final String nameRel = "hashes";
     private final TypeDBSessionWrapper db;
-    private final Hashes hashes;
-
-    private final String nameRel = "hashes";
-    private final String typeString;
-
+    private final String rolePlayers;
 
     public HashesDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        hashes = new Hashes();
-        typeString = hashes.getTypeString();
+        rolePlayers = Hashes.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListAttrJSON(getQueryStr, nameRel, hashes.getRolePlayers(), true);
+        return db.getListAttrJSON(getQueryStr, nameRel, rolePlayers, true);
     }
 
     public ObjectNode findAll() {

@@ -24,22 +24,13 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class StixCyberObservableObject extends StixCoreObject {
+
+    @JsonIgnore
+    public static final String typeList = StixCoreObject.typeList;
+    @JsonIgnore
+    public static final String typeString = StixCoreObject.typeString + " defanged;";
+
     private String defanged;
-
-    @JsonIgnore
-    private final String typeList = super.getTypeList();
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " defanged;";
-
-    @Override
-    public String getTypeList() {
-        return typeList;
-    }
-
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
 
     public StixCyberObservableObject() {
     }

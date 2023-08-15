@@ -27,21 +27,20 @@ import org.example.model.KillChainPhases;
 public class KillChainPhasesDAO {
     protected static final String KILL_CHAIN_PHASES_MATCH =
             "$ta (using: $AAA, used: $BBB) isa kill_chain_phases;";
+    private static final String nameRel = "kill_chain_phases";
     private final TypeDBSessionWrapper db;
-    private final KillChainPhases kill_chain_phases;
-
-    private final String nameRel = "kill_chain_phases";
     private final String typeString;
+    private final String rolePlayers;
 
 
     public KillChainPhasesDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        kill_chain_phases = new KillChainPhases();
-        typeString = kill_chain_phases.getTypeString();
+        typeString = KillChainPhases.typeString;
+        rolePlayers = KillChainPhases.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel, kill_chain_phases.getRolePlayers());
+        return db.getListJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

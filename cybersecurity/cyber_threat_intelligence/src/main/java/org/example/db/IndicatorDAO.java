@@ -42,8 +42,7 @@ public class IndicatorDAO {
 
     public IndicatorDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        Indicator tempIndicator = new Indicator();
-        typeString = tempIndicator.getTypeString();
+        typeString = Indicator.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +60,10 @@ public class IndicatorDAO {
 
         String getQueryStr = "match " + INDICATOR_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>() {
+        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Indicator> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -93,11 +91,10 @@ public class IndicatorDAO {
 
         String getQueryStr = "match " + INDICATOR_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>() {
+        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Indicator> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

@@ -25,17 +25,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Impersonates extends StixCoreRelationship {
     @JsonIgnore
-    private final String typeString = super.getTypeString();
+    public static final String typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    private final String rolePlayers = " impersonating; impersonated;";
+    public static final String rolePlayers = " impersonating; impersonated;";
 
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
 }

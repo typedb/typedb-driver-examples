@@ -28,21 +28,20 @@ public class IndicatesDAO {
     protected static final String INDICATES_MATCH =
             "$ta (indicating: $AAA, indicated: $BBB) isa indicates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    private static final String nameRel = "indicates";
     private final TypeDBSessionWrapper db;
-    private final Indicates indicates;
-
-    private final String nameRel = "indicates";
     private final String typeString;
+    private final String rolePlayers;
 
 
     public IndicatesDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        indicates = new Indicates();
-        typeString = indicates.getTypeString();
+        typeString = Indicates.typeString;
+        rolePlayers = Indicates.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, indicates.getRolePlayers());
+        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

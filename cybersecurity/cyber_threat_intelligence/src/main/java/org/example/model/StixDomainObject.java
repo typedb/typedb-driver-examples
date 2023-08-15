@@ -28,6 +28,11 @@ import java.util.Set;
 
 public class StixDomainObject extends StixCoreObject {
 
+    @JsonIgnore
+    public static final String typeList = StixCoreObject.typeList + " labels;";
+    @JsonIgnore
+    public static final String typeString = StixCoreObject.typeString + " labels; langs;";
+
     private Date created;
 
     private Date modified;
@@ -39,21 +44,6 @@ public class StixDomainObject extends StixCoreObject {
     private int confidence;
 
     private String langs;
-
-    @JsonIgnore
-    private final String typeList = super.getTypeList() + " labels;";
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " labels; langs;";
-
-    @Override
-    public String getTypeList() {
-        return typeList;
-    }
-
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
 
     public Date getCreated() {
         return created;

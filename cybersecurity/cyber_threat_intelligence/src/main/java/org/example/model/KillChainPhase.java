@@ -24,11 +24,11 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class KillChainPhase extends StixSubObject {
+    @JsonIgnore
+    public static final String typeString = StixSubObject.typeString + " kill_chain_name; kill_chain_phase_name;";
+
     private String kill_chain_name;
     private String kill_chain_phase_name;
-
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " kill_chain_name; kill_chain_phase_name;";
 
     public String getKill_chain_name() {
         return kill_chain_name;

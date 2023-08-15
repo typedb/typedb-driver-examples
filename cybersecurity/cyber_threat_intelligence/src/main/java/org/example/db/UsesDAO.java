@@ -28,21 +28,21 @@ public class UsesDAO {
     protected static final String USES_MATCH =
             "$ta (used_by: $AAA, used: $BBB) isa uses, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private final TypeDBSessionWrapper db;
-    private final Uses uses;
+    private static final String nameRel = "uses";
 
-    private final String nameRel = "uses";
+    private final TypeDBSessionWrapper db;
     private final String typeString;
+    private final String rolePlayers;
 
 
     public UsesDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        uses = new Uses();
-        typeString = uses.getTypeString();
+        typeString = Uses.typeString;
+        rolePlayers = Uses.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, uses.getRolePlayers());
+        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

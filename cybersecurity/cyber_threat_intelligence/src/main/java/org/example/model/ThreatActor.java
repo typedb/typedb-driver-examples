@@ -26,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 public class ThreatActor extends StixDomainObject {
+    @JsonIgnore
+    public static final String typeString = StixDomainObject.typeString + " name; description; aliases; stix_role; goals; resource_level; primary_motivation; secondary_motivation; sophistication; personal_characteristics; roles; therat_actor_types;";
+
     private String name;
     private String description;
     private String aliases;
@@ -40,11 +43,8 @@ public class ThreatActor extends StixDomainObject {
     private String personal_characteristics;
     private String roles;
     private String threat_actor_types;
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " name; description; aliases; stix_role; goals; resource_level; primary_motivation; secondary_motivation; sophistication; personal_characteristics; roles; therat_actor_types;";
 
     public ThreatActor() {
-
     }
 
     public String getTypeString() {
@@ -161,25 +161,5 @@ public class ThreatActor extends StixDomainObject {
 
     public void setThreat_actor_types(String threat_actor_types) {
         this.threat_actor_types = threat_actor_types;
-    }
-
-    @Override
-    public String toString() {
-        return "ThreatActor{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", aliases='" + aliases + '\'' +
-                ", stix_role='" + stix_role + '\'' +
-                ", first_seen=" + first_seen +
-                ", last_seen=" + last_seen +
-                ", goals='" + goals + '\'' +
-                ", resource_level='" + resource_level + '\'' +
-                ", primary_motivation='" + primary_motivation + '\'' +
-                ", secondary_motivation='" + secondary_motivation + '\'' +
-                ", sophistication='" + sophistication + '\'' +
-                ", personal_characteristics='" + personal_characteristics + '\'' +
-                ", roles='" + roles + '\'' +
-                ", threat_actor_types='" + threat_actor_types + '\'' +
-                '}';
     }
 }

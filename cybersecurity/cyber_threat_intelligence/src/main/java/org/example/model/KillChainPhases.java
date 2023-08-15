@@ -25,16 +25,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class KillChainPhases {
     @JsonIgnore
-    private final String typeString = "";
-
+    public static final String typeString = "";
     @JsonIgnore
-    private final String rolePlayers = " using; used;";
+    public static final String rolePlayers = " using; used;";
 
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
 }

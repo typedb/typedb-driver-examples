@@ -26,25 +26,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 public class AttributedTo {
+    @JsonIgnore
+    public static final String typeString = " stix_id; spec_version;";
+
+    @JsonIgnore
+    public static final String rolePlayers = " attributing; attributed;";
+
     private String stix_id;
     private String spec_version;
     private Date created;
 
     private Date modified;
 
-    @JsonIgnore
-    private final String typeString = " stix_id; spec_version;";
-
-    @JsonIgnore
-    private final String rolePlayers = " attributing; attributed;";
 
 
     public String getSpec_version() {
         return spec_version;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
     }
 
     public String getStix_id() {
@@ -69,10 +66,6 @@ public class AttributedTo {
 
     public void setModified(Date modified) {
         this.modified = modified;
-    }
-
-    public String getTypeString() {
-        return typeString;
     }
 
 }

@@ -24,6 +24,8 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Identity extends StixDomainObject {
+    @JsonIgnore
+    public static final String typeString = StixDomainObject.typeString + " name; description; stix_role; identity_class; sector; contact_information;";
     private String name;
     private String description;
     private String stix_role;
@@ -31,15 +33,7 @@ public class Identity extends StixDomainObject {
     private String sector;
     private String contact_information;
 
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " name; description; stix_role; identity_class; sector; contact_information;";
-
     public Identity() {
-    }
-
-    @Override
-    public String getTypeString() {
-        return typeString;
     }
 
     public String getName() {

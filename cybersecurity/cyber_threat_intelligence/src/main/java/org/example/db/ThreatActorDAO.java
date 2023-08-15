@@ -27,8 +27,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.ThreatActor;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -37,16 +35,13 @@ public class ThreatActorDAO {
     protected static final String TA_MATCH =
             "  $ta isa threat_actor, has stix_id $id ,has $attribute;" +
                     "$attribute isa! $j; ";
-    @Autowired
     private final TypeDBSessionWrapper db;
-
     private final String typeString;
 
 
     public ThreatActorDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        ThreatActor tempThreatActor = new ThreatActor();
-        typeString = tempThreatActor.getTypeString();
+        typeString = ThreatActor.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -64,11 +59,10 @@ public class ThreatActorDAO {
 
         String getQueryStr = "match " + TA_MATCH + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>() {
+        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<ThreatActor> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -97,11 +91,10 @@ public class ThreatActorDAO {
         System.out.println(getQueryStr);
 
         ObjectNode json = find(getQueryStr);
-        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>() {
+        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<ThreatActor> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

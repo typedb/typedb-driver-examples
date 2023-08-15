@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 public class Indicator extends StixDomainObject {
+    @JsonIgnore
+    public static final String typeString = StixDomainObject.typeString + " name; description; pattern; pattern_type; pattern_version;";
 
     private String name;
     private String description;
@@ -35,16 +37,7 @@ public class Indicator extends StixDomainObject {
     private Date valid_from;
     private Date valid_until;
 
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " name; description; pattern; pattern_type; pattern_version;";
-
-
     public Indicator() {
-    }
-
-    @Override
-    public String getTypeString() {
-        return typeString;
     }
 
     public String getName() {

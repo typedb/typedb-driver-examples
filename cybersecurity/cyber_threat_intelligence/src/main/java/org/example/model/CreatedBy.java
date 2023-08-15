@@ -25,16 +25,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CreatedBy {
     @JsonIgnore
-    private final String typeString = "";
+    public static final String typeString = "";
 
     @JsonIgnore
-    private final String rolePlayers = " creator; created;";
-
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
+    public static final String rolePlayers = " creator; created;";
 }

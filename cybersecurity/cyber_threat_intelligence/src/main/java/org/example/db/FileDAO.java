@@ -36,14 +36,13 @@ public class FileDAO {
     protected static final String FILE_MATCH =
             "  $file isa file, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    TypeDBSessionWrapper db;
-    String typeString;
+    private final TypeDBSessionWrapper db;
+    private final String typeString;
 
 
     public FileDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        File tempFile = new File();
-        typeString = tempFile.getTypeString();
+        typeString = File.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +60,10 @@ public class FileDAO {
 
         String getQueryStr = "match " + FILE_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, File>>() {
+        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<File> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -92,11 +90,10 @@ public class FileDAO {
 
         String getQueryStr = "match " + FILE_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, File>>() {
+        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<File> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

@@ -28,21 +28,20 @@ public class SightingDAO {
     protected static final String SIGHTING_MATCH =
             "$ta (sighting_of: $AAA, observed_data: $BBB) isa sighting, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    private static final String nameRel = "sighting";
     private final TypeDBSessionWrapper db;
-    private final Sighting sighting;
-
-    private final String nameRel = "sighting";
     private final String typeString;
+    private final String rolePlayers;
 
 
     public SightingDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        sighting = new Sighting();
-        typeString = sighting.getTypeString();
+        typeString = Sighting.typeString;
+        rolePlayers = Sighting.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, sighting.getRolePlayers());
+        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

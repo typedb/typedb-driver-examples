@@ -24,9 +24,9 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SchemaDAO {
+    private static final String queryAll = "match $z sub thing;";
+    private static final String queryCurrent = "match $x isa $y; get $y;";
     private final TypeDBSessionWrapper db;
-    private final String queryAll = "match $z sub thing;";
-    private final String queryCurrent = "match $x isa $y; get $y;";
 
     public SchemaDAO(TypeDBSessionWrapper db) {
         this.db = db;

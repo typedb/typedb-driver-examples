@@ -36,13 +36,12 @@ public class ClassDAO {
     protected static final String CLASS_MATCH =
             "  $class isa class, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    TypeDBSessionWrapper db;
-    String typeString;
+    private final TypeDBSessionWrapper db;
+    private final String typeString;
 
     public ClassDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        Class tempClass = new Class();
-        typeString = tempClass.getTypeString();
+        typeString = Class.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -60,11 +59,10 @@ public class ClassDAO {
 
         String getQueryStr = "match " + CLASS_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Class> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Class>>() {
+        Map<String, Class> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Class> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String type, String name) {
@@ -91,11 +89,10 @@ public class ClassDAO {
         String getQueryStr = "match " + CLASS_MATCH + search + " group $id;";
 
         ObjectNode json = find(getQueryStr);
-        Map<String, Class> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Class>>() {
+        Map<String, Class> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Class> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

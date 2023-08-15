@@ -42,8 +42,7 @@ public class KillChainPhaseDAO {
 
     public KillChainPhaseDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        KillChainPhase tempKillChainPhase = new KillChainPhase();
-        typeString = tempKillChainPhase.getTypeString();
+        typeString = KillChainPhase.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +60,10 @@ public class KillChainPhaseDAO {
 
         String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, KillChainPhase>>() {
+        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<KillChainPhase> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -93,11 +91,10 @@ public class KillChainPhaseDAO {
 
         String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, KillChainPhase>>() {
+        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<KillChainPhase> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

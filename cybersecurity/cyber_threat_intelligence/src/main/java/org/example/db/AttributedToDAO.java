@@ -28,20 +28,20 @@ public class AttributedToDAO {
     protected static final String ATTRIBUTED_TO_MATCH =
             "$ta (attributed: $AAA, attributing: $BBB) isa attributed_to, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    private static final String nameRel = "attributed_to";
     private final TypeDBSessionWrapper db;
-    private final AttributedTo attributed_to;
-    private final String nameRel = "attributed_to";
     private final String typeString;
+    private final String rolePlayers;
 
 
     public AttributedToDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        attributed_to = new AttributedTo();
-        typeString = attributed_to.getTypeString();
+        typeString = AttributedTo.typeString;
+        rolePlayers = AttributedTo.rolePlayers;
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, attributed_to.getRolePlayers());
+        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
     }
 
     public ObjectNode findAll() {

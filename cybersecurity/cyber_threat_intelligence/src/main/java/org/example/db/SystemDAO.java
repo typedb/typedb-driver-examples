@@ -42,8 +42,7 @@ public class SystemDAO {
 
     public SystemDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        System tempSystem = new System();
-        typeString = tempSystem.getTypeString();
+        typeString = System.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +60,10 @@ public class SystemDAO {
 
         String getQueryStr = "match " + SYSTEM_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, System> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, System>>() {
+        Map<String, System> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<System> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -92,11 +90,10 @@ public class SystemDAO {
 
         String getQueryStr = "match " + SYSTEM_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, System> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, System>>() {
+        Map<String, System> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<System> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

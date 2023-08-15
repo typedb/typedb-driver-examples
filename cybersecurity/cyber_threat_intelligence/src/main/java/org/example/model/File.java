@@ -26,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 
 public class File extends StixCyberObservableObject {
+    @JsonIgnore
+    public static final String typeString = StixCyberObservableObject.typeString + " name; name_enc; magic_number_hex; mime_type;";
+
     private Integer size;
     private String name;
     private String name_enc;
@@ -34,13 +37,6 @@ public class File extends StixCyberObservableObject {
     private Date ctime;
     private Date mtime;
     private Date atime;
-    @JsonIgnore
-    private final String typeString = super.getTypeString() + " name; name_enc; magic_number_hex; mime_type;";
-
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
 
     public Integer getSize() {
         return size;

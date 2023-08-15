@@ -24,17 +24,13 @@ package org.example.model;
 import java.util.Date;
 
 public class StixCoreRelationship {
+    public static final String typeString = " stix_id; stix_version; stix_type;";
+
     private String spec_version;
     private String stix_id;
     private String stix_type;
     private Date created;
     private Date modified;
-
-    private final String typeString = " stix_id; stix_version; stix_type;";
-
-    public String getTypeString() {
-        return typeString;
-    }
 
     public String getSpec_version() {
         return spec_version;

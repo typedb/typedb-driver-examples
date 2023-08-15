@@ -26,17 +26,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Indicates extends StixCoreRelationship {
 
     @JsonIgnore
-    private final String typeString = super.getTypeString();
+    public static final String typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    private final String rolePlayers = " indicating; indicated;";
+    public static final String rolePlayers = " indicating; indicated;";
 
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
 }

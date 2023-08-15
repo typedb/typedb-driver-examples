@@ -36,14 +36,12 @@ public class IdentityDAO {
     protected static final String IDENTITY_MATCH =
             "  $identity isa identity, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    TypeDBSessionWrapper db;
-    String typeString;
-
+    private final TypeDBSessionWrapper db;
+    private final String typeString;
 
     public IdentityDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        Identity tempIdentity = new Identity();
-        typeString = tempIdentity.getTypeString();
+        typeString = Identity.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +59,10 @@ public class IdentityDAO {
 
         String getQueryStr = "match " + IDENTITY_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Identity> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Identity>>() {
+        Map<String, Identity> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Identity> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -93,11 +90,10 @@ public class IdentityDAO {
 
         String getQueryStr = "match " + IDENTITY_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Identity> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Identity>>() {
+        Map<String, Identity> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Identity> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

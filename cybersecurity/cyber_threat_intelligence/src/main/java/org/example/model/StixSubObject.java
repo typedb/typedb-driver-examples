@@ -21,17 +21,17 @@
 
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class StixSubObject {
+
+    @JsonIgnore
+    public static final String typeString = "";
+
     private Date created;
     private Date modified;
-
-    private final String typeString = "";
-
-    public String getTypeString() {
-        return typeString;
-    }
 
     public Date getCreated() {
         return created;

@@ -42,8 +42,7 @@ public class IndividualDAO {
 
     public IndividualDAO(TypeDBSessionWrapper db) {
         this.db = db;
-        Individual tempIndividual = new Individual();
-        typeString = tempIndividual.getTypeString();
+        typeString = Individual.typeString;
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -61,11 +60,10 @@ public class IndividualDAO {
 
         String getQueryStr = "match " + INDIVIDUAL_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Individual> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Individual>>() {
+        Map<String, Individual> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Individual> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -93,11 +91,10 @@ public class IndividualDAO {
 
         String getQueryStr = "match " + INDIVIDUAL_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Individual> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Individual>>() {
+        Map<String, Individual> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
-        Set<Individual> result = new HashSet<>(test.values());
 
-        return result;
+        return new HashSet<>(test.values());
     }
 
 

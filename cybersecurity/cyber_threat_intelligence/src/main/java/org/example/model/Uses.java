@@ -25,17 +25,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Uses extends StixCoreRelationship {
     @JsonIgnore
-    private final String typeString = super.getTypeString();
+    public static final String typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    private final String rolePlayers = " used_by; used;";
+    public static final String rolePlayers = " used_by; used;";
 
-    @Override
-    public String getTypeString() {
-        return typeString;
-    }
-
-    public String getRolePlayers() {
-        return rolePlayers;
-    }
 }
