@@ -21,7 +21,7 @@
 
 package org.example.model;
 
-public class Class extends Identity{
+public class Class extends Identity {
     public Class() {
     }
 }

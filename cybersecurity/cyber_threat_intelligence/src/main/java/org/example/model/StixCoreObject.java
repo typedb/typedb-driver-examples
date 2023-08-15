@@ -24,27 +24,22 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class StixCoreObject {
-
-    private String spec_version;
-
     @JsonIgnore
     private String typeList = "";
+
+
+
     @JsonIgnore
     private String typeString = " spec_version;";
+    private String spec_version;
 
     public StixCoreObject() {
     }
-
-    public String getTypeList() {
-        return typeList;
-    }
-
     public String getTypeString() {
         return typeString;
     }
-
-    public void setTypeString(String typeString) {
-        this.typeString = typeString;
+    public String getTypeList() {
+        return typeList;
     }
 
     public StixCoreObject(String spec_version) {

@@ -32,9 +32,10 @@ public class Identity extends StixDomainObject {
     private String contact_information;
 
     @JsonIgnore
-    private String typeString = super.getTypeString() + " name; description; stix_role; identity_class; sector; contact_information;";
+    private final String typeString = super.getTypeString() + " name; description; stix_role; identity_class; sector; contact_information;";
 
-    public Identity(){}
+    public Identity() {
+    }
 
     @Override
     public String getTypeString() {

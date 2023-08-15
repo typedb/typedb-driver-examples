@@ -32,7 +32,7 @@ public class CTIBean implements ApplicationListener<ApplicationReadyEvent> {
         String schema = appConfiguration.getSchema();
         client = TypeDB.coreClient(address);
         LOGGER.info("Deleting Database");
-        if(client.databases().contains(database)) {
+        if (client.databases().contains(database)) {
             client.databases().get(database).delete();
         }
         LOGGER.info("Creating Database");

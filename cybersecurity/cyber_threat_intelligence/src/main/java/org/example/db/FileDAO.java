@@ -33,12 +33,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class FileDAO {
-    TypeDBSessionWrapper db;
-    String typeString;
-
     protected static final String FILE_MATCH =
             "  $file isa file, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    TypeDBSessionWrapper db;
+    String typeString;
+
 
     public FileDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -46,60 +46,54 @@ public class FileDAO {
         typeString = tempFile.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
+    private ObjectNode find(String getQueryStr) {
         return db.getAllJSON(getQueryStr);
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findALl() {
         var getQueryStr = "match " + FILE_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getAllString() {
-        return getAllJSON().toString();
-    }
-
-    public Set<File> getAllBeans() throws JsonProcessingException {
+    public Set<File> findAllBeans() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + FILE_MATCH + "group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, File>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, File>>() {
+        });
         Set<File> result = new HashSet<>(test.values());
 
         return result;
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$file has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + FILE_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getSearchString(String attrType, String attrName) {
-        return getSearchJSON(attrType, attrName).toString();
-    }
-
-    public Set<File> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
+    public Set<File> searchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$file has " + attrType + " = " + attrName + ";";
 
         String getQueryStr = "match " + FILE_MATCH + search + " group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, File>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, File> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, File>>() {
+        });
         Set<File> result = new HashSet<>(test.values());
 
         return result;

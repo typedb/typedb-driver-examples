@@ -27,9 +27,9 @@ public class StixCyberObservableObject extends StixCoreObject {
     private String defanged;
 
     @JsonIgnore
-    private String typeList = super.getTypeList();
+    private final String typeList = super.getTypeList();
     @JsonIgnore
-    private String typeString = super.getTypeString() + " defanged;";
+    private final String typeString = super.getTypeString() + " defanged;";
 
     @Override
     public String getTypeList() {

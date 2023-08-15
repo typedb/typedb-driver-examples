@@ -24,6 +24,7 @@ package org.example.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
+
 public class ThreatActor extends StixDomainObject {
     private String name;
     private String description;
@@ -40,7 +41,7 @@ public class ThreatActor extends StixDomainObject {
     private String roles;
     private String threat_actor_types;
     @JsonIgnore
-    private String typeString = super.getTypeString() + " name; description; aliases; stix_role; goals; resource_level; primary_motivation; secondary_motivation; sophistication; personal_characteristics; roles; therat_actor_types;";
+    private final String typeString = super.getTypeString() + " name; description; aliases; stix_role; goals; resource_level; primary_motivation; secondary_motivation; sophistication; personal_characteristics; roles; therat_actor_types;";
 
     public ThreatActor() {
 

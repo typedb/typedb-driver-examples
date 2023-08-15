@@ -34,14 +34,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class ThreatActorDAO {
-    @Autowired
-    private TypeDBSessionWrapper db;
-
-    private String typeString;
-
     protected static final String TA_MATCH =
             "  $ta isa threat_actor, has stix_id $id ,has $attribute;" +
                     "$attribute isa! $j; ";
+    @Autowired
+    private final TypeDBSessionWrapper db;
+
+    private final String typeString;
+
 
     public ThreatActorDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -49,33 +49,31 @@ public class ThreatActorDAO {
         typeString = tempThreatActor.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
+    private ObjectNode find(String getQueryStr) {
         return db.getAllJSON(getQueryStr);
     }
-    
-    public ObjectNode getAllJSON() {
+
+    public ObjectNode findAll() {
         var getQueryStr = "match " + TA_MATCH + "group $id;";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getAllString() {
-        return getAllJSON().toString();
-    }
-
-    public Set<ThreatActor> getAllBeans() throws JsonProcessingException {
+    public Set<ThreatActor> findAllBeans() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + TA_MATCH + " group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>() {
+        });
         Set<ThreatActor> result = new HashSet<>(test.values());
 
         return result;
     }
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+    public ObjectNode search(String attrType, String attrName) {
+
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
@@ -83,17 +81,13 @@ public class ThreatActorDAO {
         var getQueryStr = "match " + TA_MATCH + search + "group $id;";
         System.out.println(getQueryStr);
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getSearchString(String attrType, String attrName) {
-        return getSearchJSON(attrType, attrName).toString();
-    }
-
-    public Set<ThreatActor> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
+    public Set<ThreatActor> searchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
@@ -102,13 +96,13 @@ public class ThreatActorDAO {
         String getQueryStr = "match " + TA_MATCH + search + " group $id;";
         System.out.println(getQueryStr);
 
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, ThreatActor>>() {
+        });
         Set<ThreatActor> result = new HashSet<>(test.values());
 
         return result;
     }
-
 
 
 }

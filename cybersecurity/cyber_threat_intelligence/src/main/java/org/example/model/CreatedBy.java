@@ -25,10 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CreatedBy {
     @JsonIgnore
-    private String typeString = "";
+    private final String typeString = "";
 
     @JsonIgnore
-    private String rolePlayers = " creator; created;";
+    private final String rolePlayers = " creator; created;";
 
     public String getTypeString() {
         return typeString;

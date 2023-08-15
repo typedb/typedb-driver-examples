@@ -25,10 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ExternalReferences {
     @JsonIgnore
-    private String typeString = "";
+    private final String typeString = "";
 
     @JsonIgnore
-    private String rolePlayers = " referencing; referenced;";
+    private final String rolePlayers = " referencing; referenced;";
 
     public String getTypeString() {
         return typeString;

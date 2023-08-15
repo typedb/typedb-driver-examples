@@ -25,15 +25,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.Hashes;
 
 public class HashesDAO {
-
+    protected static final String HASHES_MATCH =
+            "$ta (hash_value: $AAA, hashes_owner: $BBB) isa hashes, has $attribute;";
     private final TypeDBSessionWrapper db;
     private final Hashes hashes;
 
     private final String nameRel = "hashes";
     private final String typeString;
 
-    protected static final String HASHES_MATCH =
-            "$ta (hash_value: $AAA, hashes_owner: $BBB) isa hashes, has $attribute;";
 
     public HashesDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -41,14 +40,13 @@ public class HashesDAO {
         typeString = hashes.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
-        return db.getListAttrJSON(getQueryStr, nameRel ,hashes.getRolePlayers(), true);
+    private ObjectNode find(String getQueryStr) {
+        return db.getListAttrJSON(getQueryStr, nameRel, hashes.getRolePlayers(), true);
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + HASHES_MATCH + "group $ta; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
-
 
 }

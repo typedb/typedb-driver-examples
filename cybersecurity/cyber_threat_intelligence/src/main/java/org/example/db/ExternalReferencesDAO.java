@@ -26,14 +26,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.ExternalReferences;
 
 public class ExternalReferencesDAO {
+    protected static final String EXTERNAL_REFERENCES_MATCH =
+            "$ta (referencing: $AAA, referenced: $BBB) isa external_references;";
     private final TypeDBSessionWrapper db;
     private final ExternalReferences external_references;
 
     private final String nameRel = "external_references";
     private final String typeString;
 
-    protected static final String EXTERNAL_REFERENCES_MATCH =
-            "$ta (referencing: $AAA, referenced: $BBB) isa external_references;";
 
     public ExternalReferencesDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -41,25 +41,25 @@ public class ExternalReferencesDAO {
         typeString = external_references.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel ,external_references.getRolePlayers());
+    private ObjectNode find(String getQueryStr) {
+        return db.getListJSON(getQueryStr, nameRel, external_references.getRolePlayers());
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + EXTERNAL_REFERENCES_MATCH + "group $ta; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$ta has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + EXTERNAL_REFERENCES_MATCH + search + "group $ta;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
 }

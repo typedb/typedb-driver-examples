@@ -25,15 +25,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.AttributedTo;
 
 public class AttributedToDAO {
-    private final TypeDBSessionWrapper db;
-    private final AttributedTo attributed_to;
-
-    private final String nameRel = "attributed_to";
-    private final String typeString;
-
     protected static final String ATTRIBUTED_TO_MATCH =
             "$ta (attributed: $AAA, attributing: $BBB) isa attributed_to, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    private final TypeDBSessionWrapper db;
+    private final AttributedTo attributed_to;
+    private final String nameRel = "attributed_to";
+    private final String typeString;
+
 
     public AttributedToDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -41,25 +40,25 @@ public class AttributedToDAO {
         typeString = attributed_to.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
+    private ObjectNode find(String getQueryStr) {
         return db.getRelJSON(getQueryStr, nameRel, attributed_to.getRolePlayers());
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + ATTRIBUTED_TO_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$ta has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + ATTRIBUTED_TO_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
 }

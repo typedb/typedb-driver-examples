@@ -23,7 +23,7 @@ package org.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class KillChainPhase extends StixSubObject{
+public class KillChainPhase extends StixSubObject {
     private String kill_chain_name;
     private String kill_chain_phase_name;
 

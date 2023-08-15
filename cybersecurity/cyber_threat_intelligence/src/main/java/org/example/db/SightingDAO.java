@@ -25,15 +25,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.Sighting;
 
 public class SightingDAO {
+    protected static final String SIGHTING_MATCH =
+            "$ta (sighting_of: $AAA, observed_data: $BBB) isa sighting, has stix_id $id, has $attribute;" +
+                    "$attribute isa! $j; ";
     private final TypeDBSessionWrapper db;
     private final Sighting sighting;
 
     private final String nameRel = "sighting";
     private final String typeString;
 
-    protected static final String SIGHTING_MATCH =
-            "$ta (sighting_of: $AAA, observed_data: $BBB) isa sighting, has stix_id $id, has $attribute;" +
-                    "$attribute isa! $j; ";
 
     public SightingDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -41,25 +41,25 @@ public class SightingDAO {
         typeString = sighting.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel ,sighting.getRolePlayers());
+    private ObjectNode find(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel, sighting.getRolePlayers());
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + SIGHTING_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$ta has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + SIGHTING_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
 }

@@ -33,12 +33,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class IdUnknownDAO {
-    TypeDBSessionWrapper db;
-    String typeString;
-
     protected static final String IDUNKNOWN_MATCH =
             "  $idUnknown isa id_unknown, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    TypeDBSessionWrapper db;
+    String typeString;
+
 
     public IdUnknownDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -46,60 +46,55 @@ public class IdUnknownDAO {
         typeString = tempIdUnknown.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
+    private ObjectNode find(String getQueryStr) {
         return db.getAllJSON(getQueryStr);
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + IDUNKNOWN_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getAllString() {
-        return getAllJSON().toString();
-    }
-
-    public Set<IdUnknown> getAllBeans() throws JsonProcessingException {
+    public Set<IdUnknown> findAllBeans() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + IDUNKNOWN_MATCH + "group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, IdUnknown>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, IdUnknown>>() {
+        });
         Set<IdUnknown> result = new HashSet<>(test.values());
 
         return result;
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$idUnknown has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + IDUNKNOWN_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getSearchString(String attrType, String attrName) {
-        return getSearchJSON(attrType, attrName).toString();
-    }
 
-    public Set<IdUnknown> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
+    public Set<IdUnknown> searchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$idUnknown has " + attrType + " = " + attrName + ";";
 
         String getQueryStr = "match " + IDUNKNOWN_MATCH + search + " group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, IdUnknown>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, IdUnknown>>() {
+        });
         Set<IdUnknown> result = new HashSet<>(test.values());
 
         return result;

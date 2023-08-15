@@ -23,12 +23,12 @@ package org.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Impersonates extends StixCoreRelationship{
+public class Impersonates extends StixCoreRelationship {
     @JsonIgnore
-    private String typeString = super.getTypeString();
+    private final String typeString = super.getTypeString();
 
     @JsonIgnore
-    private String rolePlayers = " impersonating; impersonated;";
+    private final String rolePlayers = " impersonating; impersonated;";
 
     @Override
     public String getTypeString() {

@@ -33,10 +33,10 @@ public class AttributedTo {
     private Date modified;
 
     @JsonIgnore
-    private String typeString = " stix_id; spec_version;";
+    private final String typeString = " stix_id; spec_version;";
 
     @JsonIgnore
-    private String rolePlayers = " attributing; attributed;";
+    private final String rolePlayers = " attributing; attributed;";
 
 
     public String getSpec_version() {

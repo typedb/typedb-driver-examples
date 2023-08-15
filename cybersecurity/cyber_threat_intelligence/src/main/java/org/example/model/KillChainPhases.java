@@ -25,10 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class KillChainPhases {
     @JsonIgnore
-    private String typeString = "";
+    private final String typeString = "";
 
     @JsonIgnore
-    private String rolePlayers = " using; used;";
+    private final String rolePlayers = " using; used;";
 
     public String getTypeString() {
         return typeString;

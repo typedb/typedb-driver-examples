@@ -33,12 +33,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class IndicatorDAO {
-    TypeDBSessionWrapper db;
-    String typeString;
-
     protected static final String INDICATOR_MATCH =
             "  $indicator isa indicator, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    TypeDBSessionWrapper db;
+    String typeString;
+
 
     public IndicatorDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -46,61 +46,55 @@ public class IndicatorDAO {
         typeString = tempIndicator.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
+    private ObjectNode find(String getQueryStr) {
         return db.getAllJSON(getQueryStr);
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + INDICATOR_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getAllString() {
-        return getAllJSON().toString();
-    }
-
-    public Set<Indicator> getAllBeans() throws JsonProcessingException {
+    public Set<Indicator> findAllBeans() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + INDICATOR_MATCH + "group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>() {
+        });
         Set<Indicator> result = new HashSet<>(test.values());
 
         return result;
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$indicator has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + INDICATOR_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getSearchString(String attrType, String attrName) {
 
-        return getSearchJSON(attrType, attrName).toString();
-    }
-
-    public Set<Indicator> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
+    public Set<Indicator> searchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$indicator has " + attrType + " = " + attrName + ";";
 
         String getQueryStr = "match " + INDICATOR_MATCH + search + " group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, Indicator> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, Indicator>>() {
+        });
         Set<Indicator> result = new HashSet<>(test.values());
 
         return result;

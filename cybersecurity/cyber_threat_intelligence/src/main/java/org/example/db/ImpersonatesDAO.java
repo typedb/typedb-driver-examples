@@ -26,15 +26,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.Impersonates;
 
 public class ImpersonatesDAO {
+    protected static final String IMPERSONATES_MATCH =
+            "$ta (impersonating: $AAA, impersonated: $BBB) isa impersonates, has stix_id $id, has $attribute;" +
+                    "$attribute isa! $j; ";
     private final TypeDBSessionWrapper db;
     private final Impersonates impersonates;
 
     private final String nameRel = "impersonates";
     private final String typeString;
 
-    protected static final String IMPERSONATES_MATCH =
-            "$ta (impersonating: $AAA, impersonated: $BBB) isa impersonates, has stix_id $id, has $attribute;" +
-                    "$attribute isa! $j; ";
 
     public ImpersonatesDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -42,25 +42,25 @@ public class ImpersonatesDAO {
         typeString = impersonates.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel ,impersonates.getRolePlayers());
+    private ObjectNode find(String getQueryStr) {
+        return db.getRelJSON(getQueryStr, nameRel, impersonates.getRolePlayers());
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + IMPERSONATES_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$ta has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + IMPERSONATES_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
 }

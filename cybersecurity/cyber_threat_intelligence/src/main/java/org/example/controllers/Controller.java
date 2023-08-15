@@ -27,13 +27,15 @@ import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
 import org.example.configuration.AppConfiguration;
 import org.example.db.*;
-import org.example.model.*;
 import org.example.model.Class;
 import org.example.model.System;
+import org.example.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 import java.util.logging.Logger;
@@ -51,66 +53,66 @@ public class Controller {
 
     @QueryMapping(value = "getMalware")
     @GetMapping(value = "/malware", produces = "application/json")
-    public ObjectNode getMalwareJSON(){
+    public ObjectNode getMalwareJSON() {
         MalwareDAO malwareDAO = new MalwareDAO(wrapper);
-        return malwareDAO.getAllJSON();
+        return malwareDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/malware-beans", produces = "application/json")
     public Set<Malware> getMalwareBeans() throws JsonProcessingException {
         MalwareDAO malwareDAO = new MalwareDAO(wrapper);
-        return malwareDAO.getAllBeans();
+        return malwareDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getThreatActor")
     @GetMapping(value = "/threat-actor", produces = "application/json")
-    public ObjectNode getThreatActorJSON(){
+    public ObjectNode getThreatActorJSON() {
         ThreatActorDAO threatActorDAO = new ThreatActorDAO(wrapper);
-        return threatActorDAO.getAllJSON();
+        return threatActorDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/threat-actor-beans", produces = "application/json")
     public Set<ThreatActor> getThreatActorBeans() throws JsonProcessingException {
         ThreatActorDAO threatActorDAO = new ThreatActorDAO(wrapper);
-        return threatActorDAO.getAllBeans();
+        return threatActorDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getFile")
     @GetMapping(value = "/file", produces = "application/json")
-    public ObjectNode getFileJSON(){
+    public ObjectNode getFileJSON() {
         FileDAO fileDAO = new FileDAO(wrapper);
-        return fileDAO.getAllJSON();
+        return fileDAO.findALl();
     }
 
     @QueryMapping
     @GetMapping(value = "/file-beans", produces = "application/json")
     public Set<File> getFileBeans() throws JsonProcessingException {
         FileDAO fileDAO = new FileDAO(wrapper);
-        return fileDAO.getAllBeans();
+        return fileDAO.findAllBeans();
     }
 
 
     @QueryMapping(value = "getIdentity")
     @GetMapping(value = "/identity", produces = "application/json")
-    public ObjectNode getIdentityJSON(){
+    public ObjectNode getIdentityJSON() {
         IdentityDAO identityDAO = new IdentityDAO(wrapper);
-        return identityDAO.getAllJSON();
+        return identityDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/identity-beans", produces = "application/json")
     public Set<Identity> getIdentityBeans() throws JsonProcessingException {
         IdentityDAO identityDAO = new IdentityDAO(wrapper);
-        return identityDAO.getAllBeans();
+        return identityDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getIndicator")
     @GetMapping(value = "/indicator", produces = "application/json")
-    public ObjectNode getIndicatorJSON(){
+    public ObjectNode getIndicatorJSON() {
         IndicatorDAO indicatorDAO = new IndicatorDAO(wrapper);
-        return indicatorDAO.getAllJSON();
+        return indicatorDAO.findAll();
     }
 
 
@@ -118,168 +120,168 @@ public class Controller {
     @GetMapping(value = "/indicator-beans", produces = "application/json")
     public Set<Indicator> getIndicatorBeans() throws JsonProcessingException {
         IndicatorDAO indicatorDAO = new IndicatorDAO(wrapper);
-        return indicatorDAO.getAllBeans();
+        return indicatorDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getClass")
     @GetMapping(value = "/class", produces = "application/json")
-    public ObjectNode get_ClassJSON(){
+    public ObjectNode get_ClassJSON() {
         ClassDAO classDAO = new ClassDAO(wrapper);
-        return classDAO.getAllJSON();
+        return classDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/class-beans", produces = "application/json")
     public Set<Class> get_ClassBeans() throws JsonProcessingException {
         ClassDAO classDAO = new ClassDAO(wrapper);
-        return classDAO.getAllBeans();
+        return classDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getGroup")
     @GetMapping(value = "/group", produces = "application/json")
-    public ObjectNode getGroupJSON(){
+    public ObjectNode getGroupJSON() {
         GroupDAO groupDAO = new GroupDAO(wrapper);
-        return groupDAO.getAllJSON();
+        return groupDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/group-beans", produces = "application/json")
     public Set<Group> getGroupBeans() throws JsonProcessingException {
         GroupDAO groupDAO = new GroupDAO(wrapper);
-        return groupDAO.getAllBeans();
+        return groupDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getIdUnknown")
     @GetMapping(value = "/id-unknown", produces = "application/json")
-    public ObjectNode getIdUnknownJSON(){
+    public ObjectNode getIdUnknownJSON() {
         IdUnknownDAO idUnknownDAO = new IdUnknownDAO(wrapper);
-        return idUnknownDAO.getAllJSON();
+        return idUnknownDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/id-unknown-beans", produces = "application/json")
     public Set<IdUnknown> getIdUnknownBeans() throws JsonProcessingException {
         IdUnknownDAO idUnknownDAO = new IdUnknownDAO(wrapper);
-        return idUnknownDAO.getAllBeans();
+        return idUnknownDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getIndividual")
     @GetMapping(value = "/individual", produces = "application/json")
-    public ObjectNode getIndividualJSON(){
+    public ObjectNode getIndividualJSON() {
         IndividualDAO individualDAO = new IndividualDAO(wrapper);
-        return individualDAO.getAllJSON();
+        return individualDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/individual-beans", produces = "application/json")
     public Set<Individual> getIndividualBeans() throws JsonProcessingException {
         IndividualDAO individualDAO = new IndividualDAO(wrapper);
-        return individualDAO.getAllBeans();
+        return individualDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getSystem")
     @GetMapping(value = "/system", produces = "application/json")
-    public ObjectNode getSystemJSON(){
+    public ObjectNode getSystemJSON() {
         SystemDAO systemDAO = new SystemDAO(wrapper);
-        return systemDAO.getAllJSON();
+        return systemDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/system-beans", produces = "application/json")
     public Set<System> getSystemBeans() throws JsonProcessingException {
         SystemDAO systemDAO = new SystemDAO(wrapper);
-        return systemDAO.getAllBeans();
+        return systemDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getKillChainPhase")
     @GetMapping(value = "/kill-chain-phase", produces = "application/json")
-    public ObjectNode getKillChainPhaseJSON(){
+    public ObjectNode getKillChainPhaseJSON() {
         KillChainPhaseDAO killChainPhaseDAO = new KillChainPhaseDAO(wrapper);
-        return killChainPhaseDAO.getAllJSON();
+        return killChainPhaseDAO.findAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/kill-chain-phase-beans", produces = "application/json")
     public Set<KillChainPhase> getKillChainPhaseBeans() throws JsonProcessingException {
         KillChainPhaseDAO killChainPhaseDAO = new KillChainPhaseDAO(wrapper);
-        return killChainPhaseDAO.getAllBeans();
+        return killChainPhaseDAO.findAllBeans();
     }
 
     @QueryMapping(value = "getAttributedTo")
     @GetMapping(value = "/attributed-to", produces = "application/json")
-    public ObjectNode getAttributedToJSON(){
+    public ObjectNode getAttributedToJSON() {
         AttributedToDAO attributedToDAO = new AttributedToDAO(wrapper);
-        return attributedToDAO.getAllJSON();
+        return attributedToDAO.findAll();
     }
 
     @QueryMapping(value = "getIndicates")
     @GetMapping(value = "/indicates", produces = "application/json")
-    public ObjectNode getIndicatesJSON(){
+    public ObjectNode getIndicatesJSON() {
         IndicatesDAO indicatesDAO = new IndicatesDAO(wrapper);
-        return indicatesDAO.getAllJSON();
+        return indicatesDAO.findAll();
     }
 
     @QueryMapping(value = "getSighting")
     @GetMapping(value = "/sighting", produces = "application/json")
-    public ObjectNode getSightingJSON(){
+    public ObjectNode getSightingJSON() {
         SightingDAO sightingDAO = new SightingDAO(wrapper);
-        return sightingDAO.getAllJSON();
+        return sightingDAO.findAll();
     }
 
     @QueryMapping(value = "getUses")
     @GetMapping(value = "/uses", produces = "application/json")
-    public ObjectNode getUsesJSON(){
+    public ObjectNode getUsesJSON() {
         UsesDAO usesDAO = new UsesDAO(wrapper);
-        return usesDAO.getAllJSON();
+        return usesDAO.findAll();
     }
 
     @QueryMapping(value = "getTargets")
     @GetMapping(value = "/targets", produces = "application/json")
-    public ObjectNode getTargetsJSON(){
+    public ObjectNode getTargetsJSON() {
         TargetsDAO targetsDAO = new TargetsDAO(wrapper);
-        return targetsDAO.getAllJSON();
+        return targetsDAO.findAll();
     }
 
     @QueryMapping(value = "getImpersonates")
     @GetMapping(value = "/impersonates", produces = "application/json")
-    public ObjectNode getImpersonatesJSON(){
+    public ObjectNode getImpersonatesJSON() {
         ImpersonatesDAO impersonatesDAO = new ImpersonatesDAO(wrapper);
-        return impersonatesDAO.getAllJSON();
+        return impersonatesDAO.findAll();
     }
 
     @QueryMapping(value = "getKillChainPhases")
     @GetMapping(value = "/kill-chain-phases", produces = "application/json")
-    public ObjectNode getKillChainPhasesJSON(){
+    public ObjectNode getKillChainPhasesJSON() {
         KillChainPhasesDAO killChainPhasesDAO = new KillChainPhasesDAO(wrapper);
-        return killChainPhasesDAO.getAllJSON();
+        return killChainPhasesDAO.findAll();
     }
 
     @QueryMapping(value = "getExternalReferences")
     @GetMapping(value = "/external-references", produces = "application/json")
-    public ObjectNode getExternalReferencesJSON(){
+    public ObjectNode getExternalReferencesJSON() {
         ExternalReferencesDAO externalReferencesDAO = new ExternalReferencesDAO(wrapper);
-        return externalReferencesDAO.getAllJSON();
+        return externalReferencesDAO.findAll();
     }
 
     @QueryMapping(value = "getCreatedBy")
     @GetMapping(value = "/created-by", produces = "application/json")
-    public ObjectNode getCreatedByJSON(){
+    public ObjectNode getCreatedByJSON() {
         CreatedByDAO createdByDAO = new CreatedByDAO(wrapper);
-        return createdByDAO.getAllJSON();
+        return createdByDAO.findAll();
     }
 
     @QueryMapping(value = "getHashes")
     @GetMapping(value = "/hashes", produces = "application/json")
-    public ObjectNode getHashesJSON(){
+    public ObjectNode getHashesJSON() {
         HashesDAO hashesDAO = new HashesDAO(wrapper);
-        return hashesDAO.getAllJSON();
+        return hashesDAO.findAll();
     }
 
     @QueryMapping(value = "getThreatActorSearch")
     @GetMapping(value = "/threat-actor/{type}/{name}", produces = "application/json")
-    public ObjectNode getThreatActorSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getThreatActorSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         ThreatActorDAO threatActorDAO = new ThreatActorDAO(wrapper);
-        return threatActorDAO.getSearchJSON(type, name);
+        return threatActorDAO.search(type, name);
     }
 
 
@@ -287,204 +289,204 @@ public class Controller {
     @GetMapping("/threat-actor-beans/{type}/{name}")
     public Set<ThreatActor> getThreatActorSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         ThreatActorDAO threatActorDAO = new ThreatActorDAO(wrapper);
-        return threatActorDAO.getSearchBeans(type, name);
+        return threatActorDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getMalwareSearch")
     @GetMapping(value = "/malware/{type}/{name}", produces = "application/json")
-    public ObjectNode getMalwareSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getMalwareSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         MalwareDAO malwareDAO = new MalwareDAO(wrapper);
-        return malwareDAO.getSearchJSON(type, name);
+        return malwareDAO.search(type, name);
     }
 
     @QueryMapping(value = "getMalwareSearchBeans")
     @GetMapping("/malware-beans/{type}/{name}")
     public Set<Malware> getMalwareSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         MalwareDAO malwareDAO = new MalwareDAO(wrapper);
-        return malwareDAO.getSearchBeans(type, name);
+        return malwareDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getFileSearch")
     @GetMapping(value = "/file/{type}/{name}", produces = "application/json")
-    public ObjectNode getFileSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getFileSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         FileDAO fileDAO = new FileDAO(wrapper);
-        return fileDAO.getSearchJSON(type, name);
+        return fileDAO.search(type, name);
     }
 
     @QueryMapping(value = "getFileSearchBeans")
     @GetMapping("/file-beans/{type}/{name}")
     public Set<File> getFileSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         FileDAO fileDAO = new FileDAO(wrapper);
-        return fileDAO.getSearchBeans(type, name);
+        return fileDAO.searchBeans(type, name);
     }
 
 
     @QueryMapping(value = "getIdentitySearch")
     @GetMapping(value = "/identity/{type}/{name}", produces = "application/json")
-    public ObjectNode getIdentitySearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getIdentitySearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         IdentityDAO identityDAO = new IdentityDAO(wrapper);
-        return identityDAO.getSearchJSON(type, name);
+        return identityDAO.search(type, name);
     }
 
     @QueryMapping(value = "getIdentitySearchBeans")
     @GetMapping("/identity-beans/{type}/{name}")
     public Set<Identity> getIdentitySearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         IdentityDAO identityDAO = new IdentityDAO(wrapper);
-        return identityDAO.getSearchBeans(type, name);
+        return identityDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getIndicatorSearch")
     @GetMapping(value = "/indicator/{type}/{name}", produces = "application/json")
-    public ObjectNode getIndicatorSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getIndicatorSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         IndicatorDAO indicatorDAO = new IndicatorDAO(wrapper);
-        return indicatorDAO.getSearchJSON(type, name);
+        return indicatorDAO.search(type, name);
     }
 
     @QueryMapping(value = "getIndicatorSearchBeans")
     @GetMapping("/indicator-beans/{type}/{name}")
     public Set<Indicator> getIndicatorSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         IndicatorDAO indicatorDAO = new IndicatorDAO(wrapper);
-        return indicatorDAO.getSearchBeans(type, name);
+        return indicatorDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getClassSearch")
     @GetMapping(value = "/class/{type}/{name}", produces = "application/json")
-    public ObjectNode getClassSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getClassSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         ClassDAO classDAO = new ClassDAO(wrapper);
-        return classDAO.getSearchJSON(type, name);
+        return classDAO.search(type, name);
     }
 
     @QueryMapping(value = "getClassSearchBeans")
     @GetMapping("/class-beans/{type}/{name}")
     public Set<Class> getClassSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         ClassDAO classDAO = new ClassDAO(wrapper);
-        return classDAO.getSearchBeans(type, name);
+        return classDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getGroupSearch")
     @GetMapping(value = "/group/{type}/{name}", produces = "application/json")
-    public ObjectNode getGroupSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getGroupSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         GroupDAO groupDAO = new GroupDAO(wrapper);
-        return groupDAO.getSearchJSON(type, name);
+        return groupDAO.search(type, name);
     }
 
     @QueryMapping(value = "getGroupSearchBeans")
     @GetMapping("/group-beans/{type}/{name}")
     public Set<Group> getGroupSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         GroupDAO groupDAO = new GroupDAO(wrapper);
-        return groupDAO.getSearchBeans(type, name);
+        return groupDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getIdUnknownSearch")
     @GetMapping(value = "/id-unknown/{type}/{name}", produces = "application/json")
-    public ObjectNode getIdUnknownSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getIdUnknownSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         IdUnknownDAO idUnknownDAO = new IdUnknownDAO(wrapper);
-        return idUnknownDAO.getSearchJSON(type, name);
+        return idUnknownDAO.search(type, name);
     }
 
     @QueryMapping(value = "getIdUnknownSearchBeans")
     @GetMapping("/id-unknown-beans/{type}/{name}")
     public Set<IdUnknown> getIdUnknownSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         IdUnknownDAO idUnknownDAO = new IdUnknownDAO(wrapper);
-        return idUnknownDAO.getSearchBeans(type, name);
+        return idUnknownDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getIndividualSearch")
     @GetMapping(value = "/individual/{type}/{name}", produces = "application/json")
-    public ObjectNode getIndividualSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getIndividualSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         IndividualDAO individualDAO = new IndividualDAO(wrapper);
-        return individualDAO.getSearchJSON(type, name);
+        return individualDAO.search(type, name);
     }
 
     @QueryMapping(value = "getIndividualSearchBeans")
     @GetMapping("/individual-beans/{type}/{name}")
     public Set<Individual> getIndividualSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         IndividualDAO individualDAO = new IndividualDAO(wrapper);
-        return individualDAO.getSearchBeans(type, name);
+        return individualDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getSystemSearch")
     @GetMapping(value = "/system/{type}/{name}", produces = "application/json")
-    public ObjectNode getSystemSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getSystemSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         SystemDAO systemDAO = new SystemDAO(wrapper);
-        return systemDAO.getSearchJSON(type, name);
+        return systemDAO.search(type, name);
     }
 
     @QueryMapping(value = "getSystemSearchBeans")
     @GetMapping("/system-beans/{type}/{name}")
     public Set<System> getSystemSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         SystemDAO systemDAO = new SystemDAO(wrapper);
-        return systemDAO.getSearchBeans(type, name);
+        return systemDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getKillChainPhaseSearch")
     @GetMapping(value = "/kill-chain-phase/{type}/{name}", produces = "application/json")
-    public ObjectNode getKillChainPhaseSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getKillChainPhaseSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         KillChainPhaseDAO killChainPhaseDAO = new KillChainPhaseDAO(wrapper);
-        return killChainPhaseDAO.getSearchJSON(type, name);
+        return killChainPhaseDAO.search(type, name);
     }
 
     @QueryMapping(value = "getKillChainPhaseSearchBeans")
     @GetMapping("/kill-chain-phase-beans/{type}/{name}")
     public Set<KillChainPhase> getKillChainPhaseSearchBeans(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) throws JsonProcessingException {
         KillChainPhaseDAO killChainPhaseDAO = new KillChainPhaseDAO(wrapper);
-        return killChainPhaseDAO.getSearchBeans(type, name);
+        return killChainPhaseDAO.searchBeans(type, name);
     }
 
     @QueryMapping(value = "getAttributedToSearch")
     @GetMapping(value = "/attributed-to/{type}/{name}", produces = "application/json")
-    public ObjectNode getAttributedToSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getAttributedToSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         AttributedToDAO attributedToDAO = new AttributedToDAO(wrapper);
-        return attributedToDAO.getSearchJSON(type, name);
+        return attributedToDAO.search(type, name);
     }
 
     @QueryMapping(value = "getIndicatesSearch")
     @GetMapping(value = "/indicates/{type}/{name}", produces = "application/json")
-    public ObjectNode getIndicatesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getIndicatesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         IndicatesDAO indicatesDAO = new IndicatesDAO(wrapper);
-        return indicatesDAO.getSearchJSON(type, name);
+        return indicatesDAO.search(type, name);
     }
 
     @QueryMapping(value = "getSightingSearch")
     @GetMapping(value = "/sighting/{type}/{name}", produces = "application/json")
-    public ObjectNode getSightingSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getSightingSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         SightingDAO sightingDAO = new SightingDAO(wrapper);
-        return sightingDAO.getSearchJSON(type, name);
+        return sightingDAO.search(type, name);
     }
 
     @QueryMapping(value = "getUsesSearch")
     @GetMapping(value = "/uses/{type}/{name}", produces = "application/json")
-    public ObjectNode getUsesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getUsesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         UsesDAO usesDAO = new UsesDAO(wrapper);
-        return usesDAO.getSearchJSON(type, name);
+        return usesDAO.search(type, name);
     }
 
     @QueryMapping(value = "getTargetsSearch")
     @GetMapping(value = "/targets/{type}/{name}", produces = "application/json")
-    public ObjectNode getTargetsSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getTargetsSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         TargetsDAO targetsDAO = new TargetsDAO(wrapper);
-        return targetsDAO.getSearchJSON(type, name);
+        return targetsDAO.search(type, name);
     }
 
     @QueryMapping(value = "getImpersonatesSearch")
     @GetMapping(value = "/impersonates/{type}/{name}", produces = "application/json")
-    public ObjectNode getImpersonatesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name){
+    public ObjectNode getImpersonatesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
         ImpersonatesDAO impersonatesDAO = new ImpersonatesDAO(wrapper);
-        return impersonatesDAO.getSearchJSON(type, name);
+        return impersonatesDAO.search(type, name);
     }
 
     @QueryMapping
     @GetMapping(value = "/schema", produces = "application/json")
-    public ObjectNode getSchema(){
+    public ObjectNode getSchema() {
         SchemaDAO schemaDAO = new SchemaDAO(wrapper);
         return schemaDAO.getSchemaAllJSON();
     }
 
     @QueryMapping
     @GetMapping(value = "/schema-current", produces = "application/json")
-    public ObjectNode getSchemaCurrent(){
+    public ObjectNode getSchemaCurrent() {
         SchemaDAO schemaDAO = new SchemaDAO(wrapper);
         return schemaDAO.getSchemaCurrentJSON();
     }
-    
+
 }

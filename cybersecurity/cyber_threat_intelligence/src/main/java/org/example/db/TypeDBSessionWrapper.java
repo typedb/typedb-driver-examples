@@ -28,27 +28,26 @@ import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBOptions;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.client.api.answer.ConceptMap;
 import com.vaticle.typedb.common.collection.Pair;
 import org.example.configuration.AppConfiguration;
+
 import java.util.logging.Logger;
 
 public class TypeDBSessionWrapper {
-
-    private final AppConfiguration appConfiguration;
     private static final Logger LOGGER = Logger.getLogger("TypeDBSessionWrapper");
+    private final AppConfiguration appConfiguration;
     private final TypeDBClient client;
     private TypeDBSession session;
 
-    private Pair<String, String> extractPair(com.vaticle.typedb.client.api.answer.ConceptMap values, ObjectNode currentNode) {
+    private Pair<String, String> extractPair(ConceptMap values, ObjectNode currentNode) {
         var json = values.toJSON().get("attribute");
         var key = json.asObject().get("type").asString();
         var valueTmp = json.asObject().get("value");
         String value = "";
-        if(valueTmp.isString()){
+        if (valueTmp.isString()) {
             value = valueTmp.asString();
-        }
-        else
-        {
+        } else {
             value = valueTmp.toString();
         }
         return (new Pair<>(key, value));
@@ -58,7 +57,6 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-        LOGGER.info("getAllJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
 
             var dbResults = readTx.query().matchGroup(query);
@@ -79,7 +77,6 @@ public class TypeDBSessionWrapper {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-        LOGGER.info("getIIDJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
 
             var dbResults = readTx.query().matchGroup(query);
@@ -96,11 +93,10 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public ObjectNode getSchemaJSON(String query){
+    public ObjectNode getSchemaJSON(String query) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-        LOGGER.info("getSchemaJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             System.out.println("QUERY -> " + query);
             var dbResults = readTx.query().match(query);
@@ -112,13 +108,13 @@ public class TypeDBSessionWrapper {
                 String key = e.map().toString().split(" ")[0];
                 String value = e.map().toString().split(" ")[1];
                 value = value.substring(0, value.length() - 2);
-                if(key.charAt(3) == 'E'){
+                if (key.charAt(3) == 'E') {
                     ent.add(value);
                 }
-                if(key.charAt(3) == 'A'){
+                if (key.charAt(3) == 'A') {
                     att.add(value);
                 }
-                if(key.charAt(3) == 'R'){
+                if (key.charAt(3) == 'R') {
                     rel.add(value);
                 }
 
@@ -132,22 +128,21 @@ public class TypeDBSessionWrapper {
     }
 
 
-    public ObjectNode getListJSON(String query, String relName, String rolePlayers){
+    public ObjectNode getListJSON(String query, String relName, String rolePlayers) {
         return getListJSON(query, relName, rolePlayers, false);
     }
 
-    public ObjectNode getListJSON(String query, String relName, String rolePlayers, boolean asAttribute){
+    public ObjectNode getListJSON(String query, String relName, String rolePlayers, boolean asAttribute) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-        LOGGER.info("getListJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             var dbResults = readTx.query().matchGroup(query);
             dbResults.forEach(e -> {
 
                 String key = e.owner().asRelation().getIID();
                 ObjectNode childNode = mapper.createObjectNode();
-                if(asAttribute){
+                if (asAttribute) {
                     e.conceptMaps().forEach(m -> {
                         var pair = extractPair(m, childNode);
                         childNode.put(pair.first(), pair.second());
@@ -157,16 +152,16 @@ public class TypeDBSessionWrapper {
                 String[] rolePlayersTmp = rolePlayers.split(";");
 
                 String queryBegin = "match $rel (";
-                for(int i = 0; i < rolePlayersTmp.length; i++){
+                for (int i = 0; i < rolePlayersTmp.length; i++) {
                     queryBegin += rolePlayersTmp[i] + ": $r" + i + ",";
                 }
                 queryBegin = removeLastChar(queryBegin);
-                queryBegin += ") isa " + relName +"; $rel iid " + key + ";";
+                queryBegin += ") isa " + relName + "; $rel iid " + key + ";";
 
 
-                for(int i = 0; i < rolePlayersTmp.length; i++){
+                for (int i = 0; i < rolePlayersTmp.length; i++) {
                     String queryTmp = queryBegin;
-                    queryTmp += "$r" + i + " has $attribute; $attribute isa! $i; group $r"+ i +";";
+                    queryTmp += "$r" + i + " has $attribute; $attribute isa! $i; group $r" + i + ";";
                     var nodeTmp = getIIDJSON(queryTmp);
                     childNode.set(removeFirstChar(rolePlayersTmp[i]), nodeTmp);
                 }
@@ -178,18 +173,17 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public ObjectNode getListAttrJSON(String query, String relName, String rolePlayers, boolean asAttribute){
+    public ObjectNode getListAttrJSON(String query, String relName, String rolePlayers, boolean asAttribute) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-        LOGGER.info("getListAttrJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             var dbResults = readTx.query().matchGroup(query);
             dbResults.forEach(e -> {
 
                 String key = e.owner().asRelation().getIID();
                 ObjectNode childNode = mapper.createObjectNode();
-                if(asAttribute){
+                if (asAttribute) {
                     e.conceptMaps().forEach(m -> {
                         var pair = extractPair(m, childNode);
                         childNode.put(pair.first(), pair.second());
@@ -199,22 +193,21 @@ public class TypeDBSessionWrapper {
                 String[] rolePlayersTmp = rolePlayers.split(";");
 
                 String queryBegin = "match $rel (";
-                for(int i = 0; i < rolePlayersTmp.length; i++){
+                for (int i = 0; i < rolePlayersTmp.length; i++) {
                     queryBegin += rolePlayersTmp[i] + ": $r" + i + ",";
                 }
                 queryBegin = removeLastChar(queryBegin);
-                queryBegin += ") isa " + relName +"; $rel iid " + key + ";";
+                queryBegin += ") isa " + relName + "; $rel iid " + key + ";";
 
 
-                for(int i = 0; i < rolePlayersTmp.length; i++){
+                for (int i = 0; i < rolePlayersTmp.length; i++) {
                     String queryTmp = queryBegin;
-                    if(i != 0){
-                        queryTmp += "$r" + i + " has $attribute; $attribute isa! $i; group $r"+ i +";";
+                    if (i != 0) {
+                        queryTmp += "$r" + i + " has $attribute; $attribute isa! $i; group $r" + i + ";";
                         var nodeTmp = getIIDJSON(queryTmp);
                         childNode.set(removeFirstChar(rolePlayersTmp[i]), nodeTmp);
-                    }
-                    else{
-                        queryTmp += " group $r"+ i +";";
+                    } else {
+                        queryTmp += " group $r" + i + ";";
                         var dbResults2 = readTx.query().matchGroup(query);
                         dbResults2.forEach(w -> {
 
@@ -240,11 +233,10 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public ObjectNode getRelJSON(String query, String relName, String rolePlayers){
+    public ObjectNode getRelJSON(String query, String relName, String rolePlayers) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
-        LOGGER.info("getRelJSON");
         try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
             var dbResults = readTx.query().matchGroup(query);
             dbResults.forEach(e -> {
@@ -259,12 +251,12 @@ public class TypeDBSessionWrapper {
                 String[] rolePlayersTmp = rolePlayers.split(";");
 
                 String queryBegin = "match $rel (";
-                for(int i = 0; i < rolePlayersTmp.length; i++){
+                for (int i = 0; i < rolePlayersTmp.length; i++) {
                     queryBegin += rolePlayersTmp[i] + ": $r" + i + ",";
                 }
                 queryBegin = removeLastChar(queryBegin);
-                queryBegin += ") isa " + relName +", has stix_id \"" + key + "\";";
-                for(int i = 0; i < rolePlayersTmp.length; i++){
+                queryBegin += ") isa " + relName + ", has stix_id \"" + key + "\";";
+                for (int i = 0; i < rolePlayersTmp.length; i++) {
                     String queryTmp = queryBegin;
                     queryTmp += "$r" + i + " has $attribute, has stix_id $id; $attribute isa! $i; group $id;";
                     var nodeTmp = getAllJSON(queryTmp);
@@ -278,7 +270,7 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public void newSession(){
+    public void newSession() {
         session = this.client.session(appConfiguration.getDatabase(), TypeDBSession.Type.DATA,
                 TypeDBOptions.core().infer(true));
     }
@@ -286,7 +278,7 @@ public class TypeDBSessionWrapper {
     public TypeDBSessionWrapper(TypeDBClient client, AppConfiguration appConfiguration) {
         this.appConfiguration = appConfiguration;
         this.client = client;
-        if(this.client.databases().contains(appConfiguration.getDatabase())){
+        if (this.client.databases().contains(appConfiguration.getDatabase())) {
             session = this.client.session(appConfiguration.getDatabase(), TypeDBSession.Type.DATA,
                     TypeDBOptions.core().infer(true));
         }

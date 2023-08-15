@@ -21,7 +21,7 @@
 
 package org.example.model;
 
-public class IdUnknown extends Identity{
+public class IdUnknown extends Identity {
     public IdUnknown() {
     }
 }

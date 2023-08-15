@@ -28,10 +28,10 @@ public class Hashes {
     private String hash_algorithm;
 
     @JsonIgnore
-    private String typeString = " hash_algorithm;";
+    private final String typeString = " hash_algorithm;";
 
     @JsonIgnore
-    private String rolePlayers = " hash_value; hashes_owner;";
+    private final String rolePlayers = " hash_value; hashes_owner;";
 
     public String getTypeString() {
         return typeString;

@@ -41,14 +41,15 @@ public class StixDomainObject extends StixCoreObject {
     private String langs;
 
     @JsonIgnore
-    private String typeList = super.getTypeList() + " labels;";
+    private final String typeList = super.getTypeList() + " labels;";
     @JsonIgnore
-    private String typeString = super.getTypeString() + " labels; langs;";
+    private final String typeString = super.getTypeString() + " labels; langs;";
 
     @Override
     public String getTypeList() {
         return typeList;
     }
+
     @Override
     public String getTypeString() {
         return typeString;

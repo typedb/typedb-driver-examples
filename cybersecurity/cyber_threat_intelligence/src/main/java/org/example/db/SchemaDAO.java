@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SchemaDAO {
     private final TypeDBSessionWrapper db;
-
     private final String queryAll = "match $z sub thing;";
     private final String queryCurrent = "match $x isa $y; get $y;";
 
@@ -33,16 +32,16 @@ public class SchemaDAO {
         this.db = db;
     }
 
-    private ObjectNode getJSON(String query){
+    private ObjectNode find(String query) {
         return db.getSchemaJSON(query);
     }
 
-    public ObjectNode getSchemaAllJSON(){
-        return getJSON(queryAll);
+    public ObjectNode getSchemaAllJSON() {
+        return find(queryAll);
     }
 
-    public ObjectNode getSchemaCurrentJSON(){
-        return getJSON(queryCurrent);
+    public ObjectNode getSchemaCurrentJSON() {
+        return find(queryCurrent);
     }
 
 }

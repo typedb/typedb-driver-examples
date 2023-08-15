@@ -33,12 +33,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class KillChainPhaseDAO {
-    TypeDBSessionWrapper db;
-    String typeString;
-
     protected static final String KILL_CHAIN_PHASE_MATCH =
             "  $kill_chain_phase isa kill_chain_phase, has kill_chain_name $id, has $attribute;" +
                     "$attribute isa! $j; ";
+    TypeDBSessionWrapper db;
+    String typeString;
+
 
     public KillChainPhaseDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -46,60 +46,55 @@ public class KillChainPhaseDAO {
         typeString = tempKillChainPhase.getTypeString();
     }
 
-    private ObjectNode getJSON(String getQueryStr) {
+    private ObjectNode find(String getQueryStr) {
         return db.getAllJSON(getQueryStr);
     }
 
-    public ObjectNode getAllJSON() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + "group $id; ";
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getAllString() {
-        return getAllJSON().toString();
-    }
-
-    public Set<KillChainPhase> getAllBeans() throws JsonProcessingException {
+    public Set<KillChainPhase> findAllBeans() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + "group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, KillChainPhase>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, KillChainPhase>>() {
+        });
         Set<KillChainPhase> result = new HashSet<>(test.values());
 
         return result;
     }
 
-    public ObjectNode getSearchJSON(String attrType, String attrName) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$kill_chain_phase has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + search + "group $id;";
 
-        return getJSON(getQueryStr);
+        return find(getQueryStr);
     }
 
-    public String getSearchString(String attrType, String attrName) {
-        return getSearchJSON(attrType, attrName).toString();
-    }
 
-    public Set<KillChainPhase> getSearchBeans(String attrType, String attrName) throws JsonProcessingException {
+    public Set<KillChainPhase> searchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + attrType + ";")){
+        if (typeString.contains(" " + attrType + ";")) {
             attrName = "\"" + attrName + "\"";
         }
 
         String search = "$kill_chain_phase has " + attrType + " = " + attrName + ";";
 
         String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + search + " group $id;";
-        ObjectNode json = getJSON(getQueryStr);
-        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, KillChainPhase>>(){});
+        ObjectNode json = find(getQueryStr);
+        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<Map<String, KillChainPhase>>() {
+        });
         Set<KillChainPhase> result = new HashSet<>(test.values());
 
         return result;
