@@ -30,7 +30,7 @@ public class StixCoreObject {
     @JsonIgnore
     public static final String typeString = " spec_version;";
     private String specVersion;
-    
+
     public String getSpecVersion() {
         return specVersion;
     }

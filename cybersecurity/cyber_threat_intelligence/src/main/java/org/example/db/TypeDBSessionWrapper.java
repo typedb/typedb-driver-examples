@@ -37,6 +37,15 @@ public class TypeDBSessionWrapper {
     private final TypeDBClient client;
     private TypeDBSession session;
 
+    public TypeDBSessionWrapper(TypeDBClient client, AppConfiguration appConfiguration) {
+        this.appConfiguration = appConfiguration;
+        this.client = client;
+        if (this.client.databases().contains(appConfiguration.getDatabase())) {
+            session = this.client.session(appConfiguration.getDatabase(), TypeDBSession.Type.DATA,
+                    TypeDBOptions.core().infer(true));
+        }
+    }
+
     private Pair<String, String> extractPair(ConceptMap values) {
         var json = values.toJSON().get("attribute");
         var key = json.asObject().get("type").asString();
@@ -123,7 +132,6 @@ public class TypeDBSessionWrapper {
         }
         return rootNode;
     }
-
 
     public ObjectNode getListJSON(String query, String relName, String rolePlayers) {
         return getListJSON(query, relName, rolePlayers, false);
@@ -266,15 +274,6 @@ public class TypeDBSessionWrapper {
     public void newSession() {
         session = this.client.session(appConfiguration.getDatabase(), TypeDBSession.Type.DATA,
                 TypeDBOptions.core().infer(true));
-    }
-
-    public TypeDBSessionWrapper(TypeDBClient client, AppConfiguration appConfiguration) {
-        this.appConfiguration = appConfiguration;
-        this.client = client;
-        if (this.client.databases().contains(appConfiguration.getDatabase())) {
-            session = this.client.session(appConfiguration.getDatabase(), TypeDBSession.Type.DATA,
-                    TypeDBOptions.core().infer(true));
-        }
     }
 
     private String removeLastChar(String str) {

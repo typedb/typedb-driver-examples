@@ -37,6 +37,7 @@ public class Sighting extends StixCoreRelationship {
 
     private Double count;
     private String summary;
+
     public Date getFirstSeen() {
         return firstSeen;
     }

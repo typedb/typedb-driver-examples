@@ -39,7 +39,6 @@ public class AttributedTo {
     private Date modified;
 
 
-
     public String getSpecVersion() {
         return specVersion;
     }
