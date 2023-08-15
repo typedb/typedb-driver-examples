@@ -19,9 +19,10 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.object;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.stix.StixDomainObject;
 
 public class Identity extends StixDomainObject {
     @JsonIgnore

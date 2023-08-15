@@ -19,9 +19,33 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.stix.ext;
 
-public class System extends Identity {
-    public System() {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.Date;
+
+public class StixSubObject {
+
+    @JsonIgnore
+    public static final String typeString = "";
+
+    private Date created;
+    private Date modified;
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
     }
 }

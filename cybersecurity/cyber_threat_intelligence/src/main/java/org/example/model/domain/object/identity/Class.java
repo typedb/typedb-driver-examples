@@ -19,23 +19,11 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.object.identity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.object.Identity;
 
-public class StixCoreObject {
-    @JsonIgnore
-    public static final String typeList = "";
-
-    @JsonIgnore
-    public static final String typeString = " spec_version;";
-    private String specVersion;
-
-    public String getSpecVersion() {
-        return specVersion;
-    }
-
-    public void setSpecVersion(String specVersion) {
-        this.specVersion = specVersion;
+public class Class extends Identity {
+    public Class() {
     }
 }

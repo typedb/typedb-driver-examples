@@ -22,7 +22,7 @@
 package org.example.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.Indicates;
+import org.example.model.domain.relationship.Indicates;
 
 public class IndicatesDAO {
     protected static final String INDICATES_MATCH =

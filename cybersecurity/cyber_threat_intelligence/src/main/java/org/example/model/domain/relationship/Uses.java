@@ -19,14 +19,16 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.stix.StixCoreRelationship;
 
-public class CreatedBy {
+public class Uses extends StixCoreRelationship {
     @JsonIgnore
-    public static final String typeString = "";
+    public static final String typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    public static final String rolePlayers = " creator; created;";
+    public static final String rolePlayers = " used_by; used;";
+
 }

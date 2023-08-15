@@ -19,52 +19,14 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Date;
-
-public class AttributedTo {
+public class KillChainPhases {
     @JsonIgnore
-    public static final String typeString = " stix_id; spec_version;";
-
+    public static final String typeString = "";
     @JsonIgnore
-    public static final String rolePlayers = " attributing; attributed;";
-
-    private String stixId;
-    private String specVersion;
-    private Date created;
-
-    private Date modified;
-
-
-    public String getSpecVersion() {
-        return specVersion;
-    }
-
-    public String getStixId() {
-        return stixId;
-    }
-
-    public void setStixId(String stixId) {
-        this.stixId = stixId;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getModified() {
-        return modified;
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
+    public static final String rolePlayers = " using; used;";
 
 }

@@ -19,9 +19,11 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.object.identity;
 
-public class IdUnknown extends Identity {
-    public IdUnknown() {
+import org.example.model.domain.object.Identity;
+
+public class Group extends Identity {
+    public Group() {
     }
 }

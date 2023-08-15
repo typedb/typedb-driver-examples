@@ -19,42 +19,31 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.stix;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
+import java.util.Set;
 
-public class StixCoreRelationship {
-    public static final String typeString = " stix_id; stix_version; stix_type;";
+public class StixDomainObject extends StixCoreObject {
 
-    private String specVersion;
-    private String stixId;
-    private String stixType;
+    @JsonIgnore
+    public static final String typeList = StixCoreObject.typeList + " labels;";
+    @JsonIgnore
+    public static final String typeString = StixCoreObject.typeString + " labels; langs;";
+
     private Date created;
+
     private Date modified;
 
-    public String getSpecVersion() {
-        return specVersion;
-    }
+    private Boolean revoked;
 
-    public void setSpecVersion(String specVersion) {
-        this.specVersion = specVersion;
-    }
+    private Set<String> labels;
 
-    public String getStixId() {
-        return stixId;
-    }
+    private int confidence;
 
-    public void setStixId(String stixId) {
-        this.stixId = stixId;
-    }
-
-    public String getStixType() {
-        return stixType;
-    }
-
-    public void setStixType(String stixType) {
-        this.stixType = stixType;
-    }
+    private String langs;
 
     public Date getCreated() {
         return created;
@@ -70,5 +59,37 @@ public class StixCoreRelationship {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    public Boolean getRevoked() {
+        return revoked;
+    }
+
+    public void setRevoked(Boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public Set<String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Set<String> labels) {
+        this.labels = labels;
+    }
+
+    public int getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(int confidence) {
+        this.confidence = confidence;
+    }
+
+    public String getLangs() {
+        return langs;
+    }
+
+    public void setLangs(String langs) {
+        this.langs = langs;
     }
 }

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.ThreatActor;
+import org.example.model.domain.object.ThreatActor;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -60,10 +60,10 @@ public class ThreatActorDAO {
 
         String getQueryStr = "match " + TA_MATCH + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
+        Map<String, ThreatActor> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
-        return new HashSet<>(test.values());
+        return new HashSet<>(result.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -92,10 +92,10 @@ public class ThreatActorDAO {
         System.out.println(getQueryStr);
 
         ObjectNode json = find(getQueryStr);
-        Map<String, ThreatActor> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
+        Map<String, ThreatActor> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
-        return new HashSet<>(test.values());
+        return new HashSet<>(result.values());
     }
 
 

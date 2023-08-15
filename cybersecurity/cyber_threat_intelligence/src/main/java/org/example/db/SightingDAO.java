@@ -22,7 +22,7 @@
 package org.example.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.Sighting;
+import org.example.model.domain.relationship.Sighting;
 
 public class SightingDAO {
     protected static final String SIGHTING_MATCH =

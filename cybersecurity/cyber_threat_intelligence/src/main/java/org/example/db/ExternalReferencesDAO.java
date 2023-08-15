@@ -23,7 +23,7 @@ package org.example.db;
 
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.ExternalReferences;
+import org.example.model.domain.relationship.ext.ExternalReferences;
 
 public class ExternalReferencesDAO {
     protected static final String EXTERNAL_REFERENCES_MATCH =

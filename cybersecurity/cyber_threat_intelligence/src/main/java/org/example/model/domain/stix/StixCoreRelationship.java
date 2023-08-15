@@ -19,19 +19,42 @@
  * under the License.
  */
 
-package org.example.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package org.example.model.domain.stix;
 
 import java.util.Date;
 
-public class StixSubObject {
+public class StixCoreRelationship {
+    public static final String typeString = " stix_id; stix_version; stix_type;";
 
-    @JsonIgnore
-    public static final String typeString = "";
-
+    private String specVersion;
+    private String stixId;
+    private String stixType;
     private Date created;
     private Date modified;
+
+    public String getSpecVersion() {
+        return specVersion;
+    }
+
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
+    }
+
+    public String getStixId() {
+        return stixId;
+    }
+
+    public void setStixId(String stixId) {
+        this.stixId = stixId;
+    }
+
+    public String getStixType() {
+        return stixType;
+    }
+
+    public void setStixType(String stixType) {
+        this.stixType = stixType;
+    }
 
     public Date getCreated() {
         return created;

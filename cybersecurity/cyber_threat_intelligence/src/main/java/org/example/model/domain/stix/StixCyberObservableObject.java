@@ -19,55 +19,27 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Date;
-
-public class Sighting extends StixCoreRelationship {
-    @JsonIgnore
-    public static final String typeString = StixCoreRelationship.typeString + " summary;";
+public class StixCyberObservableObject extends StixCoreObject {
 
     @JsonIgnore
-    public static final String rolePlayers = " sighting_of; observed_data;";
+    public static final String typeList = StixCoreObject.typeList;
+    @JsonIgnore
+    public static final String typeString = StixCoreObject.typeString + " defanged;";
 
-    private Date firstSeen;
-    private Date lastSeen;
+    private String defanged;
 
-    private Double count;
-    private String summary;
-
-    public Date getFirstSeen() {
-        return firstSeen;
+    public StixCyberObservableObject() {
     }
 
-    public void setFirstSeen(Date firstSeen) {
-        this.firstSeen = firstSeen;
+    public String getDefanged() {
+        return defanged;
     }
 
-    public Date getLastSeen() {
-        return lastSeen;
+    public void setDefanged(String defanged) {
+        this.defanged = defanged;
     }
-
-    public void setLastSeen(Date lastSeen) {
-        this.lastSeen = lastSeen;
-    }
-
-    public Double getCount() {
-        return count;
-    }
-
-    public void setCount(Double count) {
-        this.count = count;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
 }

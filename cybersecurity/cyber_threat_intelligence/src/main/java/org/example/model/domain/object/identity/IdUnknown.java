@@ -19,15 +19,11 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.object.identity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.object.Identity;
 
-public class Targets extends StixCoreRelationship {
-    @JsonIgnore
-    public static final String typeString = StixCoreRelationship.typeString;
-
-    @JsonIgnore
-    public static final String rolePlayers = " targeting; targeted;";
-
+public class IdUnknown extends Identity {
+    public IdUnknown() {
+    }
 }

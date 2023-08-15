@@ -19,15 +19,11 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.object.identity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.object.Identity;
 
-public class ExternalReferences {
-    @JsonIgnore
-    public static final String typeString = "";
-
-    @JsonIgnore
-    public static final String rolePlayers = " referencing; referenced;";
-
+public class System extends Identity {
+    public System() {
+    }
 }

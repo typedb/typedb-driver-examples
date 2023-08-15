@@ -23,7 +23,7 @@ package org.example.db;
 
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.Impersonates;
+import org.example.model.domain.relationship.Impersonates;
 
 public class ImpersonatesDAO {
     protected static final String IMPERSONATES_MATCH =

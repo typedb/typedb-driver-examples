@@ -19,16 +19,16 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.stix.StixCoreRelationship;
 
-public class Indicates extends StixCoreRelationship {
-
+public class Impersonates extends StixCoreRelationship {
     @JsonIgnore
     public static final String typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    public static final String rolePlayers = " indicating; indicated;";
+    public static final String rolePlayers = " impersonating; impersonated;";
 
 }

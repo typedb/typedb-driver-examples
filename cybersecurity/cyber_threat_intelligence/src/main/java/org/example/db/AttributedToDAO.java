@@ -22,7 +22,7 @@
 package org.example.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.AttributedTo;
+import org.example.model.domain.relationship.ext.AttributedTo;
 
 public class AttributedToDAO {
     protected static final String ATTRIBUTED_TO_MATCH =

@@ -19,25 +19,52 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Hashes {
+import java.util.Date;
+
+public class AttributedTo {
     @JsonIgnore
-    public static final String typeString = " hash_algorithm;";
+    public static final String typeString = " stix_id; spec_version;";
 
     @JsonIgnore
-    public static final String rolePlayers = " hash_value; hashes_owner;";
+    public static final String rolePlayers = " attributing; attributed;";
 
-    private String hashAlgorithm;
+    private String stixId;
+    private String specVersion;
+    private Date created;
+
+    private Date modified;
 
 
-    public String getHashAlgorithm() {
-        return hashAlgorithm;
+    public String getSpecVersion() {
+        return specVersion;
     }
 
-    public void setHashAlgorithm(String hashAlgorithm) {
-        this.hashAlgorithm = hashAlgorithm;
+    public String getStixId() {
+        return stixId;
     }
+
+    public void setStixId(String stixId) {
+        this.stixId = stixId;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
 }

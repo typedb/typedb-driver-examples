@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.Class;
+import org.example.model.domain.object.identity.Class;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -59,10 +59,10 @@ public class ClassDAO {
 
         String getQueryStr = "match " + CLASS_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, Class> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
+        Map<String, Class> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
-        return new HashSet<>(test.values());
+        return new HashSet<>(result.values());
     }
 
     public ObjectNode search(String type, String name) {
@@ -89,10 +89,10 @@ public class ClassDAO {
         String getQueryStr = "match " + CLASS_MATCH + search + " group $id;";
 
         ObjectNode json = find(getQueryStr);
-        Map<String, Class> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
+        Map<String, Class> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
-        return new HashSet<>(test.values());
+        return new HashSet<>(result.values());
     }
 
 

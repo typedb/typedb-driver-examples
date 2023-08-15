@@ -22,7 +22,7 @@
 package org.example.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.Hashes;
+import org.example.model.domain.relationship.ext.Hashes;
 
 public class HashesDAO {
     protected static final String HASHES_MATCH =

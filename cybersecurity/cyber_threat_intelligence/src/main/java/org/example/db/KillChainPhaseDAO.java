@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.KillChainPhase;
+import org.example.model.domain.stix.ext.KillChainPhase;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -60,10 +60,10 @@ public class KillChainPhaseDAO {
 
         String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
+        Map<String, KillChainPhase> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
-        return new HashSet<>(test.values());
+        return new HashSet<>(result.values());
     }
 
     public ObjectNode search(String attrType, String attrName) {
@@ -91,10 +91,10 @@ public class KillChainPhaseDAO {
 
         String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
-        Map<String, KillChainPhase> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
+        Map<String, KillChainPhase> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
-        return new HashSet<>(test.values());
+        return new HashSet<>(result.values());
     }
 
 

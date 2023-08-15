@@ -19,9 +19,25 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.relationship.ext;
 
-public class Class extends Identity {
-    public Class() {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class Hashes {
+    @JsonIgnore
+    public static final String typeString = " hash_algorithm;";
+
+    @JsonIgnore
+    public static final String rolePlayers = " hash_value; hashes_owner;";
+
+    private String hashAlgorithm;
+
+
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
     }
 }

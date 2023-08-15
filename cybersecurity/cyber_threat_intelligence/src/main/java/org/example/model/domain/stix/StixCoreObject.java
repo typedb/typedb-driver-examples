@@ -19,27 +19,23 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class StixCyberObservableObject extends StixCoreObject {
+public class StixCoreObject {
+    @JsonIgnore
+    public static final String typeList = "";
 
     @JsonIgnore
-    public static final String typeList = StixCoreObject.typeList;
-    @JsonIgnore
-    public static final String typeString = StixCoreObject.typeString + " defanged;";
+    public static final String typeString = " spec_version;";
+    private String specVersion;
 
-    private String defanged;
-
-    public StixCyberObservableObject() {
+    public String getSpecVersion() {
+        return specVersion;
     }
 
-    public String getDefanged() {
-        return defanged;
-    }
-
-    public void setDefanged(String defanged) {
-        this.defanged = defanged;
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
     }
 }

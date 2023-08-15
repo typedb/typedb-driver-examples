@@ -22,7 +22,7 @@
 package org.example.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.KillChainPhases;
+import org.example.model.domain.relationship.ext.KillChainPhases;
 
 public class KillChainPhasesDAO {
     protected static final String KILL_CHAIN_PHASES_MATCH =

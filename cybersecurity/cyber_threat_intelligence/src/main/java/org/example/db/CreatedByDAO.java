@@ -22,7 +22,7 @@
 package org.example.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.example.model.CreatedBy;
+import org.example.model.domain.relationship.ext.CreatedBy;
 
 public class CreatedByDAO {
     protected static final String CREATED_BY_MATCH =

@@ -19,9 +19,10 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.observable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.stix.StixCyberObservableObject;
 
 import java.util.Date;
 

@@ -19,30 +19,14 @@
  * under the License.
  */
 
-package org.example.model;
+package org.example.model.domain.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class KillChainPhase extends StixSubObject {
+public class CreatedBy {
     @JsonIgnore
-    public static final String typeString = StixSubObject.typeString + " kill_chain_name; kill_chain_phase_name;";
+    public static final String typeString = "";
 
-    private String killChainName;
-    private String killChainPhaseName;
-
-    public String getKillChainName() {
-        return killChainName;
-    }
-
-    public void setKillChainName(String killChainName) {
-        this.killChainName = killChainName;
-    }
-
-    public String getKillChainPhaseName() {
-        return killChainPhaseName;
-    }
-
-    public void setKillChainPhaseName(String killChainPhaseName) {
-        this.killChainPhaseName = killChainPhaseName;
-    }
+    @JsonIgnore
+    public static final String rolePlayers = " creator; created;";
 }
