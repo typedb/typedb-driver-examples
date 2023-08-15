@@ -29,10 +29,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 //@EnableConfigurationProperties(AppConfiguration.class)
 public class Main {
-
-    @Autowired
-    private AppConfiguration appConfiguration;
-
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
