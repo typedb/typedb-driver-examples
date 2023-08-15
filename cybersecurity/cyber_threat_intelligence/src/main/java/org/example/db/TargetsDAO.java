@@ -29,7 +29,7 @@ public class TargetsDAO {
     protected static final String TARGETS_MATCH =
             "$ta (targeting: $AAA, targeted: $BBB) isa targets, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private static final String nameRel = "targets";
+    private static final String NAME_REL = "targets";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -41,7 +41,7 @@ public class TargetsDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getRelJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

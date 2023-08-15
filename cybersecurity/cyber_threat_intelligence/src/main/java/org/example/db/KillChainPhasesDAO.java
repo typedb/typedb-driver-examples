@@ -27,7 +27,7 @@ import org.example.model.KillChainPhases;
 public class KillChainPhasesDAO {
     protected static final String KILL_CHAIN_PHASES_MATCH =
             "$ta (using: $AAA, used: $BBB) isa kill_chain_phases;";
-    private static final String nameRel = "kill_chain_phases";
+    private static final String NAME_REL = "kill_chain_phases";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -40,7 +40,7 @@ public class KillChainPhasesDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getListJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

@@ -28,7 +28,7 @@ public class AttributedToDAO {
     protected static final String ATTRIBUTED_TO_MATCH =
             "$ta (attributed: $AAA, attributing: $BBB) isa attributed_to, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private static final String nameRel = "attributed_to";
+    private static final String NAME_REL = "attributed_to";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -41,7 +41,7 @@ public class AttributedToDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getRelJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

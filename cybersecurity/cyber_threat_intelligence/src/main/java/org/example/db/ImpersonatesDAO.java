@@ -29,7 +29,7 @@ public class ImpersonatesDAO {
     protected static final String IMPERSONATES_MATCH =
             "$ta (impersonating: $AAA, impersonated: $BBB) isa impersonates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private static final String nameRel = "impersonates";
+    private static final String NAME_REL = "impersonates";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -42,7 +42,7 @@ public class ImpersonatesDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getRelJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

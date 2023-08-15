@@ -28,7 +28,7 @@ public class IndicatesDAO {
     protected static final String INDICATES_MATCH =
             "$ta (indicating: $AAA, indicated: $BBB) isa indicates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private static final String nameRel = "indicates";
+    private static final String NAME_REL = "indicates";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -41,7 +41,7 @@ public class IndicatesDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getRelJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

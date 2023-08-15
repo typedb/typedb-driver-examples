@@ -28,7 +28,7 @@ import org.example.model.ExternalReferences;
 public class ExternalReferencesDAO {
     protected static final String EXTERNAL_REFERENCES_MATCH =
             "$ta (referencing: $AAA, referenced: $BBB) isa external_references;";
-    private static final String nameRel = "external_references";
+    private static final String NAME_REL = "external_references";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -40,7 +40,7 @@ public class ExternalReferencesDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getListJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

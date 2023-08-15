@@ -27,7 +27,7 @@ import org.example.model.CreatedBy;
 public class CreatedByDAO {
     protected static final String CREATED_BY_MATCH =
             "$ta (creator: $AAA, created: $BBB) isa created_by;";
-    private static final String nameRel = "created_by";
+    private static final String NAME_REL = "created_by";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -40,7 +40,7 @@ public class CreatedByDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getListJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

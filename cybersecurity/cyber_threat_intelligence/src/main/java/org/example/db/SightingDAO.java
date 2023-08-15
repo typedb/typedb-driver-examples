@@ -28,7 +28,7 @@ public class SightingDAO {
     protected static final String SIGHTING_MATCH =
             "$ta (sighting_of: $AAA, observed_data: $BBB) isa sighting, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private static final String nameRel = "sighting";
+    private static final String NAME_REL = "sighting";
     private final TypeDBSessionWrapper db;
     private final String typeString;
     private final String rolePlayers;
@@ -41,7 +41,7 @@ public class SightingDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getRelJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class IdUnknownDAO {
-    protected static final String IDUNKNOWN_MATCH =
+    protected static final String ID_UNKNOWN_MATCH =
             "  $idUnknown isa id_unknown, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    TypeDBSessionWrapper db;
-    String typeString;
+    private final TypeDBSessionWrapper db;
+    private final String typeString;
 
 
     public IdUnknownDAO(TypeDBSessionWrapper db) {
@@ -50,7 +50,7 @@ public class IdUnknownDAO {
     }
 
     public ObjectNode findAll() {
-        var getQueryStr = "match " + IDUNKNOWN_MATCH + "group $id; ";
+        var getQueryStr = "match " + ID_UNKNOWN_MATCH + "group $id; ";
         return find(getQueryStr);
     }
 
@@ -58,7 +58,7 @@ public class IdUnknownDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String getQueryStr = "match " + IDUNKNOWN_MATCH + "group $id;";
+        String getQueryStr = "match " + ID_UNKNOWN_MATCH + "group $id;";
         ObjectNode json = find(getQueryStr);
         Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
@@ -73,7 +73,7 @@ public class IdUnknownDAO {
         }
 
         String search = "$idUnknown has " + attrType + " = " + attrName + ";";
-        var getQueryStr = "match " + IDUNKNOWN_MATCH + search + "group $id;";
+        var getQueryStr = "match " + ID_UNKNOWN_MATCH + search + "group $id;";
 
         return find(getQueryStr);
     }
@@ -89,7 +89,7 @@ public class IdUnknownDAO {
 
         String search = "$idUnknown has " + attrType + " = " + attrName + ";";
 
-        String getQueryStr = "match " + IDUNKNOWN_MATCH + search + " group $id;";
+        String getQueryStr = "match " + ID_UNKNOWN_MATCH + search + " group $id;";
         ObjectNode json = find(getQueryStr);
         Map<String, IdUnknown> test = objectMapper.readValue(json.toString(), new TypeReference<>() {
         });

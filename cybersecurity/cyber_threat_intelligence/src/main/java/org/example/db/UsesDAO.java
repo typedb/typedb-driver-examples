@@ -28,7 +28,7 @@ public class UsesDAO {
     protected static final String USES_MATCH =
             "$ta (used_by: $AAA, used: $BBB) isa uses, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    private static final String nameRel = "uses";
+    private static final String NAME_REL = "uses";
 
     private final TypeDBSessionWrapper db;
     private final String typeString;
@@ -42,7 +42,7 @@ public class UsesDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getRelJSON(getQueryStr, nameRel, rolePlayers);
+        return db.getRelJSON(getQueryStr, NAME_REL, rolePlayers);
     }
 
     public ObjectNode findAll() {

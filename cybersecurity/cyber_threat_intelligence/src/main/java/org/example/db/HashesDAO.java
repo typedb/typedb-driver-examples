@@ -27,7 +27,7 @@ import org.example.model.Hashes;
 public class HashesDAO {
     protected static final String HASHES_MATCH =
             "$ta (hash_value: $AAA, hashes_owner: $BBB) isa hashes, has $attribute;";
-    private static final String nameRel = "hashes";
+    private static final String NAME_REL = "hashes";
     private final TypeDBSessionWrapper db;
     private final String rolePlayers;
 
@@ -37,7 +37,7 @@ public class HashesDAO {
     }
 
     private ObjectNode find(String getQueryStr) {
-        return db.getListAttrJSON(getQueryStr, nameRel, rolePlayers, true);
+        return db.getListAttrJSON(getQueryStr, NAME_REL, rolePlayers, true);
     }
 
     public ObjectNode findAll() {
