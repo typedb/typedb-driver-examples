@@ -26,7 +26,7 @@ import org.example.model.Hashes;
 
 public class HashesDAO {
     protected static final String HASHES_MATCH =
-            "$ta (hash_value: $AAA, hashes_owner: $BBB) isa hashes, has $attribute;";
+            "$ta (hash_value: $rp1, hashes_owner: $rp2) isa hashes, has $attribute;";
     private static final String NAME_REL = "hashes";
     private final TypeDBSessionWrapper db;
     private final String rolePlayers;

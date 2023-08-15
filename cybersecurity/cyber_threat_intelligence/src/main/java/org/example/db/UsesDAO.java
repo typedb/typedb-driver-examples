@@ -26,7 +26,7 @@ import org.example.model.Uses;
 
 public class UsesDAO {
     protected static final String USES_MATCH =
-            "$ta (used_by: $AAA, used: $BBB) isa uses, has stix_id $id, has $attribute;" +
+            "$ta (used_by: $rp1, used: $rp2) isa uses, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "uses";
 

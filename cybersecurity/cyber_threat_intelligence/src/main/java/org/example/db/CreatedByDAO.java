@@ -26,7 +26,7 @@ import org.example.model.CreatedBy;
 
 public class CreatedByDAO {
     protected static final String CREATED_BY_MATCH =
-            "$ta (creator: $AAA, created: $BBB) isa created_by;";
+            "$ta (creator: $rp1, created: $rp2) isa created_by;";
     private static final String NAME_REL = "created_by";
     private final TypeDBSessionWrapper db;
     private final String typeString;

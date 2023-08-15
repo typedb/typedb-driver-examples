@@ -27,7 +27,7 @@ import org.example.model.Targets;
 
 public class TargetsDAO {
     protected static final String TARGETS_MATCH =
-            "$ta (targeting: $AAA, targeted: $BBB) isa targets, has stix_id $id, has $attribute;" +
+            "$ta (targeting: $rp1, targeted: $rp2) isa targets, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "targets";
     private final TypeDBSessionWrapper db;

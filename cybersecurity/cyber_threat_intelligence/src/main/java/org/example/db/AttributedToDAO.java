@@ -26,7 +26,7 @@ import org.example.model.AttributedTo;
 
 public class AttributedToDAO {
     protected static final String ATTRIBUTED_TO_MATCH =
-            "$ta (attributed: $AAA, attributing: $BBB) isa attributed_to, has stix_id $id, has $attribute;" +
+            "$ta (attributed: $rp1, attributing: $rp2) isa attributed_to, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "attributed_to";
     private final TypeDBSessionWrapper db;

@@ -215,7 +215,7 @@ public class TypeDBSessionWrapper {
                         var dbResults2 = readTx.query().matchGroup(query);
                         dbResults2.forEach(w -> {
                             w.conceptMaps().forEach(m -> {
-                                String value3 = m.map().get("AAA").asAttribute().toString();
+                                String value3 = m.map().get("rp1").asAttribute().toString();
                                 value3 = removeLastChar(value3.split(":")[1]);
                                 childNode.put(rolePlayersTmp[0], value3);
 

@@ -26,7 +26,7 @@ import org.example.model.KillChainPhases;
 
 public class KillChainPhasesDAO {
     protected static final String KILL_CHAIN_PHASES_MATCH =
-            "$ta (using: $AAA, used: $BBB) isa kill_chain_phases;";
+            "$ta (using: $rp1, used: $rp2) isa kill_chain_phases;";
     private static final String NAME_REL = "kill_chain_phases";
     private final TypeDBSessionWrapper db;
     private final String typeString;

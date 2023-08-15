@@ -26,7 +26,7 @@ import org.example.model.Indicates;
 
 public class IndicatesDAO {
     protected static final String INDICATES_MATCH =
-            "$ta (indicating: $AAA, indicated: $BBB) isa indicates, has stix_id $id, has $attribute;" +
+            "$ta (indicating: $rp1, indicated: $rp2) isa indicates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "indicates";
     private final TypeDBSessionWrapper db;

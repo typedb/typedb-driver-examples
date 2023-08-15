@@ -26,7 +26,7 @@ import org.example.model.Sighting;
 
 public class SightingDAO {
     protected static final String SIGHTING_MATCH =
-            "$ta (sighting_of: $AAA, observed_data: $BBB) isa sighting, has stix_id $id, has $attribute;" +
+            "$ta (sighting_of: $rp1, observed_data: $rp2) isa sighting, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "sighting";
     private final TypeDBSessionWrapper db;

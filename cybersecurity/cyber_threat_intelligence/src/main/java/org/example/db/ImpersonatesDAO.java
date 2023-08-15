@@ -27,7 +27,7 @@ import org.example.model.Impersonates;
 
 public class ImpersonatesDAO {
     protected static final String IMPERSONATES_MATCH =
-            "$ta (impersonating: $AAA, impersonated: $BBB) isa impersonates, has stix_id $id, has $attribute;" +
+            "$ta (impersonating: $rp1, impersonated: $rp2) isa impersonates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "impersonates";
     private final TypeDBSessionWrapper db;

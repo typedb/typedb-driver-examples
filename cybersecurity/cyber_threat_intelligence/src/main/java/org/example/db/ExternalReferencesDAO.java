@@ -27,7 +27,7 @@ import org.example.model.ExternalReferences;
 
 public class ExternalReferencesDAO {
     protected static final String EXTERNAL_REFERENCES_MATCH =
-            "$ta (referencing: $AAA, referenced: $BBB) isa external_references;";
+            "$ta (referencing: $rp1, referenced: $rp2) isa external_references;";
     private static final String NAME_REL = "external_references";
     private final TypeDBSessionWrapper db;
     private final String typeString;
