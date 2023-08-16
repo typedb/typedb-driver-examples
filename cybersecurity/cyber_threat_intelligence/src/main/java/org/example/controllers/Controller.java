@@ -87,7 +87,7 @@ public class Controller {
     @GetMapping(value = "/file", produces = "application/json")
     public ObjectNode getFileJSON() {
         FileDAO fileDAO = new FileDAO(wrapper);
-        return fileDAO.findALl();
+        return fileDAO.findAll();
     }
 
     @QueryMapping
@@ -483,14 +483,14 @@ public class Controller {
     @GetMapping(value = "/schema", produces = "application/json")
     public ObjectNode getSchema() {
         SchemaDAO schemaDAO = new SchemaDAO(wrapper);
-        return schemaDAO.getSchemaAllJSON();
+        return schemaDAO.getSchemaAll();
     }
 
     @QueryMapping
     @GetMapping(value = "/schema-current", produces = "application/json")
     public ObjectNode getSchemaCurrent() {
         SchemaDAO schemaDAO = new SchemaDAO(wrapper);
-        return schemaDAO.getSchemaCurrentJSON();
+        return schemaDAO.getSchemaCurrent();
     }
 
 }

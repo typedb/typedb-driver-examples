@@ -59,8 +59,7 @@ public class ThreatActorDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String getQueryStr = "match " + TA_MATCH + " group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = findAll();
         Map<String, ThreatActor> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
@@ -83,16 +82,8 @@ public class ThreatActorDAO {
     public Set<ThreatActor> searchBeans(String attrType, String attrName) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        if (typeString.contains(attrType)) {
-            attrName = "\"" + attrName + "\"";
-        }
 
-        String search = "$ta has " + attrType + " = " + attrName + ";";
-
-        String getQueryStr = "match " + TA_MATCH + search + " group $id;";
-        System.out.println(getQueryStr);
-
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = search(attrType, attrName);
         Map<String, ThreatActor> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 

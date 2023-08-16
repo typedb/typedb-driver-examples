@@ -35,7 +35,6 @@ public class AttributedToDAO {
     private final List<String> typeString;
     private final List<String> rolePlayers;
 
-
     public AttributedToDAO(TypeDBSessionWrapper db) {
         this.db = db;
         typeString = AttributedTo.typeString;

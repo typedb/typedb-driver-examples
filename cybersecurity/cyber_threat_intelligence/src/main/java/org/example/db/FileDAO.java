@@ -50,7 +50,7 @@ public class FileDAO {
         return db.getAllJSON(getQueryStr);
     }
 
-    public ObjectNode findALl() {
+    public ObjectNode findAll() {
         var getQueryStr = "match " + FILE_MATCH + "group $id; ";
         return find(getQueryStr);
     }
@@ -59,8 +59,7 @@ public class FileDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String getQueryStr = "match " + FILE_MATCH + "group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = findAll();
         Map<String, File> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
@@ -83,14 +82,7 @@ public class FileDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(attrType)) {
-            attrName = "\"" + attrName + "\"";
-        }
-
-        String search = "$file has " + attrType + " = " + attrName + ";";
-
-        String getQueryStr = "match " + FILE_MATCH + search + " group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = search(attrType, attrName);
         Map<String, File> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 

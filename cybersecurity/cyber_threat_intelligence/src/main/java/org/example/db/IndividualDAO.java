@@ -59,8 +59,7 @@ public class IndividualDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String getQueryStr = "match " + INDIVIDUAL_MATCH + "group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = findAll();
         Map<String, Individual> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
@@ -84,14 +83,7 @@ public class IndividualDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(attrType)) {
-            attrName = "\"" + attrName + "\"";
-        }
-
-        String search = "$individual has " + attrType + " = " + attrName + ";";
-
-        String getQueryStr = "match " + INDIVIDUAL_MATCH + search + " group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = search(attrType, attrName);
         Map<String, Individual> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 

@@ -59,8 +59,7 @@ public class KillChainPhaseDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + "group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = findAll();
         Map<String, KillChainPhase> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
@@ -84,14 +83,7 @@ public class KillChainPhaseDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(attrType)) {
-            attrName = "\"" + attrName + "\"";
-        }
-
-        String search = "$kill_chain_phase has " + attrType + " = " + attrName + ";";
-
-        String getQueryStr = "match " + KILL_CHAIN_PHASE_MATCH + search + " group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = search(attrType, attrName);
         Map<String, KillChainPhase> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 

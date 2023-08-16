@@ -59,8 +59,7 @@ public class SystemDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String getQueryStr = "match " + SYSTEM_MATCH + "group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = findAll();
         Map<String, System> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 
@@ -83,14 +82,7 @@ public class SystemDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(attrType)) {
-            attrName = "\"" + attrName + "\"";
-        }
-
-        String search = "$system has " + attrType + " = " + attrName + ";";
-
-        String getQueryStr = "match " + SYSTEM_MATCH + search + " group $id;";
-        ObjectNode json = find(getQueryStr);
+        ObjectNode json = search(attrType, attrName);
         Map<String, System> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
 

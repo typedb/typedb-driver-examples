@@ -36,11 +36,11 @@ public class SchemaDAO {
         return db.getSchemaJSON(query);
     }
 
-    public ObjectNode getSchemaAllJSON() {
+    public ObjectNode getSchemaAll() {
         return find(QUERY_ALL);
     }
 
-    public ObjectNode getSchemaCurrentJSON() {
+    public ObjectNode getSchemaCurrent() {
         return find(QUERY_CURRENT);
     }
 

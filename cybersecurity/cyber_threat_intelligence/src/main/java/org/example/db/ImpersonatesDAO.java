@@ -36,7 +36,6 @@ public class ImpersonatesDAO {
     private final List<String> typeString;
     private final List<String> rolePlayers;
 
-
     public ImpersonatesDAO(TypeDBSessionWrapper db) {
         this.db = db;
         typeString = Impersonates.typeString;
