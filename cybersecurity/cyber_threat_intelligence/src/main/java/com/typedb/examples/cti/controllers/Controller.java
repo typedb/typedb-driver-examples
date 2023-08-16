@@ -31,8 +31,6 @@ import com.typedb.examples.cti.model.domain.object.identity.*;
 import com.typedb.examples.cti.model.domain.observable.File;
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
-import org.example.db.*;
-import org.example.model.domain.object.identity.*;
 import com.typedb.examples.cti.model.domain.object.Indicator;
 import com.typedb.examples.cti.model.domain.object.Malware;
 import com.typedb.examples.cti.model.domain.object.identity.Class;
