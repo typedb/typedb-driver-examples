@@ -39,11 +39,14 @@ public class IndicatorDAO {
                     "$attribute isa! $j; ";
     private final TypeDBSessionWrapper db;
     private final List<String> typeString;
+    private final ObjectMapper objectMapper;
 
 
     public IndicatorDAO(TypeDBSessionWrapper db) {
         this.db = db;
         typeString = Indicator.typeString;
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -56,9 +59,6 @@ public class IndicatorDAO {
     }
 
     public Set<Indicator> findAllBeans() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         ObjectNode json = findAll();
         Map<String, Indicator> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
@@ -80,9 +80,6 @@ public class IndicatorDAO {
 
 
     public Set<Indicator> searchBeans(String attrType, String attrName) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         ObjectNode json = search(attrType, attrName);
         Map<String, Indicator> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });

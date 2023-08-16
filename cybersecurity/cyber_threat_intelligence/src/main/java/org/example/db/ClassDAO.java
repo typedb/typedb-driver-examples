@@ -39,10 +39,13 @@ public class ClassDAO {
                     "$attribute isa! $j; ";
     private final TypeDBSessionWrapper db;
     private final List<String> typeString;
+    private final ObjectMapper objectMapper;
 
     public ClassDAO(TypeDBSessionWrapper db) {
         this.db = db;
         typeString = Class.typeString;
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     private ObjectNode find(String getQueryStr) {
@@ -55,9 +58,6 @@ public class ClassDAO {
     }
 
     public Set<Class> findAllBeans() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         ObjectNode json = findAll();
         Map<String, Class> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
@@ -78,9 +78,6 @@ public class ClassDAO {
     }
 
     public Set<Class> searchBeans(String attrType, String attrName) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         ObjectNode json = search(attrType, attrName);
         Map<String, Class> result= objectMapper.readValue(json.toString(), new TypeReference<>() {
         });
