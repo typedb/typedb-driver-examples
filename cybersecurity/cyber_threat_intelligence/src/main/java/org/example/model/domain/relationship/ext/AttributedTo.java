@@ -23,24 +23,28 @@ package org.example.model.domain.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class AttributedTo {
     @JsonIgnore
-    public static final String typeString = " stix_id; spec_version;";
+    public static final List<String> typeString = Arrays.asList("stix_id", "spec_version");
 
     @JsonIgnore
-    public static final String rolePlayers = " attributing; attributed;";
-
+    public static final List<String> rolePlayers = Arrays.asList("attributing", "attributed");
     private String stixId;
     private String specVersion;
     private Date created;
-
     private Date modified;
 
 
     public String getSpecVersion() {
         return specVersion;
+    }
+
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
     }
 
     public String getStixId() {

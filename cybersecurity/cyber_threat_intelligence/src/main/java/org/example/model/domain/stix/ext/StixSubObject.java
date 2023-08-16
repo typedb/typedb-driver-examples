@@ -23,12 +23,14 @@ package org.example.model.domain.stix.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class StixSubObject {
 
     @JsonIgnore
-    public static final String typeString = "";
+    public static final List<String> typeString = new ArrayList<>();
 
     private Date created;
     private Date modified;

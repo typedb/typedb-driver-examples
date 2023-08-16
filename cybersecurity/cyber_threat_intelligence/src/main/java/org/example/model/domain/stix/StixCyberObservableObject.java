@@ -22,14 +22,20 @@
 package org.example.model.domain.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.collections.ListUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class StixCyberObservableObject extends StixCoreObject {
 
     @JsonIgnore
-    public static final String typeList = StixCoreObject.typeList;
+    public static final List<String> typeList = StixCoreObject.typeList;
     @JsonIgnore
-    public static final String typeString = StixCoreObject.typeString + " defanged;";
-
+    public static final List<String> typeString = Stream.of(StixCoreObject.typeString, List.of("defanged")
+        ).flatMap(List::stream).toList();
     private String defanged;
 
     public StixCyberObservableObject() {

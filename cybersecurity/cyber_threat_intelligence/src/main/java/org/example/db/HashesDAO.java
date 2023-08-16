@@ -24,12 +24,14 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.ext.Hashes;
 
+import java.util.List;
+
 public class HashesDAO {
     protected static final String HASHES_MATCH =
             "$ta (hash_value: $rp1, hashes_owner: $rp2) isa hashes, has $attribute;";
     private static final String NAME_REL = "hashes";
     private final TypeDBSessionWrapper db;
-    private final String rolePlayers;
+    private final List<String> rolePlayers;
 
     public HashesDAO(TypeDBSessionWrapper db) {
         this.db = db;

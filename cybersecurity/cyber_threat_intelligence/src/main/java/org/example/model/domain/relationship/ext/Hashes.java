@@ -23,12 +23,16 @@ package org.example.model.domain.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Hashes {
     @JsonIgnore
-    public static final String typeString = " hash_algorithm;";
+    public static final List<String> typeString = List.of("hash_algorithm");
 
     @JsonIgnore
-    public static final String rolePlayers = " hash_value; hashes_owner;";
+    public static final List<String> rolePlayers = Arrays.asList("hash_value", "hashes_owner");
 
     private String hashAlgorithm;
 

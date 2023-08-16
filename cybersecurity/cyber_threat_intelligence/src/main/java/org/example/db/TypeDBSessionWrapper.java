@@ -32,6 +32,8 @@ import com.vaticle.typedb.client.api.answer.ConceptMap;
 import com.vaticle.typedb.common.collection.Pair;
 import org.example.configuration.AppConfiguration;
 
+import java.util.List;
+
 public class TypeDBSessionWrapper {
     private final AppConfiguration appConfiguration;
     private final TypeDBClient client;
@@ -133,11 +135,11 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public ObjectNode getListJSON(String query, String relName, String rolePlayers) {
+    public ObjectNode getListJSON(String query, String relName, List<String> rolePlayers) {
         return getListJSON(query, relName, rolePlayers, false);
     }
 
-    public ObjectNode getListJSON(String query, String relName, String rolePlayers, boolean asAttribute) {
+    public ObjectNode getListJSON(String query, String relName, List<String> rolePlayers, boolean asAttribute) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
@@ -154,7 +156,7 @@ public class TypeDBSessionWrapper {
                     });
                 }
 
-                String[] rolePlayersTmp = rolePlayers.split(";");
+                String[] rolePlayersTmp = rolePlayers.toArray(new String[0]);
 
                 String queryBegin = "match $rel (";
                 for (int i = 0; i < rolePlayersTmp.length; i++) {
@@ -178,7 +180,7 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public ObjectNode getListAttrJSON(String query, String relName, String rolePlayers, boolean asAttribute) {
+    public ObjectNode getListAttrJSON(String query, String relName, List<String> rolePlayers, boolean asAttribute) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
@@ -195,7 +197,7 @@ public class TypeDBSessionWrapper {
                     });
                 }
 
-                String[] rolePlayersTmp = rolePlayers.split(";");
+                String[] rolePlayersTmp = rolePlayers.toArray(new String[0]);
 
                 String queryBegin = "match $rel (";
                 for (int i = 0; i < rolePlayersTmp.length; i++) {
@@ -234,7 +236,7 @@ public class TypeDBSessionWrapper {
         return rootNode;
     }
 
-    public ObjectNode getRelJSON(String query, String relName, String rolePlayers) {
+    public ObjectNode getRelJSON(String query, String relName, List<String> rolePlayers) {
         newSession();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
@@ -249,7 +251,7 @@ public class TypeDBSessionWrapper {
                     childNode.put(pair.first(), pair.second());
                 });
 
-                String[] rolePlayersTmp = rolePlayers.split(";");
+                String[] rolePlayersTmp = rolePlayers.toArray(new String[0]);
 
                 String queryBegin = "match $rel (";
                 for (int i = 0; i < rolePlayersTmp.length; i++) {

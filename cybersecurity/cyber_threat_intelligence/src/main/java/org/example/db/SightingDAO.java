@@ -24,14 +24,16 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.Sighting;
 
+import java.util.List;
+
 public class SightingDAO {
     protected static final String SIGHTING_MATCH =
             "$ta (sighting_of: $rp1, observed_data: $rp2) isa sighting, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "sighting";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public SightingDAO(TypeDBSessionWrapper db) {
@@ -51,7 +53,7 @@ public class SightingDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

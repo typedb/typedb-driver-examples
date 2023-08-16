@@ -24,14 +24,16 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.ext.AttributedTo;
 
+import java.util.List;
+
 public class AttributedToDAO {
     protected static final String ATTRIBUTED_TO_MATCH =
             "$ta (attributed: $rp1, attributing: $rp2) isa attributed_to, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "attributed_to";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public AttributedToDAO(TypeDBSessionWrapper db) {
@@ -51,7 +53,7 @@ public class AttributedToDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

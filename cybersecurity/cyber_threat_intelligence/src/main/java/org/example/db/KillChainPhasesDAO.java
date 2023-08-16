@@ -24,13 +24,15 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.ext.KillChainPhases;
 
+import java.util.List;
+
 public class KillChainPhasesDAO {
     protected static final String KILL_CHAIN_PHASES_MATCH =
             "$ta (using: $rp1, used: $rp2) isa kill_chain_phases;";
     private static final String NAME_REL = "kill_chain_phases";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public KillChainPhasesDAO(TypeDBSessionWrapper db) {
@@ -50,7 +52,7 @@ public class KillChainPhasesDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

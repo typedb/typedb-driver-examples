@@ -24,6 +24,8 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.Uses;
 
+import java.util.List;
+
 public class UsesDAO {
     protected static final String USES_MATCH =
             "$ta (used_by: $rp1, used: $rp2) isa uses, has stix_id $id, has $attribute;" +
@@ -31,8 +33,8 @@ public class UsesDAO {
     private static final String NAME_REL = "uses";
 
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public UsesDAO(TypeDBSessionWrapper db) {
@@ -52,7 +54,7 @@ public class UsesDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

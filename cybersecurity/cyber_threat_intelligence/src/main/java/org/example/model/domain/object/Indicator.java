@@ -24,12 +24,16 @@ package org.example.model.domain.object;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.model.domain.stix.StixDomainObject;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class Indicator extends StixDomainObject {
     @JsonIgnore
-    public static final String typeString = StixDomainObject.typeString + " name; description; pattern; pattern_type; pattern_version;";
-
+    public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
+            Arrays.asList("name", "description", "pattern", "pattern_type", "pattern_version")
+            ).flatMap(List::stream).toList();
     private String name;
     private String description;
     private String pattern;

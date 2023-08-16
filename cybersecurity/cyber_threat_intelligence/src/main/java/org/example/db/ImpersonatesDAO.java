@@ -25,14 +25,16 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.Impersonates;
 
+import java.util.List;
+
 public class ImpersonatesDAO {
     protected static final String IMPERSONATES_MATCH =
             "$ta (impersonating: $rp1, impersonated: $rp2) isa impersonates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "impersonates";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public ImpersonatesDAO(TypeDBSessionWrapper db) {
@@ -52,7 +54,7 @@ public class ImpersonatesDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

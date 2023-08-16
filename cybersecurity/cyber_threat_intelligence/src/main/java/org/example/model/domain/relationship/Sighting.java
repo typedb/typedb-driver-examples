@@ -24,14 +24,18 @@ package org.example.model.domain.relationship;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.model.domain.stix.StixCoreRelationship;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class Sighting extends StixCoreRelationship {
     @JsonIgnore
-    public static final String typeString = StixCoreRelationship.typeString + " summary;";
+    public static final List<String> typeString = Stream.of(StixCoreRelationship.typeString, List.of("summary")
+            ).flatMap(List::stream).toList();
 
     @JsonIgnore
-    public static final String rolePlayers = " sighting_of; observed_data;";
+    public static final List<String> rolePlayers = Arrays.asList("sighting_of", "observed_data");
 
     private Date firstSeen;
     private Date lastSeen;

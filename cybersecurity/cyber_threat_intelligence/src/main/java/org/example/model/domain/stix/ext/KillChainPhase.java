@@ -22,10 +22,16 @@
 package org.example.model.domain.stix.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.example.model.domain.stix.StixDomainObject;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class KillChainPhase extends StixSubObject {
     @JsonIgnore
-    public static final String typeString = StixSubObject.typeString + " kill_chain_name; kill_chain_phase_name;";
+    public static List<String> typeString = Stream.of(StixDomainObject.typeString,
+            Arrays.asList("kill_chain_name", "kill_chain_phase_name")).flatMap(List::stream).toList();
 
     private String killChainName;
     private String killChainPhaseName;

@@ -23,13 +23,17 @@ package org.example.model.domain.observable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.model.domain.stix.StixCyberObservableObject;
+import org.example.model.domain.stix.StixDomainObject;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class File extends StixCyberObservableObject {
     @JsonIgnore
-    public static final String typeString = StixCyberObservableObject.typeString + " name; name_enc; magic_number_hex; mime_type;";
-
+    public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
+            Arrays.asList("name", "name_enc", "magic_number_hex", "mime_type")).flatMap(List::stream).toList();
     private Integer size;
     private String name;
     private String nameEnc;

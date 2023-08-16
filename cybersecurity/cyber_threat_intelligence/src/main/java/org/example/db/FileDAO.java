@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.observable.File;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class FileDAO {
             "  $file isa file, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
+    private final List<String> typeString;
 
 
     public FileDAO(TypeDBSessionWrapper db) {
@@ -68,7 +69,7 @@ public class FileDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 
@@ -82,7 +83,7 @@ public class FileDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

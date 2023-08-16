@@ -24,13 +24,15 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.ext.CreatedBy;
 
+import java.util.List;
+
 public class CreatedByDAO {
     protected static final String CREATED_BY_MATCH =
             "$ta (creator: $rp1, created: $rp2) isa created_by;";
     private static final String NAME_REL = "created_by";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public CreatedByDAO(TypeDBSessionWrapper db) {
@@ -50,7 +52,7 @@ public class CreatedByDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

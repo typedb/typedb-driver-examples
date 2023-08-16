@@ -24,12 +24,17 @@ package org.example.model.domain.object;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.model.domain.stix.StixDomainObject;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class ThreatActor extends StixDomainObject {
     @JsonIgnore
-    public static final String typeString = StixDomainObject.typeString + " name; description; aliases; stix_role; goals; resource_level; primary_motivation; secondary_motivation; sophistication; personal_characteristics; roles; therat_actor_types;";
-
+    public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
+            Arrays.asList("name", "description", "aliases", "stix_role", "goals", "resource_level",
+            "primary_motivation", "secondary_motivation", "sophistication", "personal_characteristics",
+            "roles", "threat_actor_types")).flatMap(List::stream).toList();
     private String name;
     private String description;
     private String aliases;
@@ -46,10 +51,6 @@ public class ThreatActor extends StixDomainObject {
     private String threatActorTypes;
 
     public ThreatActor() {
-    }
-
-    public String getTypeString() {
-        return typeString;
     }
 
     public String getName() {

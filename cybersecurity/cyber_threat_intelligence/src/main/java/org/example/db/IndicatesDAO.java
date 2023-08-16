@@ -24,14 +24,16 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.Indicates;
 
+import java.util.List;
+
 public class IndicatesDAO {
     protected static final String INDICATES_MATCH =
             "$ta (indicating: $rp1, indicated: $rp2) isa indicates, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
     private static final String NAME_REL = "indicates";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
 
     public IndicatesDAO(TypeDBSessionWrapper db) {
@@ -51,7 +53,7 @@ public class IndicatesDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

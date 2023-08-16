@@ -23,12 +23,15 @@ package org.example.model.domain.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StixCoreObject {
     @JsonIgnore
-    public static final String typeList = "";
+    public static final List<String> typeList = new ArrayList<>();
 
     @JsonIgnore
-    public static final String typeString = " spec_version;";
+    public static final List<String> typeString = List.of("spec_version");
     private String specVersion;
 
     public String getSpecVersion() {

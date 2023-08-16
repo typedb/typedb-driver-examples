@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.object.Indicator;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,8 +37,8 @@ public class IndicatorDAO {
     protected static final String INDICATOR_MATCH =
             "  $indicator isa indicator, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
-    TypeDBSessionWrapper db;
-    String typeString;
+    private final TypeDBSessionWrapper db;
+    private final List<String> typeString;
 
 
     public IndicatorDAO(TypeDBSessionWrapper db) {
@@ -68,7 +69,7 @@ public class IndicatorDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 
@@ -83,7 +84,7 @@ public class IndicatorDAO {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 

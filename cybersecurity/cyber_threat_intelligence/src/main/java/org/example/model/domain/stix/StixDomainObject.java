@@ -23,15 +23,22 @@ package org.example.model.domain.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class StixDomainObject extends StixCoreObject {
 
     @JsonIgnore
-    public static final String typeList = StixCoreObject.typeList + " labels;";
+    public static final List<String> typeList = Stream.of(StixCoreObject.typeList, List.of("labels")
+        ).flatMap(List::stream).toList();
+
     @JsonIgnore
-    public static final String typeString = StixCoreObject.typeString + " labels; langs;";
+    public static final List<String> typeString = Stream.of(StixCoreObject.typeString, Arrays.asList("labels", "langs")
+        ).flatMap(List::stream).toList();
+
 
     private Date created;
 

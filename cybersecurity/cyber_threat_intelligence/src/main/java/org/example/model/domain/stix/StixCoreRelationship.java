@@ -21,11 +21,15 @@
 
 package org.example.model.domain.stix;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class StixCoreRelationship {
-    public static final String typeString = " stix_id; stix_version; stix_type;";
-
+    @JsonIgnore
+    public static final List<String> typeString = Arrays.asList("stix_id", "stix_version", "stix_type");
     private String specVersion;
     private String stixId;
     private String stixType;

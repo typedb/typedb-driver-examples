@@ -24,11 +24,15 @@ package org.example.model.domain.relationship;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.model.domain.stix.StixCoreRelationship;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Impersonates extends StixCoreRelationship {
     @JsonIgnore
-    public static final String typeString = StixCoreRelationship.typeString;
+    public static final List<String> typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    public static final String rolePlayers = " impersonating; impersonated;";
+    public static final List<String> rolePlayers = Arrays.asList("impersonating", "impersonated");
 
 }

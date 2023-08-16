@@ -23,10 +23,15 @@ package org.example.model.domain.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class KillChainPhases {
     @JsonIgnore
-    public static final String typeString = "";
+    public static final List<String> typeString = new ArrayList<>();
+
     @JsonIgnore
-    public static final String rolePlayers = " using; used;";
+    public static final List<String> rolePlayers = Arrays.asList("using", "used");
 
 }

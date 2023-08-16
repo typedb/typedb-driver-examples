@@ -24,9 +24,15 @@ package org.example.model.domain.object;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.model.domain.stix.StixDomainObject;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 public class Identity extends StixDomainObject {
     @JsonIgnore
-    public static final String typeString = StixDomainObject.typeString + " name; description; stix_role; identity_class; sector; contact_information;";
+    public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
+            Arrays.asList("name", "description", "stix_role", "identity_class", "sector",
+                    "contact_information")).flatMap(List::stream).toList();
     private String name;
     private String description;
     private String stixRole;

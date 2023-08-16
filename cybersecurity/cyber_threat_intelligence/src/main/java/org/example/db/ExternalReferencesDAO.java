@@ -25,13 +25,15 @@ package org.example.db;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.model.domain.relationship.ext.ExternalReferences;
 
+import java.util.List;
+
 public class ExternalReferencesDAO {
     protected static final String EXTERNAL_REFERENCES_MATCH =
             "$ta (referencing: $rp1, referenced: $rp2) isa external_references;";
     private static final String NAME_REL = "external_references";
     private final TypeDBSessionWrapper db;
-    private final String typeString;
-    private final String rolePlayers;
+    private final List<String> typeString;
+    private final List<String> rolePlayers;
 
     public ExternalReferencesDAO(TypeDBSessionWrapper db) {
         this.db = db;
@@ -50,7 +52,7 @@ public class ExternalReferencesDAO {
 
     public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + attrType + ";")) {
+        if (typeString.contains(attrType)) {
             attrName = "\"" + attrName + "\"";
         }
 
