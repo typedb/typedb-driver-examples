@@ -39,6 +39,9 @@ public class StixDomainObject extends StixCoreObject {
     public static final List<String> typeString = Stream.of(StixCoreObject.typeString, Arrays.asList("labels", "langs")
         ).flatMap(List::stream).toList();
 
+    @JsonIgnore
+    public static final String nameEnt = "stix_domain_object";
+
 
     private Date created;
 

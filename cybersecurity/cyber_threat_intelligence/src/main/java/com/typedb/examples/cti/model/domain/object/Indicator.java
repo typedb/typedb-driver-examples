@@ -34,6 +34,9 @@ public class Indicator extends StixDomainObject {
     public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
             Arrays.asList("name", "description", "pattern", "pattern_type", "pattern_version")
             ).flatMap(List::stream).toList();
+
+    @JsonIgnore
+    public static final String nameEnt = "indicator";
     private String name;
     private String description;
     private String pattern;

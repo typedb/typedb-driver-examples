@@ -32,6 +32,9 @@ public class StixSubObject {
     @JsonIgnore
     public static final List<String> typeString = new ArrayList<>();
 
+    @JsonIgnore
+    public static final String nameEnt = "stix_sub_object";
+
     private Date created;
     private Date modified;
 

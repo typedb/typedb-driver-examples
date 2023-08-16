@@ -33,6 +33,10 @@ public class AttributedTo {
 
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("attributing", "attributed");
+
+    @JsonIgnore
+    public static final String nameRel = "attributed_to";
+
     private String stixId;
     private String specVersion;
     private Date created;

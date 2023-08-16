@@ -34,6 +34,9 @@ public class Hashes {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("hash_value", "hashes_owner");
 
+    @JsonIgnore
+    public static final String nameRel = "hashes";
+
     private String hashAlgorithm;
 
 

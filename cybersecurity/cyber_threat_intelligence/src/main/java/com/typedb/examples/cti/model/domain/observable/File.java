@@ -34,6 +34,10 @@ public class File extends StixCyberObservableObject {
     @JsonIgnore
     public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
             Arrays.asList("name", "name_enc", "magic_number_hex", "mime_type")).flatMap(List::stream).toList();
+
+    @JsonIgnore
+    public static final String nameEnt = "file";
+
     private Integer size;
     private String name;
     private String nameEnc;

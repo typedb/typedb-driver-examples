@@ -33,4 +33,6 @@ public class CreatedBy {
 
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("creator", "created");
+    @JsonIgnore
+    public static final String nameRel = "created_by";
 }

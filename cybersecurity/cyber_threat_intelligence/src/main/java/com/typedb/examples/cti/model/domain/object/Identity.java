@@ -33,6 +33,9 @@ public class Identity extends StixDomainObject {
     public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
             Arrays.asList("name", "description", "stix_role", "identity_class", "sector",
                     "contact_information")).flatMap(List::stream).toList();
+
+    @JsonIgnore
+    public static final String nameEnt = "identity";
     private String name;
     private String description;
     private String stixRole;

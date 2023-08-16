@@ -22,6 +22,7 @@
 package com.typedb.examples.cti.model.domain.stix.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
 import com.typedb.examples.cti.model.domain.stix.StixDomainObject;
 
 import java.util.Arrays;
@@ -30,8 +31,11 @@ import java.util.stream.Stream;
 
 public class KillChainPhase extends StixSubObject {
     @JsonIgnore
-    public static List<String> typeString = Stream.of(StixDomainObject.typeString,
+    public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
             Arrays.asList("kill_chain_name", "kill_chain_phase_name")).flatMap(List::stream).toList();
+
+    @JsonIgnore
+    public static final String nameEnt = "kill_chain_phase";
 
     private String killChainName;
     private String killChainPhaseName;

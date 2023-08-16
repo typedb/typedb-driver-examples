@@ -34,4 +34,7 @@ public class Impersonates extends StixCoreRelationship {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("impersonating", "impersonated");
 
+    @JsonIgnore
+    public static final String nameRel = "impersonates";
+
 }

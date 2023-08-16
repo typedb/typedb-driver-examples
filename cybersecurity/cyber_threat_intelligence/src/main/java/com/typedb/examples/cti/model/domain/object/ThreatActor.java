@@ -35,6 +35,10 @@ public class ThreatActor extends StixDomainObject {
             Arrays.asList("name", "description", "aliases", "stix_role", "goals", "resource_level",
             "primary_motivation", "secondary_motivation", "sophistication", "personal_characteristics",
             "roles", "threat_actor_types")).flatMap(List::stream).toList();
+
+    @JsonIgnore
+    public static final String nameEnt = "threat_actor";
+
     private String name;
     private String description;
     private String aliases;

@@ -33,6 +33,9 @@ public class StixCyberObservableObject extends StixCoreObject {
     @JsonIgnore
     public static final List<String> typeString = Stream.of(StixCoreObject.typeString, List.of("defanged")
         ).flatMap(List::stream).toList();
+
+    @JsonIgnore
+    public static final String nameEnt = "stix_cyber_observable_object";
     private String defanged;
 
     public StixCyberObservableObject() {

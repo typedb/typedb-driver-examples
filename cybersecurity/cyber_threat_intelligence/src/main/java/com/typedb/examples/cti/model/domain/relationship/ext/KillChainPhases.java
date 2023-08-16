@@ -34,4 +34,7 @@ public class KillChainPhases {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("using", "used");
 
+    @JsonIgnore
+    public static final String nameRel = "kill_chain_phases";
+
 }

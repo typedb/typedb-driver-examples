@@ -34,5 +34,7 @@ public class Indicates extends StixCoreRelationship {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("indicating", "indicated");
 
+    @JsonIgnore
+    public static final String nameRel = "indicates";
 
 }

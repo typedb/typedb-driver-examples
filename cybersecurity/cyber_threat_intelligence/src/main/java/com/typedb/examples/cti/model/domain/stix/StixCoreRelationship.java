@@ -30,6 +30,9 @@ import java.util.List;
 public class StixCoreRelationship {
     @JsonIgnore
     public static final List<String> typeString = Arrays.asList("stix_id", "stix_version", "stix_type");
+
+    @JsonIgnore
+    public static final String nameEnt = "stix_core_relationship";
     private String specVersion;
     private String stixId;
     private String stixType;

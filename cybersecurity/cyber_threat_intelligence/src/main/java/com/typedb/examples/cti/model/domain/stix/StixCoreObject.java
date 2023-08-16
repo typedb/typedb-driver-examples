@@ -32,6 +32,9 @@ public class StixCoreObject {
 
     @JsonIgnore
     public static final List<String> typeString = List.of("spec_version");
+
+    @JsonIgnore
+    public static final String nameEnt = "stix_core_object";
     private String specVersion;
 
     public String getSpecVersion() {

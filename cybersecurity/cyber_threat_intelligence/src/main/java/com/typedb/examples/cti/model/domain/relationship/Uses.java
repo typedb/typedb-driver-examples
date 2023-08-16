@@ -34,4 +34,7 @@ public class Uses extends StixCoreRelationship {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("used_by", "used");
 
+    @JsonIgnore
+    public static final String nameRel = "uses";
+
 }

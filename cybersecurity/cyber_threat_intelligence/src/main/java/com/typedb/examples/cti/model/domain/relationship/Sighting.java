@@ -37,6 +37,9 @@ public class Sighting extends StixCoreRelationship {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("sighting_of", "observed_data");
 
+    @JsonIgnore
+    public static final String nameRel = "sighting";
+
     private Date firstSeen;
     private Date lastSeen;
 

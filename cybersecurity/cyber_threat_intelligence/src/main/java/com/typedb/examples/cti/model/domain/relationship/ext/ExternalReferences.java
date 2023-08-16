@@ -34,4 +34,7 @@ public class ExternalReferences {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("referencing", "referenced");
 
+    @JsonIgnore
+    public static final String nameRel = "external_references";
+
 }

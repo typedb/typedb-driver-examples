@@ -21,9 +21,14 @@
 
 package com.typedb.examples.cti.model.domain.object.identity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.typedb.examples.cti.model.domain.object.Identity;
 
 public class Group extends Identity {
+
+    @JsonIgnore
+    public static final String nameEnt = "group";
+
     public Group() {
     }
 }

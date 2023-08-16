@@ -34,4 +34,7 @@ public class Targets extends StixCoreRelationship {
     @JsonIgnore
     public static final List<String> rolePlayers = Arrays.asList("targeting", "targeted");
 
+    @JsonIgnore
+    public static final String nameRel = "targets";
+
 }
