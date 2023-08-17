@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.relationship.ext;
+package com.typedb.examples.cti.model.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

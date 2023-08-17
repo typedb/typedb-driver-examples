@@ -19,22 +19,16 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.relationship.ext;
+package com.typedb.examples.cti.model.domain.identity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.typedb.examples.cti.model.domain.Identity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class ExternalReferences {
-    @JsonIgnore
-    public static final List<String> typeString = new ArrayList<String>();
+public class IdUnknown extends Identity {
 
     @JsonIgnore
-    public static final List<String> rolePlayers = Arrays.asList("referencing", "referenced");
+    public static final String nameEnt = "id_unknown";
 
-    @JsonIgnore
-    public static final String nameRel = "external_references";
-
+    public IdUnknown() {
+    }
 }

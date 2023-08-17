@@ -19,16 +19,13 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.stix.ext;
+package com.typedb.examples.cti.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
-import com.typedb.examples.cti.model.domain.stix.StixDomainObject;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class KillChainPhase {
     @JsonIgnore

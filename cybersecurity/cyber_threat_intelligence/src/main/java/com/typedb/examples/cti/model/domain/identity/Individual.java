@@ -19,33 +19,16 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.stix;
+package com.typedb.examples.cti.model.domain.identity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.typedb.examples.cti.model.domain.Identity;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-public class StixCyberObservableObject extends StixCoreObject {
+public class Individual extends Identity {
 
     @JsonIgnore
-    public static final List<String> typeList = StixCoreObject.typeList;
-    @JsonIgnore
-    public static final List<String> typeString = Stream.of(StixCoreObject.typeString, List.of("defanged")
-        ).flatMap(List::stream).toList();
+    public static final String nameEnt = "individual";
 
-    @JsonIgnore
-    public static final String nameEnt = "stix_cyber_observable_object";
-    private String defanged;
-
-    public StixCyberObservableObject() {
-    }
-
-    public String getDefanged() {
-        return defanged;
-    }
-
-    public void setDefanged(String defanged) {
-        this.defanged = defanged;
+    public Individual() {
     }
 }

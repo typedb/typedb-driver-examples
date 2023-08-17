@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typedb.examples.cti.configuration.AppConfiguration;
 import com.typedb.examples.cti.db.EntityDAO;
 import com.typedb.examples.cti.db.TypeDBSessionWrapper;
-import com.typedb.examples.cti.model.domain.observable.File;
+import com.typedb.examples.cti.model.observable.File;
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
 import org.springframework.beans.factory.annotation.Autowired;

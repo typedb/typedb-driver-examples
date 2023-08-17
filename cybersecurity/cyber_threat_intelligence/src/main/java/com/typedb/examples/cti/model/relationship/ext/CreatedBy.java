@@ -19,16 +19,20 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.object.identity;
+package com.typedb.examples.cti.model.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.object.Identity;
 
-public class IdUnknown extends Identity {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class CreatedBy {
+    @JsonIgnore
+    public static final List<String> typeString = new ArrayList<>();
 
     @JsonIgnore
-    public static final String nameEnt = "id_unknown";
-
-    public IdUnknown() {
-    }
+    public static final List<String> rolePlayers = Arrays.asList("creator", "created");
+    @JsonIgnore
+    public static final String nameRel = "created_by";
 }

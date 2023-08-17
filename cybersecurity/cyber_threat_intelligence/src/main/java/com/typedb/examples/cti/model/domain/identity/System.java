@@ -19,16 +19,16 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.object.identity;
+package com.typedb.examples.cti.model.domain.identity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.object.Identity;
+import com.typedb.examples.cti.model.domain.Identity;
 
-public class Group extends Identity {
+public class System extends Identity {
 
     @JsonIgnore
-    public static final String nameEnt = "group";
+    public static final String nameEnt = "system";
 
-    public Group() {
+    public System() {
     }
 }

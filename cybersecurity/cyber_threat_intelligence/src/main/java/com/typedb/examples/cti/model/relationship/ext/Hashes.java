@@ -19,29 +19,32 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.stix;
+package com.typedb.examples.cti.model.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class StixCoreObject {
+public class Hashes {
     @JsonIgnore
-    public static final List<String> typeList = new ArrayList<>();
+    public static final List<String> typeString = List.of("hash_algorithm");
 
     @JsonIgnore
-    public static final List<String> typeString = List.of("spec_version");
+    public static final List<String> rolePlayers = Arrays.asList("hash_value", "hashes_owner");
 
     @JsonIgnore
-    public static final String nameEnt = "stix_core_object";
-    private String specVersion;
+    public static final String nameRel = "hashes";
 
-    public String getSpecVersion() {
-        return specVersion;
+    private String hashAlgorithm;
+
+
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
     }
 
-    public void setSpecVersion(String specVersion) {
-        this.specVersion = specVersion;
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
     }
 }

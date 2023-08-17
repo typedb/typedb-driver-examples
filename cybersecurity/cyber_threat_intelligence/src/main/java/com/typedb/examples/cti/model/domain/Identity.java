@@ -19,10 +19,10 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.object;
+package com.typedb.examples.cti.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixDomainObject;
+import com.typedb.examples.cti.model.stix.StixDomainObject;
 
 import java.util.Arrays;
 import java.util.List;

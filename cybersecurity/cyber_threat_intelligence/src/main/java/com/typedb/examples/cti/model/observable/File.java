@@ -19,11 +19,11 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.observable;
+package com.typedb.examples.cti.model.observable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixDomainObject;
-import com.typedb.examples.cti.model.domain.stix.StixCyberObservableObject;
+import com.typedb.examples.cti.model.stix.StixDomainObject;
+import com.typedb.examples.cti.model.stix.StixCyberObservableObject;
 
 import java.util.Arrays;
 import java.util.Date;

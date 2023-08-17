@@ -19,22 +19,33 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.relationship;
+package com.typedb.examples.cti.model.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class Uses extends StixCoreRelationship {
-    @JsonIgnore
-    public static final List<String> typeString = StixCoreRelationship.typeString;
-
-    @JsonIgnore
-    public static final List<String> rolePlayers = Arrays.asList("used_by", "used");
+public class StixCyberObservableObject extends StixCoreObject {
 
     @JsonIgnore
-    public static final String nameRel = "uses";
+    public static final List<String> typeList = StixCoreObject.typeList;
+    @JsonIgnore
+    public static final List<String> typeString = Stream.of(StixCoreObject.typeString, List.of("defanged")
+        ).flatMap(List::stream).toList();
 
+    @JsonIgnore
+    public static final String nameEnt = "stix_cyber_observable_object";
+    private String defanged;
+
+    public StixCyberObservableObject() {
+    }
+
+    public String getDefanged() {
+        return defanged;
+    }
+
+    public void setDefanged(String defanged) {
+        this.defanged = defanged;
+    }
 }

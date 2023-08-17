@@ -19,54 +19,22 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.stix;
+package com.typedb.examples.cti.model.relationship.ext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-public class StixCoreRelationship {
+public class ExternalReferences {
     @JsonIgnore
-    public static final List<String> typeString = Arrays.asList("stix_id", "stix_type");
+    public static final List<String> typeString = new ArrayList<String>();
 
     @JsonIgnore
-    public static final String nameEnt = "stix_core_relationship";
-    private String stixId;
-    private String stixType;
-    private Date created;
-    private Date modified;
+    public static final List<String> rolePlayers = Arrays.asList("referencing", "referenced");
 
-    public String getStixId() {
-        return stixId;
-    }
+    @JsonIgnore
+    public static final String nameRel = "external_references";
 
-    public void setStixId(String stixId) {
-        this.stixId = stixId;
-    }
-
-    public String getStixType() {
-        return stixType;
-    }
-
-    public void setStixType(String stixType) {
-        this.stixType = stixType;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getModified() {
-        return modified;
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
 }

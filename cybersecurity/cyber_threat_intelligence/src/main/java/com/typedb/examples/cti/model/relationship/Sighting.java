@@ -19,10 +19,10 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.relationship;
+package com.typedb.examples.cti.model.relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
+import com.typedb.examples.cti.model.stix.StixCoreRelationship;
 
 import java.util.Arrays;
 import java.util.Date;

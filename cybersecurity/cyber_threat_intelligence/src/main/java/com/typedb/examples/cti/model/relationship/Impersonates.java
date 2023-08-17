@@ -19,16 +19,22 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.object.identity;
+package com.typedb.examples.cti.model.relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.object.Identity;
+import com.typedb.examples.cti.model.stix.StixCoreRelationship;
 
-public class Individual extends Identity {
+import java.util.Arrays;
+import java.util.List;
+
+public class Impersonates extends StixCoreRelationship {
+    @JsonIgnore
+    public static final List<String> typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    public static final String nameEnt = "individual";
+    public static final List<String> rolePlayers = Arrays.asList("impersonating", "impersonated");
 
-    public Individual() {
-    }
+    @JsonIgnore
+    public static final String nameRel = "impersonates";
+
 }

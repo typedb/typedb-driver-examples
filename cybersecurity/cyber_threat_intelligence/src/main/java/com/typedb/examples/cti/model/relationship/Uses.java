@@ -19,22 +19,22 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.relationship;
+package com.typedb.examples.cti.model.relationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
+import com.typedb.examples.cti.model.stix.StixCoreRelationship;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Targets extends StixCoreRelationship {
+public class Uses extends StixCoreRelationship {
     @JsonIgnore
     public static final List<String> typeString = StixCoreRelationship.typeString;
 
     @JsonIgnore
-    public static final List<String> rolePlayers = Arrays.asList("targeting", "targeted");
+    public static final List<String> rolePlayers = Arrays.asList("used_by", "used");
 
     @JsonIgnore
-    public static final String nameRel = "targets";
+    public static final String nameRel = "uses";
 
 }

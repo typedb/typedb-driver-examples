@@ -19,7 +19,7 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.stix;
+package com.typedb.examples.cti.model.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

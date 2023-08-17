@@ -19,22 +19,29 @@
  * under the License.
  */
 
-package com.typedb.examples.cti.model.domain.relationship;
+package com.typedb.examples.cti.model.stix;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Indicates extends StixCoreRelationship {
+public class StixCoreObject {
     @JsonIgnore
-    public static final List<String> typeString = StixCoreRelationship.typeString;
+    public static final List<String> typeList = new ArrayList<>();
 
     @JsonIgnore
-    public static final List<String> rolePlayers = Arrays.asList("indicating", "indicated");
+    public static final List<String> typeString = List.of("spec_version");
 
     @JsonIgnore
-    public static final String nameRel = "indicates";
+    public static final String nameEnt = "stix_core_object";
+    private String specVersion;
 
+    public String getSpecVersion() {
+        return specVersion;
+    }
+
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
+    }
 }
