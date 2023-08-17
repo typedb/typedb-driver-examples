@@ -31,6 +31,7 @@ import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typedb.client.api.answer.ConceptMap;
 import com.vaticle.typedb.common.collection.Pair;
 import com.typedb.examples.cti.configuration.AppConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class TypeDBSessionWrapper {
     private final TypeDBClient client;
     private TypeDBSession session;
 
+    @Autowired
     public TypeDBSessionWrapper(TypeDBClient client, AppConfiguration appConfiguration) {
         this.appConfiguration = appConfiguration;
         this.client = client;

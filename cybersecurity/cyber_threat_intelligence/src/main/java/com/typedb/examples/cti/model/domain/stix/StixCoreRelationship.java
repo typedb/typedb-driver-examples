@@ -29,23 +29,14 @@ import java.util.List;
 
 public class StixCoreRelationship {
     @JsonIgnore
-    public static final List<String> typeString = Arrays.asList("stix_id", "stix_version", "stix_type");
+    public static final List<String> typeString = Arrays.asList("stix_id", "stix_type");
 
     @JsonIgnore
     public static final String nameEnt = "stix_core_relationship";
-    private String specVersion;
     private String stixId;
     private String stixType;
     private Date created;
     private Date modified;
-
-    public String getSpecVersion() {
-        return specVersion;
-    }
-
-    public void setSpecVersion(String specVersion) {
-        this.specVersion = specVersion;
-    }
 
     public String getStixId() {
         return stixId;
