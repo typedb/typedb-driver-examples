@@ -26,19 +26,37 @@ import com.typedb.examples.cti.model.domain.stix.StixCoreRelationship;
 import com.typedb.examples.cti.model.domain.stix.StixDomainObject;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class KillChainPhase extends StixSubObject {
+public class KillChainPhase {
     @JsonIgnore
-    public static final List<String> typeString = Stream.of(StixDomainObject.typeString,
-            Arrays.asList("kill_chain_name", "kill_chain_phase_name")).flatMap(List::stream).toList();
+    public static final List<String> typeString = Arrays.asList("kill_chain_name", "kill_chain_phase_name");
 
     @JsonIgnore
     public static final String nameEnt = "kill_chain_phase";
 
     private String killChainName;
     private String killChainPhaseName;
+    private Date created;
+    private Date modified;
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
 
     public String getKillChainName() {
         return killChainName;
