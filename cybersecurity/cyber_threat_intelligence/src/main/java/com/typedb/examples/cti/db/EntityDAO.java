@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class EntityDAO<T> {
     protected static final String ENT_MATCH =
-            "  $%s isa %s, has stix_id $id, has $attribute;" +
+            "$%s isa %s, has stix_id $id, has $attribute;" +
                     "$attribute isa! $j; ";
 
     private final String nameEnt;
@@ -47,13 +47,13 @@ public class EntityDAO<T> {
         return new HashSet<>(result.values());
     }
 
-    public ObjectNode search(String type, String name) {
+    public ObjectNode search(String attrType, String attrName) {
 
-        if (typeString.contains(" " + type + ";")) {
-            name = "\"" + name + "\"";
+        if (typeString.contains(attrType)) {
+            attrName = "\"" + attrName + "\"";
         }
         String query = String.format(ENT_MATCH, nameEnt, nameEnt);
-        String search = "$class has " + type + " = " + name + ";";
+        String search = "$" + nameEnt + " has " + attrType + " = " + attrName + ";";
         var getQueryStr = "match " + query + search + "group $id;";
 
         return find(getQueryStr);

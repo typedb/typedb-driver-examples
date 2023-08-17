@@ -267,6 +267,8 @@ type Query{
     getUsesSearch(type: String, name: String): JSON
     getTargetsSearch(type: String, name: String): JSON
     getImpersonatesSearch(type: String, name: String): JSON
+    getHashesSearch(type: String, name: String): JSON
+
 
     getAttributedTo: JSON
     getIndicates: JSON
