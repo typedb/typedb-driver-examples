@@ -29,7 +29,7 @@ public class IndicatesController {
     @QueryMapping(value = "getIndicates")
     @GetMapping(value = "/indicates", produces = "application/json")
     public ObjectNode getIndicatesJSON() {
-        RelationDAO<Indicates> indicatesDAO = new RelationDAO<>(wrapper, Indicates.nameRel,
+        RelationDAO indicatesDAO = new RelationDAO(wrapper, Indicates.nameRel,
                 Indicates.rolePlayers, Indicates.typeString);
         return indicatesDAO.findAll();
     }
@@ -37,7 +37,7 @@ public class IndicatesController {
     @QueryMapping(value = "getIndicatesSearch")
     @GetMapping(value = "/indicates/{type}/{name}", produces = "application/json")
     public ObjectNode getIndicatesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<Indicates> indicatesDAO = new RelationDAO<>(wrapper, Indicates.nameRel,
+        RelationDAO indicatesDAO = new RelationDAO(wrapper, Indicates.nameRel,
                 Indicates.rolePlayers, Indicates.typeString);
         return indicatesDAO.search(type, name);
     }

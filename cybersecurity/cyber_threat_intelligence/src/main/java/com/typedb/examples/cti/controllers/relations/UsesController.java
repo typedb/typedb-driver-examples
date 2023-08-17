@@ -29,7 +29,7 @@ public class UsesController {
     @QueryMapping(value = "getUses")
     @GetMapping(value = "/uses", produces = "application/json")
     public ObjectNode getUsesJSON() {
-        RelationDAO<Uses> usesDAO = new RelationDAO<>(wrapper, Uses.nameRel,
+        RelationDAO usesDAO = new RelationDAO(wrapper, Uses.nameRel,
                 Uses.rolePlayers, Uses.typeString, true);
         return usesDAO.findAll();
     }
@@ -37,7 +37,7 @@ public class UsesController {
     @QueryMapping(value = "getUsesSearch")
     @GetMapping(value = "/uses/{type}/{name}", produces = "application/json")
     public ObjectNode getUsesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<Uses> usesDAO = new RelationDAO<>(wrapper, Uses.nameRel,
+        RelationDAO usesDAO = new RelationDAO(wrapper, Uses.nameRel,
                 Uses.rolePlayers, Uses.typeString);
         return usesDAO.search(type, name);
     }

@@ -29,7 +29,7 @@ public class SightingController {
     @QueryMapping(value = "getSighting")
     @GetMapping(value = "/sighting", produces = "application/json")
     public ObjectNode getSightingJSON() {
-        RelationDAO<Sighting> sightingDAO = new RelationDAO<>(wrapper, Sighting.nameRel,
+        RelationDAO sightingDAO = new RelationDAO(wrapper, Sighting.nameRel,
                 Sighting.rolePlayers, Sighting.typeString);
         return sightingDAO.findAll();
     }
@@ -37,7 +37,7 @@ public class SightingController {
     @QueryMapping(value = "getSightingSearch")
     @GetMapping(value = "/sighting/{type}/{name}", produces = "application/json")
     public ObjectNode getSightingSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<Sighting> sightingDAO = new RelationDAO<>(wrapper, Sighting.nameRel,
+        RelationDAO sightingDAO = new RelationDAO(wrapper, Sighting.nameRel,
                 Sighting.rolePlayers, Sighting.typeString);
         return sightingDAO.search(type, name);
     }

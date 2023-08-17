@@ -29,7 +29,7 @@ public class AttributedToController {
     @QueryMapping(value = "getAttributedTo")
     @GetMapping(value = "/attributed-to", produces = "application/json")
     public ObjectNode getAttributedToJSON() {
-        RelationDAO<AttributedTo> attributedToDAO = new RelationDAO<>(wrapper, AttributedTo.nameRel,
+        RelationDAO attributedToDAO = new RelationDAO(wrapper, AttributedTo.nameRel,
                 AttributedTo.rolePlayers, AttributedTo.typeString);
         return attributedToDAO.findAll();
     }
@@ -37,7 +37,7 @@ public class AttributedToController {
     @QueryMapping(value = "getAttributedToSearch")
     @GetMapping(value = "/attributed-to/{type}/{name}", produces = "application/json")
     public ObjectNode getAttributedToSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<AttributedTo> attributedToDAO = new RelationDAO<>(wrapper, AttributedTo.nameRel,
+        RelationDAO attributedToDAO = new RelationDAO(wrapper, AttributedTo.nameRel,
                 AttributedTo.rolePlayers, AttributedTo.typeString);
         return attributedToDAO.search(type, name);
     }

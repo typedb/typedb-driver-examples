@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typedb.examples.cti.configuration.AppConfiguration;
 import com.typedb.examples.cti.db.RelationDAO;
 import com.typedb.examples.cti.db.TypeDBSessionWrapper;
-import com.typedb.examples.cti.model.domain.relationship.Impersonates;
 import com.typedb.examples.cti.model.domain.relationship.ext.Hashes;
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
@@ -30,7 +29,7 @@ public class HashesController {
     @QueryMapping(value = "getHashes")
     @GetMapping(value = "/hashes", produces = "application/json")
     public ObjectNode getHashesJSON() {
-        RelationDAO<Hashes> hashesDAO = new RelationDAO<>(wrapper, Hashes.nameRel,
+        RelationDAO hashesDAO = new RelationDAO(wrapper, Hashes.nameRel,
                 Hashes.rolePlayers, Hashes.typeString, true);
         return hashesDAO.findAll();
     }
@@ -38,7 +37,7 @@ public class HashesController {
     @QueryMapping(value = "getHashesSearch")
     @GetMapping(value = "/hashes/{type}/{name}", produces = "application/json")
     public ObjectNode getHashesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<Hashes> hashesDAO = new RelationDAO<>(wrapper, Hashes.nameRel,
+        RelationDAO hashesDAO = new RelationDAO(wrapper, Hashes.nameRel,
                 Hashes.rolePlayers, Hashes.typeString, true);
         return hashesDAO.search(type, name);
     }

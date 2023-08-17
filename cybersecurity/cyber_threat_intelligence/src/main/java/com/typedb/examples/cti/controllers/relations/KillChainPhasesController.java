@@ -27,7 +27,7 @@ public class KillChainPhasesController {
     @QueryMapping(value = "getKillChainPhases")
     @GetMapping(value = "/kill-chain-phases", produces = "application/json")
     public ObjectNode getKillChainPhasesJSON() {
-        RelationDAO<KillChainPhases> killChainPhasesDAO = new RelationDAO<>(wrapper, KillChainPhases.nameRel,
+        RelationDAO killChainPhasesDAO = new RelationDAO(wrapper, KillChainPhases.nameRel,
                 KillChainPhases.rolePlayers, KillChainPhases.typeString);
         return killChainPhasesDAO.findAll();
     }

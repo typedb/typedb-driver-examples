@@ -29,7 +29,7 @@ public class TargetsController {
     @QueryMapping(value = "getTargets")
     @GetMapping(value = "/targets", produces = "application/json")
     public ObjectNode getTargetsJSON() {
-        RelationDAO<Targets> targetsDAO = new RelationDAO<>(wrapper, Targets.nameRel,
+        RelationDAO targetsDAO = new RelationDAO(wrapper, Targets.nameRel,
                 Targets.rolePlayers, Targets.typeString);
         return targetsDAO.findAll();
     }
@@ -37,7 +37,7 @@ public class TargetsController {
     @QueryMapping(value = "getTargetsSearch")
     @GetMapping(value = "/targets/{type}/{name}", produces = "application/json")
     public ObjectNode getTargetsSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<Targets> targetsDAO = new RelationDAO<>(wrapper, Targets.nameRel,
+        RelationDAO targetsDAO = new RelationDAO(wrapper, Targets.nameRel,
                 Targets.rolePlayers, Targets.typeString);
         return targetsDAO.search(type, name);
     }

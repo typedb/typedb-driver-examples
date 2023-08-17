@@ -54,7 +54,7 @@ public class TypeDBSessionWrapper {
         var json = values.toJSON().get("attribute");
         var key = json.asObject().get("type").asString();
         var valueTmp = json.asObject().get("value");
-        String value = "";
+        String value;
         if (valueTmp.isString()) {
             value = valueTmp.asString();
         } else {
@@ -217,15 +217,12 @@ public class TypeDBSessionWrapper {
                         childNode.set(removeFirstChar(rolePlayersTmp[i]), nodeTmp);
                     } else {
                         var dbResults2 = readTx.query().matchGroup(query);
-                        dbResults2.forEach(w -> {
-                            w.conceptMaps().forEach(m -> {
-                                String value3 = m.map().get("rp1").asAttribute().toString();
-                                value3 = removeLastChar(value3.split(":")[1]);
-                                childNode.put(rolePlayersTmp[0], value3);
+                        dbResults2.forEach(w -> w.conceptMaps().forEach(m -> {
+                            String value3 = m.map().get("rp1").asAttribute().toString();
+                            value3 = removeLastChar(value3.split(":")[1]);
+                            childNode.put(rolePlayersTmp[0], value3);
 
-                            });
-
-                        });
+                        }));
 
                     }
 

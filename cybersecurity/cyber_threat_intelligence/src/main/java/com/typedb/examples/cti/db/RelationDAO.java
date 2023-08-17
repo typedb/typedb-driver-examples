@@ -1,18 +1,16 @@
 package com.typedb.examples.cti.db;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.typedb.examples.cti.model.domain.relationship.Sighting;
 
 import java.util.List;
 
-public class RelationDAO<T> {
-    private String relMatch = "$ta (%s: $rp1, %s: $rp2) isa %s, has stix_id $id, has $attribute; $attribute isa! $j; ";
+public class RelationDAO {
     private final String nameRel;
     private final TypeDBSessionWrapper db;
     private final List<String> typeString;
     private final List<String> rolePlayers;
-
     private final boolean asAttribute;
+    private String relMatch = "$ta (%s: $rp1, %s: $rp2) isa %s, has stix_id $id, has $attribute; $attribute isa! $j; ";
 
 
 

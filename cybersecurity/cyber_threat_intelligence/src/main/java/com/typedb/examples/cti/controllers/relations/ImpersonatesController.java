@@ -29,7 +29,7 @@ public class ImpersonatesController {
     @QueryMapping(value = "getImpersonates")
     @GetMapping(value = "/impersonates", produces = "application/json")
     public ObjectNode getImpersonatesJSON() {
-        RelationDAO<Impersonates> impersonatesDAO = new RelationDAO<>(wrapper, Impersonates.nameRel,
+        RelationDAO impersonatesDAO = new RelationDAO(wrapper, Impersonates.nameRel,
                 Impersonates.rolePlayers, Impersonates.typeString);
         return impersonatesDAO.findAll();
     }
@@ -37,7 +37,7 @@ public class ImpersonatesController {
     @QueryMapping(value = "getImpersonatesSearch")
     @GetMapping(value = "/impersonates/{type}/{name}", produces = "application/json")
     public ObjectNode getImpersonatesSearchJSON(@Argument("type") @PathVariable String type, @Argument("name") @PathVariable String name) {
-        RelationDAO<Impersonates> impersonatesDAO = new RelationDAO<>(wrapper, Impersonates.nameRel,
+        RelationDAO impersonatesDAO = new RelationDAO(wrapper, Impersonates.nameRel,
                 Impersonates.rolePlayers, Impersonates.typeString);
         return impersonatesDAO.search(type, name);
     }

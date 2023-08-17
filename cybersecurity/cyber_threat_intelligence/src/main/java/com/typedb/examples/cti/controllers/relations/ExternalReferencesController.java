@@ -27,7 +27,7 @@ public class ExternalReferencesController {
     @QueryMapping(value = "getExternalReferences")
     @GetMapping(value = "/external-references", produces = "application/json")
     public ObjectNode getExternalReferencesJSON() {
-        RelationDAO<ExternalReferences> externalReferencesDAO = new RelationDAO<>(wrapper, ExternalReferences.nameRel,
+        RelationDAO externalReferencesDAO = new RelationDAO(wrapper, ExternalReferences.nameRel,
                 ExternalReferences.rolePlayers, ExternalReferences.typeString);
         return externalReferencesDAO.findAll();
     }

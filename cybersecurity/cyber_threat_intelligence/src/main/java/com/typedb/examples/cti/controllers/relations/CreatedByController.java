@@ -27,7 +27,7 @@ public class CreatedByController {
     @QueryMapping(value = "getCreatedBy")
     @GetMapping(value = "/created-by", produces = "application/json")
     public ObjectNode getCreatedByJSON() {
-        RelationDAO<CreatedBy> createdByDAO = new RelationDAO<>(wrapper, CreatedBy.nameRel,
+        RelationDAO createdByDAO = new RelationDAO(wrapper, CreatedBy.nameRel,
                 CreatedBy.rolePlayers, CreatedBy.typeString);
 
         return createdByDAO.findAll();
