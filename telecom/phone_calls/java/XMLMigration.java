@@ -21,10 +21,10 @@
 
 package com.vaticle.typedb.example.telecom.phoneCalls;
 
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
 import mjson.Json;
 
@@ -71,11 +71,11 @@ public class XMLMigration {
      * 3. initialises the list of Inputs, each containing details required to parse the data
      * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
-     * 6. closes the client
+     * 6. closes the driver
      */
     static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws FileNotFoundException, XMLStreamException {
-        TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
+        TypeDBDriver driver = TypeDB.coreDriver("localhost:1729");
+        TypeDBSession session = driver.session(databaseName, TypeDBSession.Type.DATA);
 
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".xml] into TypeDB ...");
@@ -83,7 +83,7 @@ public class XMLMigration {
         }
 
         session.close();
-        client.close();
+        driver.close();
     }
 
     static Collection<Input> initialiseInputs() {

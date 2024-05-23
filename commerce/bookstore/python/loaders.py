@@ -20,7 +20,7 @@
 #
 
 import random, uuid
-from typedb.client import TypeDB, SessionType, TransactionType
+from typedb.driver import TypeDB, SessionType, TransactionType
 import config
 
 debug = False  # Default value for debug verbosity flag
@@ -132,12 +132,12 @@ class GenreHierarchyLoader(Loader):
 
 
 def random_books(verbose):
-    with TypeDB.core_client(config.typedb_server_addr) as client:
-        with client.session(config.db, SessionType.DATA) as session:
+    with TypeDB.core_driver(config.typedb_server_addr) as driver:
+        with driver.session(config.db, SessionType.DATA) as session:
             with session.transaction(TransactionType.READ) as transaction:
                 typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 800;"  # get 800 books
                 if verbose: print("Executing TypeQL read Query: " + typeql_read_query)
-                iterator = transaction.query().match(typeql_read_query)  # Execute read query
+                iterator = transaction.query.get(typeql_read_query)  # Execute read query
                 answers = [ans.get("x") for ans in iterator]
                 books = [answer.get_value() for answer in answers]  # This contains the result (800 ISBN records)
                 # for order_id in range(1,6):  # Go through all 5 orders

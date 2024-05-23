@@ -19,9 +19,9 @@
  * under the License.
  */
 
-const { TypeDB } = require("typedb-client/TypeDB");
-const { SessionType } = require("typedb-client/api/connection/TypeDBSession");
-const { TransactionType } = require("typedb-client/api/connection/TypeDBTransaction");
+const { TypeDB } = require("typedb-driver/TypeDB");
+const { SessionType } = require("typedb-driver/api/connection/TypeDBSession");
+const { TransactionType } = require("typedb-driver/api/connection/TypeDBTransaction");
 
 const readline = require("readline");
 
@@ -118,7 +118,7 @@ async function executeQuery1(question, transaction) {
     printToLog("Query:", query.join("\n"));
     query = query.join("");
 
-    const iterator = transaction.query().match(query);
+    const iterator = transaction.query().get(query);
     const answers = await iterator.collect();
     const result = await Promise.all(
         answers.map(answer =>
@@ -153,7 +153,7 @@ async function executeQuery2(question, transaction) {
     printToLog("Query:", query.join("\n"));
     query = query.join("");
 
-    const iterator = transaction.query().match(query);
+    const iterator = transaction.query().get(query);
     const answers = await iterator.collect();
     const result = await Promise.all(
         answers.map(answer =>
@@ -184,7 +184,7 @@ async function executeQuery3(question, transaction) {
     printToLog("Query:", query.join("\n"));
     query = query.join("");
 
-    const iterator = transaction.query().match(query);
+    const iterator = transaction.query().get(query);
     const answers = await iterator.collect();
     const result = await Promise.all(
         answers.map(answer =>
@@ -219,7 +219,7 @@ async function executeQuery4(question, transaction) {
     printToLog("Query:", query.join("\n"));
     query = query.join("");
 
-    const iterator = transaction.query().match(query);
+    const iterator = transaction.query().get(query);
     const answers = await iterator.collect();
     const result = await Promise.all(
         answers.map(answer =>
@@ -353,12 +353,12 @@ function executeBasedOnSelection(rl) {
  * 4. call the function corresponding to the selected question
  * 5. close the transaction
  * 6. close the session
- * 7. closes the client
+ * 7. closes the driver
  * @param {integer} qsNumber the (question) number selected by the user
  */
 async function processSelection(qsNumber, databaseName) {
-    const client = TypeDB.coreClient("localhost:1729"); // 1
-    const session = await client.session(databaseName, SessionType.DATA); // 2
+    const driver = TypeDB.coreDriver("localhost:1729"); // 1
+    const session = await driver.session(databaseName, SessionType.DATA); // 2
     const transaction = await session.transaction(TransactionType.READ); // 3
 
     if (qsNumber === 0) {
@@ -370,7 +370,7 @@ async function processSelection(qsNumber, databaseName) {
     }
     await transaction.close(); // 5
     await session.close(); // 6
-    client.close(); // 7
+    driver.close(); // 7
 }
 
 module.exports.processSelection = processSelection;

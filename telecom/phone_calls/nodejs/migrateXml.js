@@ -19,11 +19,11 @@
  * under the License.
  */
 
-// the Node.js client for TypeDB
-// https://github.com/vaticle/typedb/tree/master/client-nodejs
-const { TypeDB } = require("typedb-client/TypeDB");
-const { SessionType } = require("typedb-client/api/connection/TypeDBSession");
-const { TransactionType } = require("typedb-client/api/connection/TypeDBTransaction");
+// the Node.js driver for TypeDB
+// https://github.com/vaticle/typedb/tree/master/driver-nodejs
+const { TypeDB } = require("typedb-driver/TypeDB");
+const { SessionType } = require("typedb-driver/api/connection/TypeDBSession");
+const { TransactionType } = require("typedb-driver/api/connection/TypeDBTransaction");
 
 // used for creating a stream to read the data files
 // https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
@@ -58,17 +58,17 @@ const inputs = [
 
 /**
  * gets the job done:
- * 1. creates an instance of TypeDB Client
+ * 1. creates an instance of TypeDB Driver
  * 2. creates a session to the targeted database
  * 3. for each input,
  *      - a. constructs the full path to the data file
  *      - b. loads csv to TypeDB
  * 4. closes the session
- * 5. closes the client
+ * 5. closes the driver
  */
 async function buildPhoneCallGraph(dataPath, database = "phone_calls") {
-    const client = TypeDB.coreClient("localhost:1729"); // 1
-    const session = await client.session(database, SessionType.DATA); // 2
+    const driver = TypeDB.coreDriver("localhost:1729"); // 1
+    const session = await driver.session(database, SessionType.DATA); // 2
 
     for (input of inputs) {
         input.file = input.file.replace(dataPath, "") // for testing purposes
@@ -78,7 +78,7 @@ async function buildPhoneCallGraph(dataPath, database = "phone_calls") {
     }
 
     await session.close(); // 4
-    client.close(); // 5
+    driver.close(); // 5
 }
 
 /**

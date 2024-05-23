@@ -24,9 +24,9 @@ package com.vaticle.typedb.example.software.github.state
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.vaticle.typedb.client.TypeDB
-import com.vaticle.typedb.client.api.TypeDBSession
-import com.vaticle.typedb.client.api.TypeDBTransaction
+import com.vaticle.typedb.driver.TypeDB
+import com.vaticle.typedb.driver.api.TypeDBSession
+import com.vaticle.typedb.driver.api.TypeDBTransaction
 import com.vaticle.typeql.lang.TypeQL.parseQuery
 import com.vaticle.typeql.lang.query.TypeQLDefine
 import com.vaticle.typeql.lang.query.TypeQLInsert
@@ -62,16 +62,16 @@ class Migrator {
     }
 
     private fun clearDatabase() {
-        val client = TypeDB.coreClient(DB_URI)
-        if (client.databases().contains(DB_NAME)) {
-            client.databases().get(DB_NAME).delete()
+        val driver = TypeDB.coreDriver(DB_URI)
+        if (driver.databases().contains(DB_NAME)) {
+            driver.databases().get(DB_NAME).delete()
         }
-        client.databases().create(DB_NAME)
+        driver.databases().create(DB_NAME)
     }
 
     private fun connectAndWriteSchema(path: String) {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_NAME, TypeDBSession.Type.SCHEMA)
+        val driver = TypeDB.coreDriver(DB_URI)
+        val session = driver.session(DB_NAME, TypeDBSession.Type.SCHEMA)
         val transaction = session.transaction(TypeDBTransaction.Type.WRITE)
 
         try {
@@ -84,17 +84,17 @@ class Migrator {
         } finally {
             session.close()
         }
-        client.close()
+        driver.close()
     }
 
     private fun connectAndMigrate(repoFile: RepoFile) {
-        val client = TypeDB.coreClient(DB_URI)
-        val session = client.session(DB_NAME, TypeDBSession.Type.DATA)
+        val driver = TypeDB.coreDriver(DB_URI)
+        val session = driver.session(DB_NAME, TypeDBSession.Type.DATA)
 
         loadDataIntoTypeDB(repoFile, session)
 
         session.close()
-        client.close()
+        driver.close()
     }
 
     private fun loadDataIntoTypeDB(repoFile: RepoFile, session: TypeDBSession) {

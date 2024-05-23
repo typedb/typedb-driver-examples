@@ -19,7 +19,7 @@
 # under the License.
 #
 
-from typedb.client import TypeDB, SessionType, TransactionType, TypeDBOptions
+from typedb.driver import TypeDB, SessionType, TransactionType, TypeDBOptions
 from enum import Enum
 import argparse
 import config
@@ -43,7 +43,7 @@ class ResultCode(Enum):
     EXIT = 2
 
 
-def selection(client):  # This is the main UI to select a function to proceed with
+def selection(driver):  # This is the main UI to select a function to proceed with
 
     print("Please choose one of the following functions: ")
     print("1. Search for a book")
@@ -56,14 +56,14 @@ def selection(client):  # This is the main UI to select a function to proceed wi
         print("Empty selection recognized. Please try again.")
         return ResultCode.INPUT_INVALID
     elif selection == "1":  # We chose variant #1 — searching for a book
-        return search_book(input("Searching for a book. Please type in an ISBN or press enter for a full listing: "), client)
+        return search_book(input("Searching for a book. Please type in an ISBN or press enter for a full listing: "), driver)
     elif selection == "2":  # 2. Searching for a user
-        return search_user(input("Searching for a user. Please type in a foreign ID or press enter for a full listing: "), client)
+        return search_user(input("Searching for a user. Please type in a foreign ID or press enter for a full listing: "), driver)
     elif selection == "3":  # 3. Searching for an order
-        return search_order(input("Searching for an order. Please type in an order ID or press enter for a full listing: "), client)
+        return search_order(input("Searching for an order. Please type in an order ID or press enter for a full listing: "), driver)
     elif selection == "4":  # 4. Searching for books by genre
-        show_all_genres(client)  # Display all genres as a tip
-        return search_genre(input("Searching for books by genre. Please type in genre name: "), client)
+        show_all_genres(driver)  # Display all genres as a tip
+        return search_genre(input("Searching for books by genre. Please type in genre name: "), driver)
     elif selection == "0" or "exit" or "exit()" or "close" or "close()" or "help":  # Exit the program
         return ResultCode.EXIT
     else:
@@ -71,24 +71,24 @@ def selection(client):  # This is the main UI to select a function to proceed wi
         return ResultCode.INPUT_INVALID
 
 
-def search_book(ISBN, client):  # Search book by ISBN (or show all books if empty ISBN given)
+def search_book(ISBN, driver):  # Search book by ISBN (or show all books if empty ISBN given)
 
     if ISBN == "":  # empty ISBN given
         print("Empty input. Listing all books")  
-        return show_all_books(client)  # Display all books
+        return show_all_books(driver)  # Display all books
     else:  # Non-empty ISBN given
-        return show_book(ISBN, client)  # Display selected book
+        return show_book(ISBN, driver)  # Display selected book
 
 
-def show_book(ISBN, client):  # Searching book by ISBN and print info
+def show_book(ISBN, driver):  # Searching book by ISBN and print info
     result = []
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "', has name $n, " \
                                 "has book-author $ba; " \
                                 "get $n, $ba;"
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Execute match query
+            iterator = transaction.query.get(typeql_read_query)  # Execute match query
             k = 0  # Counter initialisation
             for item in iterator:  # Iterating through results of the match query
                 print(ISBN, item.get("n").get_value(), item.get("ba").get_value(), sep=" — ")  # Print every result
@@ -97,13 +97,13 @@ def show_book(ISBN, client):  # Searching book by ISBN and print info
     result.append(k)
 
     # Rating computation
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $b isa book, has ISBN '" + ISBN + "';" \
                                 "$r (product: $b, author:$a) isa review; $r has rating $rating;" \
                                 "get $rating;"
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Execute match query
+            iterator = transaction.query.get(typeql_read_query)  # Execute match query
             g = 0  # Initialising counter
             s = 0  # Initialising sum variable
             for item in iterator:  # Iterating through query results
@@ -122,23 +122,23 @@ def show_book(ISBN, client):  # Searching book by ISBN and print info
     return result
 
 
-def search_user(user, client):  # Search user by foreign-id (or show all users if empty id given)
+def search_user(user, driver):  # Search user by foreign-id (or show all users if empty id given)
 
     if user == "":
         print("Empty input. Listing all users")
-        return show_all_users(client)  # Display all users
+        return show_all_users(driver)  # Display all users
     else:
-        return show_user(user, client)  # Display selected user
+        return show_user(user, driver)  # Display selected user
 
 
-def show_user(user, client):  # Display user by foreign-id
+def show_user(user, driver):  # Display user by foreign-id
     result = []
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id '" + user + "'; " \
                                 "get $i, $n;"
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Executing query
+            iterator = transaction.query.get(typeql_read_query)  # Executing query
             k = 0
             for item in iterator:  # Iterating through results
                 print(user, item.get("n").get_value(), item.get("i").get_value(), sep=" — ")  # Print results
@@ -148,16 +148,16 @@ def show_user(user, client):  # Display user by foreign-id
     return result
 
 
-def search_order(order_id, client):  # Search order by id (or show all orders if empty id given)
+def search_order(order_id, driver):  # Search order by id (or show all orders if empty id given)
     # Different approach - download all orders first, filter later
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $o isa order, has id $i, has foreign-user-id $fui, " \
                                 "has created-date $d, has status $s, has delivery-address $da;" \
                                 "get $i, $fui, $d, $s, $da; sort $i asc;"
             # matched results sorted by id in ascending order
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Execute query
+            iterator = transaction.query.get(typeql_read_query)  # Execute query
             result = ""
             counter = 0
             for answer in iterator:  # Iterate through result of the query (all orders)
@@ -174,19 +174,19 @@ def search_order(order_id, client):  # Search order by id (or show all orders if
     return counter
 
 
-def search_genre(tag_name, client):  # Search books by genre tag
+def search_genre(tag_name, driver):  # Search books by genre tag
     if tag_name == "":  # Empty input. But we already showed all tags/genres before
         print("Empty input. Lets look for a Map genre, so you can find what you are looking for.")
         tag_name = "Map"  # Choosing genre instead of an empty input
-    TB = TypeDBOptions.core()  # Initialising a new set of options
+    TB = TypeDBOptions()  # Initialising a new set of options
     TB.infer = True  # Enabling inference in this new set of options
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ, TB) as transaction:  # Open transaction to read
             typeql_read_query = "match $g isa genre-tag; $g '" + tag_name + "';" \
                                 "$b isa book, has name $n, has ISBN $i, has $g; " \
                                 "get $i, $n; sort $i asc;"
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Execute query
+            iterator = transaction.query.get(typeql_read_query)  # Execute query
             print("Looking for a", tag_name, "genre. Here is what we have:")
             k = 0  # Counter
             for answer in iterator:  # Iterating through results
@@ -198,14 +198,14 @@ def search_genre(tag_name, client):  # Search books by genre tag
     return k
 
 
-def show_all_books(client):  # Just show all books
+def show_all_books(driver):  # Just show all books
     print("Showing all books")
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $b isa book, has ISBN $i, has name $n, has book-author $ba; " \
                                 "get $i, $n, $ba;"
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Executing match query
+            iterator = transaction.query.get(typeql_read_query)  # Executing match query
             k = 0  # Counter
             for item in iterator:  # Iterating through results
                 k += 1
@@ -215,15 +215,15 @@ def show_all_books(client):  # Just show all books
     return k
 
 
-def show_all_users(client):  # Just show all users
+def show_all_users(driver):  # Just show all users
     print("Showing all users")
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $u isa user, has id $i, has name $n, has foreign-id $fi; " \
                                 "get $i, $n, $fi; sort $fi asc;"  # Limit the number of results by adding " limit 100;"
             # Results sorted by foreign-id in ascending order. Since $fi is a string 9 goes after 88 and before 91
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Executing query
+            iterator = transaction.query.get(typeql_read_query)  # Executing query
             k = 0  # Counter
             for item in iterator:  # Iterating through results
                 k += 1
@@ -234,12 +234,12 @@ def show_all_users(client):  # Just show all users
     return k
 
 
-def show_all_genres(client):  # Just display all genre tags
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+def show_all_genres(driver):  # Just display all genre tags
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             typeql_read_query = "match $g isa genre-tag; get $g;"  # Prepare query
             if debug: print("Executing TypeQL read Query: " + typeql_read_query)
-            iterator = transaction.query().match(typeql_read_query)  # Execute transaction
+            iterator = transaction.query.get(typeql_read_query)  # Execute transaction
             k = 0  # Counter
             for item in iterator:  # Iterating through all results
                 k += 1
@@ -250,9 +250,9 @@ def show_all_genres(client):  # Just display all genre tags
 
 def main():  # This is the main function of this script
     print("Bookstore CRM v.0.0.0.0.1a")
-    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection. Once per app
+    with TypeDB.core_driver(config.typedb_server_addr) as driver:  # Establishing connection. Once per app
         while True:  # This cycle will repeat until one of the following breaks happen
-            x = selection(client)  # Call selection UI once per cycle
+            x = selection(driver)  # Call selection UI once per cycle
             if x == ResultCode.INPUT_INVALID:  # Unrecognizable answer
                 pass  # Return to cycle to call selection() again
             elif x == ResultCode.EXIT:  # Chose to exit

@@ -59,6 +59,7 @@ public class Loader {
         Path zipFile = fetchZip(workingDirectory, options);
 
         Path dataDirectory = workingDirectory.resolve("coldp");
+        System.out.println("Unzipped data directory: " + dataDirectory.toAbsolutePath().toString());
         if (Files.exists(zipFile) && (options.forceUnzip() || !Files.exists(dataDirectory))) unzip(zipFile, dataDirectory);
 
         prepareData(dataDirectory);
@@ -88,7 +89,7 @@ public class Loader {
     }
 
     public static Path fetchZip(Path workingDirectory, CLIOptions options) throws MalformedURLException {
-        URL url = new URL("https://api.checklistbank.org/dataset/9817/export.zip?format=ColDP");
+        URL url = new URL("https://api.checklistbank.org/dataset/294826/export.zip?extended=true&format=ColDP");
 
         Path zipFile = workingDirectory.resolve("coldp.zip");
         if (!options.skipDownload() && (options.forceDownload() || !Files.exists(zipFile))) {
@@ -105,6 +106,8 @@ public class Loader {
     private static void unzip(Path zipFile, Path workingDirectory) {
         try (ZipInputStream zipIn = new ZipInputStream(Files.newInputStream(zipFile))) {
             for (ZipEntry zipEntry; (zipEntry = zipIn.getNextEntry()) != null; ) {
+                System.out.println("Zip entry: ");
+                System.out.println(zipEntry.toString());
                 Path resolvedPath = workingDirectory.resolve(zipEntry.getName());
                 if (zipEntry.isDirectory()) {
                     Files.createDirectories(resolvedPath);

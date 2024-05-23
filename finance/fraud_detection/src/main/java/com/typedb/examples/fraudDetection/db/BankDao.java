@@ -51,7 +51,7 @@ public class BankDao implements Dao<Bank> {
 
   public Set<Bank> getAll() {
 
-    var getQueryStr = "match " + BANK_MATCH;
+    var getQueryStr = "match " + BANK_MATCH + "; get;";
 
     return getBanks(getQueryStr);
   }
@@ -59,7 +59,7 @@ public class BankDao implements Dao<Bank> {
   public Set<Bank> getByName(String name){
 
     var matchName = BANK_MATCH_NAME.formatted(name);
-    var getQueryStr = "match " + BANK_MATCH + matchName;
+    var getQueryStr = "match " + BANK_MATCH + matchName + "; get;";
 
     return getBanks(getQueryStr);
   }

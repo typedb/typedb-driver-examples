@@ -23,10 +23,12 @@ java_library(
     name = "csv-migration-lib",
     srcs = ["CSVMigration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typeql//java/query",
-        "@vaticle_typedb_client_java//api",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
     ],
@@ -39,9 +41,11 @@ java_library(
     name = "json-migration-lib",
     srcs = ["JSONMigration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
-        "@vaticle_typedb_client_java//api",
         "@vaticle_typeql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
@@ -55,10 +59,12 @@ java_library(
     name = "xml-migration-lib",
     srcs = ["XMLMigration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typeql//java/query",
-        "@vaticle_typedb_client_java//api",
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
@@ -71,10 +77,12 @@ java_library(
     name = "queries-lib",
     srcs = ["Queries.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typeql//java/query",
-        "@vaticle_typedb_client_java//api",
     ]
 )
 
@@ -85,9 +93,10 @@ java_test(
         "PhoneCallsTest.java"
     ],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
-        "@vaticle_typedb_client_java//api",
         "@vaticle_typeql//java/query",
         ":csv-migration-lib",
         ":json-migration-lib",
@@ -97,7 +106,11 @@ java_test(
     data = [
         "//telecom/phone_calls:schema.tql",
     ],
-    resources = ["//conf:logback-test.xml"],
+    runtime_deps = [
+    ],
+    resources = [
+        "//conf:logback-test.xml",
+    ],
     resource_strip_prefix = "conf",
 )
 
@@ -106,9 +119,11 @@ java_binary(
     main_class = "com.vaticle.typedb.example.telecom.phoneCalls.CSVMigration",
     srcs = ["CSVMigration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
-        "@vaticle_typedb_client_java//api",
         "@vaticle_typeql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
@@ -123,9 +138,11 @@ java_binary(
     main_class = "com.vaticle.typedb.example.telecom.phoneCalls.JSONMigration",
     srcs = ["JSONMigration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java/query",
-        "@vaticle_typedb_client_java//api",
         "@vaticle_typeql//java:typeql-lang",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_google_code_gson_gson",
@@ -140,10 +157,11 @@ java_binary(
     main_class = "com.vaticle.typedb.example.telecom.phoneCalls.XMLMigration",
     srcs = ["XMLMigration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typeql//java/query",
-        "@vaticle_typedb_client_java//api",
         "@maven//:org_sharegov_mjson",
         "@maven//:javax_xml_stream_stax_api"
     ],
@@ -157,10 +175,12 @@ java_binary(
     main_class = "com.vaticle.typedb.example.telecom.phoneCalls.Queries",
     srcs = ["Queries.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java:typedb_driver_jni",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typeql//java/query",
-        "@vaticle_typedb_client_java//api",
     ],
 )
 

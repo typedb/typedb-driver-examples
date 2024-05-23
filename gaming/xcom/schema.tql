@@ -50,8 +50,8 @@ research-project sub entity,
     owns name,
     plays resource-cost-to-begin-research:research-to-begin,
     plays campaign-research-task:research-task,
-    plays tech-requirement-to-begin-task:required-tech,
-    plays tech-requirement-to-begin-research:required-tech,
+    plays tech-requirement-to-begin-task:task-begin-required-tech,
+    plays tech-requirement-to-begin-research:research-begin-required-tech,
     plays tech-requirement-to-begin-research:research-to-begin,
     owns completed;
 
@@ -78,10 +78,12 @@ tech-requirement sub requirement,
     relates required-tech as prerequisite;
 
 tech-requirement-to-begin-task sub tech-requirement,
-    relates task-to-begin as outcome;
+    relates task-to-begin as outcome,
+    relates task-begin-required-tech as required-tech;
 
 tech-requirement-to-begin-research sub tech-requirement,
-    relates research-to-begin as outcome;
+    relates research-to-begin as outcome,
+    relates research-begin-required-tech as required-tech;
 
 resource-cost sub requirement,
     relates consumes-resource as prerequisite,
@@ -233,8 +235,8 @@ rule task-has-no-progress-if-it-has-not-been-started:
 
 rule research-tech-requirements-are-transitive:
     when {
-        (research-to-begin: $a, required-tech: $b) isa tech-requirement-to-begin-research;
-        (research-to-begin: $b, required-tech: $c) isa tech-requirement-to-begin-research;
+        (research-to-begin: $a, research-begin-required-tech: $b) isa tech-requirement-to-begin-research;
+        (research-to-begin: $b, research-begin-required-tech: $c) isa tech-requirement-to-begin-research;
     } then {
-        (research-to-begin: $a, required-tech: $c) isa tech-requirement-to-begin-research;
+        (research-to-begin: $a, research-begin-required-tech: $c) isa tech-requirement-to-begin-research;
     };

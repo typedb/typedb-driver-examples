@@ -21,13 +21,13 @@
 
 package com.vaticle.typedb.example.software.github.state
 
-import com.vaticle.typedb.client.TypeDB
-import com.vaticle.typedb.client.api.TypeDBOptions
-import com.vaticle.typedb.client.api.TypeDBSession.Type.DATA
-import com.vaticle.typedb.client.api.TypeDBTransaction
-import com.vaticle.typedb.client.api.TypeDBTransaction.Type.READ
+import com.vaticle.typedb.driver.TypeDB
+import com.vaticle.typedb.driver.api.TypeDBOptions
+import com.vaticle.typedb.driver.api.TypeDBSession.Type.DATA
+import com.vaticle.typedb.driver.api.TypeDBTransaction
+import com.vaticle.typedb.driver.api.TypeDBTransaction.Type.READ
 import com.vaticle.typeql.lang.TypeQL
-import com.vaticle.typeql.lang.query.TypeQLMatch
+import com.vaticle.typeql.lang.query.TypeQLGet
 
 
 /**
@@ -36,9 +36,9 @@ import com.vaticle.typeql.lang.query.TypeQLMatch
  *      - The schema and data are loaded in under 'github'.
  */
 class Explorer {
-    private fun useTransaction(sessionOptions: TypeDBOptions = TypeDBOptions.core(), fn: (TypeDBTransaction) -> Unit) {
-        TypeDB.coreClient(DB_URI).use { client ->
-            client.session(DB_NAME, DATA, sessionOptions).use { session ->
+    private fun useTransaction(sessionOptions: TypeDBOptions = TypeDBOptions(), fn: (TypeDBTransaction) -> Unit) {
+        TypeDB.coreDriver(DB_URI).use { driver ->
+            driver.session(DB_NAME, DATA, sessionOptions).use { session ->
                 session.transaction(READ).use { fn(it) }
             }
         }
@@ -46,12 +46,13 @@ class Explorer {
 
     fun usersCollaboratedOnFile(fileName: String): ArrayList<String> {
         val results = ArrayList<String>()
-        useTransaction(TypeDBOptions.core().infer(true)) { transaction ->
+        useTransaction(TypeDBOptions().infer(true)) { transaction ->
             val queryString =
                 "match \$file isa file, has file-name \"$fileName\";" +
                         "\$file-collaborator(file: \$file, collaborator: \$c) isa file-collaborator;" +
-                        "\$c has user-name \$user-name;"
-            val query = TypeQL.parseQuery<TypeQLMatch>(queryString)
+                        "\$c has user-name \$user-name;" +
+                        "get;"
+            val query = TypeQL.parseQuery<TypeQLGet>(queryString)
             collectAttributeValues("user-name", transaction, query, results)
             results.sort()
         }
@@ -67,7 +68,7 @@ class Explorer {
                         "\$commit-file(file: \$file, commit: \$commit) isa commit-file;" +
                         "\$file has file-name \$file-name;" +
                         "get \$file-name;"
-            val query = TypeQL.parseQuery<TypeQLMatch>(queryString)
+            val query = TypeQL.parseQuery<TypeQLGet>(queryString)
             collectAttributeValues("file-name", transaction, query, results)
             results.sort()
         }
@@ -83,7 +84,7 @@ class Explorer {
                         "\$commit-author(commit: \$commit, author: \$author) isa commit-author;" +
                         "\$author has user-name \$user-name;" +
                         "get \$user-name;"
-            val query = TypeQL.parseQuery<TypeQLMatch>(queryString)
+            val query = TypeQL.parseQuery<TypeQLGet>(queryString)
             collectAttributeValues("user-name", transaction, query, results)
             results.sort()
         }
@@ -100,7 +101,7 @@ class Explorer {
                         "\$commit-author(commit: \$commit2, author: \$author) isa commit-author;" +
                         "\$author has user-name \$user-name;" +
                         "get \$user-name;"
-            val query = TypeQL.parseQuery<TypeQLMatch>(queryString)
+            val query = TypeQL.parseQuery<TypeQLGet>(queryString)
             collectAttributeValues("user-name", transaction, query, results)
             results.sort()
         }
@@ -110,10 +111,10 @@ class Explorer {
     private fun collectAttributeValues(
         attributeVarName: String,
         transaction: TypeDBTransaction,
-        query: TypeQLMatch?,
+        query: TypeQLGet?,
         results: ArrayList<String>
     ) {
-        transaction.query().match(query).forEach { result ->
+        transaction.query().get(query).forEach { result ->
             results.add(
                 result.get(attributeVarName).asAttribute().value.toString()
             )
@@ -129,8 +130,8 @@ class Explorer {
                         "\$commit-file2(commit: \$commit2, file: \$file) isa commit-file;" +
                         "not {\$commit-file is \$commit-file2;};" +
                         "get \$commit-file; count;"
-            val query = TypeQL.parseQuery<TypeQLMatch.Aggregate>(queryString)
-            val count = transaction.query().match(query).get().toString()
+            val query = TypeQL.parseQuery<TypeQLGet.Aggregate>(queryString)
+            val count = transaction.query().get(query).resolve().get().toString()
             result.add(count)
         }
         return result

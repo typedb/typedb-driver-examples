@@ -21,13 +21,13 @@
 
 package com.vaticle.typedb.example.telecom.phoneCalls;
 
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
-import com.vaticle.typedb.client.api.answer.Numeric;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.concept.value.Value;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
-import com.vaticle.typeql.lang.query.TypeQLMatch;
+import com.vaticle.typeql.lang.query.TypeQLGet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +36,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.Optional;
 
 
 public class Queries {
@@ -78,8 +79,8 @@ public class Queries {
     }
 
     static void processSelection(Integer qsNumber, List<QueryExample>  queryExamples, String databaseName) {
-        TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
+        TypeDBDriver driver = TypeDB.coreDriver("localhost:1729");
+        TypeDBSession session = driver.session(databaseName, TypeDBSession.Type.DATA);
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
         if (qsNumber == 0) {
@@ -92,7 +93,7 @@ public class Queries {
 
         transaction.close();
         session.close();
-        client.close();
+        driver.close();
     }
 
     // GRAQL QUERY EXAMPLES
@@ -119,9 +120,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 List<String> result = new ArrayList<>();
-                transaction.query().match((TypeQLMatch) TypeQL.parseQuery(query)).forEach(answer -> {
+                transaction.query().get((TypeQLGet) TypeQL.parseQuery(query)).forEach(answer -> {
                     result.add(
-                            answer.get("phone-number").asAttribute().asString().getValue()
+                            answer.get("phone-number").asAttribute().getValue().asString()
                     );
                 });
 
@@ -154,9 +155,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 List<String> result = new ArrayList<>();
-                transaction.query().match((TypeQLMatch) TypeQL.parseQuery(query)).forEach(answer -> {
+                transaction.query().get((TypeQLGet) TypeQL.parseQuery(query)).forEach(answer -> {
                     result.add(
-                            answer.get("phone-number").asAttribute().asString().getValue()
+                            answer.get("phone-number").asAttribute().getValue().asString()
                     );
                 });
 
@@ -185,9 +186,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 Set<String> result = new HashSet<>();
-                transaction.query().match((TypeQLMatch) TypeQL.parseQuery(query)).forEach(answer -> {
+                transaction.query().get((TypeQLGet) TypeQL.parseQuery(query)).forEach(answer -> {
                     result.add(
-                            answer.get("phone-number").asAttribute().asString().getValue()
+                            answer.get("phone-number").asAttribute().getValue().asString()
                     );
                 });
 
@@ -220,9 +221,9 @@ public class Queries {
                 String query = String.join("", queryAsList);
 
                 Set<String> result = new HashSet<>();
-                transaction.query().match((TypeQLMatch) TypeQL.parseQuery(query)).forEach(answer -> {
-                    result.add(answer.get("phone-number-a").asAttribute().asString().getValue());
-                    result.add(answer.get("phone-number-b").asAttribute().asString().getValue());
+                transaction.query().get((TypeQLGet) TypeQL.parseQuery(query)).forEach(answer -> {
+                    result.add(answer.get("phone-number-a").asAttribute().getValue().asString());
+                    result.add(answer.get("phone-number-b").asAttribute().getValue().asString());
                 });
 
                 printToLog("Result: ", String.join(", ", result));
@@ -248,11 +249,11 @@ public class Queries {
                 printToLog("First Query:", String.join("\n", firstQueryAsList));
                 String firstQuery = String.join("", firstQueryAsList);
 
-                List<Numeric> result = new ArrayList<>();
+                List< Optional<Value>> result = new ArrayList<>();
 
-                Numeric firstAnswer = transaction.query().match(TypeQL.parseQuery(firstQuery).asMatchAggregate()).get();
+                Optional<Value> firstAnswer = transaction.query().get(TypeQL.parseQuery(firstQuery).asGetAggregate()).resolve();
                 result.add(firstAnswer);
-                String firstResult = !firstAnswer.isNaN() ? firstAnswer.asNumber().toString() : "NaN";
+                String firstResult = !firstAnswer.isEmpty() ? ((Double)firstAnswer.get().asValue().asDouble()).toString() : "NaN";
 
                 String output = "Customers aged under 20 have made calls with average duration of " + firstResult + " seconds.\n";
 
@@ -267,10 +268,10 @@ public class Queries {
 
                 printToLog("Second Query:", String.join("\n", secondQueryAsList));
                 String secondQuery = String.join("", secondQueryAsList);
-                
-                Numeric secondAnswer = transaction.query().match(TypeQL.parseQuery(secondQuery).asMatchAggregate()).get();
+
+                Optional<Value> secondAnswer = transaction.query().get(TypeQL.parseQuery(secondQuery).asGetAggregate()).resolve();
                 result.add(secondAnswer);
-                String secondResult = !secondAnswer.isNaN() ? secondAnswer.asNumber().toString() : "NaN";
+                String secondResult = !secondAnswer.isEmpty() ? ((Double)secondAnswer.get().asValue().asDouble()).toString() : "NaN";
 
                 output += "Customers aged over 40 have made calls with average duration of " + secondResult + " seconds.\n";
 

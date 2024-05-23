@@ -21,7 +21,7 @@
 
 import csv
 import os
-from typedb.client import TypeDB, SessionType, TransactionType
+from typedb.driver import TypeDB, SessionType, TransactionType
 import loaders
 import config
 import argparse
@@ -63,7 +63,7 @@ def load_data_into_typedb(loader, session):  # Requests generation of insert que
             typeql_insert_query = input_object.load()  # This builds the corresponding TypeQL insert query from item
             if typeql_insert_query != "":
                 if debug: print("Executing TypeQL Query: " + typeql_insert_query)
-                transaction.query().insert(typeql_insert_query)  # runs the query
+                transaction.query.insert(typeql_insert_query)  # runs the query
                 transaction.commit()  # commits the transaction
                 # todo: Add a transaction result check. Increase skip_cont if nothing was inserted
             else:
@@ -75,9 +75,9 @@ def load_data_into_typedb(loader, session):  # Requests generation of insert que
     return loaded_count  # END of load_data_into_typedb()
 
 
-def load_data(client):  # Main data load function
+def load_data(driver):  # Main data load function
     res = []
-    with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
         for loader in loaders.loaders_list:  # Iterating through the list of classes to import all data
             if debug: print("Loading from [" + loader("").file + "] into TypeDB ...")
             res.append(load_data_into_typedb(loader, session))  # Call loader to load data with session
@@ -86,26 +86,26 @@ def load_data(client):  # Main data load function
     return res
 
 
-def has_existing_data(client):  # Checking whether the DB already has the schema and the data loaded
-    with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
+def has_existing_data(driver):  # Checking whether the DB already has the schema and the data loaded
+    with driver.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
         with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
             try:
                 typeql_read_query = "match $b isa book, has ISBN $x; get $x; limit 3;"
-                transaction.query().match(typeql_read_query)
+                transaction.query.get(typeql_read_query)
                 print("The DB contains the schema and loaded data already.")
                 return True  # Success means DB most likely already has the schema and the data loaded
             except:
                 return False  # Exception — we consider DB as empty (brand new, no schema, no data)
 
 
-def load_schema(client):  # Loading schema
+def load_schema(driver):  # Loading schema
     this_script_dir = os.path.dirname(__file__)  # Look for a path to this script, load_data.py
-    with client.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
+    with driver.session(config.db, SessionType.SCHEMA) as session:  # Access data in the database
         with open(os.path.join(this_script_dir, "../schema.tql"), "r") as schema:  # Read the schema.tql file
             define_query = schema.read()
             with session.transaction(TransactionType.WRITE) as transaction:  # Open transaction to write
                 try:
-                    transaction.query().define(define_query)  # Execute query to load the schema
+                    transaction.query.define(define_query)  # Execute query to load the schema
                     transaction.commit()  # Commit transaction
                     print("Loaded the " + config.db + " schema.")
                     return True  # Setup complete
@@ -115,31 +115,31 @@ def load_schema(client):  # Loading schema
 
 
 def main():  # This is the main function of this script
-    with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection. Once per app
-        if client.databases().contains(config.db):  # Check the DB existence
+    with TypeDB.core_driver(config.typedb_server_addr) as driver:  # Establishing connection. Once per app
+        if driver.databases.contains(config.db):  # Check the DB existence
             print("Detected DB " + config.db + ". Connecting.")
-            if not has_existing_data(client):  # Most likely the DB is empty and has no schema
+            if not has_existing_data(driver):  # Most likely the DB is empty and has no schema
                 print("Attempting to load the schema and data.")
-                if load_schema(client):  # Schema has been loaded
-                    load_data(client)  # Main data loading function
+                if load_schema(driver):  # Schema has been loaded
+                    load_data(driver)  # Main data loading function
             else:  # The data check showed that we already have schema and some data in the DB
                 print("To reload data we will delete the existing DB... Please confirm!")
                 if input("Type in Delete to proceed with deletion: ").lower() == "delete":
-                    client.databases().get(config.db).delete()  # Deleting the DB
+                    driver.databases.get(config.db).delete()  # Deleting the DB
                     print("Deleted DB " + config.db + ".")
-                    client.databases().create(config.db)  # Creating new (empty) DB
+                    driver.databases.create(config.db)  # Creating new (empty) DB
                     print("DB " + config.db + " created. Applying schema...")
-                    if load_schema(client):  # Schema has been loaded
-                        return load_data(client)  # Main data loading function
+                    if load_schema(driver):  # Schema has been loaded
+                        return load_data(driver)  # Main data loading function
                 else:
                     exit("Database was not deleted due to user choice. Exiting.")
 
         else:  # DB is non-existent
             print("DB " + config.db + " is absent. Trying to create.")
-            client.databases().create(config.db)  # Creating the DB
+            driver.databases.create(config.db)  # Creating the DB
             print("DB " + config.db + " created. Applying schema...")
-            if load_schema(client):  # Schema has been loaded
-                return load_data(client)  # Main data loading function
+            if load_schema(driver):  # Schema has been loaded
+                return load_data(driver)  # Main data loading function
 
     return False
 

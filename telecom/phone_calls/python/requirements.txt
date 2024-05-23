@@ -1,2 +1,2 @@
 ijson==2.3
-typedb-client
+typedb-driver

@@ -19,16 +19,20 @@
 # under the License.
 #
 
-load("@vaticle_typedb_common//test:rules.bzl", "native_typedb_artifact")
 load("@vaticle_bazel_distribution//artifact:rules.bzl", "artifact_extractor")
+load("@vaticle_dependencies//builder/java:rules.bzl", "native_typedb_artifact")
 
 native_typedb_artifact(
     name = "native-typedb-artifact",
-    mac_artifact = "@vaticle_typedb_artifact_mac//file",
-    linux_artifact = "@vaticle_typedb_artifact_linux//file",
-    windows_artifact = "@vaticle_typedb_artifact_windows//file",
+    native_artifacts = {
+        "@vaticle_bazel_distribution//platform:is_linux_arm64": ["@vaticle_typedb_artifact_linux-arm64//file"],
+        "@vaticle_bazel_distribution//platform:is_linux_x86_64": ["@vaticle_typedb_artifact_linux-x86_64//file"],
+        "@vaticle_bazel_distribution//platform:is_mac_arm64": ["@vaticle_typedb_artifact_mac-arm64//file"],
+        "@vaticle_bazel_distribution//platform:is_mac_x86_64": ["@vaticle_typedb_artifact_mac-x86_64//file"],
+        "@vaticle_bazel_distribution//platform:is_windows_x86_64": ["@vaticle_typedb_artifact_windows-x86_64//file"],
+    },
     output = "typedb-server-native.tar.gz",
-    visibility = ["//test:__subpackages__"],
+    visibility = ["//test/integration:__subpackages__"],
 )
 
 artifact_extractor(
@@ -36,13 +40,11 @@ artifact_extractor(
     artifact = ":native-typedb-artifact",
 )
 
-
 # CI targets that are not declared in any BUILD file, but are called externally
 filegroup(
     name = "ci",
     data = [
         "@vaticle_dependencies//library/maven:update",
-        "@vaticle_dependencies//tool/bazelrun:rbe",
         "@vaticle_dependencies//distribution/artifact:create-netrc",
         "@vaticle_dependencies//tool/checkstyle:test-coverage",
         "@vaticle_dependencies//tool/sonarcloud:code-analysis",

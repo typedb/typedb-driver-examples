@@ -20,7 +20,7 @@
 #
 
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")
-load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library")
+load("@io_bazel_rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
 
 package(default_visibility = ["//software/github:__subpackages__"])
 
@@ -29,9 +29,9 @@ kt_jvm_library(
     srcs = glob(["*.kt"]),
     tags = ["maven_coordinates=com.vaticle.typedb:typedb-studio-view:{pom_version}"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
-        "@vaticle_typedb_client_java//api",
-        "@vaticle_typedb_common//:common",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
         "@vaticle_typeql//java/common",
         "@vaticle_typeql//java/query",

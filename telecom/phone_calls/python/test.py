@@ -21,7 +21,7 @@
 #
 
 import unittest
-from typedb.client import TypeDB, SessionType, TransactionType
+from typedb.driver import TypeDB, SessionType, TransactionType
 
 import migrate_csv
 import migrate_json
@@ -34,17 +34,17 @@ data_path = "telecom/phone_calls/data/"
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self._client = TypeDB.core_client("localhost:1729")
-        self._client.databases().create(database_name)
-        self._session = self._client.session(database_name, SessionType.SCHEMA)
+        self._driver = TypeDB.core_driver("localhost:1729")
+        self._driver.databases.create(database_name)
+        self._session = self._driver.session(database_name, SessionType.SCHEMA)
         with open('telecom/phone_calls/schema.tql', 'r') as schema:
             define_query = schema.read()
             with self._session.transaction(TransactionType.WRITE) as transaction:
-                transaction.query().define(define_query)
+                transaction.query.define(define_query)
                 transaction.commit()
                 print("Loaded the " + database_name + " schema")
         self._session.close()
-        self._session = self._client.session(database_name, SessionType.DATA)
+        self._session = self._driver.session(database_name, SessionType.DATA)
 
     def test_csv_migration(self):
         migrate_csv.build_phone_call_graph(migrate_csv.Inputs, data_path, database_name)
@@ -90,22 +90,22 @@ class Test(unittest.TestCase):
 
     def assert_migration_results(self):
         with self._session.transaction(TransactionType.READ) as transaction:
-            number_of_people = transaction.query().match_aggregate("match $x isa person; get $x; count;").get().as_int()
+            number_of_people = transaction.query.get_aggregate("match $x isa person; get $x; count;").resolve().get()
             self.assertEqual(number_of_people, 30)
 
-            number_of_companies = transaction.query().match_aggregate("match $x isa company; get $x; count;").get().as_int()
+            number_of_companies = transaction.query.get_aggregate("match $x isa company; get $x; count;").resolve().get()
             self.assertEqual(number_of_companies, 1)
 
-            number_of_contracts = transaction.query().match_aggregate("match $x isa contract; get $x; count;").get().as_int()
+            number_of_contracts = transaction.query.get_aggregate("match $x isa contract; get $x; count;").resolve().get()
             self.assertEqual(number_of_contracts, 10)
 
-            number_of_calls = transaction.query().match_aggregate("match $x isa call; get $x; count;").get().as_int()
+            number_of_calls = transaction.query.get_aggregate("match $x isa call; get $x; count;").resolve().get()
             self.assertEqual(number_of_calls, 200)
 
     def tearDown(self):
         self._session.close()
-        self._client.databases().get(database_name).delete()
-        self._client.close()
+        self._driver.databases.get(database_name).delete()
+        self._driver.close()
         print("Deleted the " + database_name + " database")
 
 

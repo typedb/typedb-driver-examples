@@ -23,17 +23,14 @@ exports_files(["requirements.txt"])
 
 load("@rules_python//python:python.bzl", "py_library", "py_test")
 
-load("@vaticle_typedb_client_python_pip//:requirements.bzl",
-       vaticle_typedb_client_python_requirement = "requirement")
-
-load("@phone_calls_pip//:requirements.bzl",
-       phone_calls_requirement = "requirement")
+load("@vaticle_typedb_driver_python_pip//:requirements.bzl", vaticle_typedb_driver_python_requirement = "requirement")
+load("@phone_calls_pip//:requirements.bzl", phone_calls_requirement = "requirement")
 
 py_library(
     name = "migrate-csv",
     srcs = ["migrate_csv.py"],
     deps = [
-        "@vaticle_typedb_client_python//:client_python"
+        "@vaticle_typedb_driver//python:driver_python"
     ],
     data = [
         "//telecom/phone_calls:data-csv"
@@ -44,7 +41,7 @@ py_library(
     name = "migrate-json",
     srcs = ["migrate_json.py"],
     deps = [
-        "@vaticle_typedb_client_python//:client_python",
+        "@vaticle_typedb_driver//python:driver_python",
         phone_calls_requirement("ijson")
     ],
     data = [
@@ -56,7 +53,7 @@ py_library(
     name = "migrate-xml",
     srcs = ["migrate_xml.py"],
     deps = [
-        "@vaticle_typedb_client_python//:client_python"
+        "@vaticle_typedb_driver//python:driver_python",
     ],
     data = [
         "//telecom/phone_calls:data-xml"
@@ -67,7 +64,7 @@ py_library(
     name = "queries",
     srcs = ["queries.py"],
     deps = [
-        "@vaticle_typedb_client_python//:client_python"
+        "@vaticle_typedb_driver//python:driver_python",
     ]
 )
 
@@ -83,11 +80,13 @@ py_test(
         ":queries"
     ],
     deps = [
-        "@vaticle_typedb_client_python//:client_python",
+        "@vaticle_typedb_driver//python:driver_python",
         phone_calls_requirement("ijson"),
     ],
     data = [
-        "//telecom/phone_calls:schema.tql"
+        "//telecom/phone_calls:schema.tql",
+        "@vaticle_typedb_driver//python:native-driver-binary-link",
+        "@vaticle_typedb_driver//python:native-driver-wrapper-link"
     ]
 )
 

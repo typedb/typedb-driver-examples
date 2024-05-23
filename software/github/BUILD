@@ -20,7 +20,7 @@
 #
 
 java_binary(
-    name = "github-bin-mac",
+    name = "github-bin-mac-x86_64",
     classpath_resources = ["//software/github/config/logback:logback-xml"],
     data = [
         "//software/github/datasets:github-data-json",
@@ -34,7 +34,21 @@ java_binary(
 )
 
 java_binary(
-    name = "github-bin-windows",
+    name = "github-bin-mac-arm64",
+    classpath_resources = ["//software/github/config/logback:logback-xml"],
+    data = [
+        "//software/github/datasets:github-data-json",
+        "//software/github/schemas:github-data-schemas",
+    ],
+    main_class = "com.vaticle.typedb.example.software.github.view.GitApplication",
+    runtime_deps = [
+        "//software/github/view:view",
+        "@maven//:org_jetbrains_skiko_skiko_awt_runtime_macos_arm64",
+    ],
+)
+
+java_binary(
+    name = "github-bin-windows-x86_64",
     classpath_resources = ["//software/github/config/logback:logback-xml"],
     data = [
         "//software/github/datasets:github-data-json",
@@ -48,7 +62,7 @@ java_binary(
 )
 
 java_binary(
-    name = "github-bin-linux",
+    name = "github-bin-linux-x86_64",
     classpath_resources = ["//software/github/config/logback:logback-xml"],
     data = [
         "//software/github/datasets:github-data-json",
@@ -58,6 +72,20 @@ java_binary(
     runtime_deps = [
         "//software/github/view:view",
         "@maven//:org_jetbrains_skiko_skiko_awt_runtime_linux_x64",
+    ],
+)
+
+java_binary(
+    name = "github-bin-linux-arm64",
+    classpath_resources = ["//software/github/config/logback:logback-xml"],
+    data = [
+        "//software/github/datasets:github-data-json",
+        "//software/github/schemas:github-data-schemas",
+    ],
+    main_class = "com.vaticle.typedb.example.software.github.view.GitApplication",
+    runtime_deps = [
+        "//software/github/view:view",
+        "@maven//:org_jetbrains_skiko_skiko_awt_runtime_linux_arm64",
     ],
 )
 

@@ -65,9 +65,9 @@
   </build>
   <dependencies>
     <dependency>
-      <artifactId>typedb-client</artifactId>
+      <artifactId>typedb-driver</artifactId>
       <groupId>com.vaticle.typedb</groupId>
-      <version>2.16.1</version>
+      <version>2.28.0</version>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>

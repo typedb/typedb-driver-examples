@@ -30,9 +30,9 @@ import com.typedb.examples.fraudDetection.model.BankCoordinates;
 import com.typedb.examples.fraudDetection.model.Cardholder;
 import com.typedb.examples.fraudDetection.model.Merchant;
 import com.typedb.examples.fraudDetection.model.Transaction;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
 import io.quarkus.runtime.StartupEvent;
 import java.io.InputStream;
@@ -53,7 +53,7 @@ public class AppLifecycleBean {
   private static final Logger LOGGER = Logger.getLogger("AppLifecycleBean");
 
   @Inject
-  TypeDBClient client;
+  TypeDBDriver driver;
 
   @Inject
   Dao<Bank> banks;
@@ -68,15 +68,15 @@ public class AppLifecycleBean {
 
     LOGGER.info("Deleting database");
 
-    client.databases().get("fraud").delete();
+    driver.databases().get("fraud").delete();
 
     LOGGER.info("Creating database");
 
-    client.databases().create("fraud");
+    driver.databases().create("fraud");
 
     LOGGER.info("Creating schema");
 
-    try (TypeDBSession session = client.session("fraud", TypeDBSession.Type.SCHEMA)) {
+    try (TypeDBSession session = driver.session("fraud", TypeDBSession.Type.SCHEMA)) {
 
       try (TypeDBTransaction tx = session.transaction(TypeDBTransaction.Type.WRITE)) {
 

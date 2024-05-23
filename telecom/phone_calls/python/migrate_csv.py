@@ -19,13 +19,13 @@
 # under the License.
 #
 
-# the Python client for TypeDB
-# https://github.com/vaticle/client-python
+# the Python driver for TypeDB
+# https://github.com/vaticle/driver-python
 # Python's built in module for dealing with .csv files.
 # we will use it read data source files.
 # https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
 import csv
-from typedb.client import TypeDB, SessionType, TransactionType
+from typedb.driver import TypeDB, SessionType, TransactionType
 
 
 def build_phone_call_graph(inputs, data_path, database_name):
@@ -38,8 +38,8 @@ def build_phone_call_graph(inputs, data_path, database_name):
         - b. loads csv to TypeDB
       :param input as list of dictionaties: each dictionary contains details required to parse the data
     """
-    with TypeDB.core_client("localhost:1729") as client:  # 1
-        with client.session(database_name, SessionType.DATA) as session:  # 2
+    with TypeDB.core_driver("localhost:1729") as driver:  # 1
+        with driver.session(database_name, SessionType.DATA) as session:  # 2
             for input in inputs:
                 input["file"] = input["file"].replace(data_path, "")  # for testing purposes
                 input["file"] = data_path + input["file"]  # 3a
@@ -65,7 +65,7 @@ def load_data_into_typedb(input, session):
         with session.transaction(TransactionType.WRITE) as transaction:  # a
             graql_insert_query = input["template"](item)  # b
             print("Executing TypeQL Query: " + graql_insert_query)
-            transaction.query().insert(graql_insert_query)  # c
+            transaction.query.insert(graql_insert_query)  # c
             transaction.commit()  # d
 
     print("\nInserted " + str(len(items)) +

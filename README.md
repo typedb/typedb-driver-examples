@@ -10,7 +10,7 @@
 
 ## Examples in this repository
 
-This repository includes examples that showcase usage of TypeDB Clients in reading from and writing to a TypeDB 
+This repository includes examples that showcase usage of TypeDB Drivers in reading from and writing to a TypeDB 
 database.
 
 ### [Biology: Catalogue of Life](biology/catalogue_of_life)
@@ -48,12 +48,12 @@ GitHub snapshot, and provides a visual interface to explore some sample queries.
 
 ### [Telecom: Phone Calls](telecom/phone_calls)
 
-TypeDB officially supports clients for Java, Node.js and Python. Learn more about [TypeDB Clients](http://docs.vaticle.com/docs/client-api/overview).
+TypeDB officially supports drivers for Java, Node.js, Python, and more. Learn more about [TypeDB Drivers](https://typedb.com/docs/drivers/overview).
 
 The Phone Calls example showcases basic migration of a database of customers of a fictional telecom company and calls
 they make in various formats (CSV, JSON, and XML) and expressive TypeQL queries using
 the [Java,](telecom/phone_calls/java) [Node.js,](telecom/phone_calls/nodejs) and [Python](telecom/phone_calls/python)
-clients.
+drivers.
 
 #### Data migration
 

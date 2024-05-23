@@ -23,8 +23,9 @@ java_library(
     name = "migration-lib",
     srcs = ["Migration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
-        "@vaticle_typedb_client_java//api",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java/query",
         "@vaticle_typeql//java:typeql-lang",
         "@maven//:org_sharegov_mjson",
@@ -37,8 +38,9 @@ java_library(
     name = "queries-lib",
     srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
-        "@vaticle_typedb_client_java//api",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
     ]
 )
@@ -51,9 +53,10 @@ java_test(
         "XCOMTest.java"
     ],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
-        "@vaticle_typedb_client_java//api",
         "@vaticle_typeql//java/query",
         ":migration-lib",
         ":queries-lib"
@@ -72,9 +75,10 @@ java_binary(
     main_class = "com.vaticle.typedb.example.gaming.xcom.Migration",
     srcs = ["Migration.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
-        "@vaticle_typedb_client_java//api",
         "@vaticle_typeql//java/query",
         "@maven//:org_sharegov_mjson",
         "@maven//:com_univocity_univocity_parsers"
@@ -88,8 +92,9 @@ java_binary(
     main_class = "com.vaticle.typedb.example.gaming.xcom.Queries",
     srcs = ["Queries.java", "TransactionMode.java", "ResearchTask.java", "InventoryItem.java", "Result.java"],
     deps = [
-        "@vaticle_typedb_client_java//:client-java",
-        "@vaticle_typedb_client_java//api",
+        "@vaticle_typedb_driver//java:driver-java",
+        "@vaticle_typedb_driver//java/api",
+        "@vaticle_typedb_driver//java/common",
         "@vaticle_typeql//java:typeql-lang",
     ],
 )

@@ -2,7 +2,8 @@
   "globalConfig": {
     "separator": "\t",
     "schema": "${data-directory}/schema.tql",
-    "rowsPerCommit": 50
+    "rowsPerCommit": 100,
+    "parallelisation": 64
   },
   "attributes": {},
   "entities": {

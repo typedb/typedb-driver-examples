@@ -21,10 +21,10 @@
 
 package com.vaticle.typedb.example.gaming.xcom;
 
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
 import org.junit.After;
 import org.junit.Before;
@@ -41,21 +41,21 @@ import static org.junit.Assert.assertTrue;
 
 public class XCOMTest {
 
-    TypeDBClient client;
+    TypeDBDriver driver;
     TypeDBSession session;
     String databaseName = "xcom_test";
 
     @Before
     public void migrateDatabase() throws IOException {
         Migration.main(new String[]{databaseName});
-        client = TypeDB.coreClient("localhost:1729");
-        session = client.session(databaseName, TypeDBSession.Type.DATA);
+        driver = TypeDB.coreDriver("localhost:1729");
+        session = driver.session(databaseName, TypeDBSession.Type.DATA);
     }
 
     @After
     public void deleteDatabase() {
         session.close();
-        client.close();
+        driver.close();
     }
 
     @Test
@@ -167,16 +167,16 @@ public class XCOMTest {
     public void assertMigrationResults() {
         final TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
-        final int totalTechs = transaction.query().match(TypeQL.parseQuery("match $x isa research-project; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
+        final long totalTechs = transaction.query().get(TypeQL.parseQuery("match $x isa research-project; get $x; count;").asGetAggregate()).resolve().get().asLong();
         assertEquals(46, totalTechs);
 
-        final int totalItems = transaction.query().match(TypeQL.parseQuery("match $x isa item; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
+        final long totalItems = transaction.query().get(TypeQL.parseQuery("match $x isa item; get $x; count;").asGetAggregate()).resolve().get().asLong();
         assertEquals(34, totalItems);
 
-        final int totalResearchTechRequirements = transaction.query().match(TypeQL.parseQuery("match $x isa tech-requirement-to-begin-research; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
+        final long totalResearchTechRequirements = transaction.query().get(TypeQL.parseQuery("match $x isa tech-requirement-to-begin-research; get $x; count;").asGetAggregate()).resolve().get().asLong();
         assertEquals(36, totalResearchTechRequirements);
 
-        final int totalResearchResourceCosts = transaction.query().match(TypeQL.parseQuery("match $x isa resource-cost-to-begin-research; get $x; count;").asMatchAggregate()).get().asNumber().intValue();
+        final long totalResearchResourceCosts = transaction.query().get(TypeQL.parseQuery("match $x isa resource-cost-to-begin-research; get $x; count;").asGetAggregate()).resolve().get().asLong();
         assertEquals(44, totalResearchResourceCosts);
 
         transaction.close();

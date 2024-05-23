@@ -7,7 +7,7 @@ The Phone Calls Java example showcases:
 ## Prerequisites
 
 * [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.11.1
-* [Bazel](https://bazel.build/install) v5.1.1 (alternatively, declare dependencies manually and run using Maven. See [TypeDB Client Java documentation](http://docs.vaticle.com/docs/client-api/java) for details.)
+* [Bazel](https://bazel.build/install) v5.1.1 (alternatively, declare dependencies manually and run using Maven. See [TypeDB Driver Java documentation](http://docs.vaticle.com/docs/driver-api/java) for details.)
 
 ## Quickstart
 

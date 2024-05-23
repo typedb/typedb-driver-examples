@@ -21,10 +21,10 @@
 
 package com.typedb.examples.fraudDetection.db;
 
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBOptions;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBOptions;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ public class TypeDBSessionWrapper {
   private static final Logger LOGGER = Logger.getLogger(TypeDBSessionWrapper.class);
 
   @Inject
-  TypeDBClient client;
+  TypeDBDriver driver;
 
   @ConfigProperty(name = "typedb.db", defaultValue="fraud")
   String db;
@@ -62,7 +62,7 @@ public class TypeDBSessionWrapper {
 
     try (TypeDBTransaction readTx = session.transaction(TypeDBTransaction.Type.READ)) {
 
-      var dbResults = readTx.query().match(query);
+      var dbResults = readTx.query().get(query);
 
       var results = dbResults.map(conceptMap -> {
 
@@ -92,7 +92,7 @@ public class TypeDBSessionWrapper {
 
     LOGGER.info("Creating TypeDB session");
 
-    session = client.session(db, TypeDBSession.Type.DATA, TypeDBOptions.core().infer(true));
+    session = driver.session(db, TypeDBSession.Type.DATA, TypeDBOptions().infer(true));
   }
 
   @PreDestroy

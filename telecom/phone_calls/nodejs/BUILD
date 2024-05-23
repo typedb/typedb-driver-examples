@@ -19,34 +19,37 @@
 # under the License.
 #
 
-exports_files(["package.json", "yarn.lock"])
+exports_files(["package.json"])
 
-load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+npm_link_all_packages(
+    name = "node_modules",
+)
 
-jasmine_node_test(
+load("@aspect_rules_jasmine//jasmine:defs.bzl", "jasmine_test")
+
+jasmine_test(
     name = "test",
-    srcs = [
+    args = ["test.js"],
+    data = [
         "test.js",
         "migrateCsv.js",
         "migrateJson.js",
         "migrateXml.js",
-        "queries.js"
-    ],
-    deps = [
-        "@npm//jasmine",
-        "@npm//jasmine-reporters",
-        "@npm//typedb-client",
-        "@npm//papaparse",
-        "@npm//stream-json",
-        "@npm//xml-stream"
-
-    ],
-    data = [
+        "queries.js",
+        "package.json",
         "//telecom/phone_calls:schema.tql",
         "//telecom/phone_calls:data-csv",
         "//telecom/phone_calls:data-json",
         "//telecom/phone_calls:data-xml",
-    ]
+#        ":node_modules/jasmine-reporters",
+#        ":node_modules/typedb-driver",
+#        ":node_modules/papaparse",
+#        ":node_modules/stream-json",
+#        ":node_modules/xml-stream"
+    ],
+    chdir = package_name(),
+    node_modules = "//:node_modules",
 )
 
 load("@vaticle_dependencies//tool/checkstyle:rules.bzl", "checkstyle_test")

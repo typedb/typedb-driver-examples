@@ -22,6 +22,8 @@
 # Misc
 .DS_Store
 logs/
+.aspect/
+
 
 # IDE files
 .idea/

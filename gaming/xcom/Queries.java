@@ -21,11 +21,11 @@
 
 package com.vaticle.typedb.example.gaming.xcom;
 
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBOptions;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBOptions;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
 
 import java.io.ByteArrayInputStream;
@@ -179,8 +179,8 @@ public class Queries {
                     transaction(t -> {
                         String query = "match $campaign isa campaign, has name $name; get $name; sort $name asc;";
                         System.out.println("Executing TypeQL Query: " + query);
-                        t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> campaignNames.add(
-                                result.get("name").asAttribute().asString().getValue()
+                        t.query().get(TypeQL.parseQuery(query).asGet()).forEach(result -> campaignNames.add(
+                                result.get("name").asAttribute().getValue().asString()
                         ));
                     }, TransactionMode.READ);
                     break;
@@ -190,8 +190,8 @@ public class Queries {
                     transaction(t -> {
                         String query = "match $tech isa research-project, has name $name; get $name; sort $name asc;";
                         System.out.println("Executing TypeQL Query: " + query);
-                        t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> techs.add(
-                                result.get("name").asAttribute().asString().getValue()
+                        t.query().get(TypeQL.parseQuery(query).asGet()).forEach(result -> techs.add(
+                                result.get("name").asAttribute().getValue().asString()
                         ));
                     }, TransactionMode.READ);
                     break;
@@ -200,8 +200,8 @@ public class Queries {
                     transaction(t -> {
                         String query = "match $item isa item, has name $name; get $name; sort $name asc;";
                         System.out.println("Executing TypeQL Query: " + query);
-                        t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> items.add(
-                                result.get("name").asAttribute().asString().getValue()
+                        t.query().get(TypeQL.parseQuery(query).asGet()).forEach(result -> items.add(
+                                result.get("name").asAttribute().getValue().asString()
                         ));
                     }, TransactionMode.READ);
                     break;
@@ -360,9 +360,9 @@ public class Queries {
                     + " (campaign-with-tasks: $campaign, research-task: $research-project) isa campaign-research-task, has can-begin true, has progress $progress;"
                     + " get $research_project_name, $progress;";
             System.out.println("Executing TypeQL Query: " + query);
-            t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> researchTasks.add(new ResearchTask(
-                    result.get("research_project_name").asAttribute().asString().getValue(),
-                    result.get("progress").asAttribute().asDouble().getValue()
+            t.query().get(TypeQL.parseQuery(query).asGet    ()).forEach(result -> researchTasks.add(new ResearchTask(
+                    result.get("research_project_name").asAttribute().getValue().asString(),
+                    result.get("progress").asAttribute().getValue().asDouble()
             )));
         }, TransactionMode.READ);
 
@@ -379,9 +379,9 @@ public class Queries {
                     + " (item-owner: $campaign, owned-item: $item) isa item-ownership, has quantity $quantity;"
                     + " get $item_name, $quantity;";
             System.out.println("Executing TypeQL Query: " + query);
-            t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> inventory.add(new InventoryItem(
-                    result.get("item_name").asAttribute().asString().getValue(),
-                    result.get("quantity").asAttribute().asLong().getValue()
+            t.query().get(TypeQL.parseQuery(query).asGet()).forEach(result -> inventory.add(new InventoryItem(
+                    result.get("item_name").asAttribute().getValue().asString(),
+                    result.get("quantity").asAttribute().getValue().asLong()
             )));
         }, TransactionMode.READ);
 
@@ -491,8 +491,8 @@ public class Queries {
                         + " (research-to-begin: $tech, required-tech: $required-tech) isa tech-requirement-to-begin-research;"
                         + " get $required_tech_name;";
                 System.out.println("Executing TypeQL Query: " + query);
-                t.query().match(TypeQL.parseQuery(query).asMatch()).forEach(result -> requiredTechs.add(
-                        result.get("required_tech_name").asAttribute().asString().getValue()
+                t.query().get(TypeQL.parseQuery(query).asGet()).forEach(result -> requiredTechs.add(
+                        result.get("required_tech_name").asAttribute().getValue().asString()
                 ));
             }, TransactionMode.READ);
             System.out.println(tech + " requires [" + String.join(", ", requiredTechs) + "]");
@@ -502,9 +502,9 @@ public class Queries {
     }
 
     static void transaction(Consumer<TypeDBTransaction> queries, final TransactionMode mode) {
-        TypeDBClient client = TypeDB.coreClient("localhost:1729");
-        TypeDBSession session = client.session(databaseName, TypeDBSession.Type.DATA);
-        TypeDBOptions options = TypeDBOptions.core().infer(true);
+        TypeDBDriver driver = TypeDB.coreDriver("localhost:1729");
+        TypeDBSession session = driver.session(databaseName, TypeDBSession.Type.DATA);
+        TypeDBOptions options = new TypeDBOptions().infer(true);
         TypeDBTransaction transaction = mode == TransactionMode.WRITE
                 ? session.transaction(TypeDBTransaction.Type.WRITE, options)
                 : session.transaction(TypeDBTransaction.Type.READ, options);
@@ -516,6 +516,6 @@ public class Queries {
 
         transaction.close();
         session.close();
-        client.close();
+        driver.close();
     }
 }

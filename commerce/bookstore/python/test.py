@@ -24,7 +24,7 @@ from unittest import mock, TestCase
 import load_data
 import requests
 import config
-from typedb.client import TypeDB, SessionType, TransactionType
+from typedb.driver import TypeDB, SessionType, TransactionType
 
 
 class LoadDataTests(TestCase):
@@ -67,12 +67,12 @@ class RequestTests(TestCase):
         mocked_input.side_effect = ["2", user_foreign_id]  # 2. Search for a user -> Foreign ID: 88
         result = requests.main()  # we get the result from requests.py
         expected_result = []  # we get the result of our own request here
-        with TypeDB.core_client(config.typedb_server_addr) as client:  # Establishing connection
-            with client.session(config.db, SessionType.DATA) as session:  # Access data in the database
+        with TypeDB.core_driver(config.typedb_server_addr) as driver:  # Establishing connection
+            with driver.session(config.db, SessionType.DATA) as session:  # Access data in the database
                 with session.transaction(TransactionType.READ) as transaction:  # Open transaction to read
                     typeql_read_query = "match $u isa user, has id $i, has name $n, " \
                                         "has foreign-id '" + user_foreign_id + "'; get $i, $n;"
-                    iterator = transaction.query().match(typeql_read_query)  # Executing query
+                    iterator = transaction.query.get(typeql_read_query)  # Executing query
                     for item in iterator:  # Iterating through results
                         expected_result.append(item.get("i").get_value())  # We get every user with the foreign_id
 

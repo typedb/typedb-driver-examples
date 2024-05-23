@@ -20,7 +20,7 @@ demonstration of TypeDB queries. But you can easily explore the implementation o
 
 * [TypeDB](https://docs.vaticle.com/docs/running-typedb/install-and-run) v2.14.1+
 * Python v.3.9+
-  * `typedb.client` — [Python client](https://docs.vaticle.com/docs/client-api/python) for TypeDB
+  * `typedb.driver` — [Python driver](https://docs.vaticle.com/docs/driver-api/python) for TypeDB
   * Common Python libraries: os, csv, argparse, enum, uuid, random, unittest
 * This repository
 

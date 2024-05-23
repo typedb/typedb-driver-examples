@@ -2,11 +2,13 @@
     "author": "Vaticle (community@vaticle.com)",
     "dependencies": {
         "@bazel/jasmine": "latest",
+        "expat": "^1.0.0",
+        "gyp": "^0.5.0",
         "jasmine": "latest",
-        "typedb-client": "2.1.1",
         "jasmine-reporters": "^2.3.2",
         "papaparse": "^4.6.3",
         "stream-json": "^1.1.4",
+        "typedb-driver": "2.28.0",
         "xml-stream": "^0.4.5"
     },
     "description": "An example that illustrates how CSV data can be loaded into TypeDB using the Node.js Client",

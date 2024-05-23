@@ -23,10 +23,10 @@ package com.vaticle.typedb.example.gaming.xcom;
 
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
 import mjson.Json;
 
@@ -71,15 +71,15 @@ public class Migration {
      * 3. initialises the list of Inputs, each containing details required to parse the data
      * 4. loads the csv data to TypeDB for each file
      * 5. closes the session
-     * 6. closes the client
+     * 6. closes the driver
      */
     static void connectAndMigrate(Collection<Input> inputs, String databaseName) throws IOException {
-        TypeDBClient client = TypeDB.coreClient("localhost:1729");
+        TypeDBDriver driver = TypeDB.coreDriver("localhost:1729");
 
-        if (client.databases().contains(databaseName)) client.databases().get(databaseName).delete();
-        client.databases().create(databaseName);
+        if (driver.databases().contains(databaseName)) driver.databases().get(databaseName).delete();
+        driver.databases().create(databaseName);
 
-        TypeDBSession schemaSession = client.session(databaseName, TypeDBSession.Type.SCHEMA);
+        TypeDBSession schemaSession = driver.session(databaseName, TypeDBSession.Type.SCHEMA);
         TypeDBTransaction schemaTransaction = schemaSession.transaction(TypeDBTransaction.Type.WRITE);
         Writer queryBuffer = new StringWriter();
         getReader("gaming/xcom/schema.tql").transferTo(queryBuffer);
@@ -88,14 +88,14 @@ public class Migration {
         System.out.println("\nCreated the database.\n");
         schemaSession.close();
 
-        TypeDBSession dataSession = client.session(databaseName, TypeDBSession.Type.DATA);
+        TypeDBSession dataSession = driver.session(databaseName, TypeDBSession.Type.DATA);
         for (Input input : inputs) {
             System.out.println("Loading from [" + input.getDataPath() + ".csv] into TypeDB ...");
             loadDataIntoTypeDB(input, dataSession);
         }
 
         dataSession.close();
-        client.close();
+        driver.close();
     }
 
     static Collection<Input> initialiseInputs() {
@@ -129,7 +129,7 @@ public class Migration {
                 // match required tech
                 typeQLInsertQuery += " $required_tech isa research-project, has name " + techRequirement.at("required_tech") + ";";
                 // insert research project tech requirement
-                typeQLInsertQuery += " insert (research-to-begin: $tech, required-tech: $required_tech) isa tech-requirement-to-begin-research;";
+                typeQLInsertQuery += " insert (research-to-begin: $tech, research-begin-required-tech: $required_tech) isa tech-requirement-to-begin-research;";
                 return typeQLInsertQuery;
             }
         };

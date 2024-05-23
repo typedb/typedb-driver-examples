@@ -21,11 +21,11 @@
 
 package com.vaticle.typedb.example.biology.catalogueOfLife.test;
 
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
-import com.vaticle.typedb.client.api.TypeDBOptions;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
+import com.vaticle.typedb.driver.api.TypeDBOptions;
+import com.vaticle.typedb.driver.api.TypeDBSession;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 import com.vaticle.typedb.example.biology.catalogueOfLife.Loader;
 import com.vaticle.typeql.lang.TypeQL;
 import org.junit.AfterClass;
@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import static com.vaticle.typeql.lang.TypeQL.var;
+import static com.vaticle.typeql.lang.TypeQL.cVar;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 public class CoLTest {
     private static final String DATABASE_NAME = "catalogue-of-life";
 
-    private static TypeDBClient client;
+    private static TypeDBDriver driver;
     private static TypeDBSession session;
 
     @BeforeClass
@@ -54,42 +54,42 @@ public class CoLTest {
         Loader.prepareData(dataDirectory);
         Loader.loadData(dataDirectory, Loader.parseCLIOptions(new String[]{}).get());
 
-        client = TypeDB.coreClient("localhost:1729");
-        session = client.session(DATABASE_NAME, TypeDBSession.Type.DATA);
+        driver = TypeDB.coreDriver("localhost:1729");
+        session = driver.session(DATABASE_NAME, TypeDBSession.Type.DATA);
     }
 
     @AfterClass
     public static void close() throws IOException {
         session.close();
-        client.close();
+        driver.close();
     }
 
     @Test
     public void testLoaded() {
         TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
 
-        long totalTaxa = transaction.query().match(TypeQL.match(var("x").isa("taxon")).count()).get().asLong();
+        long totalTaxa = transaction.query().get(TypeQL.match(cVar("x").isa("taxon")).get().count()).resolve().get().asLong();
         assertEquals(149, totalTaxa);
 
-        long totalNames = transaction.query().match(TypeQL.match(var("x").isa("vernacular-name")).count()).get().asLong();
+        long totalNames = transaction.query().get(TypeQL.match(cVar("x").isa("vernacular-name")).get().count()).resolve().get().asLong();
         assertEquals(21, totalNames);
 
-        long totalReferences = transaction.query().match(TypeQL.match(var("x").isa("reference")).count()).get().asLong();
+        long totalReferences = transaction.query().get(TypeQL.match(cVar("x").isa("reference")).get().count()).resolve().get().asLong();
         assertEquals(36, totalReferences);
 
-        long totalRegions = transaction.query().match(TypeQL.match(var("x").isa("region")).count()).get().asLong();
+        long totalRegions = transaction.query().get(TypeQL.match(cVar("x").isa("region")).get().count()).resolve().get().asLong();
         assertEquals(43 + 6, totalRegions);
 
-        long totalMarineRegions = transaction.query().match(TypeQL.match(var("x").isa("marine-region")).count()).get().asLong();
+        long totalMarineRegions = transaction.query().get(TypeQL.match(cVar("x").isa("marine-region")).get().count()).resolve().get().asLong();
         assertEquals(43, totalMarineRegions);
 
-        long totalDescribedRegions = transaction.query().match(TypeQL.match(var("x").isa("catalogue-of-life-region")).count()).get().asLong();
+        long totalDescribedRegions = transaction.query().get(TypeQL.match(cVar("x").isa("catalogue-of-life-region")).get().count()).resolve().get().asLong();
         assertEquals(6, totalDescribedRegions);
 
-        long totalParenthoods = transaction.query().match(TypeQL.match(var("x").isa("parenthood")).count()).get().asLong();
+        long totalParenthoods = transaction.query().get(TypeQL.match(cVar("x").isa("parenthood")).get().count()).resolve().get().asLong();
         assertEquals(147, totalParenthoods);
 
-        long totalNamings = transaction.query().match(TypeQL.match(var("x").isa("naming")).count()).get().asLong();
+        long totalNamings = transaction.query().get(TypeQL.match(cVar("x").isa("naming")).get().count()).resolve().get().asLong();
         assertEquals(21, totalNamings);
 
         transaction.close();
@@ -97,13 +97,13 @@ public class CoLTest {
 
     @Test
     public void testQueries() {
-        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ, TypeDBOptions.core().infer(true));
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ, new TypeDBOptions().infer(true));
         ArrayList<String> subspecies = new ArrayList<>();
-        transaction.query().match(
+        transaction.query().get(
                 "match $a isa taxon; $a has scientific-name \"Gelliodes\"; "
                         + "(ancestor: $a, $x) isa common-taxon; "
                         + "$x has taxon-rank \"variety\", has scientific-name $sn; get $sn; sort $sn asc;"
-        ).forEach(result -> subspecies.add(result.get("sn").asAttribute().asString().getValue()));
+        ).forEach(result -> subspecies.add(result.get("sn").asAttribute().getValue().asString()));
         String[] expectedSubspecies = {
                 "Gelliodes carnosa var. laxa",
                 "Gelliodes fayalensis var. minor",
@@ -113,11 +113,11 @@ public class CoLTest {
         assertArrayEquals(expectedSubspecies, subspecies.toArray());
 
         ArrayList<String> commonAncestors = new ArrayList<>();
-        transaction.query().match(
+        transaction.query().get(
                 "match $x isa taxon; ($x, $x-name) isa naming; $x-name has name \"Simien fox\"; "
                         + "$y isa taxon; ($y, $y-name) isa naming; $y-name has name \"Wolf\"; "
                         + "(ancestor: $a, $x, $y) isa common-taxon; $a has scientific-name $sn; get $sn;"
-        ).forEach(result -> commonAncestors.add(result.get("sn").asAttribute().asString().getValue()));
+        ).forEach(result -> commonAncestors.add(result.get("sn").asAttribute().getValue().asString()));
         assertTrue(commonAncestors.size() >= 1);  // FIXME exactly one with negation in rule
         assertTrue(commonAncestors.contains("Canis"));
         transaction.close();

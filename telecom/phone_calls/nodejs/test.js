@@ -20,9 +20,9 @@
  */
 
 const fs = require("fs");
-const { TypeDB } = require("typedb-client/TypeDB");
-const { SessionType } = require("typedb-client/api/connection/TypeDBSession");
-const { TransactionType } = require("typedb-client/api/connection/TypeDBTransaction");
+const { TypeDB } = require("typedb-driver/TypeDB");
+const { SessionType } = require("typedb-driver/api/connection/TypeDBSession");
+const { TransactionType } = require("typedb-driver/api/connection/TypeDBTransaction");
 const reporters = require("jasmine-reporters");
 
 const csvMigration = require("./migrateCsv");
@@ -35,26 +35,26 @@ jasmine.getEnv().addReporter(tapReporter);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 
-let client;
+let driver;
 let session;
 const dataPath = "telecom/phone_calls/data/"
 const databaseName = "phone_calls_nodejs"
 
 beforeEach(async function() {
-    client = TypeDB.coreClient("localhost:1729");
-    if (!await (client.databases().contains(databaseName))) {
-        await client.databases().create(databaseName);
+    driver = TypeDB.coreDriver("localhost:1729");
+    if (!await (driver.databases().contains(databaseName))) {
+        await driver.databases().create(databaseName);
     } else {
-        await (await client.databases().get(databaseName)).delete();
-        await client.databases().create(databaseName);
+        await (await driver.databases().get(databaseName)).delete();
+        await driver.databases().create(databaseName);
     }
-    session = await client.session(databaseName, SessionType.SCHEMA);
+    session = await driver.session(databaseName, SessionType.SCHEMA);
     const transaction = await session.transaction(TransactionType.WRITE);
     const defineQuery = fs.readFileSync("telecom/phone_calls/schema.tql", "utf8");
     await transaction.query().define(defineQuery);
     await transaction.commit();
     await session.close()
-    session = await client.session(databaseName, SessionType.DATA);
+    session = await driver.session(databaseName, SessionType.DATA);
     console.log("Loaded the phone_calls_nodejs schema");
 });
 
@@ -147,7 +147,7 @@ async function assertMigrationResults() {
 
 afterEach(async function() {
     await session.close();
-    await (await client.databases().get(databaseName)).delete();
+    await (await driver.databases().get(databaseName)).delete();
     console.log("Deleted the phone_calls_nodejs database");
-    client.close();
+    driver.close();
 });

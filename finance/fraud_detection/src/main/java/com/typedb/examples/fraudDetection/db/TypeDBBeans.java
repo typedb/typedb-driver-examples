@@ -21,8 +21,8 @@
 
 package com.typedb.examples.fraudDetection.db;
 
-import com.vaticle.typedb.client.TypeDB;
-import com.vaticle.typedb.client.api.TypeDBClient;
+import com.vaticle.typedb.driver.TypeDB;
+import com.vaticle.typedb.driver.api.TypeDBDriver;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
@@ -40,17 +40,17 @@ public class TypeDBBeans {
 
   @Produces
   @ApplicationScoped
-  TypeDBClient getClient() {
+  TypeDBDriver getDriver() {
 
-    LOGGER.info("Creating TypeDB client");
+    LOGGER.info("Creating TypeDB driver");
 
-    return TypeDB.coreClient(host + ":" + port);
+    return TypeDB.coreDriver(host + ":" + port);
   }
 
-   void closeClient(@Disposes TypeDBClient client) {
+   void closeDriver(@Disposes TypeDBDriver driver) {
 
-     LOGGER.info("Closing TypeDB client");
+     LOGGER.info("Closing TypeDB driver");
 
-     client.close();
+     driver.close();
    }
 }
