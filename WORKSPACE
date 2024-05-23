@@ -37,8 +37,14 @@ load("@vaticle_dependencies//builder/java:deps.bzl", java_deps = "deps")
 java_deps()
 
 # Load //builder/kotlin
-load("@vaticle_dependencies//builder/kotlin:deps.bzl", kotlin_deps = "deps")
-kotlin_deps()
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+# load specific verison of kotlin
+http_archive(
+    name = "io_bazel_rules_kotlin",
+    sha256 = "34e8c0351764b71d78f76c8746e98063979ce08dcf1a91666f3f3bc2949a533d",
+    url = "https://github.com/bazelbuild/rules_kotlin/releases/download/v1.9.5/rules_kotlin-v1.9.5.tar.gz",
+)
+
 load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories")
 kotlin_repositories()
 load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_register_toolchains")
@@ -291,8 +297,3 @@ maven_install(
     strict_visibility = True,
     version_conflict_policy = "pinned"
 )
-#
-## Load JetBrains Compose for Kotlin.
-#load("@vaticle_dependencies//builder/compose:deps.bzl", compose_deps = "deps")
-#compose_deps()
-#load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_binary", "kt_jvm_library")
