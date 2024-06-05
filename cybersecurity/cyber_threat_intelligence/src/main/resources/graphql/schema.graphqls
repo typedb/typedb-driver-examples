@@ -1,0 +1,285 @@
+"""
+* Copyright (C) 2023 Vaticle
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+"""
+
+scalar Date
+scalar JSON
+
+type Malware{
+    name: String
+    description: String
+    spec_version: String
+    malware_types: String
+    langs: String
+    is_family: Boolean
+    revoked: Boolean
+    created: Date
+    modified: Date
+    confidence: Int
+    aliases: [String]
+    labels: [String]
+    architecture_execution_envs: [String]
+    implementation_languages: [String]
+    capabilities: [String]
+}
+
+type ThreatActor{
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    aliases: String
+    stix_role: String
+    goals: String
+    resource_level: String
+    primary_motivation: String
+    secondary_motivation: String
+    sophistication: String
+    personal_characteristics: String
+    roles: String
+    threat_actor_types: String
+    first_seen: Date
+    last_seen: Date
+}
+
+type File{
+    spec_version: String
+
+    defanged: String
+
+    size: Int
+    name: String
+    name_enc: String
+    magic_number_hex: String
+    mime_type: String
+    ctime: Date
+    mtime: Date
+    atime: Date
+}
+
+type Identity{
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    stix_role: String
+    identity_class: String
+    sector: String
+    contact_information: String
+}
+
+type Indicator {
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    pattern: String
+    pattern_type: String
+    pattern_version: String
+    valid_from: String
+    valid_until: String
+}
+
+type Class {
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    stix_role: String
+    identity_class: String
+    sector: String
+    contact_information: String
+}
+
+type Group {
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    stix_role: String
+    identity_class: String
+    sector: String
+    contact_information: String
+}
+
+type IdUnknown {
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    stix_role: String
+    identity_class: String
+    sector: String
+    contact_information: String
+}
+
+type Individual {
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    stix_role: String
+    identity_class: String
+    sector: String
+    contact_information: String
+}
+
+type System {
+    spec_version: String
+
+    created: Date
+    modified: Date
+    revoked: Boolean
+    langs: String
+    confidence: Int
+    labels: [String]
+
+    name: String
+    description: String
+    stix_role: String
+    identity_class: String
+    sector: String
+    contact_information: String
+}
+
+type KillChainPhase{
+    created: Date
+    modified: Date
+    kill_chain_name: String
+    kill_chain_phase_name: String
+}
+
+type Query{
+    getMalware: JSON
+    getMalwareBeans: [Malware]
+    getThreatActor: JSON
+    getThreatActorBeans: [ThreatActor]
+    getFile: JSON
+    getFileBeans: [File]
+    getIdentity: JSON
+    getIdentityBeans: [Identity]
+    getIndicator: JSON
+    getIndicatorBeans: [Indicator]
+    getClass: JSON
+    getClassBeans: [Class]
+    getGroup: JSON
+    getGroupBeans: [Group]
+    cenIdUnknown: JSON
+    getIdUnknownBeans: [IdUnknown]
+    getIndividual: JSON
+    getIndividualBeans: [Individual]
+    getSystem: JSON
+    getSystemBeans: [System]
+    getKillChainPhase: JSON
+    getKillChainPhaseBeans: [KillChainPhase]
+
+    getThreatActorSearch(type: String, name: String): JSON
+    getThreatActorSearchBeans(type: String, name: String): [ThreatActor]
+    getMalwareSearch(type: String, name: String): JSON
+    getMalwareSearchBeans(type: String, name: String): [Malware]
+    getFileSearch(type: String, name: String): JSON
+    getFileSearchBeans(type: String, name: String): [File]
+    getIdentitySearch(type: String, name: String): JSON
+    getIdentitySearchBeans(type: String, name: String): [Identity]
+    getIndicatorSearch(type: String, name: String): JSON
+    getIndicatorSearchBeans(type: String, name: String): [Indicator]
+    getClassSearch(type: String, name: String): JSON
+    getClassSearchBeans(type: String, name: String): [Class]
+    getGroupSearch(type: String, name: String): JSON
+    getGroupSearchBeans(type: String, name: String): [Group]
+    getIdUnknownSearch(type: String, name: String): JSON
+    getIdUnknownSearchBeans(type: String, name: String): [IdUnknown]
+    getIndividualSearch(type: String, name: String): JSON
+    getIndividualSearchBeans(type: String, name: String): [Individual]
+    getSystemSearch(type: String, name: String): JSON
+    getSystemSearchBeans(type: String, name: String): [System]
+    getKillChainPhaseSearch(type: String, name: String): JSON
+    getKillChainPhaseSearchBeans(type: String, name: String): [KillChainPhase]
+    getAttributedToSearch(type: String, name: String): JSON
+    getIndicatesSearch(type: String, name: String): JSON
+    getSightingSearch(type: String, name: String): JSON
+    getUsesSearch(type: String, name: String): JSON
+    getTargetsSearch(type: String, name: String): JSON
+    getImpersonatesSearch(type: String, name: String): JSON
+    getHashesSearch(type: String, name: String): JSON
+
+
+    getAttributedTo: JSON
+    getIndicates: JSON
+    getSighting: JSON
+    getUses: JSON
+    getTargets: JSON
+    getImpersonates: JSON
+    getKillChainPhases: JSON
+    getExternalReferences: JSON
+    getCreatedBy: JSON
+    getHashes: JSON
+    getSchema: JSON
+    getSchemaCurrent: JSON
+}

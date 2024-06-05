@@ -30,6 +30,13 @@ Read the [README](commerce/bookstore/README.md) file for instructions. Check [th
 or the initial [dataset](commerce/bookstore/python/data) for additional information. All logic accessible in the script
 files in the [python](commerce/bookstore/python) directory.
 
+### [Cybersecurity: Cyber Threat Intellingence](cybersecurity/cyber_threat_intelligence)
+
+The Cyber Threat Intelligence example uses Spring Boot to showcase usage of CTI dataset into TypeDB and executing queries on this data.
+In this project, we use TypeDB to represent a queryable database of relevant CTI data about some threat actors and their targets.
+We can query the database either with a REST API or a GraphQL API through the dedicated web interface.
+
+ 
 ### [Finance: Fraud Detection](finance/fraud_detection)
 
 The Fraud Detection example uses Quarkus, the Supersonic Subatomic Java Framework in order to let us present results with GraphQL.
